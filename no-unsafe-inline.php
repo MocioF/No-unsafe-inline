@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * The plugin bootstrap file
+ *
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @link              https://profiles.wordpress.org/mociofiletto/
+ * @since             1.0.0
+ * @package           No_Unsafe_Inline
+ *
+ * @wordpress-plugin
+ * Plugin Name:       No unsafe-inline
+ * Plugin URI:        https://github.com/MocioF/No-unsafe-inline
+ * Description:       This plugin helps you to build a CSP to avoid using 'unsafe-inline' in your .htaccess
+ * Version:           1.0.0
+ * Author:            Giuseppe Foti
+ * Author URI:        https://profiles.wordpress.org/mociofiletto/
+ * License:           GPL-2.0-or-later
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       no-unsafe-inline
+ * Domain Path:       /languages
+ */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+/**
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
+ */
+define( 'NO_UNSAFE_INLINE_VERSION', '1.0.0' );
+define( 'NO_UNSAFE_INLINE_DB_VERSION', '1.0' );
+define( 'NO_UNSAFE_INLINE_MINIMUM_WP_VERSION', '4.7' );
+define( 'NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION', '7.2' );
+define( 'NO_UNSAFE_INLINE_PLUGIN', __FILE__ );
+define( 'NO_UNSAFE_INLINE_PLUGIN_BASENAME', plugin_basename( NO_UNSAFE_INLINE_PLUGIN ) );
+define( 'NO_UNSAFE_INLINE_PLUGIN_NAME', trim( dirname( NO_UNSAFE_INLINE_PLUGIN_BASENAME ), '/' ) );
+define( 'NO_UNSAFE_INLINE_PLUGIN_DIR', untrailingslashit( dirname( NO_UNSAFE_INLINE_PLUGIN ) ) );
+
+/**
+ * The table prefix for db tables used by the plugin
+ */
+global $wpdb;
+$nunil_table_prefix = $wpdb->prefix . 'nunil_';
+define( 'NO_UNSAFE_INLINE_TABLE_PREFIX', $nunil_table_prefix );
+
+/**
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-no-unsafe-inline-activator.php
+ */
+function activate_no_unsafe_inline() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
+	No_Unsafe_Inline_Activator::activate();
+}
+
+/**
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-no-unsafe-inline-deactivator.php
+ */
+function deactivate_no_unsafe_inline() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
+	No_Unsafe_Inline_Deactivator::deactivate();
+}
+
+register_activation_hook( __FILE__, 'activate_no_unsafe_inline' );
+register_deactivation_hook( __FILE__, 'deactivate_no_unsafe_inline' );
+
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline.php';
+
+/**
+ * Include all dependencies, managed by composer.
+ */
+require plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) .'vendor/autoload.php';
+
+/**
+ * Extra settings for visualization in plugin list.
+ */
+//~ require_once plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) . 'settings.php';
+
+
+/**
+ * Begins execution of the plugin.
+ *
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
+ */
+function run_no_unsafe_inline() {
+
+	$plugin = new No_Unsafe_Inline();
+	$plugin->run();
+
+}
+run_no_unsafe_inline();

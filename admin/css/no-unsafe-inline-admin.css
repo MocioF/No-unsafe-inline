@@ -1,0 +1,499 @@
+@import url("../../vendor/scrivo/highlight.php/styles/obsidian.css");
+
+/**
+ *  Stars in the plugin list
+ */
+.nunil-stars {
+	display: inline-block;
+	color: #ffb900;
+	position: relative;
+	top: 3px
+}
+
+.nunil-stars svg {
+	fill: #ffb900
+}
+
+.nunil-stars svg:hover {
+	fill: #ffb900
+}
+
+.nunil-stars svg:hover~svg {
+	fill: none
+}
+
+/**
+ * Ciprian on Monday, April 19, 2021
+ * Checkbox Toggle UI
+ *
+ * https://getbutterfly.com/on-off-toggle-replacement-for-wordpress-checkboxes/
+ */
+input[type="checkbox"].nunil-ui-toggle {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+
+	-webkit-tap-highlight-color: transparent;
+
+	width: auto;
+	height: auto;
+	vertical-align: middle;
+	position: relative;
+	border: 0;
+	outline: 0;
+	cursor: pointer;
+	margin: 0 4px;
+	background: none;
+	box-shadow: none;
+}
+
+input[type="checkbox"].nunil-ui-toggle:focus {
+	box-shadow: none;
+}
+
+input[type="checkbox"].nunil-ui-toggle:after {
+	content: '';
+	font-size: 8px;
+	font-weight: 400;
+	line-height: 18px;
+	text-indent: -14px;
+	color: #ffffff;
+	width: 36px;
+	height: 18px;
+	display: inline-block;
+	background-color: #a7aaad;
+	border-radius: 72px;
+	box-shadow: 0 0 12px rgb(0 0 0 / 15%) inset;
+}
+
+input[type="checkbox"].nunil-ui-toggle:before {
+	content: '';
+	width: 14px;
+	height: 14px;
+	display: block;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	margin: 0;
+	border-radius: 50%;
+	background-color: #ffffff;
+}
+
+input[type="checkbox"].nunil-ui-toggle:checked:before {
+	left: 20px;
+	margin: 0;
+	background-color: #ffffff;
+}
+
+input[type="checkbox"].nunil-ui-toggle,
+input[type="checkbox"].nunil-ui-toggle:before,
+input[type="checkbox"].nunil-ui-toggle:after,
+input[type="checkbox"].nunil-ui-toggle:checked:before,
+input[type="checkbox"].nunil-ui-toggle:checked:after {
+	transition: ease .15s;
+}
+
+input[type="checkbox"].nunil-ui-toggle:checked:after {
+	content: 'ON';
+	background-color: #2271b1;
+}
+
+/**
+ * Author: Aaron Iker
+ * July 9, 2018
+ *
+ * RADIO INPUT
+ * https://codepen.io/aaroniker/pen/yqBVJY
+ */
+.nunil-l-radio {
+	margin: 8px 0;
+	display: block;
+	cursor: pointer;
+}
+
+.nunil-l-radio input {
+	display: none;
+}
+
+.nunil-l-radio input+span {
+	line-height: 16px;
+	height: 16px;
+	padding-left: 16px;
+	display: block;
+	position: relative;
+}
+
+.nunil-l-radio input+span:not(:empty) {
+	padding-left: 30px;
+}
+
+.nunil-l-radio input+span:before,
+.nunil-l-radio input+span:after {
+	content: "";
+	width: 16px;
+	height: 16px;
+	display: block;
+	border-radius: 50%;
+	left: 0;
+	top: 0;
+	position: absolute;
+}
+
+.nunil-l-radio input+span:before {
+	background: #D1D7E3;
+	transition: background 0.2s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 2);
+}
+
+.nunil-l-radio input+span:after {
+	background: #fff;
+	transform: scale(0.78);
+	transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.4);
+}
+
+.nunil-l-radio input:checked+span:before {
+	transform: scale(1.04);
+	background: #2271b1;
+}
+
+.nunil-l-radio input:checked+span:after {
+	transform: scale(0.4);
+	transition: transform 0.3s ease;
+}
+
+.nunil-l-radio:hover input+span:before {
+	transform: scale(0.92);
+}
+
+.nunil-l-radio:hover input+span:after {
+	transform: scale(0.74);
+}
+
+.nunil-l-radio:hover input:checked+span:after {
+	transform: scale(0.4);
+}
+
+.nunil-radio-div {
+	justify-content: start;
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	box-sizing: border-box;
+}
+
+/**
+ * styling admin tables
+ */
+.wp-list-table .column-nunil-ext-directive {
+	width: 10%;
+}
+.wp-list-table .column-nunil-ext-sources {
+	width: 30%;
+}
+
+.nunil-inl-scripts td.column-cb, .nunil-evh-scripts td.column-cb, .nunil-ext-scripts td.column-cb {
+	width: 4%;
+}
+
+.nunil-inl-scripts th.column-script, .nunil-evh-scripts th.column-script {
+	width: 30%;
+}
+
+.nunil-ext-scripts th.column-src_attrib {
+	width: 62%;
+}
+
+.nunil-ext-scripts th.column-sha256, .nunil-ext-scripts th.column-sha384, .nunil-ext-scripts th.column-sha512 {
+	width: 5%;
+}
+
+td.column-script div.ui-accordion div.ui-accordion-content{
+	padding: 0px !important;
+}
+td.column-script div.ui-widget-content {
+	background: unset;
+}
+.nunil-script-code {
+	margin: 1px 0px 1px 0px;
+}
+
+.nunil-inl-scripts th.column-directive, .nunil-evh-scripts th.column-tagid, .nunil-ext-scripts th.column-directive {
+	width: 7%;
+}
+.nunil-inl-scripts th.column-tagname, .nunil-evh-scripts th.column-tagname, .nunil-ext-scripts th.column-tagname {
+	width: 7%;
+}
+
+.nunil-evh-scripts th.column-event_attribute {
+	width: 7%;
+}
+.nunil-inl-scripts th.column-clustername, .nunil-evh-scripts th.column-clustername {
+	width: 7%;
+}
+.nunil-inl-scripts th.column-whitelist, .nunil-evh-scripts th.column-whitelist, .nunil-ext-scripts th.column-whitelist {
+	width: 5%;
+}
+.nunil-inl-scripts td.column-whitelist p.whitelist,
+.nunil-evh-scripts td.column-whitelist p.whitelist,
+.nunil-ext-scripts td.column-whitelist p.whitelist {
+	background-color: #cfffd7;
+	text-align: center;
+	font-weight: bold;
+}
+.nunil-inl-scripts td.column-whitelist p.blacklist,
+.nunil-evh-scripts td.column-whitelist p.blacklist,
+.nunil-ext-scripts td.column-whitelist p.blacklist {
+	background-color: #e8b756;
+	text-align: center;
+}
+.nunil-inl-scripts th.column-pages, .nunil-evh-scripts th.column-pages {
+	width: 19%;
+}
+td.column-pages div.ui-accordion div.ui-accordion-content{
+	padding: 0px !important;
+}
+.nunil-pages-code {
+	margin: 1px 0px 1px 0px;
+}
+
+.nunil-inl-scripts th.column-lastseen, .nunil-evh-scripts th.column-lastseen {
+	width: 7%;
+}
+.nunil-inl-scripts th.column-occurences, .nunil-evh-scripts th.column-occurences {
+	width: 7%;
+}
+
+
+td.column-script div.ui-accordion div.ui-accordion-content{
+	padding: 0px !important;
+}
+
+/* smartphones
+@media only screen
+  and (min-device-width: 320px)
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+	 .wp-list-table .column-nunil-ext-directive { width: 100px; }
+	 .wp-list-table .column-nunil-ext-sources { width: 200px }
+
+}
+*/
+.nunil-base-src-container {
+	float: left;
+	margin-right: 20px;
+	width: 100%;
+}
+
+input.nunil-base-src,
+label.nunil-base-src {
+	display: block;
+}
+
+input.nunil-base-src {
+	width: 100%;
+}
+
+/**
+ * styling Json response temporary div
+ */
+div.nunil_temp_div {
+	border: 1px solid;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px 0;
+	width: 300px;
+}
+
+.type1 {
+	border-color: #E76F51;
+	background-color: rgba(231, 111, 81, 0.1);
+}
+
+.type2 {
+	border-color: #2A9D8F;
+	background-color: rgba(42, 157, 143, 0.1);
+}
+
+.type3 {
+	border-color: #0096C7;
+	background-color: rgba(0, 150, 199, 0.1);
+}
+
+.type4 {
+	border-color: #00B353;
+	background-color: rgba(0, 179, 83, 0.1);
+}
+
+/**
+ * The table used to monitor inline scripts
+ * Made by Geoff Yuen
+ * March 25, 2014
+ * https://codepen.io/geoffyuen/pen/FCBEg
+ */
+.rwd-table {
+	margin: 1em 0;
+	min-width: 300px;
+	border-collapse: collapse;
+}
+
+.rwd-table tr {
+	border-top: 1px solid #ddd;
+}
+
+.rwd-table th {
+	display: none;
+}
+
+.rwd-table td {
+	display: block;
+
+}
+
+.rwd-table td:first-child {
+	padding-top: .5em;
+}
+
+.rwd-table td:last-child {
+	padding-bottom: .5em;
+}
+
+.rwd-table td:before {
+	content: attr(data-th) ": ";
+	font-weight: bold;
+	width: 6.5em;
+	display: inline-block;
+}
+
+@media (min-width: 480px) {
+	.rwd-table td:before {
+		display: none;
+	}
+}
+
+.rwd-table th,
+.rwd-table td {
+	text-align: left;
+}
+
+@media (min-width: 480px) {
+
+	.rwd-table th,
+	.rwd-table td {
+		display: table-cell;
+		padding: .25em .5em;
+	}
+
+	.rwd-table th:first-child,
+	.rwd-table td:first-child {
+		padding-left: 0;
+	}
+
+	.rwd-table th:last-child,
+	.rwd-table td:last-child {
+		padding-right: 0;
+	}
+}
+
+.rwd-table {
+	background: #01263a;
+/*
+	background: #34495E;
+*/
+/*
+	background: #7796e6;
+*/
+	color: #fff;
+/*
+	color: #122313;
+*/
+	border-radius: .4em;
+	overflow: hidden;
+}
+
+.rwd-table tr {
+	border-color: #46637f;
+	border-bottom: 1px dotted;
+}
+
+.rwd-table th,
+.rwd-table td {
+	margin: .5em 1em;
+}
+
+@media (min-width: 480px) {
+
+	.rwd-table th,
+	.rwd-table td {
+		padding: 1em !important;
+	}
+}
+
+.rwd-table th,
+.rwd-table td:before {
+	color: #dd5;
+/*
+	color: #e68b77;
+*/
+}
+
+.nunil-tools-wrapper {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	column-gap: 15px;
+	grid-template-rows: 1fr;
+	grid-auto-rows: 1fr;
+	text-align:center;
+	justify-content: space-between;
+	align-items: center;
+}
+
+@media (max-width: 480px) {
+	.nunil-tools-wrapper {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr 1fr;
+		row-gap: 15px;
+	}
+}
+
+.nunil-tools-box {
+	flex-basis: 30%;
+	border: 2px solid #3582ca;
+
+}
+
+.nunil-tools-button-wrapper {
+	margin: 5px;
+/*
+	border: 1px solid #3582ca;
+*/
+	border: 0px;
+	text-align: center;
+
+}
+
+.nunil-tools-button-container {
+	padding: 5px 5px 0px 5px;
+	text-align: center;
+	background-color: #ffffff;
+}
+
+.no-unsafe-inline-tools-button-form > p.submit {
+	text-align: center;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.nunil-tools-button-description {
+	padding: 0px 5px 5px 5px;
+	background-color: #ffffff;
+	color: #01263a;
+	font-weight: 600;
+}
+
+.no-unsafe-inline-clean-database,
+.no-unsafe-inline-test-classifier,
+.no-unsafe-inline-clustering {
+	background-color: #ffffff;
+}
