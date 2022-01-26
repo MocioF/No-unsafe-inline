@@ -190,9 +190,9 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'To cluster your data, click the "Trigger Clustering" button', 'no-unsafe-inline' )
 			. '</b></p>';
 		$content['nunil-tools-test-policy']       = '<p>'
-			. esc_html( 'By enabling the "Content Security Policy" test you will be able to check your settings in the developer console of your browser.', 'no-unsafe-inline' )
+			. esc_html__( 'By enabling the "Content Security Policy" test you will be able to check your settings in the developer console of your browser.', 'no-unsafe-inline' )
 			. '</p><p>'
-			. esc_html( 'In addition, during the test, additional information is captured in the database to help refine your "Content Security Policy"', 'no-unsafe-inline' )
+			. esc_html__( 'In addition, during the test, additional information is captured in the database to help refine your "Content Security Policy"', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-tools-enable-protection'] = '<p>'
 			. esc_html__( 'By enabling the protection, your "Content Security Policy" will be used by WordPress in the pages of the site.', 'no-unsafe-inline' )

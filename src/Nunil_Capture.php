@@ -89,8 +89,8 @@ class Nunil_Capture {
 		$this->domdocument                     = new HTML5DOMDocument();
 		$this->domdocument->preserveWhiteSpace = true;
 
-		$plugin_options = get_option( 'no-unsafe-inline' );
-		if ( is_array( $plugin_options ) ) {
+		$plugin_options = (array) get_option( 'no-unsafe-inline' );
+		if ( ! empty ( $plugin_options ) ) {
 			$inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
 			if ( 'nonce' === $inline_scripts_mode ) {
 				$this->hash_in_use = 'sha256';

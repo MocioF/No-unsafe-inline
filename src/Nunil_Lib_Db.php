@@ -1,4 +1,13 @@
 <?php
+/**
+ * Database Lib Class
+ *
+ * Class has static methods to operate DB operations.
+ *
+ * @package No unsafe inline
+ * @link    https://wordpress.org/plugins/no-unsafe-inline/
+ * @since   1.0.0
+ */
 
 namespace NUNIL;
 
@@ -26,7 +35,11 @@ class Nunil_Lib_Db {
 	 */
 	private static function with_prefix( $table ): string {
 		global $wpdb;
-		return $wpdb->prefix . $table;
+		if ( 0 === strpos( $table, 'nunil_', 0 ) ) {
+			return $wpdb->prefix . $table;
+		} else {
+			return $wpdb->prefix . 'nunil_' . $table;
+		}
 	}
 
 	/**
@@ -605,6 +618,398 @@ class Nunil_Lib_Db {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * WhiteList a inline script
+	 *
+	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function inl_whitelist( $id, $wl = true ) {
+		$affected = self::whitelist( self::inline_scripts_table(), $id, $wl );
+		return $affected;
+	}
+
+	/**
+	 * WhiteList an external script
+	 *
+	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function ext_whitelist( $id, $wl = true ) {
+		$affected = self::whitelist( self::external_scripts_table(), $id, $wl );
+		return $affected;
+	}
+
+	/**
+	 * WhiteList an external script
+	 *
+	 * @param mixed $id The external script id or an ARRAY_N of script_id.
+	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function evh_whitelist( $id, $wl = true ) {
+		$affected = self::whitelist( self::event_handlers_table(), $id, $wl );
+		return $affected;
+	}
+
+	/**
+	 * WhiteList/BlackList a script
+	 *
+	 * @param string $table The script table.
+	 * @param mixed  $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool   $wl (true will Whiteliste, false to blacklist).
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function whitelist( $table, $id, $wl ) {
+		global $wpdb;
+		if ( ! is_array( $id ) ) {
+			$my_ids   = array();
+			$my_ids[] = $id;
+		} else {
+			$my_ids = $id;
+		}
+		$affected = 0;
+
+		foreach ( $my_ids as $id ) {
+
+			if ( self::external_scripts_table() !== $table ) {
+
+				$sel_cluster = 'SELECT `clustername`, `tagname` FROM ' . $table . ' WHERE `ID` = %d';
+				$row         = $wpdb->get_row(
+					$wpdb->prepare(
+						$sel_cluster,
+						$id
+					)
+				);
+				$clustername = $row->clustername;
+				$tagname     = $row->tagname;
+
+				if ( 'Unclustered' === $clustername ) {
+					$upd_wl   = 'UPDATE ' . $table . ' SET `whitelist` = %d WHERE `ID` = %d';
+					$affected = $affected + $wpdb->query(
+						$wpdb->prepare(
+							$upd_wl,
+							$wl,
+							$id
+						)
+					);
+				} else {
+					$upd_wl   = 'UPDATE ' . $table . ' SET `whitelist` = %d WHERE `clustername` = %s AND `tagname` = %s';
+					$affected = $affected + $wpdb->query(
+						$wpdb->prepare(
+							$upd_wl,
+							$wl,
+							$clustername,
+							$tagname
+						)
+					);
+				}
+			} else {
+				$upd_wl   = 'UPDATE ' . $table . ' SET `whitelist` = %d WHERE `ID` = %d';
+				$affected = $affected + $wpdb->query(
+					$wpdb->prepare(
+						$upd_wl,
+						$wl,
+						$id
+					)
+				);
+			}
+		}
+		return $affected;
+	}
+
+	/**
+	 * Uncluster an inline event cluster
+	 *
+	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function inl_uncluster( $id ) {
+		$affected = self::uncluster( self::inline_scripts_table(), $id );
+		return $affected;
+	}
+
+	/**
+	 * Uncluster a event_handler script cluster
+	 *
+	 * @param mixed $id The event script id or an ARRAY_N of script_id.
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function evh_uncluster( $id ) {
+		$affected = self::uncluster( self::event_handlers_table(), $id );
+		return $affected;
+	}
+
+	/**
+	 * Removes a cluster from database, setting it to 'Uncluster'
+	 * in previously clustered script
+	 *
+	 * @param string $table The script table (one of $this->tbl_inl $this->tbl_evh).
+	 * @param mixed  $id The script id or an ARRAY_N of script_id.
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function uncluster( $table, $id ) {
+		global $wpdb;
+		if ( ! is_array( $id ) ) {
+			$my_ids   = array();
+			$my_ids[] = $id;
+		} else {
+			$my_ids = $id;
+		}
+		$affected = 0;
+
+		foreach ( $my_ids as $id ) {
+			$sel_cluster = 'SELECT `clustername`, `tagname` FROM ' . $table . ' WHERE `ID` = %d';
+			$row         = $wpdb->get_row(
+				$wpdb->prepare(
+					$sel_cluster,
+					$id
+				)
+			);
+			$clustername = $row->clustername;
+			$tagname     = $row->tagname;
+			if ( 'Unclustered' !== $clustername ) {
+				$upd_cl   = 'UPDATE ' . $table . ' SET `clustername` = \'Unclustered\' WHERE `clustername` = %s AND `tagname` = %s';
+				$affected = $affected + $wpdb->query(
+					$wpdb->prepare(
+						$upd_cl,
+						$clustername,
+						$tagname
+					)
+				);
+			}
+		}
+		return $affected;
+	}
+
+	/**
+	 * Removes a script or a cluster of scripts from inline_scripts table
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function inl_delete( $id, $delete_occurences = true ) {
+		$affected = self::delete( self::inline_scripts_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script or a cluster of scripts from event_handlers table
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $id The handler script id or an ARRAY_N of script_id.
+	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function evh_delete( $id, $delete_occurences = true ) {
+		$affected = self::delete( self::event_handlers_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script from external_scripts table
+	 *
+	 * @since 1.0.0
+	 * @param mixed $id The external script id or an ARRAY_N of script_id.
+	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function ext_delete( $id, $delete_occurences = false ) {
+		$affected = self::delete( self::external_scripts_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script or a cluster of scripts
+	 * from the database
+	 *
+	 * @param string $table The script full table name.
+	 * @param mixed  $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool   $delete_occurences True to remove entryes from occurences table.
+	 * @since 1.0.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function delete( $table, $id, $delete_occurences ) {
+		global $wpdb;
+		if ( ! is_array( $id ) ) {
+			$my_ids   = array();
+			$my_ids[] = $id;
+		} else {
+			$my_ids = $id;
+		}
+		$affected = 0;
+
+		foreach ( $my_ids as $id ) {
+
+			if ( self::external_scripts_table() !== $table ) {
+
+				$sel_cluster = 'SELECT `clustername`, `tagname` FROM ' . $table . ' WHERE `ID` = %d';
+				$row         = $wpdb->get_row(
+					$wpdb->prepare(
+						$sel_cluster,
+						$id
+					)
+				);
+				$clustername = $row->clustername;
+				$tagname     = $row->tagname;
+
+				if ( 'Unclustered' === $clustername ) {
+					$del_sc   = 'DELETE FROM ' . $table . ' WHERE `ID` = %d';
+					$affected = $affected + $wpdb->query(
+						$wpdb->prepare(
+							$del_sc,
+							$id
+						)
+					);
+					if ( true === $delete_occurences ) {
+						$del_sc_occ = 'DELETE FROM ' . self::occurences_table() . ' WHERE `itemid` = %d AND dbtable = %s';
+						$del_occur  = $wpdb->query(
+							$wpdb->prepare(
+								$del_sc_occ,
+								$id,
+								substr( $table, strlen( NO_UNSAFE_INLINE_TABLE_PREFIX ) )
+							)
+						);
+					}
+				} else {
+					$sel_ids = 'SELECT `ID` FROM ' . $table . ' WHERE `clustername` = %s AND `tagname` = %s';
+					$ids     = $wpdb->get_results(
+						$wpdb->prepare(
+							$sel_ids,
+							$clustername,
+							$tagname
+						)
+					);
+
+					$del_cl   = 'DELETE FROM ' . $table . ' WHERE `clustername` = %s AND `tagname` = %s';
+					$affected = $affected + $wpdb->query(
+						$wpdb->prepare(
+							$del_cl,
+							$clustername,
+							$tagname
+						)
+					);
+					if ( true === $delete_occurences ) {
+						$in_str = '(';
+						foreach ( $ids as $rid ) {
+							$in_str = $in_str . "('" . substr( $table, strlen( NO_UNSAFE_INLINE_TABLE_PREFIX ) ) . "', $rid->id), ";
+						}
+						$in_str = substr( $in_str, 0, strlen( $in_str ) - 2 );
+						$in_str = $in_str . ')';
+
+						$del_cl_occur = 'DELETE FROM ' . $table . ' WHERE (`dbtable`,`itemid`) IN $in_str';
+						$del_occur    = $wpdb->query( $del_cl_occur );
+					}
+				}
+			} else {
+				$del_sc   = 'DELETE FROM ' . $table . ' WHERE `ID` = %d';
+				$affected = $affected + $wpdb->query(
+					$wpdb->prepare(
+						$del_sc,
+						$id
+					)
+				);
+			}
+		}
+		return $affected;
+	}
+
+	/**
+	 * Truncate table
+	 *
+	 * @since 1.0.0
+	 * @param string $table Internal table name
+	 * @return bool
+	 */
+	public static function truncate_table( $table ) {
+		global $wpdb;
+		$truncate = $wpdb->query( 'TRUNCATE TABLE ' . self::with_prefix( $table ) );
+		return (bool) $truncate;
+	}
+
+
+	/**
+	 * Performs query for database summary tables, showed in tools tab
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @param string $table The table name
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_database_summary_data( $table ) {
+		global $wpdb;
+		$result = json_encode( array() );
+		switch ( $table ) {
+			case 'global':
+			case 'nunil_global':
+				$result = $wpdb->get_results(
+					'SELECT \'External Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', '
+					. '`whitelist`, \'--\' AS \'Clusters\' FROM ' . self::external_scripts_table() . ' '
+					. 'GROUP BY `whitelist` '
+					. 'UNION ALL '
+					. 'SELECT \'Inline Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', `whitelist`, '
+					. 'COUNT(DISTINCT CASE WHEN `clustername` != \'Unclustered\' THEN `clustername` END) AS \'Clusters\' FROM ' . self::inline_scripts_table() . ' '
+					. 'GROUP BY `whitelist` '
+					. 'UNION ALL '
+					. 'SELECT \'Events\' AS \'Type\', COUNT(`ID`) AS \'Num\', `whitelist`, '
+					. 'COUNT(DISTINCT CASE WHEN `clustername` != \'Unclustered\' THEN `clustername` END) AS \'Clusters\' FROM ' . self::event_handlers_table() . ' '
+					. 'GROUP BY `whitelist`;'
+				);
+
+				break;
+
+			case 'external_scripts':
+			case 'nunil_external_scripts':
+				$result = $wpdb->get_results(
+					'SELECT `directive`, `tagname`, `whitelist`, COUNT(*) as \'num\' FROM ' . self::with_prefix( $table ) . ' '
+					. 'GROUP BY `whitelist`, `tagname`, `directive` '
+					. 'ORDER BY `directive` ASC, `tagname` ASC, `num` ASC, `whitelist` ASC;'
+				);
+				break;
+
+			case 'inline_scripts':
+			case 'nunil_inline_scripts':
+				$result = $wpdb->get_results(
+					'SELECT `directive`, `tagname`, `clustername`, `whitelist`, COUNT(*) as \'num\' FROM ' . self::with_prefix( $table ) . ' '
+					. 'GROUP BY `whitelist`, `clustername`, `tagname`, `directive` '
+					. 'ORDER BY `directive` ASC, `tagname` ASC, `clustername` ASC, `num` ASC, `whitelist` ASC;'
+				);
+				break;
+
+			case 'event_handlers':
+			case 'nunil_event_handlers':
+				$result = $wpdb->get_results(
+					'SELECT `tagname`, `event_attribute`, `clustername`, `whitelist`, COUNT(`ID`) as \'num\' FROM ' . self::with_prefix( $table ) . ' '
+					. 'GROUP BY `whitelist`, `clustername`, `tagname`, `event_attribute` '
+					. 'ORDER BY `tagname` ASC, `event_attribute` ASC, `clustername` ASC, `num` ASC, `whitelist` ASC;'
+				);
+				break;
+		}
+
+		return $result;
 	}
 }
 

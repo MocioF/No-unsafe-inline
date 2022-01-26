@@ -41,7 +41,10 @@
 			}
 		}
 	);
-
+	
+	/**
+	 * Used to order strings in base-src rules
+	 */
 	function UniqueOrdered(string) {
 		const categories = string.split( ' ' );
 		const unique     = Array.from( new Set( categories ) );
@@ -112,53 +115,116 @@
 		return false;
 	};
 
-	function updateInlineTableWorker(once) {
+	function updateSummaryTablesWorker(once) {
 		$.ajax(
 			{
 				type: "post",
 				dataType: "json",
 				url: nunil_object.ajax_url,
+				
 				data: {
-					action: "nunil_update_summary_inline_table",
+					action: "nunil_update_summary_tables",
 				},
 				success: function (res) {
+					//~ console.log( res );
+					var nunil_db_summary_data = '';
+					var nunil_external_table_summary_data = '';
 					var nunil_inline_table_summary_data = '';
+					var nunil_eventhandlers_table_summary_data = '';
 					$.each(
 						res,
-						function (index, value) {
-							// ~ $.each(res, function(key, value){
-							nunil_inline_table_summary_data += '<tr>';
-							nunil_inline_table_summary_data += '<td data-th="' + __( 'Directive', 'no-unsafe-inline' ) + '">' + value.directive + '</td>';
-							nunil_inline_table_summary_data += '<td data-th="' + __( 'Tagname', 'no-unsafe-inline' ) + '">' + value.tagname + '</td>';
-							nunil_inline_table_summary_data += '<td data-th="' + __( 'Cluster', 'no-unsafe-inline' ) + '">' + value.clustername + '</td>';
-							// ~ if (value.clustername.length > 11) {
-							// ~ nunil_inline_table_summary_data += '<td data-th="' + __('Cluster', 'no-unsafe-inline') + '">' + value.clustername.substring(0, 8) + '...</td>';
-							// ~ } else {
-							// ~ nunil_inline_table_summary_data += '<td data-th="' + __('Cluster', 'no-unsafe-inline') + '">' + value.clustername + '</td>';
-							// ~ }
-							var wlText = '';
-							if ( 1 == value.whitelist) {
-								wlText = __( 'WL', 'no-unsafe-inline' );
-							} else {
-								wlText = __( 'BL', 'no-unsafe-inline' );
-							}
-							nunil_inline_table_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
-							nunil_inline_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
-							nunil_inline_table_summary_data += '</tr>';
-							// ~ });
+						function (index, label) {
+							if ( 'global' === index ) {
+								$.each(
+								label,
+								function (index, value) {
+									nunil_db_summary_data += '<tr>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Type', 'no-unsafe-inline' ) + '">' + value.Type + '</td>';
+									var wlText = '';
+									if ( 1 == value.whitelist) {
+										wlText = __( 'WL', 'no-unsafe-inline' );
+									} else {
+										wlText = __( 'BL', 'no-unsafe-inline' );
+									}
+									nunil_db_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.Num + '</td>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Num. Clusters', 'no-unsafe-inline' ) + '">' + value.Clusters + '</td>';
+									nunil_db_summary_data += '</tr>';
+								}
+							)}
+							if ( 'inline' === index ) {
+								$.each(
+								label,
+								function (index, value) {
+									nunil_inline_table_summary_data += '<tr>';
+									nunil_inline_table_summary_data += '<td data-th="' + __( 'Directive', 'no-unsafe-inline' ) + '">' + value.directive + '</td>';
+									nunil_inline_table_summary_data += '<td data-th="' + __( 'Tagname', 'no-unsafe-inline' ) + '">' + value.tagname + '</td>';
+									nunil_inline_table_summary_data += '<td data-th="' + __( 'Cluster', 'no-unsafe-inline' ) + '">' + value.clustername + '</td>';
+									var wlText = '';
+									if ( 1 == value.whitelist) {
+										wlText = __( 'WL', 'no-unsafe-inline' );
+									} else {
+										wlText = __( 'BL', 'no-unsafe-inline' );
+									}
+									nunil_inline_table_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
+									nunil_inline_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
+									nunil_inline_table_summary_data += '</tr>';
+								}
+							)}
+							if ( 'external' === index ) {
+								$.each(
+								label,
+								function (index, value) {
+									nunil_external_table_summary_data += '<tr>';
+									nunil_external_table_summary_data += '<td data-th="' + __( 'Directive', 'no-unsafe-inline' ) + '">' + value.directive + '</td>';
+									nunil_external_table_summary_data += '<td data-th="' + __( 'Tagname', 'no-unsafe-inline' ) + '">' + value.tagname + '</td>';
+									var wlText = '';
+									if ( 1 == value.whitelist) {
+										wlText = __( 'WL', 'no-unsafe-inline' );
+									} else {
+										wlText = __( 'BL', 'no-unsafe-inline' );
+									}
+									nunil_external_table_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
+									nunil_external_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
+									nunil_external_table_summary_data += '</tr>';
+								}
+							)}
+							if ( 'events' === index ) {
+								$.each(
+								label,
+								function (index, value) {
+									nunil_eventhandlers_table_summary_data += '<tr>';
+									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Tagname', 'no-unsafe-inline' ) + '">' + value.tagname + '</td>';
+									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Event Attribute', 'no-unsafe-inline' ) + '">' + value.event_attribute + '</td>';
+									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Cluster', 'no-unsafe-inline' ) + '">' + value.clustername + '</td>';
+									var wlText = '';
+									if ( 1 == value.whitelist) {
+										wlText = __( 'WL', 'no-unsafe-inline' );
+									} else {
+										wlText = __( 'BL', 'no-unsafe-inline' );
+									}
+									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
+									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
+									nunil_eventhandlers_table_summary_data += '</tr>';
+								}
+							)}
 						}
 					);
 
+					$( "#nunil_db_summary_body" ).html( nunil_db_summary_data );
+					$( "#nunil_external_table_summary_body" ).html( nunil_external_table_summary_data );
 					$( "#nunil_inline_table_summary_body" ).html( nunil_inline_table_summary_data );
+					$( "#nunil_eventhandlers_table_summary_body" ).html( nunil_eventhandlers_table_summary_data );
+					
 				},
 				complete: function () {
 					// Schedule the next request when the current one's complete
 					if ($( "input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']" ).prop( "checked" )) {
 						if (once === undefined) {
-							setTimeout( updateInlineTableWorker, 25000 );
+							setTimeout( updateSummaryTablesWorker, 25000 );
 						}
 					} else {
-						clearTimeout( updateInlineTableWorker );
+						clearTimeout( updateSummaryTablesWorker );
 					}
 				}
 			}
@@ -168,43 +234,6 @@
 	$( window ).on(
 		'load',
 		function () {
-			// Populated -src input field on checkbox check.
-			$( "input[type='checkbox'][name*='bulk-select[]']" ).change(
-				function () {
-					var $chk      = $( this );
-					var directive = $chk
-					.parent()
-					.parent()
-					.find( "td:nth-child(2)" )
-					.clearText();
-					var source    = $chk.parent().parent().find( "td:nth-child(3)" ).clearText();
-					var textboxId =
-					"no-unsafe-inline-base-src\\[" + directive + "_base_source\\]";
-					if ($chk.prop( "checked" )) {
-						$( "#" + textboxId ).val( $( "#" + textboxId ).val() + " " + source );
-						$( "#" + textboxId ).val(
-							UniqueOrdered(
-								$( "#" + textboxId )
-								.val()
-								.trim()
-							)
-						);
-					} else {
-						$( "#" + textboxId ).val(
-							$( "#" + textboxId )
-							.val()
-							.replace( source, "" )
-						);
-						$( "#" + textboxId ).val(
-							UniqueOrdered(
-								$( "#" + textboxId )
-								.val()
-								.trim()
-							)
-						);
-					}
-				}
-			);
 			// Trigger checkboxes check on select-all click.
 			$( "#cb-select-all-1" ).on(
 				"click",
@@ -215,14 +244,51 @@
 				}
 			);
 
-			// QUESTA ROBA VA SOLO SE LA SELECTED TAB è base-src script
+			// START base-src main tab.
 			var mypage = getUrlParameter( 'page' );
 			var mytab  = getUrlParameter( 'tab' );
 
 			if ('no-unsafe-inline' === mypage && 'base-src' === mytab) {
-
 				const matrix = new Array();
 				const row    = new Array();
+
+				// Populated -src input field on checkbox check.
+				$( "input[type='checkbox'][name*='bulk-select[]']" ).change(
+					function () {
+						var $chk      = $( this );
+						var directive = $chk
+						.parent()
+						.parent()
+						.find( "td:nth-child(2)" )
+						.clearText();
+						var source    = $chk.parent().parent().find( "td:nth-child(3)" ).clearText();
+						var textboxId =
+						"no-unsafe-inline-base-src\\[" + directive + "_base_source\\]";
+						if ($chk.prop( "checked" )) {
+							$( "#" + textboxId ).val( $( "#" + textboxId ).val() + " " + source );
+							$( "#" + textboxId ).val(
+								UniqueOrdered(
+									$( "#" + textboxId )
+									.val()
+									.trim()
+								)
+							);
+						} else {
+							$( "#" + textboxId ).val(
+								$( "#" + textboxId )
+								.val()
+								.replace( source, "" )
+							);
+							$( "#" + textboxId ).val(
+								UniqueOrdered(
+									$( "#" + textboxId )
+									.val()
+									.trim()
+								)
+							);
+						}
+					}
+				);
 
 				var tb   = $( "table.nunil-ext-sources tbody" );
 				var size = tb.find( "tr" ).length;
@@ -288,7 +354,9 @@
 					}
 				);
 			}
-			// FINE QUESTA ROBA VA SOLO SE LA SELECTED TAB è base-src script
+			// END base-src main tab.
+			
+			// START inline main tab.
 			if ('no-unsafe-inline' === mypage && 'inline' === mytab) {
 
 				var acc_options = { active: false, collapsible: true, animation: 200, heightStyle: "content", autoHeight: false, classes: {"ui-accordion-content": "hljs"} };
@@ -302,7 +370,8 @@
 				$( "div[class^='code-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
 				$( "div[class^='pages-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
 			}
-
+			
+			// START settings main tab.
 			// Handle SRI options in settings tab.
 			if ('no-unsafe-inline' === mypage && 'settings' === mytab) {
 				$( "input[type='checkbox'][name='no-unsafe-inline[sri_script]']" ).change(
@@ -334,7 +403,18 @@
 
 			}
 			// End SRI options in External script tab.
-
+			
+			// START tools main tab.
+			$( "#nunil-db-sum-tabs" ).tabs({
+				active: false,
+				collapsible: true,
+				classes: {
+					"ui-tabs": "ui-corner-none",
+					"ui-tabs-nav": "ui-corner-none",
+					"ui-tabs-tab": "ui-corner-none",
+					"ui-tabs-panel": "ui-corner-none"
+				}
+			});
 			// AJAX for Clustering button.
 			$( "#nunil_trigger_clustering" ).click(
 				function (e) {
@@ -352,18 +432,9 @@
 							},
 							success: function (res) {
 								if (res.type == "success") {
-									$( "div#trigger_clustering_result" ).hide();
-									$( "div#trigger_clustering_result" ).addClass( ['nunil_temp_div', 'type3'] );
-									$( "div#trigger_clustering_result" ).html( res.report );
-									$( "div#trigger_clustering_result" ).fadeIn( 400 );
-									setTimeout(
-										function () {
-											$( "div#trigger_clustering_result" ).fadeOut( 4000 );
-											$( "#nunil_trigger_clustering" ).prop( 'disabled', false );
-										},
-										4000
-									);
-									updateInlineTableWorker( "once" );
+									$( "div#nunil_tools_operation_report" ).append( res.report );
+									$( "#nunil_trigger_clustering" ).prop( 'disabled', false );
+									updateSummaryTablesWorker( "once" );
 								} else {
 									alert( "Error in clustering scripts." )
 								}
@@ -373,7 +444,7 @@
 				}
 			);
 
-			// AJAX for Testing Button.
+			// AJAX for Test Classifier Button.
 			$( "#nunil_test_classifier" ).click(
 				function (e) {
 					e.preventDefault();
@@ -390,18 +461,8 @@
 							},
 							success: function (res) {
 								if (res.type == "success") {
-									$( "div#test_classifier_result" ).hide();
-									$( "div#test_classifier_result" ).addClass( ['nunil_temp_div', 'type3'] );
-									$( "div#test_classifier_result" ).html( res.report );
-									$( "div#test_classifier_result" ).fadeIn( 400 );
-									setTimeout(
-										function () {
-											$( "div#test_classifier_result" ).fadeOut( 16000 );
-											$( "#nunil_test_classifier" ).prop( 'disabled', false );
-										},
-										16000
-									);
-									// ~ updateInlineTableWorker("once");
+									$( "div#nunil_tools_operation_report" ).append( res.report );
+									$( "#nunil_test_classifier" ).prop( 'disabled', false );
 								} else {
 									alert( "Error in test classifier scripts." )
 								}
@@ -427,17 +488,9 @@
 								},
 								success: function (res) {
 									if (res.type == "success") {
-										$( "div#clean_database_result" ).hide();
-										$( "div#clean_database_result" ).addClass( ['nunil_temp_div', 'type3'] );
-										$( "div#clean_database_result" ).html( res.report );
-										$( "div#clean_database_result" ).fadeIn( 400 );
-										setTimeout(
-											function () {
-												$( "div#clean_database_result" ).fadeOut( 4000 )
-											},
-											4000
-										);
-										updateInlineTableWorker( "once" );
+										$( "div#nunil_tools_operation_report" ).append( res.report );
+										$( "#nunil_clean_database" ).prop( 'disabled', false );
+										updateSummaryTablesWorker( "once" );
 									} else {
 										alert( "Error in cleaning tables." )
 									}
@@ -453,7 +506,7 @@
 			("tools" === mytab || null === mytab || false === mytab)) {
 				$( "input#submit" ).prop( "disabled", true );
 				if ($( "input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']" ).prop( "checked" )) {
-					updateInlineTableWorker();
+					updateSummaryTablesWorker();
 				}
 			}
 
@@ -462,7 +515,7 @@
 					$( "input#submit" ).prop( "disabled", false );
 					var $chk = $( this );
 					if ($chk.prop( "checked" )) {
-						updateInlineTableWorker();
+						updateSummaryTablesWorker();
 					}
 				}
 			);

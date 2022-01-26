@@ -9,7 +9,11 @@
  * @subpackage No_Unsafe_Inline/admin
  */
 
-defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
+use NUNIL\Nunil_Lib_Db As DB;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -107,16 +111,14 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_whitelist( $script_id );
+					$affected      = DB::ext_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected      = $_POST['ext-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_whitelist( $selected );
+					$affected      = DB::ext_whitelist( $selected );
 				}
 				break;
 
@@ -126,16 +128,14 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_whitelist( $script_id, false );
+					$affected      = DB::ext_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected      = $_POST['ext-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_whitelist( $selected, false );
+					$affected      = DB::ext_whitelist( $selected, false );
 				}
 				break;
 
@@ -145,16 +145,14 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_delete( $script_id );
+					$affected      = DB::ext_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected      = $_POST['ext-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->ext_delete( $selected );
+					$affected      = DB::ext_delete( $selected );
 				}
 				break;
 

@@ -497,3 +497,25 @@ div.nunil_temp_div {
 .no-unsafe-inline-clustering {
 	background-color: #ffffff;
 }
+
+.nunil_tools_operation_report_title {
+	color: #dd5;
+	padding: 1em !important;
+	border-color: #46637f;
+	border-bottom: 1px dotted;
+	border-top: 1px solid #ddd;
+	font-size: 1.1em;
+	font-weight: bold;
+	
+}
+.nunil_tools_operation_report_container {
+	height: 340px;
+	padding: 0px 1em 1em 1em;
+	background: #01263a;
+}
+.nunil_tools_operation_report {
+	height: 280px;
+	overflow: auto;
+	background: #01263a;
+	color: #fff;
+}

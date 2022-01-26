@@ -8,6 +8,8 @@
  * @package    No_Unsafe_Inline
  * @subpackage No_Unsafe_Inline/admin
  */
+ 
+ use NUNIL\Nunil_Lib_Db As DB;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -81,8 +83,24 @@ class No_Unsafe_Inline_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
+		$screen = get_current_screen(); 
+		if ( 'no-unsafe-inline' === $screen->id ) {
+		
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
+			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.min.css', array(), $this->version, 'all' );
+			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui-sctructure', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.structure.min.css', array(), $this->version, 'all' );
+			
+			//Enqueue the jQuery UI theme css file from google:
+			$wp_scripts = wp_scripts();
+	 
+			wp_enqueue_style(
+				'jquery-ui-theme-smoothness', //select ui theme: base...
+				sprintf(
+					'https://ajax.googleapis.com/ajax/libs/jqueryui/%s/themes/smoothness/jquery-ui.css',
+					$wp_scripts->registered['jquery-ui-core']->ver
+				)
+			);
+		}
 	}
 
 	/**
@@ -104,17 +122,21 @@ class No_Unsafe_Inline_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		// ~ wp_enqueue_script( 'no-unsafe-inline-prefilter', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline.js', array( 'jquery' ), time(), false );
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.js', array( 'jquery', 'jquery-ui-accordion', 'wp-i18n' ), $this->version, false );
+		$screen = get_current_screen(); 
+		if ( 'no-unsafe-inline' === $screen->id ) {
 
-		wp_localize_script(
-			$this->plugin_name,
-			'nunil_object',
-			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-			)
-		);
+			// ~ wp_enqueue_script( 'no-unsafe-inline-prefilter', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline.js', array( 'jquery' ), time(), false );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
 
+			wp_localize_script(
+				$this->plugin_name,
+				'nunil_object',
+				array(
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+				)
+			);
+		}
+		
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 
 		// VA IMPOSTATO A 1. ORA è disabilitato sempre
@@ -180,7 +202,7 @@ class No_Unsafe_Inline_Admin {
 		if ( $old_ver === $new_ver ) {
 			return;
 		}
-
+		// controlla l'azione
 		do_action( 'nunil_upgrade', $new_ver, $old_ver );
 		update_option( 'no-unsafe-inline_version', $new_ver );
 	}
@@ -1340,7 +1362,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_external_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-db-queries.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-external.php';
 	}
@@ -1361,7 +1382,6 @@ class No_Unsafe_Inline_Admin {
 			)
 		);
 
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-db-queries.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-inline.php';
 	}
@@ -1382,7 +1402,6 @@ class No_Unsafe_Inline_Admin {
 			)
 		);
 
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-db-queries.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-events.php';
 	}
@@ -1451,7 +1470,6 @@ class No_Unsafe_Inline_Admin {
 		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'nunil_trigger_clean_database' ) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
-		global $wpdb;
 
 		$tables = array(
 			'event_handlers',
@@ -1459,13 +1477,13 @@ class No_Unsafe_Inline_Admin {
 			'inline_scripts',
 			'occurences',
 		);
-
+		
+		$result_string = '<br><b> --- ' . esc_html( 'DELETE ALL SCRIPTS FROM DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
 		$result_string = '<ul>';
 
 		foreach ( $tables as $table ) {
-			$tablename = NO_UNSAFE_INLINE_TABLE_PREFIX . $table;
-
-			$delete = $wpdb->query( "TRUNCATE TABLE $tablename" );
+			
+			$delete = DB::truncate_table( $table );
 
 			$delete_string = $delete ? esc_html__( 'succeded', 'no-unsafe-inline' ) : esc_html__( 'FAILED', 'no-unsafe-inline' );
 
@@ -1496,16 +1514,19 @@ class No_Unsafe_Inline_Admin {
 	 *
 	 * @since 1.0.0
 	 * @access public
+	 * @param string $table Internal table name.
 	 * @return void
 	 */
-	public function update_summary_inline_table(): void {
-		global $wpdb;
-		$table  = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-		$result = $wpdb->get_results(
-			"SELECT `directive`, `tagname`, `clustername`, `whitelist`, COUNT(*) as 'num' FROM $table "
-			. 'GROUP BY `whitelist`, `clustername`, `tagname`, `directive` '
-			. 'ORDER BY `directive` ASC, `tagname` ASC, `clustername` ASC, `num` ASC, `whitelist` ASC;'
-		);
+	public function update_summary_tables(): void {
+		
+		$result = array();
+		$result['global']   = DB::get_database_summary_data( 'global' );
+		$result['external'] = DB::get_database_summary_data( 'external_scripts' );
+		$result['inline']   = DB::get_database_summary_data( 'inline_scripts' );
+		$result['events']   = DB::get_database_summary_data( 'event_handlers' );
+		
+		//~ $result = DB::get_database_summary_data( 'inline_scripts' );
+		
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
 			echo json_encode( $result );
 		} else {
@@ -1513,7 +1534,82 @@ class No_Unsafe_Inline_Admin {
 		}
 
 		wp_die();
+	}
 
+	/**
+	 * Output the summary table of all scripts in db
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string The html of the table
+	 */
+	public function output_summary_tables() {
+		$result = DB::get_database_summary_data( 'global' );
+		
+		$htb    = '
+		<table class="rwd-table">
+			<tr>
+			 <th>' . esc_html__( 'Type', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '</th>
+			</tr>
+			<tbody id="nunil_db_summary_body">';
+
+		foreach ( $result as $print ) {
+			$htb = $htb . '<tr>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->Type . '</td>';
+			if ( '0' === $print->whitelist ) {
+				$wl_text = __( 'BL', 'no-unsafe-inline' );
+			} else {
+				$wl_text = __( 'WL', 'no-unsafe-inline' );
+			}
+			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->Num . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->Clusters . '</td>';
+			$htb = $htb . '</tr>';
+		}
+		$htb = $htb . '</tbody></table>';
+
+		return $htb;
+	}
+
+/**
+	 * Output the summary table of external scripts
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string The html of the table
+	 */
+	public function output_summary_external_table() {
+		$result = DB::get_database_summary_data( 'external_scripts' );
+		
+		$htb    = '
+		<table class="rwd-table">
+			<tr>
+			 <th>' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
+			</tr>
+			<tbody id="nunil_external_table_summary_body">';
+
+		foreach ( $result as $print ) {
+			$htb = $htb . '<tr>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+			if ( '0' === $print->whitelist ) {
+				$wl_text = __( 'BL', 'no-unsafe-inline' );
+			} else {
+				$wl_text = __( 'WL', 'no-unsafe-inline' );
+			}
+			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+			$htb = $htb . '</tr>';
+		}
+		$htb = $htb . '</tbody></table>';
+
+		return $htb;
 	}
 
 	/**
@@ -1524,13 +1620,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return string The html of the table
 	 */
 	public function output_summary_inline_table() {
-		global $wpdb;
-		$table  = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-		$result = $wpdb->get_results(
-			"SELECT `directive`, `tagname`, `clustername`, `whitelist`, COUNT(*) as 'num' FROM $table "
-			. 'GROUP BY `whitelist`, `clustername`, `tagname`, `directive` '
-			. 'ORDER BY `directive` ASC, `tagname` ASC, `clustername` ASC, `num` ASC, `whitelist` ASC;'
-		);
+		$result = DB::get_database_summary_data( 'inline_scripts' );
+		
 		$htb    = '
 		<table class="rwd-table">
 			<tr>
@@ -1562,11 +1653,53 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
+	 * Output the summary table of events scripts
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return string The html of the table
+	 */
+	public function output_summary_eventhandlers_table() {
+		$result = DB::get_database_summary_data( 'event_handlers' );
+		
+		$htb    = '
+		<table class="rwd-table">
+			<tr>
+			 <th>' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Event Attribute', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
+			</tr>
+			<tbody id="nunil_eventhandlers_table_summary_body">';
+
+		foreach ( $result as $print ) {
+			$htb = $htb . '<tr>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Event Attribute', 'no-unsafe-inline' ) . '">' . $print->event_attribute . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
+			if ( '0' === $print->whitelist ) {
+				$wl_text = __( 'BL', 'no-unsafe-inline' );
+			} else {
+				$wl_text = __( 'WL', 'no-unsafe-inline' );
+			}
+			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+			$htb = $htb . '</tr>';
+		}
+		$htb = $htb . '</tbody></table>';
+
+		return $htb;
+	}
+
+	/**
 	 * Performs a simple test on classifier.
 	 *
-	 * Questa funzione deve essere rimossa
+	 * @since 1.0.0
+	 * @access public
+	 * @return void
 	 */
-	public function test_classifier() {
+	public function test_classifier(): void {
 		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'nunil_test_classifier_nonce' ) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}

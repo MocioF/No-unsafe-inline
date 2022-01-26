@@ -14,6 +14,12 @@ namespace NUNIL;
 use Phpml\Math\Distance;
 use Beager\Nilsimsa;
 
+/**
+ * Hamming Distance for Clustering
+ *
+ * @package No unsafe inline
+ * @since   1.0.0
+ */
 class Nunil_Hamming_Distance implements Distance {
 
 	/**

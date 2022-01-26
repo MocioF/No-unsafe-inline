@@ -239,9 +239,9 @@ class Nunil_Clustering {
 
 		$start_time = microtime( true );
 
-		$result_string = '';
+		$result_string = '<br><b> --- ' . esc_html__( 'CLUSTERING DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
 
-		$result_string = $result_string . esc_html__( 'Start time: ', 'no_unsafe_inline' ) . $start_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Start time: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
 		$scripts_tables = array(
 			array(
@@ -255,8 +255,8 @@ class Nunil_Clustering {
 		);
 
 		foreach ( $scripts_tables as $tbl ) {
-
-			$result_string = $result_string . 'Clustering <b>' . $tbl['table'] . '</b><br>';
+			
+			$result_string = $result_string . '<br>' . sprintf( esc_html__( 'Clustering %s', 'no-unsafe-inline' ), '<b>' . $tbl['table'] . '</b>' ) . '<br>';
 
 			$table = NO_UNSAFE_INLINE_TABLE_PREFIX . $tbl['table'];
 
@@ -270,23 +270,23 @@ class Nunil_Clustering {
 				foreach ( $tagnames as $tagname ) {
 					$obj_collection = self::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
 
-					$result_string    = $result_string . '<b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
-					$result_string    = $result_string . esc_html__( 'Processed hashes: ', 'no_unsafe_inline' ) . count( $obj_collection ) . '<br>';
+					$result_string    = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
+					$result_string    = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
 					$dbscan_results   = self::make_db_scan( $obj_collection, $tbl['table'] );
-					$result_string    = $result_string . esc_html__( 'Cluster builded: ', 'no_unsafe_inline' ) . strval( count( $dbscan_results ) ) . '<br>';
+					$result_string    = $result_string . esc_html__( 'Clusters built: ', 'no-unsafe-inline' ) . strval( count( $dbscan_results ) ) . '<br>';
 					$clustered_digest = self::cluster_digests( $table, $obj_collection, $dbscan_results );
-					$result_string    = $result_string . '<center>-------$$$-------</center>';
+					$result_string    = $result_string . ' ------- $$$ ------- <br>';
 				}
 			}
 			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>';
 		}
 		$end_time = microtime( true );
 
-		$result_string = $result_string . esc_html__( 'End time: ', 'no_unsafe_inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'End time: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 
 		$execution_time = ( $end_time - $start_time );
 
-		$result_string = $result_string . esc_html__( 'Execution time of script (sec): ', 'no_unsafe_inline' ) . $execution_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Execution time of script (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
 		$result['type']   = 'success';
 		$result['report'] = $result_string;

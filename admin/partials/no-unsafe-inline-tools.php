@@ -83,25 +83,39 @@
 </ul>
 <hr style="width:100%;text-align:center;margin-left:0">
 
-<?php
-	// ~ echo '<form method="post" action="" class="no-unsafe-inline-clustering">';
-	// ~ submit_button(
-		// ~ esc_html__( 'Trigger Clustering', 'no-unsafe-inline' ),
-		// ~ 'primary nunil_trigger_clustering',
-		// ~ 'nunil_trigger_clustering',
-		// ~ true );
-		// ~ wp_nonce_field( 'nunil_trigger_clustering_nonce', 'clustering_nonce' );
-	// ~ echo '</form>';
-	echo '<div id="trigger_clustering_result"></div>';
-
-	echo '<div id="nunil_summary_inline_table_container" class="nunil_summary_inline_table_container">';
-	echo No_Unsafe_Inline_Admin::output_summary_inline_table();
-	echo '</div>';
-
-
-	echo '<div id="clean_database_result"></div>';
-
-	echo '<div id="test_classifier_result"></div>';
-
-
-?>
+<div id="nunil-db-sum-tabs">
+	<ul>
+		<li><a href="#nunil-db-sum-tabs-1"><?php printf( esc_html__( 'Total DB Status', 'no-unsafe-inline' ) ); ?></a></li>
+		<li><a href="#nunil-db-sum-tabs-2"><?php printf( esc_html__( 'External scripts', 'no-unsafe-inline' ) ); ?></a></li>
+		<li><a href="#nunil-db-sum-tabs-3"><?php printf( esc_html__( 'Inline scripts', 'no-unsafe-inline' ) ); ?></a></li>
+		<li><a href="#nunil-db-sum-tabs-4"><?php printf( esc_html__( 'Events scripts', 'no-unsafe-inline' ) ); ?></a></li>
+		<li><a href="#nunil-db-sum-tabs-5"><?php printf( esc_html__( 'Operations Report', 'no-unsafe-inline' ) ); ?></a></li>
+	</ul>
+	<div id="nunil-db-sum-tabs-1">
+		<div id="nunil_nunil_db_summary_container" class="nunil_nunil_db_summary_container">
+		<?php echo No_Unsafe_Inline_Admin::output_summary_tables(); ?>
+		</div>
+	</div>
+	<div id="nunil-db-sum-tabs-2">
+		<div id="nunil_summary_external_table_container" class="nunil_summary_external_table_container">
+		<?php echo No_Unsafe_Inline_Admin::output_summary_external_table(); ?>
+		</div>
+	</div>
+	<div id="nunil-db-sum-tabs-3">
+		<div id="nunil_summary_inline_table_container" class="nunil_summary_inline_table_container">
+		<?php echo No_Unsafe_Inline_Admin::output_summary_inline_table(); ?>
+		</div>
+	</div>
+	<div id="nunil-db-sum-tabs-4">
+		<div id="nunil_summary_eventhandlers_table_container" class="nunil_summary_eventhandlers_table_container">
+		<?php echo No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(); ?>
+		</div>
+	</div>
+	<div id="nunil-db-sum-tabs-5">
+		<div id="nunil_tools_operation_report_container" class="nunil_tools_operation_report_container">
+			<p class="nunil_tools_operation_report_title"><?php printf( esc_html__( 'Operations performed in this section', 'no-unsafe-inline') );?></p>
+			<div id="nunil_tools_operation_report" class="nunil_tools_operation_report">
+			</div>
+		</div>
+	</div>
+</div>

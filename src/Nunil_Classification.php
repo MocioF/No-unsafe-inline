@@ -111,6 +111,7 @@ class Nunil_Classification {
 
 		$start_time        = microtime( true );
 		$start_time_global = $start_time;
+		$result_string     = $result_string . '<br><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no_unsafe_inline' ) . ' --- </b><br>';
 		$result_string     = $result_string . esc_html__( 'Start time DB GET: ', 'no_unsafe_inline' ) . $start_time . '<br>';
 
 		$database      = $this->get_samples( 'script' );

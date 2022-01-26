@@ -10,6 +10,7 @@
  */
 
 use Highlight\Highlighter;
+use NUNIL\Nunil_Lib_Db As DB;
 
 defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
 
@@ -108,16 +109,14 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_whitelist( $script_id );
+					$affected      = DB::evh_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected      = $_POST['evh-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_whitelist( $selected );
+					$affected      = DB::evh_whitelist( $selected );
 				}
 				break;
 
@@ -127,16 +126,14 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_whitelist( $script_id, false );
+					$affected      = DB::evh_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected      = $_POST['evh-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_whitelist( $selected, false );
+					$affected      = DB::evh_whitelist( $selected, false );
 				}
 				break;
 
@@ -146,16 +143,14 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_delete( $script_id );
+					$affected      = DB::evh_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected      = $_POST['evh-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_delete( $selected );
+					$affected      = DB::evh_delete( $selected );
 				}
 				break;
 
@@ -165,8 +160,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->evh_uncluster( $script_id );
+					$affected      = DB::evh_uncluster( $script_id );
 				}
 				break;
 

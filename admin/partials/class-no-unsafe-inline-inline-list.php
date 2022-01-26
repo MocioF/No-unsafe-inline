@@ -10,8 +10,11 @@
  */
 
 use Highlight\Highlighter;
+use NUNIL\Nunil_Lib_Db As DB;
 
-defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -108,16 +111,14 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_whitelist( $script_id );
+					$affected      = DB::inl_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected      = $_POST['inl-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_whitelist( $selected );
+					$affected      = DB::inl_whitelist( $selected );
 				}
 				break;
 
@@ -127,16 +128,14 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_whitelist( $script_id, false );
+					$affected      = DB::inl_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected      = $_POST['inl-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_whitelist( $selected, false );
+					$affected      = DB::inl_whitelist( $selected, false );
 				}
 				break;
 
@@ -146,16 +145,14 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_delete( $script_id );
+					$affected      = DB::inl_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected      = $_POST['inl-select'];
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_delete( $selected );
+					$affected      = DB::inl_delete( $selected );
 				}
 				break;
 
@@ -165,8 +162,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id     = intval( $_GET['script_id'] );
-					$nunil_dbquery = new No_Unsafe_Inline_Db_Queries();
-					$affected      = $nunil_dbquery->inl_uncluster( $script_id );
+					$affected      = DB::inl_uncluster( $script_id );
 				}
 				break;
 
