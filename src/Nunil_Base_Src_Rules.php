@@ -238,6 +238,9 @@ class Nunil_Base_Src_Rules {
 							$host = $parsed_url['host'];
 						}
 						break;
+					case 'resource':
+						$host = $parsed_url['scheme'] . '://' . $parsed_url['host'] . $parsed_url['path'];
+						break;
 				}
 			}
 			if ( empty( $host ) ) {
@@ -307,8 +310,8 @@ class Nunil_Base_Src_Rules {
 	 * @return string
 	 */
 	private function get_nunil_external_host_mode_option() {
-		$options = get_option( 'no-unsafe-inline' );
-		if ( is_array( $options ) && isset( $options['external_host_mode'] ) ) {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		if ( isset( $options['external_host_mode'] ) ) {
 			return strval( $options['external_host_mode'] );
 		} else {
 			return 'sch-host';

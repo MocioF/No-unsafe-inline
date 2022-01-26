@@ -498,7 +498,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function register_base_src_sources(): void {
 
-		$options = get_option( 'no-unsafe-inline' );
+		$options = (array) get_option( 'no-unsafe-inline' );
 
 		register_setting(
 			'no-unsafe-inline_base_src_group',
@@ -642,7 +642,7 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['inline_scripts_mode'] = 'nonce';
 		}
-		$external_host_modes = array( 'host', 'sch-host', 'domain' );
+		$external_host_modes = array( 'host', 'sch-host', 'domain', 'resource' );
 		if ( in_array( $input['external_host_mode'], $external_host_modes, true ) ) {
 			$new_input['external_host_mode'] = $input['external_host_mode'];
 		} else {
@@ -801,8 +801,8 @@ class No_Unsafe_Inline_Admin {
 	public function print_directive_src_enabled( $args ): void {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
-		$options     = get_option( 'no-unsafe-inline' );
-		$value       = ( is_array( $options ) && isset( $options[ $option_name ] ) ) ? esc_attr( $options[ $option_name ] ) : 0;
+		$options     = (array) get_option( 'no-unsafe-inline' );
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( $options[ $option_name ] ) : 0;
 		$enabled     = $value ? 'checked="checked"' : '';
 
 		printf(
@@ -827,8 +827,8 @@ class No_Unsafe_Inline_Admin {
 	public function print_base_srcs( $args ): void {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
-		$options     = get_option( 'no-unsafe-inline-base-src' );
-		$value       = ( is_array( $options ) && isset( $options[ $option_name ] ) ) ? esc_attr( $options[ $option_name ] ) : '';
+		$options     = (array) get_option( 'no-unsafe-inline-base-src' );
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( $options[ $option_name ] ) : '';
 
 		printf(
 			'<div class="nunil-base-src-container">' .
@@ -848,8 +848,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_sri_script_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['sri_script'] ) ) ? esc_attr( $options['sri_script'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_script'] ) ? esc_attr( $options['sri_script'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_script]"' .
@@ -867,8 +867,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_sri_link_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['sri_link'] ) ) ? esc_attr( $options['sri_link'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_link'] ) ? esc_attr( $options['sri_link'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_link]"' .
@@ -886,8 +886,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_use_strict_dynamic_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['use_strict-dynamic'] ) ) ? esc_attr( $options['use_strict-dynamic'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['use_strict-dynamic'] ) ? esc_attr( $options['use_strict-dynamic'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[use_strict-dynamic]"' .
@@ -909,8 +909,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_sri_sha256_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['sri_sha256'] ) ) ? esc_attr( $options['sri_sha256'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha256'] ) ? esc_attr( $options['sri_sha256'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha256]"' .
@@ -928,8 +928,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_sri_sha384_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['sri_sha384'] ) ) ? esc_attr( $options['sri_sha384'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha384'] ) ? esc_attr( $options['sri_sha384'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha384]"' .
@@ -947,8 +947,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_sri_sha512_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['sri_sha512'] ) ) ? esc_attr( $options['sri_sha512'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha512'] ) ? esc_attr( $options['sri_sha512'] ) : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha512]"' .
@@ -966,8 +966,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_inline_script_mode_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['inline_scripts_mode'] ) ) ? esc_attr( $options['inline_scripts_mode'] ) : 'nonce';
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['inline_scripts_mode'] ) ? esc_attr( $options['inline_scripts_mode'] ) : 'nonce';
 
 		echo (
 			'<div class="nunil-radio-div">' .
@@ -1017,33 +1017,34 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_external_host_mode_option(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['external_host_mode'] ) ) ? esc_attr( $options['external_host_mode'] ) : 'host';
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['external_host_mode'] ) ? esc_attr( $options['external_host_mode'] ) : 'host';
 
 		echo (
 			'<div class="nunil-radio-div">' .
+			'<label for="resource" class="nunil-l-radio">' .
+			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="resource" value="resource" ' );
+		echo( checked( 'resource', $options['external_host_mode'], false ) );
+		echo( '/>' .
+			'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inine' ) . '</span>' .
+			'</label>' .
 			'<label for="sch-host" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="sch-host" value="sch-host" ' );
-		if ( is_array( $options ) ) {
-			echo( checked( 'sch-host', $options['external_host_mode'], false ) );
-		}
+
+		echo( checked( 'sch-host', $options['external_host_mode'], false ) );
 		echo( '/>' .
 			'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inine' ) . '</span>' .
 			'</label>' .
 			'<label for="host" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="host" value="host" ' );
-		if ( is_array( $options ) ) {
-			echo( checked( 'host', $options['external_host_mode'], false ) );
-		}
+		echo( checked( 'host', $options['external_host_mode'], false ) );
 		echo( '/>' .
 			'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inine' ) . '</span>' .
 			'</label>' .
 
 			'<label for="domain" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="domain" value="domain" ' );
-		if ( is_array( $options ) ) {
-			echo( checked( 'domain', $options['external_host_mode'], false ) );
-		}
+		echo( checked( 'domain', $options['external_host_mode'], false ) );
 		echo( '/>' .
 			'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inine' ) . '</span>' .
 			'</label>' .
@@ -1061,8 +1062,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_upgrade_insecure(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['no-unsafe-inline_upgrade_insecure'] ) ) ? esc_attr( $options['no-unsafe-inline_upgrade_insecure'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['no-unsafe-inline_upgrade_insecure'] ) ? esc_attr( $options['no-unsafe-inline_upgrade_insecure'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1082,8 +1083,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_protect_admin(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['protect_admin'] ) ) ? esc_attr( $options['protect_admin'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['protect_admin'] ) ? esc_attr( $options['protect_admin'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1103,8 +1104,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_use_unsafe_hashes(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['use_unsafe-hashes'] ) ) ? esc_attr( $options['use_unsafe-hashes'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['use_unsafe-hashes'] ) ? esc_attr( $options['use_unsafe-hashes'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1124,8 +1125,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_fix_setattribute_style(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['fix_setattribute_style'] ) ) ? esc_attr( $options['fix_setattribute_style'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['fix_setattribute_style'] ) ? esc_attr( $options['fix_setattribute_style'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1147,8 +1148,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_logs_enabled(): void {
-		$options = get_option( 'no-unsafe-inline' );
-		$value   = ( is_array( $options ) && isset( $options['logs_enabled'] ) ) ? esc_attr( $options['logs_enabled'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['logs_enabled'] ) ? esc_attr( $options['logs_enabled'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1169,8 +1170,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_capture_enabled(): void {
-		$options = get_option( 'no-unsafe-inline-tools' );
-		$value   = ( is_array( $options ) && isset( $options['capture_enabled'] ) ) ? esc_attr( $options['capture_enabled'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline-tools' );
+		$value   = isset( $options['capture_enabled'] ) ? esc_attr( $options['capture_enabled'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1190,8 +1191,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_test_policy(): void {
-		$options = get_option( 'no-unsafe-inline-tools' );
-		$value   = ( is_array( $options ) && isset( $options['test_policy'] ) ) ? esc_attr( $options['test_policy'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline-tools' );
+		$value   = isset( $options['test_policy'] ) ? esc_attr( $options['test_policy'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1212,8 +1213,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_enable_protection(): void {
-		$options = get_option( 'no-unsafe-inline-tools' );
-		$value   = ( is_array( $options ) && isset( $options['enable_protection'] ) ) ? esc_attr( $options['enable_protection'] ) : 0;
+		$options = (array) get_option( 'no-unsafe-inline-tools' );
+		$value   = isset( $options['enable_protection'] ) ? esc_attr( $options['enable_protection'] ) : 0;
 
 		$enabled = $value ? 'checked' : '';
 

@@ -59,7 +59,7 @@ class No_Unsafe_Inline_Public {
 
 		$this->plugin_name         = $plugin_name;
 		$this->version             = $version;
-		$this->csp_local_whitelist = array();
+		//~ $this->csp_local_whitelist = array();
 		// ~ $this->managed_src_directives = $managed_src_directives;
 	}
 
@@ -162,7 +162,7 @@ class No_Unsafe_Inline_Public {
 			if ( false === is_admin() || ( true === is_admin() && 1 === $options['protect_admin'] ) ) {
 				$manipulated = new NUNIL\Nunil_Manipulate_DOM();
 				$manipulated->load_html( $htmlsource );
-				$this->csp_local_whitelist = $manipulated->get_local_csp();
+				$this->csp_local_whitelist = (array) $manipulated->get_local_csp();
 				$htmlsource                = $manipulated->get_manipulated();
 			}
 		}
@@ -205,7 +205,7 @@ class No_Unsafe_Inline_Public {
 					$dir = str_replace( '_base_source', '', $directive );
 					$csp = trim( $base_sources );
 					if ( 'script-src' === $dir || 'style-src' === $dir ) {
-						foreach ( $this->csp_local_whitelist as $local ) {
+/**/						foreach ( $this->csp_local_whitelist as $local ) {
 							if ( $dir === $local['directive'] ) {
 								$csp = $csp . ' \'' . $local['source'] . '\' ';
 							}
