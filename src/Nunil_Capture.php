@@ -84,13 +84,14 @@ class Nunil_Capture {
 	 * Set $hash_in_use to SHA algo used to search for scripts in db.
 	 *
 	 * @since 1.0.0
+	 * @throws \Exception Exception raised when the plugin options are not set.
 	 */
 	public function __construct() {
 		$this->domdocument                     = new HTML5DOMDocument();
 		$this->domdocument->preserveWhiteSpace = true;
 
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
-		if ( ! empty ( $plugin_options ) ) {
+		if ( ! empty( $plugin_options ) ) {
 			$inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
 			if ( 'nonce' === $inline_scripts_mode ) {
 				$this->hash_in_use = 'sha256';
@@ -309,8 +310,6 @@ class Nunil_Capture {
 					'script'          => $node->getAttribute( $attribute['attr'] ),
 				);
 
-				// ~ error_log( print_r( $row, true ) );
-
 				$rows[] = $row;
 			}
 		}
@@ -526,7 +525,7 @@ class Nunil_Capture {
 					if ( ! $node->hasAttribute( $key ) ) {
 						$check_attrs = false;
 					} else {
-						if ( $value !== $node->getAttribute( $key ) && $value !== '*' ) {
+						if ( $node->getAttribute( $key ) !== $value  && '*' !== $value ) {
 							$check_attrs = false;
 						}
 					}
@@ -605,11 +604,6 @@ class Nunil_Capture {
 
 							}
 						} else {
-
-							/**
-							 * qui devo valutare se inserire un elenco di tag html di cui voglio raccogliere l'inline
-							 * IN realtà sarebbe una proprietà del tag e questa cosa crea problemi
-							 */
 							if ( $tag->capture_inline() ) {
 								$inline = true;
 							}
@@ -795,7 +789,6 @@ class Nunil_Capture {
 	 * @return false|int $external_script_id the ID (as int) of the inserted tag or false if not new tag to insert
 	 */
 	protected function insert_external_tag_in_db( $directive, $tagname, $src_attrib, $this_page_url = null ) {
-		global $wpdb;
 
 		$returned_id = false;
 
@@ -856,6 +849,7 @@ class Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access public
+	 * @param \WP_REST_Request $request The rest request.
 	 * @return \WP_REST_Response
 	 */
 	public function insert_inline_observed_in_db( \WP_REST_Request $request ) {
@@ -863,7 +857,6 @@ class Nunil_Capture {
 		$body = json_decode( $body, true );
 
 		$this->insert_inline_content_in_db( $directive = 'style-src', $body['tag'], $body['style'], $sticky = true, $page_url = $body['baseURI'] );
-		// ~ error_log( print_r( $body, true ) );
 
 		$data     = array( 'time' => time() );
 		$response = new \WP_REST_Response( $data );

@@ -234,6 +234,14 @@
 	$( window ).on(
 		'load',
 		function () {
+			// Open inline help from link
+			$( "#nunil-help-link" ).on(
+				"click",
+				function() {
+					$("#contextual-help-link").click();
+				}
+			);
+		
 			// Trigger checkboxes check on select-all click.
 			$( "#cb-select-all-1" ).on(
 				"click",

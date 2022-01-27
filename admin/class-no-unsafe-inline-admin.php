@@ -84,7 +84,7 @@ class No_Unsafe_Inline_Admin {
 		 * class.
 		 */
 		$screen = get_current_screen(); 
-		if ( 'no-unsafe-inline' === $screen->id ) {
+		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
 		
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
 			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.min.css', array(), $this->version, 'all' );
@@ -123,7 +123,7 @@ class No_Unsafe_Inline_Admin {
 		 * class.
 		 */
 		$screen = get_current_screen(); 
-		if ( 'no-unsafe-inline' === $screen->id ) {
+		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
 
 			// ~ wp_enqueue_script( 'no-unsafe-inline-prefilter', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline.js', array( 'jquery' ), time(), false );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
@@ -549,8 +549,8 @@ class No_Unsafe_Inline_Admin {
 	public function sanitize_options( $input ) {
 		$new_input = array();
 
-		$options = get_option( 'no-unsafe-inline' );
-		if ( ! is_array( $options ) ) {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		if ( empty ( $options ) ) {
 			throw( new Exception( 'Option no-unsafe-inline is not an array' ) );
 		}
 
@@ -661,7 +661,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function sanitize_tools( $input ) {
 		$new_input = array();
-		$options   = get_option( 'no-unsafe-inline-tools' );
+		$options   = (array) get_option( 'no-unsafe-inline-tools' );
 
 		if ( isset( $input['capture_enabled'] ) ) {
 			$new_input['capture_enabled'] = 1;
@@ -679,15 +679,8 @@ class No_Unsafe_Inline_Admin {
 			$new_input['enable_protection'] = 0;
 		}
 
-		if ( ! $options ) {
-			return $new_input;
-		} else {
-			if ( ! is_array( $options ) ) {
-				throw new Exception( 'Option no-unsafe-inline-tools is not an array' );
-			}
-			$new_input = array_merge( $options, $new_input );
-			return $new_input;
-		}
+		$new_input = array_merge( $options, $new_input );
+		return $new_input;
 	}
 
 	/**
@@ -698,22 +691,15 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function sanitize_base_src( $input ) {
 		$new_input = array();
-		$options   = get_option( 'no-unsafe-inline-base-src' );
+		$options   = (array) get_option( 'no-unsafe-inline-base-src' );
 		foreach ( $this->managed_src_directives as $directive ) {
 			$setting_name = $directive . '_base_source';
 			if ( isset( $input[ $setting_name ] ) ) {
 				$new_input[ $setting_name ] = sanitize_text_field( $input[ $setting_name ] );
 			}
 		}
-		if ( ! $options ) {
-			return $new_input;
-		} else {
-			if ( ! is_array( $options ) ) {
-				throw new Exception( 'Option no-unsafe-inline-base-src is not an array' );
-			}
-			$new_input = array_merge( $options, $new_input );
-			return $new_input;
-		}
+		$new_input = array_merge( $options, $new_input );
+		return $new_input;
 	}
 
 	/**
@@ -792,7 +778,7 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the *-src directive option.
+	 * Print the option to enable a  *-src directive.
 	 *
 	 * @param array<string> $args Function arguments.
 	 * @since 1.0.0
@@ -802,7 +788,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( $options[ $option_name ] ) : 0;
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : 0;
 		$enabled     = $value ? 'checked="checked"' : '';
 
 		printf(
@@ -828,7 +814,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline-base-src' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( $options[ $option_name ] ) : '';
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : '';
 
 		printf(
 			'<div class="nunil-base-src-container">' .
@@ -973,36 +959,28 @@ class No_Unsafe_Inline_Admin {
 			'<div class="nunil-radio-div">' .
 			'<label for="nonce" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="nonce" value="nonce" ' );
-		if ( is_array( $options ) ) {
 			echo( checked( 'nonce', $options['inline_scripts_mode'], false ) );
-		}
 		echo( '/>' .
 			'<span>' . esc_html__( 'nonce', 'no-unsafe-inine' ) . '</span>' .
 			'</label>' .
 
 			'<label for="sha256" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha256" value="sha256" ' );
-		if ( is_array( $options ) ) {
 			echo( checked( 'sha256', $options['inline_scripts_mode'], false ) );
-		}
 		echo( '/>' .
 			'<span>' . esc_html__( 'sha256', 'no-unsafe-inine' ) . '</span>' .
 			'</label>' .
 
 			'<label for="sha384" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha384" value="sha384" ' );
-		if ( is_array( $options ) ) {
 			echo( checked( 'sha384', $options['inline_scripts_mode'], false ) );
-		}
 		echo( '/>' .
 			'<span>' . esc_html__( 'sha384', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 
 			'<label for="sha512" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha512" value="sha512" ' );
-		if ( is_array( $options ) ) {
 			echo( checked( 'sha512', $options['inline_scripts_mode'], false ) );
-		}
 		echo( '/>' .
 			'<span>' . esc_html__( 'sha512', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
@@ -1250,8 +1228,8 @@ class No_Unsafe_Inline_Admin {
 					<?php
 					printf(
 					// translators: %1$s is the opening a tag %2$s is the closing a tag.
-						esc_html__( 'All the settings are described in the %1$s documentation%2$s.', 'no-unsafe-inline' ),
-						'<a target="_blank" href="https://CHANGEME">',
+						esc_html__( 'All the settings are described in the %1$sinline help%2$s.', 'no-unsafe-inline' ),
+						'<a href="#" id="nunil-help-link">',
 						'</a>'
 					);
 					?>
@@ -1479,7 +1457,7 @@ class No_Unsafe_Inline_Admin {
 			'occurences',
 		);
 		
-		$result_string = '<br><b> --- ' . esc_html( 'DELETE ALL SCRIPTS FROM DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
+		$result_string = '<br><b> --- ' . esc_html__( 'DELETE ALL SCRIPTS FROM DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
 		$result_string = '<ul>';
 
 		foreach ( $tables as $table ) {
@@ -1488,7 +1466,7 @@ class No_Unsafe_Inline_Admin {
 
 			$delete_string = $delete ? esc_html__( 'succeded', 'no-unsafe-inline' ) : esc_html__( 'FAILED', 'no-unsafe-inline' );
 
-			$result_string = $result_string . ( "<li>TRUNCATE $tablename: $delete_string</li>" );
+			$result_string = $result_string . ( "<li>TRUNCATE $table: $delete_string</li>" );
 
 		}
 		$result_string = $result_string . '</ul>';
@@ -1515,7 +1493,6 @@ class No_Unsafe_Inline_Admin {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param string $table Internal table name.
 	 * @return void
 	 */
 	public function update_summary_tables(): void {
@@ -1556,19 +1533,20 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_db_summary_body">';
-
-		foreach ( $result as $print ) {
-			$htb = $htb . '<tr>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->Type . '</td>';
-			if ( '0' === $print->whitelist ) {
-				$wl_text = __( 'BL', 'no-unsafe-inline' );
-			} else {
-				$wl_text = __( 'WL', 'no-unsafe-inline' );
+		if ( isset ( $result ) ) {
+			foreach ( $result as $print ) {
+				$htb = $htb . '<tr>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->Type . '</td>';
+				if ( '0' === $print->whitelist ) {
+					$wl_text = __( 'BL', 'no-unsafe-inline' );
+				} else {
+					$wl_text = __( 'WL', 'no-unsafe-inline' );
+				}
+				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->Num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->Clusters . '</td>';
+				$htb = $htb . '</tr>';
 			}
-			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->Num . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->Clusters . '</td>';
-			$htb = $htb . '</tr>';
 		}
 		$htb = $htb . '</tbody></table>';
 
@@ -1594,19 +1572,20 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_external_table_summary_body">';
-
-		foreach ( $result as $print ) {
-			$htb = $htb . '<tr>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-			if ( '0' === $print->whitelist ) {
-				$wl_text = __( 'BL', 'no-unsafe-inline' );
-			} else {
-				$wl_text = __( 'WL', 'no-unsafe-inline' );
+		if ( isset ( $result ) ) {
+			foreach ( $result as $print ) {
+				$htb = $htb . '<tr>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				if ( '0' === $print->whitelist ) {
+					$wl_text = __( 'BL', 'no-unsafe-inline' );
+				} else {
+					$wl_text = __( 'WL', 'no-unsafe-inline' );
+				}
+				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '</tr>';
 			}
-			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
-			$htb = $htb . '</tr>';
 		}
 		$htb = $htb . '</tbody></table>';
 
@@ -1633,20 +1612,21 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_inline_table_summary_body">';
-
-		foreach ( $result as $print ) {
-			$htb = $htb . '<tr>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
-			if ( '0' === $print->whitelist ) {
-				$wl_text = __( 'BL', 'no-unsafe-inline' );
-			} else {
-				$wl_text = __( 'WL', 'no-unsafe-inline' );
+		if ( isset ( $result ) ) {
+			foreach ( $result as $print ) {
+				$htb = $htb . '<tr>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
+				if ( '0' === $print->whitelist ) {
+					$wl_text = __( 'BL', 'no-unsafe-inline' );
+				} else {
+					$wl_text = __( 'WL', 'no-unsafe-inline' );
+				}
+				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '</tr>';
 			}
-			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
-			$htb = $htb . '</tr>';
 		}
 		$htb = $htb . '</tbody></table>';
 
@@ -1673,20 +1653,21 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_eventhandlers_table_summary_body">';
-
-		foreach ( $result as $print ) {
-			$htb = $htb . '<tr>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Event Attribute', 'no-unsafe-inline' ) . '">' . $print->event_attribute . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
-			if ( '0' === $print->whitelist ) {
-				$wl_text = __( 'BL', 'no-unsafe-inline' );
-			} else {
-				$wl_text = __( 'WL', 'no-unsafe-inline' );
+		if ( isset ( $result ) ) {
+			foreach ( $result as $print ) {
+				$htb = $htb . '<tr>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Event Attribute', 'no-unsafe-inline' ) . '">' . $print->event_attribute . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
+				if ( '0' === $print->whitelist ) {
+					$wl_text = __( 'BL', 'no-unsafe-inline' );
+				} else {
+					$wl_text = __( 'WL', 'no-unsafe-inline' );
+				}
+				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '</tr>';
 			}
-			$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-			$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
-			$htb = $htb . '</tr>';
 		}
 		$htb = $htb . '</tbody></table>';
 
