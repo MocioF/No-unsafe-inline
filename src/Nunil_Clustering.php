@@ -91,7 +91,7 @@ class Nunil_Clustering {
 				"SELECT ID, nilsimsa FROM $table $where LIMIT %d",
 				$args
 			),
-			'OBJECT'
+			OBJECT
 		);
 
 		return $hashes;

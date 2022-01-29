@@ -30,7 +30,7 @@
 
 	const { __ } = wp.i18n;
 
-	jQuery.fn.extend(
+	$.fn.extend(
 		{
 			clearText: function () {
 				return this.clone() // clone the element
@@ -151,7 +151,7 @@
 									nunil_db_summary_data += '<td data-th="' + __( 'Num. Clusters', 'no-unsafe-inline' ) + '">' + value.Clusters + '</td>';
 									nunil_db_summary_data += '</tr>';
 								}
-							)}
+							);}
 							if ( 'inline' === index ) {
 								$.each(
 								label,
@@ -170,7 +170,7 @@
 									nunil_inline_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
 									nunil_inline_table_summary_data += '</tr>';
 								}
-							)}
+							);}
 							if ( 'external' === index ) {
 								$.each(
 								label,
@@ -188,7 +188,7 @@
 									nunil_external_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
 									nunil_external_table_summary_data += '</tr>';
 								}
-							)}
+							);}
 							if ( 'events' === index ) {
 								$.each(
 								label,
@@ -207,7 +207,7 @@
 									nunil_eventhandlers_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
 									nunil_eventhandlers_table_summary_data += '</tr>';
 								}
-							)}
+							);}
 						}
 					);
 
@@ -229,7 +229,7 @@
 				}
 			}
 		);
-	};
+	}
 
 	$( window ).on(
 		'load',
@@ -365,18 +365,11 @@
 			// END base-src main tab.
 			
 			// START inline main tab.
-			if ('no-unsafe-inline' === mypage && 'inline' === mytab) {
+			if ('no-unsafe-inline' === mypage && ( 'inline' === mytab || 'events' === mytab ) ) {
 
 				var acc_options = { active: false, collapsible: true, animation: 200, heightStyle: "content", autoHeight: false, classes: {"ui-accordion-content": "hljs"} };
-				$( "div[class^='code-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
-				$( "div[class^='pages-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
-			}
-
-			if ('no-unsafe-inline' === mypage && 'events' === mytab) {
-
-				var acc_options = { active: false, collapsible: true, animation: 200, heightStyle: "content", autoHeight: false, classes: {"ui-accordion-content": "hljs"} };
-				$( "div[class^='code-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
-				$( "div[class^='pages-accordion-']" ).each( function() { $( this ).accordion( acc_options ) } );
+				$( "div[class^='code-accordion-']" ).each( function() { $( this ).accordion( acc_options ); } );
+				$( "div[class^='pages-accordion-']" ).each( function() { $( this ).accordion( acc_options ); } );
 			}
 			
 			// START settings main tab.
@@ -428,8 +421,8 @@
 				function (e) {
 					e.preventDefault();
 					$( "#nunil_trigger_clustering" ).prop( 'disabled', true );
-					var clustering_nonce = jQuery( "#clustering_nonce" ).val();
-					jQuery.ajax(
+					var clustering_nonce = $( "#clustering_nonce" ).val();
+					$.ajax(
 						{
 							type: "post",
 							dataType: "json",
@@ -444,7 +437,7 @@
 									$( "#nunil_trigger_clustering" ).prop( 'disabled', false );
 									updateSummaryTablesWorker( "once" );
 								} else {
-									alert( "Error in clustering scripts." )
+									alert( "Error in clustering scripts." );
 								}
 							},
 						}
@@ -457,8 +450,8 @@
 				function (e) {
 					e.preventDefault();
 					$( "#nunil_test_classifier" ).prop( 'disabled', true );
-					var clustering_nonce = jQuery( "#test_clussifier_nonce" ).val();
-					jQuery.ajax(
+					var clustering_nonce = $( "#test_clussifier_nonce" ).val();
+					$.ajax(
 						{
 							type: "post",
 							dataType: "json",
@@ -472,7 +465,7 @@
 									$( "div#nunil_tools_operation_report" ).append( res.report );
 									$( "#nunil_test_classifier" ).prop( 'disabled', false );
 								} else {
-									alert( "Error in test classifier scripts." )
+									alert( "Error in test classifier scripts." );
 								}
 							},
 						}
@@ -484,8 +477,8 @@
 				function (e) {
 					if (confirm( __( 'Are you sure you want to clean db data?\n(This will not clear your base-src rules)', 'no-unsafe-inline' ) )) {
 						e.preventDefault();
-						var db_clean_nonce = jQuery( "#clean_db_nonce" ).val();
-						jQuery.ajax(
+						var db_clean_nonce = $( "#clean_db_nonce" ).val();
+						$.ajax(
 							{
 								type: "post",
 								dataType: "json",
@@ -500,7 +493,7 @@
 										$( "#nunil_clean_database" ).prop( 'disabled', false );
 										updateSummaryTablesWorker( "once" );
 									} else {
-										alert( "Error in cleaning tables." )
+										alert( "Error in cleaning tables." );
 									}
 								},
 							}

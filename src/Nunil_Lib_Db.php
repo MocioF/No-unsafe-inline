@@ -297,7 +297,6 @@ class Nunil_Lib_Db {
 			'SELECT `ID` FROM ' . self::occurences_table() . ' WHERE `dbtable`=%s AND `itemid`=%d AND `pageurl`=%s',
 			$tbl_string,
 			intval( $id ),
-			// ~ Nunil_Lib_Utils::get_page_url()
 			$page_url
 		);
 		$result = $wpdb->get_var( $sql );
@@ -333,16 +332,14 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param string $directive The -src csp directive.
 	 * @param string $tagname The html tagname.
 	 * @param string $hash The sha supported hash of the js event script.
 	 * @return int|null
 	 */
-	public static function get_inl_id( $directive, $tagname, $hash ) {
+	public static function get_inl_id( $tagname, $hash ) {
 		global $wpdb;
 		$sql    = $wpdb->prepare(
-			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `directive`=%s AND `tagname`=%s AND ' . self::src_hash( $hash ),
-			$directive,
+			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `tagname`=%s AND ' . self::src_hash( $hash ),
 			$tagname,
 			$hash
 		);
@@ -1010,6 +1007,64 @@ class Nunil_Lib_Db {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Returns an array of rows of inline whitelisted entries
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_inline_rows() {
+		global $wpdb;
+		$sql = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, tagname FROM ' . self::inline_scripts_table();
+		return $wpdb->get_results( $sql, OBJECT );
+	}
+
+	/**
+	 * Returns an array of rows of event_handlers whitelisted entries
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_events_rows() {
+		global $wpdb;
+		$sql = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, event_attribute, tagname, tagid FROM ' . self::event_handlers_table();
+		return $wpdb->get_results( $sql, OBJECT );
+	}
+
+	/**
+	 * Returns an array of rows of external whitelisted entries
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_external_rows() {
+		global $wpdb;
+		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM `' . self::external_scripts_table() . '`'
+			 . ' WHERE `tagname`=\'link\' OR `tagname`=\'script\';';
+		return $wpdb->get_results( $sql, OBJECT );
+	}
+
+	/**
+	 * Cluster and white list an inline script
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @param int    $id The script ID
+	 * @param string $clustername The clustername
+	 * @return int|false The number of rows updated, or false on error.
+	 */
+	public static function upd_inl_cl_wl( $id, $clustername ) {
+		global $wpdb;
+		$data = array(
+			'clustername' => $clustername,
+			'whitelist'   => 1,
+		);
+		return $wpdb->update( self::inline_scripts_table(), $data, array( 'ID' => $id ), array( '%s', '%d' ), array( '%d' ) );
 	}
 }
 

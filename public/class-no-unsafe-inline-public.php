@@ -57,18 +57,17 @@ class No_Unsafe_Inline_Public {
 	 */
 	public function __construct( $plugin_name, $version ) {
 
-		$this->plugin_name         = $plugin_name;
-		$this->version             = $version;
-		//~ $this->csp_local_whitelist = array();
-		// ~ $this->managed_src_directives = $managed_src_directives;
+		$this->plugin_name = $plugin_name;
+		$this->version     = $version;
 	}
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
+	 * @return void
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles(): void {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -90,8 +89,9 @@ class No_Unsafe_Inline_Public {
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
+	 * @return void
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts(): void {
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -195,58 +195,84 @@ class No_Unsafe_Inline_Public {
 					$header_csp = 'Content-Security-Policy: ';
 				}
 
-				if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] ) {
-					$header_csp = $header_csp . 'upgrade-insecure-requests; ';
-				}
+				if ( isset( $header_csp ) ) {
+					if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] ) {
+						$header_csp = $header_csp . 'upgrade-insecure-requests; ';
+					}
 
-				$base_src = get_option( 'no-unsafe-inline-base-src' );
+					$base_src = (array) get_option( 'no-unsafe-inline-base-src' );
 
-				foreach ( $base_src as $directive => $base_sources ) {
-					$dir = str_replace( '_base_source', '', $directive );
-					$csp = trim( $base_sources );
-					if ( 'script-src' === $dir || 'style-src' === $dir ) {
-/**/						foreach ( $this->csp_local_whitelist as $local ) {
-							if ( $dir === $local['directive'] ) {
-								$csp = $csp . ' \'' . $local['source'] . '\' ';
+					foreach ( $base_src as $directive => $base_sources ) {
+						$dir = str_replace( '_base_source', '', $directive );
+						$csp = trim( strval( $base_sources ) );
+						if ( 'script-src' === $dir || 'style-src' === $dir ) {
+							foreach ( $this->csp_local_whitelist as $local ) {
+								if ( $dir === $local['directive'] ) {
+									$csp = $csp . ' \'' . $local['source'] . '\' ';
+								}
+							}
+							if ( 1 === $tools['capture_enabled'] ) {
+								$csp = $csp . '\'report-sample\' ';
 							}
 						}
-						if ( 1 === $tools['capture_enabled'] ) {
-							$csp = $csp . '\'report-sample\' ';
+						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
+							$csp = $csp . ' \'strict-dynamic\' ';
+						}
+						$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
+					}
+
+					$report_uri       = '';
+					$header_report_to = '';
+					$report_to        = '';
+
+					/**
+					 * La riga commentata è solo per fare test con csp scanner.
+					 * // ~ if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection']) {
+					 */
+					if ( 1 === $tools['capture_enabled'] ) {
+						$report_uri       = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
+						$header_report_to = $header_report_to
+							. '{ "group": "csp-captbyv", '
+							. '"max_age": 10886400, '
+							. '"endpoints": [{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }]'
+							. ' }';
+						$report_to        = $report_to . ' csp-captbyv';
+					}
+					if ( 0 < strlen( $report_uri ) ) {
+						$header_csp = $header_csp . 'report-uri ' . $report_uri . ';';
+					}
+					if ( 0 < strlen( $report_to ) ) {
+						$header_csp = $header_csp . 'report-to ' . $report_to . ';';
+					}
+
+					if ( 0 < strlen( $header_report_to ) ) {
+						if ( ! headers_sent( $filename, $linenum ) ) {
+							header( 'Report-To: ' . $header_report_to );
+						} else {
+							NUNIL\Nunil_Lib_Log::warning(
+								sprintf(
+									// translators: $s is the filename of the file that sent headers, $d is the line in filename where headers where sent
+									esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+									$filename,
+									$linenum
+								)
+							);
 						}
 					}
-					if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
-						$csp = $csp . ' \'strict-dynamic\' ';
+					
+					if ( ! headers_sent( $filename, $linenum ) ) {
+						header( $header_csp );
+					} else {
+						NUNIL\Nunil_Lib_Log::warning(
+							sprintf(
+								// translators: $s is the filename of the file that sent headers, $d is the line in filename where headers where sent
+								esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+								$filename,
+								$linenum
+							)
+						);
 					}
-					$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
 				}
-
-				$report_uri       = '';
-				$header_report_to = '';
-				$report_to        = '';
-
-				// La riga commentata è solo per fare test con csp scanner.
-				// ~ if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection']) {
-				if ( 1 === $tools['capture_enabled'] ) {
-					$report_uri       = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
-					$header_report_to = $header_report_to
-						. '{ "group": "csp-captbyv", '
-						. '"max_age": 10886400, '
-						. '"endpoints": [{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }]'
-						. ' }';
-					$report_to        = $report_to . ' csp-captbyv';
-				}
-				if ( 0 < strlen( $report_uri ) ) {
-					$header_csp = $header_csp . 'report-uri ' . $report_uri . ';';
-				}
-				if ( 0 < strlen( $report_to ) ) {
-					$header_csp = $header_csp . 'report-to ' . $report_to . ';';
-				}
-
-				if ( 0 < strlen( $header_report_to ) ) {
-					header( 'Report-To: ' . $header_report_to );
-				}
-
-				header( $header_csp );
 			}
 		}
 	}

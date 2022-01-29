@@ -1,0 +1,33 @@
+{
+  "name": "no-unsafe-inline",
+  "version": "1.0.0",
+  "main": "Gruntfile.js",
+  "author": "Giuseppe Foti",
+  "license": "GPL-2.0-or-later",
+  "description": "A WordPress plugin to set Content Security Policy (CSP) without using the 'unsafe-inline' keyword for script-src",
+  "scripts": {
+    "start": "grunt default",
+    "readme": "grunt readme",
+    "i18n": "grunt i18n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MocioF/No-unsafe-inline"
+  },
+  "keywords": [
+    "wordpress-plugin",
+    "csp",
+    "content-security-policy"
+  ],
+  "devDependencies": {
+    "grunt": "^1.4.1",
+    "grunt-contrib-jshint": "^3.1.1",
+    "grunt-contrib-sass": "^0.7.4",
+    "grunt-contrib-uglify": "^5.0.1",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-curl": "^2.5.1",
+    "grunt-phpdocumentor": "^0.4.1",
+    "grunt-wp-i18n": "^1.0.3",
+    "grunt-wp-readme-to-markdown": "^1.0.0"
+  }
+}

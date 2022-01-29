@@ -111,33 +111,33 @@ class Nunil_Classification {
 
 		$start_time        = microtime( true );
 		$start_time_global = $start_time;
-		$result_string     = $result_string . '<br><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no_unsafe_inline' ) . ' --- </b><br>';
-		$result_string     = $result_string . esc_html__( 'Start time DB GET: ', 'no_unsafe_inline' ) . $start_time . '<br>';
+		$result_string     = $result_string . '<br><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no-unsafe-inline' ) . ' --- </b><br>';
+		$result_string     = $result_string . esc_html__( 'Start time DB GET: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
 		$database      = $this->get_samples( 'script' );
 		$nums          = count( $database['samples'] );
 		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no_unsafe_inline' ) . $end_time . '<br>';
-		$result_string = $result_string . esc_html__( 'Num of hashes: ', 'no_unsafe_inline' ) . "<b>$nums</b>" . '<br>';
+		$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Num of hashes: ', 'no-unsafe-inline' ) . "<b>$nums</b>" . '<br>';
 
 		$execution_time = ( $end_time - $start_time );
-		$result_string  = $result_string . esc_html__( 'Execution time DB GET (sec): ', 'no_unsafe_inline' ) . $execution_time . '<br>';
+		$result_string  = $result_string . esc_html__( 'Execution time DB GET (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
 		$start_time    = microtime( true );
-		$result_string = $result_string . esc_html__( 'Start time Training: ', 'no_unsafe_inline' ) . $start_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Start time Training: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
 		$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, new Nunil_Hamming_Distance() );
 
 		$classifier->train( $database['samples'], $database['labels'] );
 
 		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time Training: ', 'no_unsafe_inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'End time Training: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 
 		$execution_time = ( $end_time - $start_time );
-		$result_string  = $result_string . esc_html__( 'Execution time Training (sec): ', 'no_unsafe_inline' ) . $execution_time . '<br>';
+		$result_string  = $result_string . esc_html__( 'Execution time Training (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
 		$start_time    = microtime( true );
-		$result_string = $result_string . esc_html__( 'Start time Classifying: ', 'no_unsafe_inline' ) . $start_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Start time Classifying: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 		$result_string = $result_string . '<br>';
 
 		foreach ( $cases as $case ) {
@@ -147,18 +147,18 @@ class Nunil_Classification {
 				$calc_label = $classifier->predict( $test );
 
 				$result_string = $result_string . $case['hexDvalue'] . '<br>';
-				$result_string = $result_string . esc_html__( 'Expected:', 'no_unsafe_inline' ) . '     ' . $case['exp_label'] . '<br>';
-				$result_string = $result_string . esc_html__( 'Returned:', 'no_unsafe_inline' ) . '     ' . $calc_label . '<br>';
+				$result_string = $result_string . esc_html__( 'Expected:', 'no-unsafe-inline' ) . '     ' . $case['exp_label'] . '<br>';
+				$result_string = $result_string . esc_html__( 'Returned:', 'no-unsafe-inline' ) . '     ' . $calc_label . '<br>';
 				$result_string = $result_string . '<br>';
 			}
 		}
 
 		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time Classifying: ', 'no_unsafe_inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'End time Classifying: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 
 		$end_time_global = $end_time;
 		$execution_time  = ( $end_time_global - $start_time_global );
-		$result_string   = $result_string . esc_html__( 'Execution time Global (sec): ', 'no_unsafe_inline' ) . $execution_time . '<br>';
+		$result_string   = $result_string . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
 		return $result_string;
 	}

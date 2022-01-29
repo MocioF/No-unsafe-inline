@@ -84,18 +84,19 @@ class No_Unsafe_Inline_Activator {
 			}
 			$plugin_options['prefetch-src_enabled'] = 0;
 
-			$plugin_options['external_host_mode']     = 'sch-host';
-			$plugin_options['sri_script']             = 1;
-			$plugin_options['sri_link']               = 1;
-			$plugin_options['use_strict-dynamic']     = 0;
-			$plugin_options['sri_sha256']             = 1;
-			$plugin_options['sri_sha384']             = 0;
-			$plugin_options['sri_sha512']             = 0;
-			$plugin_options['inline_scripts_mode']    = 'sha256';
-			$plugin_options['protect_admin']          = 1;
-			$plugin_options['use_unsafe-hashes']      = 0;
-			$plugin_options['fix_setattribute_style'] = 1;
-			$plugin_options['logs_enabled']           = 1;
+			$plugin_options['external_host_mode']      = 'sch-host';
+			$plugin_options['sri_script']              = 1;
+			$plugin_options['sri_link']                = 1;
+			$plugin_options['use_strict-dynamic']      = 0;
+			$plugin_options['sri_sha256']              = 1;
+			$plugin_options['sri_sha384']              = 0;
+			$plugin_options['sri_sha512']              = 0;
+			$plugin_options['inline_scripts_mode']     = 'sha256';
+			$plugin_options['protect_admin']           = 1;
+			$plugin_options['use_unsafe-hashes']       = 0;
+			$plugin_options['fix_setattribute_style']  = 1;
+			$plugin_options['add_wl_by_cluster_to_db'] = 1;
+			$plugin_options['logs_enabled']            = 1;
 		}
 		update_option( 'no-unsafe-inline', $plugin_options );
 	}

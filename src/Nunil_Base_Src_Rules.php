@@ -61,9 +61,6 @@ class Nunil_Base_Src_Rules {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-
-		$table = NO_UNSAFE_INLINE_TABLE_PREFIX . 'external_scripts';
-
 		$cache_key   = 'external_scripts_directives';
 		$cache_group = 'no-unsafe-inline';
 		$expire_secs = 10;
@@ -134,8 +131,6 @@ class Nunil_Base_Src_Rules {
 	 * @return array<\stdClass>|null Array of OBJECT returned by wpdb::get_results
 	 */
 	private function get_db_entry( $directive ) {
-		$table = NO_UNSAFE_INLINE_TABLE_PREFIX . 'external_scripts';
-
 		$cache_key   = 'external_scripts_src-attr_' . $directive;
 		$cache_group = 'no-unsafe-inline';
 		$expire_secs = 10;

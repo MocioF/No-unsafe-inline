@@ -525,7 +525,7 @@ class Nunil_Capture {
 					if ( ! $node->hasAttribute( $key ) ) {
 						$check_attrs = false;
 					} else {
-						if ( $node->getAttribute( $key ) !== $value  && '*' !== $value ) {
+						if ( $node->getAttribute( $key ) !== $value && '*' !== $value ) {
 							$check_attrs = false;
 						}
 					}
@@ -747,7 +747,7 @@ class Nunil_Capture {
 		}
 
 		if ( $hash ) {
-			$inline_script_id = Nunil_Lib_Db::get_inl_id( $directive, $tagname, $hash );
+			$inline_script_id = Nunil_Lib_Db::get_inl_id( $tagname, $hash );
 		} else {
 			$inline_script_id = null;
 		}
@@ -924,6 +924,7 @@ class Nunil_Capture {
 			$argument = $attributes['args'][ $param ];
 			// Check to make sure our argument is a string.
 			if ( 'string' === $argument['type'] && ! is_string( $value ) ) {
+				// translators: %1$s is the variable name; %2$s is the expected type
 				return new \WP_Error( 'rest_invalid_param', sprintf( esc_html__( '%1$s is not of type %2$s', 'no-unsafe-inline' ), $param, 'string' ), array( 'status' => 400 ) );
 			}
 			/**

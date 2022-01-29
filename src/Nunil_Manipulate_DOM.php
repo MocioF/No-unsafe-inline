@@ -15,6 +15,7 @@ use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use Phpml\Classification\KNearestNeighbors;
 use Spatie\Async\Pool;
+use NUNIL\Nunil_Lib_Db AS DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -159,18 +160,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		parent::__construct();
 
-		global $wpdb;
-
-		$plugin_options = get_option( 'no-unsafe-inline' );
-		$tools          = get_option( 'no-unsafe-inline-tools' );
-
-		if ( ! is_array( $plugin_options ) ) {
-			throw new \Exception( 'get_option( \'no-unsafe-inline\' ) did not return an array.' );
-		}
-
-		if ( ! is_array( $tools ) ) {
-			throw new \Exception( 'get_option( \'no-unsafe-inline-tools\' ) did not return an array.' );
-		}
+		$plugin_options = (array) get_option( 'no-unsafe-inline' );
+		$tools          = (array) get_option( 'no-unsafe-inline-tools' );
 
 		$gls = new Nunil_Global_Settings();
 
@@ -188,9 +179,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$inline_rows = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $inline_rows ) {
-			$sql         = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, tagname FROM `'
-			. NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts`;';
-			$inline_rows = $wpdb->get_results( $sql, 'OBJECT' );
+			$inline_rows = DB::get_inline_rows();
 			wp_cache_set( $cache_key, $inline_rows, $cache_group, $expire_secs );
 		}
 		$this->inline_rows = $inline_rows;
@@ -208,10 +197,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$events_rows = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $events_rows ) {
-			$sql = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, event_attribute, tagname, tagid FROM `'
-			. NO_UNSAFE_INLINE_TABLE_PREFIX . 'event_handlers`;';
-
-			$events_rows = $wpdb->get_results( $sql, 'OBJECT' );
+			$events_rows = DB::get_events_rows();
 			wp_cache_set( $cache_key, $events_rows, $cache_group, $expire_secs );
 		}
 		$this->events_rows = $events_rows;
@@ -223,11 +209,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 			$external_rows = wp_cache_get( $cache_key, $cache_group );
 			if ( false === $external_rows ) {
-				$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM `'
-				. NO_UNSAFE_INLINE_TABLE_PREFIX . 'external_scripts`'
-				. 'WHERE `tagname`=\'link\' OR `tagname`=\'script\';';
-
-				$external_rows = $wpdb->get_results( $sql, 'OBJECT' );
+				
+				$external_rows = DB::get_external_rows();
 				wp_cache_set( $cache_key, $external_rows, $cache_group, $expire_secs );
 			}
 			$this->external_rows = $external_rows;
@@ -240,30 +223,34 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 1 === $plugin_options['script-src_enabled'] ) {
 			$inline_scripts_samples = array();
 			$inline_scripts_labels  = array();
-			foreach ( $inline_rows as $row ) {
-				if ( 'script' === $row->tagname ) {
-					$inline_scripts_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
-					$inline_scripts_labels[]  = $row->clustername;
+			if ( is_array( $inline_rows ) ) {
+				foreach ( $inline_rows as $row ) {
+					if ( 'script' === $row->tagname ) {
+						$inline_scripts_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+						$inline_scripts_labels[]  = $row->clustername;
+					}
 				}
-			}
-			if ( $inline_scripts_samples && $inline_scripts_labels ) {
-				$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
-				$this->inline_scripts_classifier->train( $inline_scripts_samples, $inline_scripts_labels );
+				if ( $inline_scripts_samples && $inline_scripts_labels ) {
+					$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
+					$this->inline_scripts_classifier->train( $inline_scripts_samples, $inline_scripts_labels );
+				}
 			}
 		}
 
 		if ( 1 === $plugin_options['style-src_enabled'] ) {
 			$internal_css_samples = array();
 			$internal_css_labels  = array();
-			foreach ( $inline_rows as $row ) {
-				if ( 'style' === $row->tagname ) {
-					$internal_css_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
-					$internal_css_labels[]  = $row->clustername;
+			if ( is_array( $inline_rows ) ) {
+				foreach ( $inline_rows as $row ) {
+					if ( 'style' === $row->tagname ) {
+						$internal_css_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+						$internal_css_labels[]  = $row->clustername;
+					}
 				}
-			}
-			if ( $internal_css_samples && $internal_css_labels ) {
-				$this->internal_css_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
-				$this->internal_css_classifier->train( $internal_css_samples, $internal_css_labels );
+				if ( $internal_css_samples && $internal_css_labels ) {
+					$this->internal_css_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
+					$this->internal_css_classifier->train( $internal_css_samples, $internal_css_labels );
+				}
 			}
 		}
 
@@ -271,13 +258,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 0 === $plugin_options['use_unsafe-hashes'] ) {
 			$evh_samples = array();
 			$evh_labels  = array();
-			foreach ( $events_rows as $row ) {
-				$evh_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
-				$evh_labels[]  = $row->event_attribute . '#' . $row->clustername;
-			}
-			if ( $evh_samples && $evh_labels ) {
-				$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_evh, new Nunil_Hamming_Distance() );
-				$this->event_handlers_classifier->train( $evh_samples, $evh_labels );
+			if ( is_array( $events_rows ) ) {
+				foreach ( $events_rows as $row ) {
+					$evh_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+					$evh_labels[]  = $row->event_attribute . '#' . $row->clustername;
+				}
+				if ( $evh_samples && $evh_labels ) {
+					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_evh, new Nunil_Hamming_Distance() );
+					$this->event_handlers_classifier->train( $evh_samples, $evh_labels );
+				}
 			}
 		}
 
@@ -331,13 +320,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function manipulate_inline_scripts(): void {
 
-		// ~ try {
-			$plugin_options = (array) get_option( 'no-unsafe-inline' );
-			// ~ if ( ! is_array( $plugin_options ) ) {
-				// ~ throw new \Exception('get_option( \'no-unsafe-inline\' ) did not return an array.');
-			// ~ } catch ( Exception $e ) {
-
-		// ~ }
+		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( 1 === $plugin_options['script-src_enabled'] ) {
 			if ( 'nonce' === $this->inline_scripts_mode ) {
@@ -465,11 +448,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 					if ( $wl_cluster ) {
 						$this->allow_whitelisted( $node, $hashes, $directive );
-
-						$nilsimsa = $lsh->hexDigest();
-						/* Start async block. */
-						$this->insert_new_inline_in_db( $tagname, $content, $hashes, $nilsimsa, $wl_cluster );
-						/* End async block. */
+						
+						$options = (array) get_option('no-unsafe-inline');
+						if ( 1 === $options['add_wl_by_cluster_to_db'] ) {
+							$nilsimsa = $lsh->hexDigest();
+							/* Start async block. */
+							$this->insert_new_inline_in_db( $tagname, $content, $hashes, $nilsimsa, $wl_cluster );
+							/* End async block. */
+						}
 					}
 				}
 			}
@@ -758,8 +744,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * If a new inline_script is allowed, because it has been classified in a cluster, we insert this one in the database.
+	 * If a new inline_script is allowed, because it has been classified in a cluster, we can insert this one in the database.
 	 * This should help in further classifications, because we cannot know clusters' shape.
+	 * This behaviour can be enabled by option page.
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -771,106 +758,38 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return void
 	 */
 	private function insert_new_inline_in_db( $tagname, $content, $hashes, $nilsimsa, $predicted_label ): void {
-		global $wpdb;
 
 		$cache_key   = 'inline_rows';
 		$cache_group = 'no-unsafe-inline';
 		$inline_rows = wp_cache_delete( $cache_key, $cache_group );
 
 		$this->insert_pool->add(
-			function () use ( $tagname, $content, $hashes, $nilsimsa, $predicted_label, $wpdb ) {
+			function () use ( $tagname, $content, $hashes, $predicted_label ) {
+				
+				$in_use    = $hashes['in_use'];
+				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 
-				// NUOVO CODICE
-				$script_id = Nunil_Lib_Db::get_inl_id( $tagname . '-src', $tagname, $hashes['sha256'] );
-				// FINE NUOVO CODICE
-
-				$table   = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-				$tbl_occ = NO_UNSAFE_INLINE_TABLE_PREFIX . 'occurences';
-
-				$lastseen = wp_date( 'Y-m-d H:i:s' );
 				$pageurl  = Nunil_Lib_Utils::get_page_url();
 				/* Before inserting, check if the script is in db. */
-				$in_use    = $hashes['in_use'];
-				$script_id = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT `id` from $table WHERE `tagname` = %s AND `$in_use` = %s",
-						$tagname,
-						$hashes[ $in_use ]
-					)
-				);
-
+				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 				if ( ! is_null( $script_id ) ) {
-					$data = array(
-						'clustername' => $predicted_label,
-						'whitelist'   => 1,
-					);
 					// Cluster and whitelist if in DB.
-					$wpdb->update( $table, $data, array( 'id' => $script_id ), array( '%s', '%d' ), array( '%d' ) );
-
-					$occ_id = $wpdb->get_var(
-						$wpdb->prepare(
-							"SELECT `id` FROM $tbl_occ WHERE `dbtable` = %s AND `itemid` = %d AND `pageurl` = %s",
-							array(
-								'inline_scripts',
-								$script_id,
-								$pageurl,
-							)
-						)
-					);
+					$affected = DB::upd_inl_cl_wl ( $script_id, $predicted_label );
+					
+					$occ_id = DB::get_occ_id( $script_id, 'inline_scripts', $pageurl );
 
 					if ( ! is_null( $occ_id ) ) {
-						$wpdb->update( $tbl_occ, array( 'lastseen' => $lastseen ), array( 'id' => $occ_id ), array( '%s' ), array( '%d' ) );
+						DB::update_lastseen( $occ_id );
+						
 					} else {
-						$wpdb->insert(
-							$tbl_occ,
-							array(
-								'dbtable'  => 'inline_scripts',
-								'itemid'   => $script_id,
-								'pageurl'  => $pageurl,
-								'lastseen' => $lastseen,
-							),
-							array( '%s', '%d', '%s', '%s' )
-						);
+						$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
 					}
 				} else {
+					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false );
+					$affected = DB::upd_inl_cl_wl( $script_id, $predicted_label );
 
-					$data = array(
-						'directive'   => $tagname . '-src',
-						'tagname'     => $tagname,
-						'script'      => $content,
-						'sha256'      => $hashes['sha256'],
-						'sha384'      => $hashes['sha384'],
-						'sha512'      => $hashes['sha512'],
-						'nilsimsa'    => $nilsimsa,
-						'clustername' => $predicted_label,
-						'whitelist'   => 1,
-					);
-
-					$format = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d' );
-
-					$affected = $wpdb->insert( $table, $data, $format );
-
-					/**
-					 * I'm not sure it is safe to use $wpdb->insert_id in async script sharing
-					 * the global $wpdb with other async scripts.
-					 */
-					$script_id = $wpdb->get_var(
-						$wpdb->prepare(
-							"SELECT `id` FROM $table WHERE `tagname` = %s AND `$in_use` = %s",
-							array( $tagname, $hashes[ $in_use ] )
-						)
-					);
-					// Insert row in occurences.
-					$data   = array(
-						'dbtable'  => 'inline_scripts',
-						'itemid'   => $script_id,
-						'pageurl'  => Nunil_Lib_Utils::get_page_url(),
-						'lastseen' => wp_date( 'Y-m-d H:i:s' ),
-					);
-					$format = array( '%s', '%d', '%s', '%s' );
-					$wpdb->insert( $tbl_occ, $data, $format );
+					$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
 				}
-
 			}
 		);
 	}

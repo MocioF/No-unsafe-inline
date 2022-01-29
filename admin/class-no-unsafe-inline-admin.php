@@ -435,6 +435,14 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		add_settings_field(
+			'add_wl_by_cluster_to_db',
+			esc_html__( 'Add scripts authorized by classification in a whitelisted cluster in the database.', 'no-unsafe-inline' ),
+			array( $this, 'print_add_wl_by_cluster_to_db' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_misc'
+		);
+		
+		add_settings_field(
 			'logs_enabled',
 			esc_html__( 'Enable Server Logs', 'no-unsafe-inline' ),
 			array( $this, 'print_logs_enabled' ),
@@ -627,6 +635,12 @@ class No_Unsafe_Inline_Admin {
 			$new_input['fix_setattribute_style'] = 1;
 		} else {
 			$new_input['fix_setattribute_style'] = 0;
+		}
+		
+		if ( isset( $input['add_wl_by_cluster_to_db'] ) ) {
+			$new_input['add_wl_by_cluster_to_db'] = 1;
+		} else {
+			$new_input['add_wl_by_cluster_to_db'] = 0;
 		}
 
 		if ( isset( $input['logs_enabled'] ) ) {
@@ -961,14 +975,14 @@ class No_Unsafe_Inline_Admin {
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="nonce" value="nonce" ' );
 			echo( checked( 'nonce', $options['inline_scripts_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'nonce', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'nonce', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 
 			'<label for="sha256" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha256" value="sha256" ' );
 			echo( checked( 'sha256', $options['inline_scripts_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'sha256', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'sha256', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 
 			'<label for="sha384" class="nunil-l-radio">' .
@@ -1004,27 +1018,27 @@ class No_Unsafe_Inline_Admin {
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="resource" value="resource" ' );
 		echo( checked( 'resource', $options['external_host_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 			'<label for="sch-host" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="sch-host" value="sch-host" ' );
 
 		echo( checked( 'sch-host', $options['external_host_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 			'<label for="host" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="host" value="host" ' );
 		echo( checked( 'host', $options['external_host_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 
 			'<label for="domain" class="nunil-l-radio">' .
 			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="domain" value="domain" ' );
 		echo( checked( 'domain', $options['external_host_mode'], false ) );
 		echo( '/>' .
-			'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inine' ) . '</span>' .
+			'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inline' ) . '</span>' .
 			'</label>' .
 			'</div>'
 		);
@@ -1097,7 +1111,7 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the fis setAttribute('style') option
+	 * Print the fix setAttribute('style') option
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -1117,7 +1131,26 @@ class No_Unsafe_Inline_Admin {
 		);
 	}
 
+	/**
+	 * Print add_wl_by_cluster_to_db option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_add_wl_by_cluster_to_db(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['add_wl_by_cluster_to_db'] ) ? esc_attr( $options['add_wl_by_cluster_to_db'] ) : 0;
 
+		$enabled = $value ? 'checked' : '';
+
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[add_wl_by_cluster_to_db]"' .
+			'name="no-unsafe-inline[add_wl_by_cluster_to_db]" %s />
+			<label for="no-unsafe-inline[add_wl_by_cluster_to_db]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add auto-authorized scripts in db.', 'no-unsafe-inline' )
+		);
+	}
 
 	/**
 	 * Print the logs_enabled option
