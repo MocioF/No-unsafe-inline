@@ -436,7 +436,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'add_wl_by_cluster_to_db',
-			esc_html__( 'Add scripts authorized by classification in a whitelisted cluster in the database.', 'no-unsafe-inline' ),
+			esc_html__( 'Add to the database the scripts authorized by classification in a whitelisted cluster.', 'no-unsafe-inline' ),
 			array( $this, 'print_add_wl_by_cluster_to_db' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc'
@@ -1305,6 +1305,12 @@ class No_Unsafe_Inline_Admin {
 					if ( 'settings' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
+					
+					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab 
+					<?php
+					if ( 'logs' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Logs', 'no-unsafe-inline' ) ); ?></a>
 				</nav>
 
 				<div class="tab-content">
@@ -1324,6 +1330,9 @@ class No_Unsafe_Inline_Admin {
 						break;
 					case 'events':
 						self::print_events_page();
+						break;
+					case 'logs':
+						self::print_logs_page();
 						break;
 					default:
 						self::print_tools_page();
@@ -1416,6 +1425,17 @@ class No_Unsafe_Inline_Admin {
 
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-events.php';
+	}
+
+	/**
+	 * Renders the logs table page
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_logs_page(): void {
+		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-admin-logs-table.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-logs.php';
 	}
 
 	/**

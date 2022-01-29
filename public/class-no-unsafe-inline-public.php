@@ -162,7 +162,7 @@ class No_Unsafe_Inline_Public {
 			if ( false === is_admin() || ( true === is_admin() && 1 === $options['protect_admin'] ) ) {
 				$manipulated = new NUNIL\Nunil_Manipulate_DOM();
 				$manipulated->load_html( $htmlsource );
-				$this->csp_local_whitelist = (array) $manipulated->get_local_csp();
+				$this->csp_local_whitelist = $manipulated->get_local_csp();
 				$htmlsource                = $manipulated->get_manipulated();
 			}
 		}
@@ -206,13 +206,15 @@ class No_Unsafe_Inline_Public {
 						$dir = str_replace( '_base_source', '', $directive );
 						$csp = trim( strval( $base_sources ) );
 						if ( 'script-src' === $dir || 'style-src' === $dir ) {
-							foreach ( $this->csp_local_whitelist as $local ) {
-								if ( $dir === $local['directive'] ) {
-									$csp = $csp . ' \'' . $local['source'] . '\' ';
+							if ( is_array( $this->csp_local_whitelist ) ) {
+								foreach ( $this->csp_local_whitelist as $local ) {
+									if ( $dir === $local['directive'] ) {
+										$csp = $csp . ' \'' . $local['source'] . '\' ';
+									}
 								}
-							}
-							if ( 1 === $tools['capture_enabled'] ) {
-								$csp = $csp . '\'report-sample\' ';
+								if ( 1 === $tools['capture_enabled'] ) {
+									$csp = $csp . '\'report-sample\' ';
+								}
 							}
 						}
 						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
@@ -227,7 +229,8 @@ class No_Unsafe_Inline_Public {
 
 					/**
 					 * La riga commentata è solo per fare test con csp scanner.
-					 * // ~ if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection']) {
+					 *
+					   if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection']) {
 					 */
 					if ( 1 === $tools['capture_enabled'] ) {
 						$report_uri       = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
@@ -251,7 +254,7 @@ class No_Unsafe_Inline_Public {
 						} else {
 							NUNIL\Nunil_Lib_Log::warning(
 								sprintf(
-									// translators: $s is the filename of the file that sent headers, $d is the line in filename where headers where sent
+									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
 									esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
 									$filename,
 									$linenum
@@ -259,13 +262,13 @@ class No_Unsafe_Inline_Public {
 							);
 						}
 					}
-					
+
 					if ( ! headers_sent( $filename, $linenum ) ) {
 						header( $header_csp );
 					} else {
 						NUNIL\Nunil_Lib_Log::warning(
 							sprintf(
-								// translators: $s is the filename of the file that sent headers, $d is the line in filename where headers where sent
+								// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
 								esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
 								$filename,
 								$linenum
