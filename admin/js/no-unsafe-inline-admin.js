@@ -178,11 +178,17 @@
 									nunil_external_table_summary_data += '<tr>';
 									nunil_external_table_summary_data += '<td data-th="' + __( 'Directive', 'no-unsafe-inline' ) + '">' + value.directive + '</td>';
 									nunil_external_table_summary_data += '<td data-th="' + __( 'Tagname', 'no-unsafe-inline' ) + '">' + value.tagname + '</td>';
+									nunil_external_table_summary_data += '<td data-th="' + __( 'Nonceable', 'no-unsafe-inline' ) + '">' + value.nonceable + '</td>';
 									var wlText = '';
-									if ( 1 == value.whitelist) {
-										wlText = __( 'WL', 'no-unsafe-inline' );
-									} else {
-										wlText = __( 'BL', 'no-unsafe-inline' );
+									switch(value.whitelist) {
+										case '1':
+											wlText = __( 'WL', 'no-unsafe-inline' );
+											break;
+										case '0':
+											wlText = __( 'BL', 'no-unsafe-inline' );
+											break;
+										default:
+											wlText = '--';
 									}
 									nunil_external_table_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
 									nunil_external_table_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';

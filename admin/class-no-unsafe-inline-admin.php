@@ -122,6 +122,15 @@ class No_Unsafe_Inline_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
+			 ( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
+			) {
+			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array('jquery'), $this->version, false );
+			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
+		}
+		
 		$screen = get_current_screen(); 
 		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
 
@@ -1621,6 +1630,7 @@ class No_Unsafe_Inline_Admin {
 			<tr>
 			 <th>' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '</th>
 			 <th>' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '</th>
+			 <th>' . esc_html__( 'Nonceable', 'no-unsafe-inline' ) . '</th>
 			 <th>' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '</th>
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
@@ -1630,6 +1640,7 @@ class No_Unsafe_Inline_Admin {
 				$htb = $htb . '<tr>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Nonceable', 'no-unsafe-inline' ) . '">' . $print->nonceable . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {

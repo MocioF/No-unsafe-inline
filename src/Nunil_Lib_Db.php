@@ -981,9 +981,20 @@ class Nunil_Lib_Db {
 			case 'external_scripts':
 			case 'nunil_external_scripts':
 				$result = $wpdb->get_results(
-					'SELECT `directive`, `tagname`, `whitelist`, COUNT(*) as \'num\' FROM ' . self::with_prefix( $table ) . ' '
-					. 'GROUP BY `whitelist`, `tagname`, `directive` '
-					. 'ORDER BY `directive` ASC, `tagname` ASC, `num` ASC, `whitelist` ASC;'
+					'SELECT `directive`, `tagname`, '
+				.	'CASE '
+				.	'WHEN `tagname` =\'script\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
+				.	'WHEN `tagname` =\'link\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
+				.	'ELSE \'' . esc_html__( 'No', 'no-unsafe-inline' ) . '\' '
+				.	'END AS \'nonceable\', '
+				.	'CASE '
+				.	'WHEN `tagname` =\'script\' THEN `whitelist` '
+				.	'WHEN `tagname` =\'link\' THEN `whitelist` '
+				.	'ELSE \'--\' '
+				.	'END AS \'whitelist\', '
+				.	'COUNT(`ID`) AS \'num\' FROM ' . self::with_prefix( $table ) . ' '
+				.	'GROUP BY `whitelist`, `tagname`, `directive` '
+				.	'ORDER BY `nonceable` DESC, `directive` ASC, `tagname` ASC, `num` ASC, `whitelist` ASC;'
 				);
 				break;
 
