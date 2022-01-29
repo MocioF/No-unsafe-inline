@@ -106,6 +106,15 @@ class No_Unsafe_Inline_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-public.js', array( 'jquery' ), $this->version, false );
+		
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
+			 ( 1 === $options['fix_setattribute_style'] )
+			) {
+			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array('jquery'), $this->version, false );
+			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
+		}
 
 	}
 

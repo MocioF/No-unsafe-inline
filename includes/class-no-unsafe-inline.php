@@ -165,7 +165,7 @@ class No_Unsafe_Inline {
 	 */
 	public function load_logger() {
 		$options      = get_option( 'no-unsafe-inline', array() );
-		$enabled_logs = isset( $options['logs_enabled'] ) && $options['logs_enabled'] == 1;
+		$enabled_logs = isset( $options['logs_enabled'] ) && 1 === $options['logs_enabled'];
 
 		if ( $enabled_logs ) {
 			$logger = new \NUNIL\log\Nunil_Lib_Log_Db();
@@ -204,13 +204,9 @@ class No_Unsafe_Inline {
 	 */
 	private function define_admin_hooks() {
 		$plugin_admin = new No_Unsafe_Inline_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_managed_src_directives() );
-		$tools        = (array) get_option( 'no-unsafe-inline-tools' );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 0 );
-
-		$this->loader->add_action( 'admin_enqueue_scripts', $this, 'add_jquery_htmlPrefilter_ovverride', 10 );
-		$this->loader->add_action( 'admin_enqueue_scripts', $this, 'add_data_style_parser', 20 );
 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'nunil_upgrade', 10, 0 );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'nunil_admin_options_submenu' );
@@ -223,7 +219,7 @@ class No_Unsafe_Inline {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_base_src_sources' );
 
 		$this->loader->add_action( 'wp_ajax_nunil_update_summary_tables', $plugin_admin, 'update_summary_tables' );
-		
+
 		$this->loader->add_action( 'wp_ajax_nunil_trigger_clustering', $plugin_admin, 'trigger_clustering' );
 		$this->loader->add_action( 'wp_ajax_nunil_clean_database', $plugin_admin, 'clean_database' );
 		$this->loader->add_action( 'wp_ajax_nunil_test_classifier', $plugin_admin, 'test_classifier' );
@@ -243,13 +239,9 @@ class No_Unsafe_Inline {
 	 */
 	private function define_public_hooks() {
 		$plugin_public = new No_Unsafe_Inline_Public( $this->get_plugin_name(), $this->get_version() );
-		$tools         = (array) get_option( 'no-unsafe-inline-tools' );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 0 );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'add_jquery_htmlPrefilter_ovverride', 10 );
-		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'add_data_style_parser', 20 );
 
 		// This will output CSP (and Report-To) headers.
 		$this->loader->add_action( 'nunil_output_csp_headers', $plugin_public, 'output_csp_headers', 100, 1 );
@@ -311,101 +303,4 @@ class No_Unsafe_Inline {
 	public function get_managed_src_directives() {
 		return $this->managed_src_directives;
 	}
-
-	/**
-	 * Overrides jquery htmlPrefilter
-	 *
-	 * https://csplite.com/csp/test433/
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
-	public function add_jquery_htmlPrefilter_ovverride(): void {
-		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
-		$options = (array) get_option( 'no-unsafe-inline' );
-		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] || 1 === $tools['capture_enabled'] ) {
-			if ( 1 === $options['fix_setattribute_style'] ) {
-				$script = '
-				var originalHtmlPrefilter = jQuery.htmlPrefilter;
-				jQuery.htmlPrefilter = function( html ) {
-					return ( html + \'\' ).replace( / style=/gi, \' data-style=\' );
-				};';
-
-				$wp_version = get_bloginfo( 'version' );
-
-				if ( version_compare( $wp_version, '4.5', '>=' ) ) {
-					wp_add_inline_script( 'jquery', $script, 'after' );
-				} else {
-					wp_print_scripts( '<script type="text/javascript">' . $script . '</script>' );
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds data-style parser for jquery and let script to use setAttribute('style') without breaking CSP
-	 *
-	 * https://csplite.com/csp/test433/
-	 * https://csplite.com/csp/test343/
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return void
-	 */
-	public function add_data_style_parser(): void {
-		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
-		$options = (array) get_option( 'no-unsafe-inline' );
-		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] || 1 === $tools['capture_enabled'] ) {
-			if ( 1 === $options['fix_setattribute_style'] ) {
-				$script = '
-				var tags = document.querySelectorAll(\'[data-style]\');
-				for (var tag of tags) {
-					var attr = tag.getAttribute(\'data-style\')
-					var arr = attr.split(\';\').map( (el, index) => el.trim() );
-					for (var i=0, tmp; i < arr.length; ++i) {
-						if (! /:/.test(arr[i]) ) continue;
-						tmp = arr[i].split(\':\').map( (el, index) => el.trim() );
-						tag.style[ camelize(tmp[0]) ] = tmp[1];
-					}
-				}
-				
-				var setAttribute_ = Element.prototype.setAttribute;
-				Element.prototype.setAttribute = function (attr, val) {
-					if (attr.toLowerCase() !== \'style\') {
-						// console.log("set " + attr + "=`" + val + "` natively");
-						setAttribute_.apply(this, [attr, val]);
-					}
-					else {
-						// console.log("set " + attr + "=`" + val + "` via setAttribute(\'style\') polyfill");
-						var arr = val.split(\';\').map( (el, index) => el.trim() );
-						for (var i=0, tmp; i < arr.length; ++i) {
-							if (! /:/.test(arr[i]) ) continue;		// Empty or wrong
-							tmp = arr[i].split(\':\').map( (el, index) => el.trim() );
-							this.style[ camelize(tmp[0]) ] = tmp[1];
-							//console.log(camelize(tmp[0]) + \' = \'+ tmp[1]);
-						}
-					}
-				}
-
-				function camelize(str) {
-				  return str
-					.split(\'-\')
-					.map(
-					(word, index) => index == 0 ? word : word[0].toUpperCase() + word.slice(1)
-					)
-				  .join(\'\');
-				}';
-
-				$wp_version = get_bloginfo( 'version' );
-
-				if ( version_compare( $wp_version, '4.5', '>=' ) ) {
-					wp_add_inline_script( $this->plugin_name, $script, 'after' );
-				} else {
-					wp_print_scripts( '<script type="text/javascript">' . $script . '</script>' );
-				}
-			}
-		}
-	}
-
 }
