@@ -28,6 +28,8 @@ class Nunil_SRI {
 
 	/**
 	 * Parses url in array
+	 * 
+	 * Parese url using League\Uri\UriString
 	 *
 	 * @since 1.0.0
 	 * @param string $url The URL to be parsed.
@@ -38,6 +40,8 @@ class Nunil_SRI {
 	}
 
 	/**
+	 * Check it uri is a local resource
+	 * 
 	 * Checks a URL to determine whether or not the resource is "remote"
 	 * (served by a third-party) or whether the resource is local (and
 	 * is being served by the same webserver as this plugin is run on.)
@@ -58,6 +62,8 @@ class Nunil_SRI {
 
 	/**
 	 * Fetch resource
+	 * 
+	 * Fetch a resource using wp_remote_get
 	 *
 	 * @since 1.0.0
 	 * @link https://plugins.trac.wordpress.org/browser/wp-sri/trunk/wp-sri.php#L138
@@ -139,7 +145,6 @@ class Nunil_SRI {
 
 			} else {
 				Nunil_Lib_Log::warning( 'Unable to fetch ' . $data->src_attrib );
-				throw new \Exception( 'Unable to fetch ' . $data->src_attrib );
 			}
 		}
 	}
