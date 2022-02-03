@@ -399,7 +399,8 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 		$do_search = ( $search ) ? $wpdb->prepare( " AND `src_attrib` LIKE '%%%s%%' ", $search ) : '';
 
 		$sql = "SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM $tbl_ext "
-			 . "WHERE ( `tagname`='link' OR `tagname`='script' ) $do_search ";
+			 . "WHERE 1 $do_search ";
+			 //~ . "WHERE ( `tagname`='link' OR `tagname`='script' ) $do_search ";
 
 		$columns  = $this->get_columns();
 		$hidden   = array();

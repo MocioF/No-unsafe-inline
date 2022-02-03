@@ -57,8 +57,8 @@ class No_Unsafe_Inline_Base_Src_List extends WP_List_Table {
 	/**
 	 * Render a column when no column specific method exists.
 	 *
-	 * @param array  $item
-	 * @param string $column_name
+	 * @param object|array $item
+	 * @param string       $column_name
 	 *
 	 * @return mixed
 	 */
@@ -76,7 +76,7 @@ class No_Unsafe_Inline_Base_Src_List extends WP_List_Table {
 	/**
 	 * Render the bulk edit checkbox
 	 *
-	 * @param array $item
+	 * @param array $item The current item.
 	 *
 	 * @return string
 	 */
@@ -90,7 +90,7 @@ class No_Unsafe_Inline_Base_Src_List extends WP_List_Table {
 	/**
 	 * Associative array of columns
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	public function get_columns() {
 		$columns = array(

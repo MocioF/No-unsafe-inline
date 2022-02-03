@@ -9,7 +9,7 @@
  * @package    No_Unsafe_Inline
  * @subpackage No_Unsafe_Inline/admin
  */
- 
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
