@@ -46,16 +46,16 @@ class Nunil_HTML_Tag {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var string The attribute of the HTML tag which content will be stored in the db (if the tag loads an external content).
+	 * @var array<string>|string|null The attribute of the HTML tag which content will be stored in the db (if the tag loads an external content).
 	 */
-	private $stored_attr;
+	private $stored_attrs;
 
 	/**
 	 * The childs of the HTML tag
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var array<string>|null The childs tagnames of the HTML tagname where to look for $stored_attr, if any
+	 * @var array<string>|string|null The childs tagnames of the HTML tagname where to look for $stored_attr, if any
 	 */
 	private $childs;
 
@@ -84,13 +84,13 @@ class Nunil_HTML_Tag {
 	 *
 	 * @param    string                    $directive     The CPS -src directive the tag is used for.
 	 * @param    string                    $tag           The HTML tag searched in the DOM.
-	 * @param    string|null               $stored_attr   The stored attr of the HTML tag; null is only inline (<style>).
+	 * @param    array<string>|string|null $stored_attrs  The stored attrs of the HTML tag; null is only inline (<style>).
 	 * @param    array<array<string>>|null $needed_attrs  The needed attrs of the HTML tag.
 	 * @param    array<string>|string|null $childs        The childs of the HTML tag.
 	 * @param    bool                      $inline        True if the tag can have inline content to capture.
 	 * @since    1.0.0
 	 */
-	public function __construct( string $directive, string $tag, string $stored_attr = null, $needed_attrs = null, $childs = null, $inline = true ) {
+	public function __construct( string $directive, string $tag, $stored_attrs = null, $needed_attrs = null, $childs = null, $inline = true ) {
 		if ( ! $directive ) {
 			$this->directive = 'script-src';
 		} else {
@@ -103,10 +103,10 @@ class Nunil_HTML_Tag {
 			$this->tag = $tag;
 		}
 
-		if ( ! $stored_attr ) {
-			$this->stored_attr = 'src';
+		if ( ! $stored_attrs ) {
+			$this->stored_attrs = 'src';
 		} else {
-			$this->stored_attr = $stored_attr;
+			$this->stored_attrs = $stored_attrs;
 		}
 
 		if ( is_null( $needed_attrs ) ) {
@@ -171,14 +171,19 @@ class Nunil_HTML_Tag {
 	}
 
 	/**
-	 * Return stored_attr
+	 * Return stored_attrs
 	 *
 	 * @since 1.0.0
-	 * @return string|null
+	 * @return array<string>|null
 	 */
-	public function get_storedattr() {
-		if ( $this->stored_attr ) {
-			return $this->stored_attr;
+	public function get_storedattrs() {
+		if ( $this->stored_attrs ) {
+			if ( is_string( $this->stored_attrs ) ) {
+				$exploded = explode( ',', $this->stored_attrs );
+				return array_map( 'trim', $exploded );
+			} else {
+				return $this->stored_attrs;
+			}
 		} else {
 			return null;
 		}
@@ -202,11 +207,16 @@ class Nunil_HTML_Tag {
 	 * Return childs
 	 *
 	 * @since 1.0.0
-	 * @return string|array<string>|null
+	 * @return array<string>|null
 	 */
 	public function get_childs() {
 		if ( $this->childs ) {
-			return $this->childs;
+			if ( is_string( $this->childs ) ) {
+				$exploded = explode( ',', $this->childs );
+				return array_map( 'trim', $exploded );
+			} else {
+				return $this->childs;
+			}
 		} else {
 			return null;
 		}
