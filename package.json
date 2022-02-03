@@ -26,7 +26,6 @@
     "grunt-contrib-uglify": "^5.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-curl": "^2.5.1",
-    "grunt-phpdocumentor": "^0.4.1",
     "grunt-wp-i18n": "^1.0.3",
     "grunt-wp-readme-to-markdown": "^1.0.0"
   }
