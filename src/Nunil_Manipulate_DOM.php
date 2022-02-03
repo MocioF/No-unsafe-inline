@@ -15,7 +15,7 @@ use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use Phpml\Classification\KNearestNeighbors;
 use Spatie\Async\Pool;
-use NUNIL\Nunil_Lib_Db AS DB;
+use NUNIL\Nunil_Lib_Db as DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -28,12 +28,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since   1.0.0
  */
 class Nunil_Manipulate_DOM extends Nunil_Capture {
+
 	/**
 	 * The array of external scripts objects
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var array<\stdClass> Array of event handlers rows.
+	 * @var array<\stdClass>|null Array of external resources table rows.
 	 */
 	private $external_rows;
 
@@ -42,16 +43,16 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var array<\stdClass> Array of inline table rows
+	 * @var array<\stdClass>|null Array of inline table rows
 	 */
 	private $inline_rows;
 
 	/**
-	 * The array of event handlers scripts objects
+	 * The array of event handlers scripts table rows
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var array<\stdClass> Array of event handlers rows.
+	 * @var array<\stdClass>|null Array of event handlers rows.
 	 */
 	private $events_rows;
 
@@ -63,6 +64,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @var string $inline_scripts_mode One of 'nonce', 'sha256', 'sha384', 'sha512'
 	 */
 	private $inline_scripts_mode;
+
+	/**
+	 * Array of managed html tag
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @var array<\NUNIL\Nunil_HTML_Tag> $managed_tags Array returned by Nunil_Captured_Tags::get_captured_tags()
+	 */
+	private $managed_tags;
 
 	/**
 	 * Array of [src-directive] [hash or nonce] for whitelisted inline scripts
@@ -163,6 +173,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 		$tools          = (array) get_option( 'no-unsafe-inline-tools' );
 
+		$this->managed_tags = Nunil_Captured_Tags::get_captured_tags();
+
 		$gls = new Nunil_Global_Settings();
 
 		/* performs DB queries and set them in the private properties */
@@ -182,7 +194,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$inline_rows = DB::get_inline_rows();
 			wp_cache_set( $cache_key, $inline_rows, $cache_group, $expire_secs );
 		}
-		$this->inline_rows = $inline_rows;
+		if ( is_array( $inline_rows ) ) {
+			$this->inline_rows = $inline_rows;
+		}
 
 		$cache_key   = 'events_rows';
 		$cache_group = 'no-unsafe-inline';
@@ -200,7 +214,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$events_rows = DB::get_events_rows();
 			wp_cache_set( $cache_key, $events_rows, $cache_group, $expire_secs );
 		}
-		$this->events_rows = $events_rows;
+		if ( is_array( $events_rows ) ) {
+			$this->events_rows = $events_rows;
+		}
 
 		if ( 1 === $plugin_options['sri_script'] || 1 === $plugin_options['sri_link'] ) {
 			$cache_key   = 'external_rows';
@@ -209,11 +225,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 			$external_rows = wp_cache_get( $cache_key, $cache_group );
 			if ( false === $external_rows ) {
-				
 				$external_rows = DB::get_external_rows();
 				wp_cache_set( $cache_key, $external_rows, $cache_group, $expire_secs );
 			}
-			$this->external_rows = $external_rows;
+			if ( is_array( $external_rows ) ) {
+				$this->external_rows = $external_rows;
+			}
 		}
 
 		$this->inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
@@ -278,6 +295,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Get the manipulated HTML
+	 *
 	 * Check if manipulation has been performed and if not, performs it,
 	 * then returns the manipulated HTML.
 	 *
@@ -294,6 +313,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Get the array used to build CSP
+	 *
 	 * Check if manipulation has been performed and if not, performs it,
 	 * then returns the array containing local sources for script-src and style-src.
 	 *
@@ -311,6 +332,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 	/**
 	 * Manipulates inline scripts adding nonce or hash.
+	 *
 	 * Appending nonce or hash to $csp_local_whitelist-
 	 * Manipulated HTML goes in $manipulated_html property.
 	 *
@@ -374,48 +396,31 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Manipulates external scripts and style adding integrity and cross origin attrs,
-	 * when using SRI.
-	 * Appending hashes to $csp_local_whitelist
+	 * Manipulate external resources
+	 *
+	 * Proposed feature for implementing integrity in future SRI specs
+	 *
+	 * Adds integrity and cross origin attrs,when using SRI.
+	 * Appends hashes to $csp_local_whitelist
 	 *
 	 * @since 1.0.0
 	 * @access private
 	 * @return void
 	 */
 	private function manipulate_external_scripts(): void {
-		$plugin_options = (array) get_option( 'no-unsafe-inline' );
-
-		if ( 1 === $plugin_options['script-src_enabled'] && 1 === $plugin_options['sri_script'] ) {
-			$external_scripts_node_list = $this->get_external_js();
-			if ( $external_scripts_node_list ) {
-				foreach ( $external_scripts_node_list as $node ) {
-					$index = $this->check_external_whitelist( $node );
-
-					if ( ! is_null( $index ) ) {
-						$this->manipulate_external_node( $node, $index, 'script-src' );
-					}
-				}
-			}
-			if ( 1 === $plugin_options['use_strict-dynamic'] ) {
-				$this->csp_local_whitelist[] = array(
-					'directive' => 'script-src',
-					'source'    => 'strict-dynamic',
-				);
-			}
+		if ( ! is_array( $this->external_rows ) ) {
+			return;
 		}
 
-		if ( 1 === $plugin_options['style-src_enabled'] && 1 === $plugin_options['sri_link'] ) {
-			$external_style_node_list = $this->get_external_css();
-			if ( $external_style_node_list ) {
-				foreach ( $external_style_node_list as $node ) {
+		foreach ( $this->managed_tags as $tag ) {
+			$node_list = $this->get_external_nodelist( $tag );
+			if ( $node_list ) {
+				foreach ( $node_list as $node ) {
 					$index = $this->check_external_whitelist( $node );
-					if ( ! is_null( $index ) ) {
-						$this->manipulate_external_node( $node, $index, 'style-src' );
-					}
+					$this->manipulate_external_node( $node, $index, $tag->get_directive() );
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -434,7 +439,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 				$content = $node->textContent;
 				$content = $this->clean_text_content( $content );
-				$hashes  = $this->get_hashes( $content, $utf8 = true );
+				if ( 'script' === $tagname ) {
+					$utf8 = true;
+				} else {
+					$utf8 = false;
+				}
+				$hashes = $this->get_hashes( $content, $utf8 );
 
 				$wl_index = $this->check_single_whitelist( $hashes, $tagname );
 				if ( $wl_index ) {
@@ -448,8 +458,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 					if ( $wl_cluster ) {
 						$this->allow_whitelisted( $node, $hashes, $directive );
-						
-						$options = (array) get_option('no-unsafe-inline');
+
+						$options = (array) get_option( 'no-unsafe-inline' );
 						if ( 1 === $options['add_wl_by_cluster_to_db'] ) {
 							$nilsimsa = $lsh->hexDigest();
 							/* Start async block. */
@@ -491,31 +501,112 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Select all <link> tags with rel="stylesheet" (external CSS)
+	 * Select all nodes matching a tag
+	 *
+	 * Builds XPath query to get all nodes matching a Nunil_HTML_Tag.
 	 *
 	 * @since 1.0.0
 	 * @access private
+	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
 	 * @return \DOMNodeList<\DOMNode>|false
 	 */
-	private function get_external_css() {
+	private function get_external_nodelist( $tag ) {
 		$x            = new \DOMXPath( $this->domdocument );
-		$x_path_query = "//link[@rel='stylesheet']";
-		$nodelist     = $x->query( $x_path_query );
-		return $nodelist;
-	}
+		$x_path_query = '//' . $tag->get_name();
 
-	/**
-	 * Select all <script> tags with src and not type='text/html' or 'text/template'
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 * @return \DOMNodeList<\DOMNode>|false
-	 */
-	private function get_external_js() {
-		$x            = new \DOMXPath( $this->domdocument );
-		$x_path_query = "//script[@src and not(@type='text/html') and not(@type='text/template')]";
-		$nodelist     = $x->query( $x_path_query );
-		return $nodelist;
+		$storedattrs = $tag->get_storedattrs();
+
+		$query_attrs = array();
+		$stored      = array();
+
+		if ( ! $tag->has_childs() && ! is_null( $storedattrs ) ) {
+
+			foreach ( $storedattrs as $storedattr ) {
+				$stored[] = '@' . $storedattr;
+			}
+			$len          = count( $stored );
+			$stored_attrs = '';
+			for ( $i = 0; $i < $len; $i++ ) {
+				$stored_attrs = $stored_attrs . ' or ' . $stored[ $i ];
+			}
+			$stored_attrs = '(' . substr( $stored_attrs, 4 ) . ')';
+
+			if ( ! is_null( $tag->get_neededattrs() ) ) {
+				foreach ( $tag->get_neededattrs() as $needed_attr ) {
+					foreach ( $needed_attr as $attr => $value ) {
+						if ( '!' === substr( trim( $value ), 0, 1 ) ) {
+							$query_attrs[] = 'not(@' . $attr . '=\'' . preg_replace( '/\s*\!\s*/', '', $value, 1 ) . '\')';
+						} else {
+							$query_attrs[] = '(@' . $attr . '=\'' . trim( $value ) . '\')';
+						}
+					}
+				}
+			}
+			$attrlen = count( $query_attrs );
+			$attrs   = '';
+			for ( $i = 0; $i < $attrlen; $i++ ) {
+				$attrs = $attrs . ' and ' . $query_attrs[ $i ];
+			}
+
+			$attrs = substr( $attrs, 5 );
+			if ( ! empty( $attrs ) ) {
+				$x_path_query = $x_path_query . '[' . $stored_attrs . ' and ' . $attrs . ']';
+			} else {
+				$x_path_query = $x_path_query . '[' . $stored_attrs . ']';
+			}
+		} else {
+
+			$tmp_subquery = '';
+			$childs       = $tag->get_childs();
+			if ( is_array( $childs ) && ! is_null( $storedattrs ) ) {
+				foreach ( $childs as $child ) {
+					$query_attrs     = array();
+					$x_path_subquery = './/' . $child;
+
+					foreach ( $storedattrs as $storedattr ) {
+						$query_attrs[] = '@' . $storedattr;
+					}
+					$len          = count( $query_attrs );
+					$stored_attrs = '';
+					for ( $i = 0; $i < $len; $i++ ) {
+						$stored_attrs = $stored_attrs . ' or ' . $query_attrs[ $i ];
+					}
+					$stored_attrs = '(' . substr( $stored_attrs, 4 ) . ')';
+					$query_attrs  = array();
+
+					if ( ! is_null( $tag->get_neededattrs() ) ) {
+						foreach ( $tag->get_neededattrs() as $needed_attr ) {
+							foreach ( $needed_attr as $attr => $value ) {
+								if ( '!' === substr( trim( $value ), 0, 1 ) ) {
+									$query_attrs[] = 'not(@' . $attr . '=\'' . preg_replace( '/\s*\!\s*/', '', $value, 1 ) . '\')';
+								} else {
+									$query_attrs[] = '(@' . $attr . '=\'' . trim( $value ) . '\')';
+								}
+							}
+						}
+					}
+					$attrlen = count( $query_attrs );
+					$attrs   = '';
+					for ( $i = 0; $i < $attrlen; $i++ ) {
+						$attrs = $attrs . ' and ' . $query_attrs[ $i ];
+					}
+
+					$attrs = substr( $attrs, 5 );
+
+					if ( ! empty( $attrs ) ) {
+						$x_path_subquery = $x_path_subquery . '[' . $stored_attrs . ' and ' . $attrs . ']';
+					} else {
+						$x_path_subquery = $x_path_subquery . '[' . $stored_attrs . ']';
+					}
+					$tmp_subquery = $tmp_subquery . ' or ' . $x_path_subquery;
+				}
+				$tmp_subquery = substr( $tmp_subquery, 4 );
+				if ( ! empty( $tmp_subquery ) ) {
+					$x_path_query = $x_path_query . '[' . $tmp_subquery . ']';
+				}
+			}
+		}
+		return $x->query( $x_path_query );
 	}
 
 	/**
@@ -532,122 +623,220 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Check if a single external script or style is whitelisted
+	 * Check if resource fetched by a node is whitelisted.
+	 *
+	 * Looks for sources in external_rows array.
+	 * If the node asks for more sources returns an array.
 	 *
 	 * @access private
 	 * @param \DomElement $node The selected DomNode.
-	 * @return int|false|null The Index of array if whitelisted, false if not whitelist, null if not found.
+	 * @return array<int|false> An array where each element is the index of external_rows array if resource is whitelisted, false if not.
 	 */
 	private function check_external_whitelist( $node ) {
-		switch ( $node->nodeName ) {
-			case 'link':
-				$src_attrib = $node->getAttribute( 'href' );
-				break;
-			case 'script':
-				$src_attrib = $node->getAttribute( 'src' );
-				break;
-			default:
-				return false;
-		}
+		$tag_lists = $this->get_tags_by_tagname( $this->managed_tags );
+		$node_name = $node->nodeName;
 
-		$list = $this->external_rows;
-		/**
-		 * TODO: See Nunil_Capture.php:730
-		 */
-		if ( 0 < count( $list ) ) {
-			foreach ( $list as $index => $obj ) {
-				if ( $src_attrib === $obj->src_attrib ) {
-					if ( '1' === $obj->whitelist ) {
-						return (int) $index;
+		// We need to process only the list where $tag_lists[index] === $mytagname.
+		// The list is sorted placing first tag with childs.
+		$my_tag_list = $tag_lists[ $node_name ];
+
+		$int_result = array();
+
+		foreach ( $my_tag_list as $tag ) {
+			$tag_childs   = $tag->get_childs();
+			$stored_attrs = $tag->get_storedattrs();
+
+			if ( ! is_null( $stored_attrs ) ) {
+				foreach ( $stored_attrs as $stored_attr ) {
+					if ( is_null( $tag_childs ) ) {
+						if ( is_string( $stored_attr ) && $node->hasAttribute( $stored_attr ) ) {
+							$src_attrib = $node->getAttribute( $stored_attr );
+							if ( 'srcset' === $stored_attr ) {
+								$srcs = $this->get_srcs_from_srcset( $node->getAttribute( 'srcset' ) );
+								foreach ( $srcs as $single_src ) {
+									$res = $this->check_res_wl( $single_src );
+									if ( $res && ! in_array( $res, $int_result, true ) ) {
+										$int_result[] = $res;
+									}
+								}
+							} else {
+								$res = $this->check_res_wl( $src_attrib );
+								if ( $res && ! in_array( $res, $int_result, true ) ) {
+									$int_result[] = $res;
+								}
+							}
+						}
 					} else {
-						return false;
+						foreach ( $tag_childs as $tag_child ) {
+							$child_nodes = $node->getElementsByTagName( $tag_child );
+							foreach ( $child_nodes as $child_node ) {
+								if ( is_string( $stored_attr ) && $child_node->hasAttribute( $stored_attr ) ) {
+									$src_attrib = $child_node->getAttribute( $stored_attr );
+									if ( 'srcset' === $stored_attr ) {
+										$srcs = $this->get_srcs_from_srcset( $child_node->getAttribute( 'srcset' ) );
+										foreach ( $srcs as $single_src ) {
+											$res = $this->check_res_wl( $single_src );
+											if ( $res && ! in_array( $res, $int_result, true ) ) {
+												$int_result[] = $res;
+											}
+										}
+									} else {
+										$res = $this->check_res_wl( $src_attrib );
+										if ( $res && ! in_array( $res, $int_result, true ) ) {
+											$int_result[] = $res;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} else {
+				$int_result[] = false;
+			}
+		}
+		return $int_result;
+	}
+
+	/**
+	 * Check is a resource is in external whitelist
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @param string $src_attrib  The resource URI as registered in external_scripts table.
+	 * @return int|false
+	 */
+	private function check_res_wl( $src_attrib ) {
+		$ext_wlist = $this->external_rows;
+		if ( ! is_array( $ext_wlist ) ) {
+			return false; // BL.
+		} else {
+			if ( 0 < count( $ext_wlist ) ) {
+				foreach ( $ext_wlist as $index => $obj ) {
+					if ( $src_attrib === $obj->src_attrib ) {
+						if ( '1' === $obj->whitelist ) {
+							return (int) $index; // WL.
+						} else {
+							return false; // BL.
+						}
 					}
 				}
 			}
 		}
-		return null;
+		return false;
 	}
 
+
 	/**
-	 * Adds integrity attributes to whitelisted nodes with script or link tagname.
+	 * Insert WL external sources in queue for CSP
+	 * Adds SRI attributes to whitelisted nodes with script or link tagname.
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DomElement $node The DomNode passed by reference.
-	 * @param int|false   $index The index of the whitelisted node in $this->external_rows array.
-	 * @param string      $directive The -src directive.
+	 * @param \DomElement                $node The DomNode passed by reference.
+	 * @param int|false|array<int|false> $input_index The index of the whitelisted source in $this->external_rows array.
+	 * @param string                     $directive The -src directive.
 	 * @return void
 	 */
-	private function manipulate_external_node( &$node, $index = null, $directive ): void {
-		$plugin_options = (array) get_option( 'no-unsafe-inline' );
-		$use256         = ( 1 === $plugin_options['sri_sha256'] ) ? true : false;
-		$use384         = ( 1 === $plugin_options['sri_sha384'] ) ? true : false;
-		$use512         = ( 1 === $plugin_options['sri_sha512'] ) ? true : false;
+	private function manipulate_external_node( &$node, $input_index = null, $directive ): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$use256  = ( 1 === $options['sri_sha256'] ) ? true : false;
+		$use384  = ( 1 === $options['sri_sha384'] ) ? true : false;
+		$use512  = ( 1 === $options['sri_sha512'] ) ? true : false;
 
-		if ( ! is_null( $index ) ) { // The src_attrib is in the DB, but it could be whitelisted or not.
-			if ( false !== $index ) { // The node is whitelisted.
-				if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs setted by others plugins.
-					$integrity_string = '';
-					if ( $use256 && '' !== $this->external_rows[ $index ]->sha256 ) {
-						$hash_with_options           = 'sha256-' . $this->external_rows[ $index ]->sha256;
-						$integrity_string            = $integrity_string . $hash_with_options . ' ';
-						$this->csp_local_whitelist[] = array(
-							'directive' => $directive,
-							'source'    => $hash_with_options,
-						);
-					}
-					if ( $use384 && '' !== $this->external_rows[ $index ]->sha384 ) {
-						$hash_with_options           = 'sha384-' . $this->external_rows[ $index ]->sha384;
-						$integrity_string            = $integrity_string . $hash_with_options . ' ';
-						$this->csp_local_whitelist[] = array(
-							'directive' => $directive,
-							'source'    => $hash_with_options,
-						);
-					}
-					if ( $use512 && '' !== $this->external_rows[ $index ]->sha512 ) {
-						$hash_with_options           = 'sha512-' . $this->external_rows[ $index ]->sha512;
-						$integrity_string            = $integrity_string . $hash_with_options . ' ';
-						$this->csp_local_whitelist[] = array(
-							'directive' => $directive,
-							'source'    => $hash_with_options,
-						);
-					}
-					$node->setAttribute( 'integrity', trim( $integrity_string ) );
-					if ( ! $node->hasAttribute( 'crossorigin' ) ) {
-						$node->setAttribute( 'crossorigin', 'anonymous' );
-					}
-				} else { // The node has got integrity by other way. Just whitelist it.
-					$integrity        = $node->getAttribute( 'integrity' );
-					$crossorigin      = $node->getAttribute( 'crossorigin' );
-					$integrity_values = preg_split( '/\s+/', $integrity, -1 );
-					if ( $integrity_values ) {
-						foreach ( $integrity_values as $hash_with_options ) {
-							$this->csp_local_whitelist[] = array(
+		if ( ! is_null( $input_index ) ) { // If index has not been passed, don't do anything.
+
+			// Convert single index to array to perform loop.
+			// This if statement, should never been run, because now index is always an array.
+			if ( ! is_array( $input_index ) ) {
+				$run_index[] = $input_index;
+			} else {
+				$run_index = $input_index;
+			}
+			foreach ( $run_index as $index ) {
+
+				if ( false !== $index && ! is_null( $this->external_rows ) ) { // The node is whitelisted.
+					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs setted by others plugins.
+						$integrity_string = '';
+						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
+							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+							$local_wl          = array(
 								'directive' => $directive,
 								'source'    => $hash_with_options,
 							);
+							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+								$this->csp_local_whitelist[] = $local_wl;
+							}
+						}
+						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
+							$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+							$local_wl          = array(
+								'directive' => $directive,
+								'source'    => $hash_with_options,
+							);
+							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+								$this->csp_local_whitelist[] = $local_wl;
+							}
+						}
+						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
+							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+							$local_wl          = array(
+								'directive' => $directive,
+								'source'    => $hash_with_options,
+							);
+							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+								$this->csp_local_whitelist[] = $local_wl;
+							}
+						}
+						if ( ( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
+							( 'link' === $node->nodeName && 1 === $options['sri_link'] )
+						) {
+							$node->setAttribute( 'integrity', trim( $integrity_string ) );
+							if ( ! $node->hasAttribute( 'crossorigin' ) ) {
+								$node->setAttribute( 'crossorigin', 'anonymous' );
+							}
+						}
+					} else { // The node has got integrity by other way. Just whitelist it.
+						$integrity        = $node->getAttribute( 'integrity' );
+						$crossorigin      = $node->getAttribute( 'crossorigin' );
+						$integrity_values = preg_split( '/\s+/', $integrity, -1 );
+						if ( $integrity_values ) {
+							foreach ( $integrity_values as $hash_with_options ) {
+								$this->csp_local_whitelist[] = array(
+									'directive' => $directive,
+									'source'    => $hash_with_options,
+								);
+							}
 						}
 					}
-				}
-			} else { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
-				if ( ! $node->hasAttribute( 'integrity' ) ) {
-					$integrity_string = '';
-					if ( $use256 && '' !== $this->external_rows[ $index ]->sha256 ) {
-						$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
-						$integrity_string  = $integrity_string . $hash_with_options . ' ';
+				} else { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
+					if ( (
+							( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
+							( 'link' === $node->nodeName && 1 === $options['sri_link'] )
+						  ) && ( ! $node->hasAttribute( 'integrity' ) )
+							&& ( ! is_null( $this->external_rows ) )
+						) {
+						$integrity_string = '';
+						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
+							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+						}
+						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
+							$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+						}
+						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
+							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
+							$integrity_string  = $integrity_string . $hash_with_options . ' ';
+						}
+						$node->setAttribute( 'integrity', trim( $integrity_string ) );
 					}
-					if ( $use384 && '' !== $this->external_rows[ $index ]->sha384 ) {
-						$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
-						$integrity_string  = $integrity_string . $hash_with_options . ' ';
+					if ( ! $node->hasAttribute( 'crossorigin' ) ) {
+						$node->setAttribute( 'crossorigin', 'anonymous' );
 					}
-					if ( $use512 && '' !== $this->external_rows[ $index ]->sha512 ) {
-						$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
-						$integrity_string  = $integrity_string . $hash_with_options . ' ';
-					}
-					$node->setAttribute( 'integrity', trim( $integrity_string ) );
-				}
-				if ( ! $node->hasAttribute( 'crossorigin' ) ) {
-					$node->setAttribute( 'crossorigin', 'anonymous' );
 				}
 			}
 		}
@@ -660,7 +849,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @access private
 	 * @param array<string> $hashes The sha hashes array.
 	 * @param string        $tagname The tagname: script or style.
-	 * @param string        $event The event_handler (used when checkin an hash)
+	 * @param string        $event The event_handler (used when checkin an hash).
 	 * @return mixed The Index of array if whitelisted, else false
 	 */
 	private function check_single_whitelist( $hashes, $tagname, $event = null ) {
@@ -672,12 +861,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		} else {
 			$list = $this->inline_rows;
 		}
-		foreach ( $list as $index => $obj ) {
-			if ( $fhash === $obj->$in_use && $tagname === $obj->tagname && ( null === $event || $event === $obj->event_attribute ) ) {
-				if ( '1' === $obj->whitelist ) {
-					return $index;
-				} else {
-					return false;
+		if ( ! is_null( $list ) ) {
+			foreach ( $list as $index => $obj ) {
+				if ( $fhash === $obj->$in_use && $tagname === $obj->tagname && ( null === $event || $event === $obj->event_attribute ) ) {
+					if ( '1' === $obj->whitelist ) {
+						return $index;
+					} else {
+						return false;
+					}
 				}
 			}
 		}
@@ -712,38 +903,41 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		} else {
 			return false;
 		}
+		if ( is_array( $list ) ) {
+			if ( 'Unclustered' !== $predicted_label ) {
+				if ( null === $event ) {
+					foreach ( $list as $obj ) {
+						if (
+						$tagname === $obj->tagname &&
+						$predicted_label === $obj->clustername &&
+						'1' === $obj->whitelist
+						) {
+							return $predicted_label;
 
-		if ( 'Unclustered' !== $predicted_label ) {
-			if ( null === $event ) {
-				foreach ( $list as $obj ) {
-					if (
-					$tagname === $obj->tagname &&
-					$predicted_label === $obj->clustername &&
-					'1' === $obj->whitelist
-					) {
-						return $predicted_label;
-
+						}
 					}
-				}
-				return false;
-			} elseif ( isset( $my_evh ) ) {
-				foreach ( $list as $obj ) {
-					if (
-					$tagname === $obj->tagname &&
-					$my_evh === $obj->event_attribute &&
-					$predicted_label === $obj->clustername &&
-					'1' === $obj->whitelist
-					) {
-						return $predicted_label;
+					return false;
+				} elseif ( isset( $my_evh ) ) {
+					foreach ( $list as $obj ) {
+						if (
+						$tagname === $obj->tagname &&
+						$my_evh === $obj->event_attribute &&
+						$predicted_label === $obj->clustername &&
+						'1' === $obj->whitelist
+						) {
+							return $predicted_label;
+						}
 					}
+					return false;
 				}
-				return false;
 			}
 		}
 		return false;
 	}
 
 	/**
+	 * Insert a new inline script or style in database
+	 *
 	 * If a new inline_script is allowed, because it has been classified in a cluster, we can insert this one in the database.
 	 * This should help in further classifications, because we cannot know clusters' shape.
 	 * This behaviour can be enabled by option page.
@@ -765,28 +959,28 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$this->insert_pool->add(
 			function () use ( $tagname, $content, $hashes, $predicted_label ) {
-				
+
 				$in_use    = $hashes['in_use'];
 				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 
-				$pageurl  = Nunil_Lib_Utils::get_page_url();
+				$pageurl = Nunil_Lib_Utils::get_page_url();
 				/* Before inserting, check if the script is in db. */
 				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 				if ( ! is_null( $script_id ) ) {
 					// Cluster and whitelist if in DB.
-					$affected = DB::upd_inl_cl_wl ( $script_id, $predicted_label );
-					
+					$affected = DB::upd_inl_cl_wl( $script_id, $predicted_label );
+
 					$occ_id = DB::get_occ_id( $script_id, 'inline_scripts', $pageurl );
 
 					if ( ! is_null( $occ_id ) ) {
 						DB::update_lastseen( $occ_id );
-						
+
 					} else {
 						$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
 					}
 				} else {
 					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false );
-					$affected = DB::upd_inl_cl_wl( $script_id, $predicted_label );
+					$affected  = DB::upd_inl_cl_wl( $script_id, $predicted_label );
 
 					$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
 				}
@@ -835,6 +1029,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Removes event handlers
+	 *
 	 * Removes event handlers attribute from html tags and
 	 * prepares code to be output in a injected inline script
 	 *
@@ -871,6 +1067,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Removes inline styles
+	 *
 	 * Removes script attribute from html tags and
 	 * prepares code to be output in a injected inline <style>
 	 *
@@ -887,7 +1085,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				$row = $this->get_inline_style_in_node( $node );
 
 				if ( false !== $row ) {
-					$hashes = $this->get_hashes( $row['script'], $utf8 = true );
+					$hashes = $this->get_hashes( $row['script'], $utf8 = false );
 
 					$index = $this->check_single_whitelist( $hashes, $row['tagname'] );
 
@@ -911,6 +1109,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Create the injected inline script
+	 *
 	 * Inserts event handlers whitelisted scripts in a string used
 	 * to create an inline script.
 	 * Removes the event handler attribute from the node.
@@ -939,6 +1139,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
+	 * Creates the internal CSS
+	 *
 	 * Inserts classes for whitelisted inline styles in a string used
 	 * to create an inline css with <script>.
 	 * Removes the style attribute from the node and add the class to it.
@@ -975,7 +1177,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Injected the created inline <script> and whitelists it
+	 * Injects the created inline <script> and whitelists it
 	 *
 	 * @since 1.0.0
 	 * @access private;
@@ -1017,7 +1219,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Injected the created inline <style> and whitelists it
+	 * Injects the created internal CSS and whitelists it
 	 *
 	 * @since 1.0.0
 	 * @access private;
@@ -1037,7 +1239,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$style_node->appendChild( $this->domdocument->createTextNode( $content ) );
 
 			if ( 'nonce' !== $this->inline_scripts_mode ) {
-				$hashes = $this->get_hashes( $content, $utf8 = true );
+				$hashes = $this->get_hashes( $content, $utf8 = false );
 				$in_use = $hashes['in_use'];
 
 				$this->csp_local_whitelist[] = array(

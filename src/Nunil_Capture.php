@@ -16,6 +16,8 @@ use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use NUNIL\Nunil_Lib_Log as Log;
 
+use League\Uri\UriString;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -389,19 +391,19 @@ class Nunil_Capture {
 	 * TextContent.
 	 *
 	 * @since  1.0.0
-	 * @access private
+	 * @access protected
 	 * @param  array<Nunil_HTML_Tag> $tags An array of obj $tag istances
 	 * of Nunil_HTML_Tag object.
 	 * @return array<array<Nunil_HTML_Tag>>
 	 */
-	private function get_tags_by_tagname( $tags ) {
+	protected function get_tags_by_tagname( $tags ) {
 		$tagnames = array();
 		foreach ( $tags as $tag ) {
 			$name                = $tag->get_name();
 			$tagnames[ $name ][] = $tag;
 		}
 		/**
-		 * To avoid inserting in inline db, tags with childs and
+		 * To avoid inserting in inline db tags with childs and
 		 * textcontent we process tag with childs, first.
 		 */
 		foreach ( $tagnames as &$tagname ) {
@@ -482,10 +484,13 @@ class Nunil_Capture {
 				 * More evidence needed.
 				 */
 				$string = preg_replace( '~\R~u', "\n", $string );
+
 				if ( is_null( $string ) ) {
 					return false;
 				}
-				$string = utf8_encode( $string );
+				if ( ! mb_check_encoding( $string, 'utf8' ) ) {
+					$string = utf8_encode( $string );
+				}
 			}
 			$base64 = base64_encode( hash( $algo, $string, true ) );
 			return $base64;
@@ -562,20 +567,34 @@ class Nunil_Capture {
 
 				if ( $this->check_attrs( $tag->get_neededattrs(), $node ) ) {
 
-					$stored_attr = $tag->get_storedattr();
-					$directive   = $tag->get_directive();
-					$tagname     = $tag->get_name();
+					$stored_attrs = $tag->get_storedattrs();
+					$directive    = $tag->get_directive();
+					$tagname      = $tag->get_name();
 
-					if ( ! $tag->has_childs() ) { // Tag hasn't childs.
+					if ( ! $tag->has_childs() && is_array( $stored_attrs ) ) { // Tag hasn't childs.
+						foreach ( $stored_attrs as $stored_attr ) {
+							if ( $node->hasAttribute( $stored_attr ) ) {
+								if ( 'srcset' === $stored_attr ) {
+									$srcset = $node->getAttribute( $stored_attr );
+									$srcs   = $this->get_srcs_from_srcset( $srcset );
+									foreach ( $srcs as $src_attrib ) {
+										$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 
-						if ( $node->hasAttribute( $stored_attr ) ) {
-							if ( 'srcset' === $stored_attr ) {
-								$srcset = $node->getAttribute( $stored_attr );
-								$srcs   = $this->get_srcs_from_srcset( $srcset );
-								foreach ( $srcs as $src_attrib ) {
+										if ( $external_script_id ) {
+											try {
+												$sri = new Nunil_SRI();
+												$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
+											} catch ( \Exception $ex ) {
+												Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
+											}
+										}
 
+										$processed[ $node_key ] = true;
+
+									}
+								} else { // $stored_attr is not 'srcset'.
+									$src_attrib         = $node->getAttribute( $stored_attr );
 									$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-
 									if ( $external_script_id ) {
 										try {
 											$sri = new Nunil_SRI();
@@ -588,52 +607,41 @@ class Nunil_Capture {
 									$processed[ $node_key ] = true;
 
 								}
-							} else { // $stored_attr is not 'srcset'.
-								$src_attrib         = $node->getAttribute( $stored_attr );
-								$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-								if ( $external_script_id ) {
-									try {
-										$sri = new Nunil_SRI();
-										$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-									} catch ( \Exception $ex ) {
-										Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
-									}
+							} else {
+								if ( $tag->capture_inline() ) {
+									$inline = true;
 								}
-
-								$processed[ $node_key ] = true;
-
-							}
-						} else {
-							if ( $tag->capture_inline() ) {
-								$inline = true;
 							}
 						}
 					} else { // Tag HAS childs.
 						$children_tags = $tag->get_childs();
-						if ( is_array( $children_tags ) ) {
+						if ( is_array( $children_tags ) && is_array( $stored_attrs ) ) {
 							foreach ( $children_tags as $child_tag ) {
 								$child_nodes = $node->getElementsByTagName( $child_tag );
-								foreach ( $child_nodes as $child_node ) {
-									if ( $child_node->hasAttribute( $stored_attr ) ) {
-										if ( 'srcset' === $stored_attr ) {
-											$srcset = $child_node->getAttribute( $stored_attr );
-											$srcs   = $this->get_srcs_from_srcset( $srcset );
-											foreach ( $srcs as $src_attrib ) {
+								foreach ( $stored_attrs as $stored_attr ) {
+									foreach ( $child_nodes as $child_node ) {
+										if ( $child_node->hasAttribute( $stored_attr ) ) {
+											if ( 'srcset' === $stored_attr ) {
+												$srcset = $child_node->getAttribute( $stored_attr );
+												$srcs   = $this->get_srcs_from_srcset( $srcset );
+												foreach ( $srcs as $src_attrib ) {
+													$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
+													if ( $external_script_id ) {
+														$sri = new Nunil_SRI();
+														$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
+													}
+													$processed[ $node_key ] = true;
+												}
+											} else {
+												$src_attrib         = $child_node->getAttribute( $stored_attr );
 												$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
+												// ~ $external_script_id = $this->insert_external_tag_in_db( $directive, $child_node->nodeName, $src_attrib );
 												if ( $external_script_id ) {
 													$sri = new Nunil_SRI();
 													$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
 												}
 												$processed[ $node_key ] = true;
 											}
-										} else {
-											$src_attrib         = $child_node->getAttribute( $stored_attr );
-											$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-											if ( $external_script_id ) {
-												$sri = new Nunil_SRI();
-												$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-											}
-											$processed[ $node_key ] = true;
 										}
 									}
 								}
@@ -730,19 +738,23 @@ class Nunil_Capture {
 	 * @return void
 	 */
 	private function insert_inline_content_in_db( $directive, $tagname, $content, $sticky = false, $page_url = null ): void {
-
+		if ( 'script' === $tagname ) {
+			$utf8 = true;
+		} else {
+			$utf8 = false;
+		}
 		switch ( $this->hash_in_use ) {
 			case 'sha256':
-				$hash = self::calculate_hash( 'sha256', $content, $utf8 = true );
+				$hash = self::calculate_hash( 'sha256', $content, $utf8 );
 				break;
 			case 'sha384':
-				$hash = self::calculate_hash( 'sha384', $content, $utf8 = true );
+				$hash = self::calculate_hash( 'sha384', $content, $utf8 );
 				break;
 			case 'sha512':
-				$hash = self::calculate_hash( 'sha512', $content, $utf8 = true );
+				$hash = self::calculate_hash( 'sha512', $content, $utf8 );
 				break;
 			default:
-				$hash = self::calculate_hash( 'sha256', $content, $utf8 = true );
+				$hash = self::calculate_hash( 'sha256', $content, $utf8 );
 				break;
 		}
 
@@ -830,11 +842,11 @@ class Nunil_Capture {
 	 * Get an array of src from srcset value
 	 *
 	 * @since  1.0.0
-	 * @access private
+	 * @access protected
 	 * @param  string $srcset The string found in srcset value.
 	 * @return array<string>
 	 */
-	private function get_srcs_from_srcset( $srcset ) {
+	protected function get_srcs_from_srcset( $srcset ) {
 		$srcs         = array();
 		$srcset_lines = array_map( 'trim', explode( ',', $srcset ) );
 		foreach ( $srcset_lines as $line ) {
@@ -924,7 +936,7 @@ class Nunil_Capture {
 			$argument = $attributes['args'][ $param ];
 			// Check to make sure our argument is a string.
 			if ( 'string' === $argument['type'] && ! is_string( $value ) ) {
-				// translators: %1$s is the variable name; %2$s is the expected type
+				// translators: %1$s is the variable name; %2$s is the expected type.
 				return new \WP_Error( 'rest_invalid_param', sprintf( esc_html__( '%1$s is not of type %2$s', 'no-unsafe-inline' ), $param, 'string' ), array( 'status' => 400 ) );
 			}
 			/**
