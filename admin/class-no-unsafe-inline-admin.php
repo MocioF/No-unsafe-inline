@@ -85,20 +85,22 @@ class No_Unsafe_Inline_Admin {
 		 */
 		$screen = get_current_screen(); 
 		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
-		
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
 			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.min.css', array(), $this->version, 'all' );
 			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui-sctructure', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.structure.min.css', array(), $this->version, 'all' );
 			
-			//Enqueue the jQuery UI theme css file from google:
 			$wp_scripts = wp_scripts();
 	 
 			wp_enqueue_style(
-				'jquery-ui-theme-smoothness', //select ui theme: base...
+				'jquery-ui-theme-smoothness',
+				plugin_dir_url( __FILE__ ) .
 				sprintf(
-					'https://ajax.googleapis.com/ajax/libs/jqueryui/%s/themes/smoothness/jquery-ui.css',
+					'css/jqueryui/%s/themes/smoothness/jquery-ui.css',
 					$wp_scripts->registered['jquery-ui-core']->ver
-				)
+				),
+				array(),
+				$this->version,
+				'all'
 			);
 		}
 	}
@@ -246,32 +248,33 @@ class No_Unsafe_Inline_Admin {
 	public function nunil_set_screen(): void {
 		set_current_screen( 'no-unsafe-inline' );
 		$current_screen = get_current_screen();
+		if ( ! is_null( $current_screen ) ) {
+			// Get the active tab from the $_GET param.
+			$default_tab = null;
+			$tab         = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+			
+			$help_tabs = new \NUNIL\Nunil_Admin_Help_Tabs( $current_screen );
 
-		// Get the active tab from the $_GET param.
-		$default_tab = null;
-		$tab         = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
-
-		$help_tabs = new \NUNIL\Nunil_Admin_Help_Tabs( $current_screen );
-
-		switch ( $tab ) :
-			case 'settings':
-				$help_tabs->set_help_tabs( 'settings' );
-				break;
-			case 'base-src':
-				$help_tabs->set_help_tabs( 'base-src' );
-				break;
-			case 'external':
-				$help_tabs->set_help_tabs( 'external' );
-				break;
-			case 'inline':
-				$help_tabs->set_help_tabs( 'inline' );
-				break;
-			case 'events':
-				$help_tabs->set_help_tabs( 'events' );
-				break;
-			default:
-				$help_tabs->set_help_tabs( 'nunil-tools' );
-		endswitch;
+			switch ( $tab ) :
+				case 'settings':
+					$help_tabs->set_help_tabs( 'settings' );
+					break;
+				case 'base-src':
+					$help_tabs->set_help_tabs( 'base-src' );
+					break;
+				case 'external':
+					$help_tabs->set_help_tabs( 'external' );
+					break;
+				case 'inline':
+					$help_tabs->set_help_tabs( 'inline' );
+					break;
+				case 'events':
+					$help_tabs->set_help_tabs( 'events' );
+					break;
+				default:
+					$help_tabs->set_help_tabs( 'nunil-tools' );
+			endswitch;
+		}
 	}
 
 	/**
