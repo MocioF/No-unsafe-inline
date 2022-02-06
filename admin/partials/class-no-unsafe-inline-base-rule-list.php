@@ -25,7 +25,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * @subpackage No_Unsafe_Inline/admin
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
-class No_Unsafe_Inline_Base_Src_List extends WP_List_Table {
+class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 
 	/** Class constructor */
 	public function __construct() {

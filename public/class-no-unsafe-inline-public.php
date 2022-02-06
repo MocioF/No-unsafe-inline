@@ -106,13 +106,13 @@ class No_Unsafe_Inline_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-public.js', array( 'jquery' ), $this->version, false );
-		
+
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-			 ( 1 === $options['fix_setattribute_style'] )
+		( 1 === $options['fix_setattribute_style'] )
 			) {
-			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array('jquery'), $this->version, false );
+			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
 		}
 
@@ -175,14 +175,13 @@ class No_Unsafe_Inline_Public {
 				$htmlsource                = $manipulated->get_manipulated();
 			}
 		}
-
 		return $htmlsource;
 	}
 
 	/**
 	 * Output the CSP header
 	 *
-	 * The CSP header is built from base_src options, the content of
+	 * The CSP header is built from base rule options, the content of
 	 * csp_local_whitelist property and some settings in no-unsafe-inline
 	 * option.
 	 *
@@ -209,25 +208,24 @@ class No_Unsafe_Inline_Public {
 						$header_csp = $header_csp . 'upgrade-insecure-requests; ';
 					}
 
-					$base_src = (array) get_option( 'no-unsafe-inline-base-src' );
+					$base_src = (array) get_option( 'no-unsafe-inline-base-rule' );
 
 					foreach ( $base_src as $directive => $base_sources ) {
-						$dir = str_replace( '_base_source', '', $directive );
+						$dir = str_replace( '_base_rule', '', $directive );
 						$csp = trim( strval( $base_sources ) );
-						if ( 'script-src' === $dir || 'style-src' === $dir ) {
-							if ( is_array( $this->csp_local_whitelist ) ) {
-								foreach ( $this->csp_local_whitelist as $local ) {
-									if ( $dir === $local['directive'] ) {
-										$csp = $csp . ' \'' . $local['source'] . '\' ';
-									}
+						if ( is_array( $this->csp_local_whitelist ) ) {
+							foreach ( $this->csp_local_whitelist as $local ) {
+								if ( $dir === $local['directive'] ) {
+									$csp = $csp . ' \'' . $local['source'] . '\'';
 								}
-								if ( 1 === $tools['capture_enabled'] ) {
-									$csp = $csp . '\'report-sample\' ';
-								}
+							}
+							if ( 1 === $tools['capture_enabled'] &&
+							'frame-ancestors' !== $dir ) {
+								$csp = $csp . ' \'report-sample\'';
 							}
 						}
 						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
-							$csp = $csp . ' \'strict-dynamic\' ';
+							$csp = $csp . ' \'strict-dynamic\'';
 						}
 						$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
 					}
@@ -248,13 +246,13 @@ class No_Unsafe_Inline_Public {
 							. '"max_age": 10886400, '
 							. '"endpoints": [{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }]'
 							. ' }';
-						$report_to        = $report_to . ' csp-captbyv';
+						$report_to        = $report_to . 'csp-captbyv';
 					}
 					if ( 0 < strlen( $report_uri ) ) {
-						$header_csp = $header_csp . 'report-uri ' . $report_uri . ';';
+						$header_csp = $header_csp . ' report-uri ' . $report_uri . ';';
 					}
 					if ( 0 < strlen( $report_to ) ) {
-						$header_csp = $header_csp . 'report-to ' . $report_to . ';';
+						$header_csp = $header_csp . ' report-to ' . $report_to . ';';
 					}
 
 					if ( 0 < strlen( $header_report_to ) ) {
@@ -264,7 +262,7 @@ class No_Unsafe_Inline_Public {
 							NUNIL\Nunil_Lib_Log::warning(
 								sprintf(
 									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
-									esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+									esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
 									$filename,
 									$linenum
 								)
@@ -278,7 +276,7 @@ class No_Unsafe_Inline_Public {
 						NUNIL\Nunil_Lib_Log::warning(
 							sprintf(
 								// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
-								esc_html__( 'CSP headers not send because header where sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+								esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
 								$filename,
 								$linenum
 							)
@@ -301,8 +299,8 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function register_capture_routes(): void {
-		$tools = get_option( 'no-unsafe-inline-tools' );
-		if ( is_array( $tools ) && 1 === $tools['capture_enabled'] ) {
+		$tools = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( 1 === $tools['capture_enabled'] ) {
 			$capture_1 = new NUNIL\Nunil_Capture();
 			$capture_2 = new NUNIL\Nunil_Capture_CSP_Violations();
 			register_rest_route(

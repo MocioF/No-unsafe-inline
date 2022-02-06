@@ -79,7 +79,7 @@ class No_Unsafe_Inline_Activator {
 		if ( ! $plugin_options ) {
 			$plugin_options = array();
 			$class          = new No_Unsafe_Inline();
-			foreach ( $class->managed_src_directives as $src_directive ) {
+			foreach ( $class->managed_directives as $src_directive ) {
 				$plugin_options[ $src_directive . '_enabled' ] = 1;
 			}
 			$plugin_options['prefetch-src_enabled'] = 0;
@@ -97,6 +97,12 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['fix_setattribute_style']  = 1;
 			$plugin_options['add_wl_by_cluster_to_db'] = 1;
 			$plugin_options['logs_enabled']            = 1;
+			
+			$plugin_options['hash_in_script-src']      = 1;
+			$plugin_options['hash_in_style-src']       = 1;
+			$plugin_options['hash_in_img-src']         = 0;
+			$plugin_options['hash_in_all']             = 0;
+
 		}
 		update_option( 'no-unsafe-inline', $plugin_options );
 	}

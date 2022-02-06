@@ -43,7 +43,7 @@
 		}
 	);
 
-	// Used to order strings in base-src rules
+	// Used to order strings in base rules
 	function UniqueOrdered(string) {
 		const categories = string.split( ' ' );
 		const unique     = Array.from( new Set( categories ) );
@@ -280,11 +280,11 @@
 				}
 			);
 
-			// START base-src main tab.
+			// START base rules main tab.
 			var mypage = getUrlParameter( 'page' );
 			var mytab  = getUrlParameter( 'tab' );
 
-			if ('no-unsafe-inline' === mypage && 'base-src' === mytab) {
+			if ('no-unsafe-inline' === mypage && 'base-rule' === mytab) {
 				const matrix = [];
 				const row    = [];
 				// Populate -src input field on checkbox check.
@@ -298,7 +298,7 @@
 						.clearText();
 						var source    = $chk.parent().parent().find( 'td:nth-child(3)' ).clearText();
 						var textboxId =
-						'no-unsafe-inline-base-src\\[' + directive + '_base_source\\]';
+						'no-unsafe-inline-base-rule\\[' + directive + '_base_rule\\]';
 						if ($chk.prop( 'checked' )) {
 							$( '#' + textboxId ).val( $( '#' + textboxId ).val() + ' ' + source );
 							$( '#' + textboxId ).val(
@@ -364,7 +364,7 @@
 				managedDirectives.forEach(
 					function( directive ) {
 						srcDirectiveId   =
-						'no-unsafe-inline-base-src\\[' + directive + '_base_source\\]';
+						'no-unsafe-inline-base-rule\\[' + directive + '_base_rule\\]';
 						const SetSources = $( '#' + srcDirectiveId )
 						.val()
 						.split( ' ' );
@@ -386,7 +386,7 @@
 					}
 				);
 			}
-			// END base-src main tab.
+			// END base rules main tab.
 			
 			// START inline main tab.
 			if ('no-unsafe-inline' === mypage && ( 'inline' === mytab || 'events' === mytab ) ) {
@@ -514,7 +514,7 @@
 
 			$( '#nunil_clean_database' ).click(
 				function( e ) {
-					if ( window.confirm( __( 'Are you sure you want to clean db data?\n(This will not clear your base-src rules)', 'no-unsafe-inline' ) )) {
+					if ( window.confirm( __( 'Are you sure you want to clean db data?\n(This will not clear your base rules)', 'no-unsafe-inline' ) )) {
 						e.preventDefault();
 						var db_clean_nonce = $( '#clean_db_nonce' ).val();
 						$.ajax(

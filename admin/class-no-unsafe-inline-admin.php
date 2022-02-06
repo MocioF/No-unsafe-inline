@@ -8,8 +8,8 @@
  * @package    No_Unsafe_Inline
  * @subpackage No_Unsafe_Inline/admin
  */
- 
- use NUNIL\Nunil_Lib_Db As DB;
+
+use NUNIL\Nunil_Lib_Db as DB;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -46,9 +46,9 @@ class No_Unsafe_Inline_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      array<string>    $managed_src_directives   The CSP -src directives managed by the plugin.
+	 * @var      array<string>    $managed_directives   The CSP directives managed by the plugin.
 	 */
-	private $managed_src_directives;
+	private $managed_directives;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -56,12 +56,12 @@ class No_Unsafe_Inline_Admin {
 	 * @since    1.0.0
 	 * @param    string        $plugin_name               The name of this plugin.
 	 * @param    string        $version                   The version of this plugin.
-	 * @param    array<string> $managed_src_directives    The CSP -src directives managed by this plugin.
+	 * @param    array<string> $managed_directives    The CSP -src directives managed by this plugin.
 	 */
-	public function __construct( $plugin_name, $version, $managed_src_directives ) {
-		$this->plugin_name            = $plugin_name;
-		$this->version                = $version;
-		$this->managed_src_directives = $managed_src_directives;
+	public function __construct( $plugin_name, $version, $managed_directives ) {
+		$this->plugin_name        = $plugin_name;
+		$this->version            = $version;
+		$this->managed_directives = $managed_directives;
 	}
 
 	/**
@@ -83,14 +83,11 @@ class No_Unsafe_Inline_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		$screen = get_current_screen(); 
+		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
-			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.min.css', array(), $this->version, 'all' );
-			//~ wp_enqueue_style( $this->plugin_name . 'jquery-ui-sctructure', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.structure.min.css', array(), $this->version, 'all' );
-			
+
 			$wp_scripts = wp_scripts();
-	 
 			wp_enqueue_style(
 				'jquery-ui-theme-smoothness',
 				plugin_dir_url( __FILE__ ) .
@@ -129,14 +126,13 @@ class No_Unsafe_Inline_Admin {
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 			 ( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
 			) {
-			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array('jquery'), $this->version, false );
+			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
 		}
-		
-		$screen = get_current_screen(); 
+
+		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
 
-			// ~ wp_enqueue_script( 'no-unsafe-inline-prefilter', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline.js', array( 'jquery' ), time(), false );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
 
 			wp_localize_script(
@@ -147,21 +143,8 @@ class No_Unsafe_Inline_Admin {
 				)
 			);
 		}
-		
+
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
-
-		// VA IMPOSTATO A 1. ORA è disabilitato sempre
-		if ( 22 === $tools['capture_enabled'] ) {
-			wp_enqueue_script( $this->plugin_name . '_observer', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline.js', array(), time(), false ); // usa time() al posto di $this->version per costringere il reload
-
-			wp_localize_script(
-				$this->plugin_name . '_observer',
-				'WPURLS',
-				array(
-					'restRoute' => get_rest_url( null, 'no-unsafe-inline/v1/capture-by-observer' ),
-				)
-			);
-		}
 	}
 
 	/**
@@ -252,15 +235,15 @@ class No_Unsafe_Inline_Admin {
 			// Get the active tab from the $_GET param.
 			$default_tab = null;
 			$tab         = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
-			
+
 			$help_tabs = new \NUNIL\Nunil_Admin_Help_Tabs( $current_screen );
 
 			switch ( $tab ) :
 				case 'settings':
 					$help_tabs->set_help_tabs( 'settings' );
 					break;
-				case 'base-src':
-					$help_tabs->set_help_tabs( 'base-src' );
+				case 'base-rule':
+					$help_tabs->set_help_tabs( 'base-rule' );
 					break;
 				case 'external':
 					$help_tabs->set_help_tabs( 'external' );
@@ -292,16 +275,16 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_section(
 			'no-unsafe-inline_fetch_directives_settings',
-			esc_html__( 'Fetch directives managed', 'no-unsafe-inline' ),
-			array( $this, 'print_fetch_directives_section' ),
+			esc_html__( 'Directives managed', 'no-unsafe-inline' ),
+			array( $this, 'print_directives_section' ),
 			'no-unsafe-inline-options'
 		);
 
-		foreach ( $this->managed_src_directives as $src_directive ) {
+		foreach ( $this->managed_directives as $src_directive ) {
 			$args = array(
 				'option_name' => $src_directive . '_enabled',
 				// translators: %s is the CSP -src directive, as script-src.
-				'label'       => sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . $src_directive . '" target="_blank">' . $src_directive . '</a>' ),
+				'label'       => $src_directive,
 			);
 
 			$id    = $src_directive . '_enabled';
@@ -326,11 +309,84 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'external_host_mode',
-			esc_html__( 'External hosts identification', 'no-unsafe-inline' ),
+			esc_html__( 'External sources, base identification', 'no-unsafe-inline' ),
 			array( $this, 'print_external_host_mode_option' ),
 			'no-unsafe-inline-options',
 			'external_host_mode'
 		);
+
+		/*** Single hash setting. */
+		add_settings_section(
+			'no-unsafe-inline_ext_hashes',
+			esc_html__( 'Use single hashes in directives:', 'no-unsafe-inline' ),
+			array( $this, 'print_ext_hashes' ),
+			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'hash_in_script-src',
+			esc_html__( 'script-src', 'no-unsafe-inline' ),
+			array( $this, 'print_hash_in_script_src' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_ext_hashes'
+		);
+
+		add_settings_field(
+			'hash_in_style-src',
+			esc_html__( 'style-src', 'no-unsafe-inline' ),
+			array( $this, 'print_hash_in_style_src' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_ext_hashes'
+		);
+
+		add_settings_field(
+			'hash_in_img-src',
+			esc_html__( 'img-src', 'no-unsafe-inline' ),
+			array( $this, 'print_hash_in_img_src' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_ext_hashes'
+		);
+
+		add_settings_field(
+			'hash_in_all',
+			esc_html__( 'Whenever is possible', 'no-unsafe-inline' ),
+			array( $this, 'print_hash_in_all' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_ext_hashes'
+		);
+
+		/*** Used hashes */
+		add_settings_section(
+			'no-unsafe-inline_algo_in_use',
+			esc_html__( 'Select which hashes to use', 'no-unsafe-inline' ),
+			array( $this, 'print_algo_in_use' ),
+			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'sri_sha256',
+			esc_html__( 'sha256', 'no-unsafe-inline' ),
+			array( $this, 'print_sri_sha256_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_algo_in_use'
+		);
+
+		add_settings_field(
+			'sri_sha384',
+			esc_html__( 'sha384', 'no-unsafe-inline' ),
+			array( $this, 'print_sri_sha384_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_algo_in_use'
+		);
+
+		add_settings_field(
+			'sri_sha512',
+			esc_html__( 'sha512', 'no-unsafe-inline' ),
+			array( $this, 'print_sri_sha512_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_algo_in_use'
+		);
+
 		/*** SRI section. */
 		add_settings_section(
 			'no-unsafe-inline_use_sri',
@@ -341,7 +397,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'sri_script',
-			esc_html__( 'Add integrity attribute to <script>', 'no-unsafe-inline' ),
+			esc_html__( 'SRI for <script>', 'no-unsafe-inline' ),
 			array( $this, 'print_sri_script_option' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_use_sri'
@@ -349,45 +405,13 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'sri_link',
-			esc_html__( 'Add integrity attribute to <link>', 'no-unsafe-inline' ),
+			esc_html__( 'SRI for <link>', 'no-unsafe-inline' ),
 			array( $this, 'print_sri_link_option' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_use_sri'
 		);
 
-		add_settings_field(
-			'use_strict-dynamic',
-			esc_html__( 'Use sctrict-dynamic in <script>', 'no-unsafe-inline' ),
-			array( $this, 'print_use_strict_dynamic_option' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_use_sri'
-		);
-
-		add_settings_field(
-			'sri_sha256',
-			esc_html__( 'Add sha256 in integrity attribute', 'no-unsafe-inline' ),
-			array( $this, 'print_sri_sha256_option' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_use_sri'
-		);
-
-		add_settings_field(
-			'sri_sha384',
-			esc_html__( 'Add sha384 in integrity attribute', 'no-unsafe-inline' ),
-			array( $this, 'print_sri_sha384_option' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_use_sri'
-		);
-
-		add_settings_field(
-			'sri_sha512',
-			esc_html__( 'Add sha512 in integrity attribute', 'no-unsafe-inline' ),
-			array( $this, 'print_sri_sha512_option' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_use_sri'
-		);
-		/*** End of SRI section. */
-
+		/*** Inline script mode section. */
 		add_settings_section(
 			'no-unsafe-inline_inline_script_mode',
 			esc_html__( 'Inline script mode', 'no-unsafe-inline' ),
@@ -403,11 +427,20 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_inline_script_mode'
 		);
 
+		/*** Start misc section */
 		add_settings_section(
 			'no-unsafe-inline_misc',
 			esc_html__( 'Misc options', 'no-unsafe-inline' ),
 			array( $this, 'print_misc_section' ),
 			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'use_strict-dynamic',
+			esc_html__( 'Use sctrict-dynamic in <script>', 'no-unsafe-inline' ),
+			array( $this, 'print_use_strict_dynamic_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_misc'
 		);
 
 		add_settings_field(
@@ -428,6 +461,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'use_unsafe-hashes',
+			// translators:: %s is unsafe-hashes link to w3.org site.
 			sprintf( esc_html__( 'Use \'%s\' for JS event handlers attributes of HTML elements. (Say NO)', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#unsafe-hashes-usage" target="_blank">unsafe-hashes</a>' ),
 			array( $this, 'print_use_unsafe_hashes' ),
 			'no-unsafe-inline-options',
@@ -437,6 +471,7 @@ class No_Unsafe_Inline_Admin {
 		add_settings_field(
 			'fix_setattribute_style',
 			sprintf(
+				// translators:: %1$s is setAttribute link, %2$s is jQuery htmlPrefilte link.
 				esc_html__( 'Fix the use of %1$s in 3th party libraries and override %2$s', 'no-unsafe-inline' ),
 				'<a href="https://csplite.com/csp/test343/" target="_blank">setAttribute(\'style\')</a>',
 				'<a href="https://csplite.com/csp/test433/" target="_blank">jQuery htmlPrefilter()(\'style\')</a>'
@@ -453,7 +488,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc'
 		);
-		
+
 		add_settings_field(
 			'logs_enabled',
 			esc_html__( 'Enable Server Logs', 'no-unsafe-inline' ),
@@ -511,38 +546,38 @@ class No_Unsafe_Inline_Admin {
 
 
 	/**
-	 * Register the base -src rules
+	 * Register the base rules
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function register_base_src_sources(): void {
+	public function register_base_rule(): void {
 
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		register_setting(
-			'no-unsafe-inline_base_src_group',
-			'no-unsafe-inline-base-src',
-			array( $this, 'sanitize_base_src' )
+			'no-unsafe-inline_base_rule_group',
+			'no-unsafe-inline-base-rule',
+			array( $this, 'sanitize_base_rule' )
 		);
 
 		add_settings_section(
-			'no-unsafe-inline-base-src-section',
-			esc_html__( 'Base CSP -src sources', 'no-unsafe-inline' ),
-			array( $this, 'print_base_src_section' ),
-			'no-unsafe-inline-base-src-page'
+			'no-unsafe-inline-base-rule-section',
+			esc_html__( 'Base CSP rules', 'no-unsafe-inline' ),
+			array( $this, 'print_base_rule_section' ),
+			'no-unsafe-inline-base-rule-page'
 		);
 
-		foreach ( $this->managed_src_directives as $directive ) {
+		foreach ( $this->managed_directives as $directive ) {
 			$setting_name = $directive . '_enabled';
 
-			// Show only enabled -src directives.
+			// Show only enabled rules directives.
 			if ( 1 === $options[ $setting_name ] ) {
 				$args = array(
-					'option_name' => $directive . '_base_source',
+					'option_name' => $directive . '_base_rule',
 					'label'       => sprintf(
 						// translators: %s is the CSP directive, like script-src.
-						esc_html__( 'Base sources for the %s directive.', 'no-unsafe-inline' ),
+						esc_html__( 'Base rules for the %s directive.', 'no-unsafe-inline' ),
 						$directive
 					),
 				);
@@ -551,9 +586,9 @@ class No_Unsafe_Inline_Admin {
 					$args['option_name'],
 					// translators: %s is the CSP directive, like script-src.
 					sprintf( esc_html__( 'Base %s sources', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . $directive . '" target="_blank">' . $directive . '</a>' ),
-					array( $this, 'print_base_srcs' ),
-					'no-unsafe-inline-base-src-page',
-					'no-unsafe-inline-base-src-section',
+					array( $this, 'print_base_rule' ),
+					'no-unsafe-inline-base-rule-page',
+					'no-unsafe-inline-base-rule-section',
 					$args
 				);
 			}
@@ -563,6 +598,7 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Sanitize the settings
 	 *
+	 * @throws \Exception
 	 * @param array<int|string> $input Contains the settings.
 	 * @return array<int|string>
 	 */
@@ -570,12 +606,12 @@ class No_Unsafe_Inline_Admin {
 		$new_input = array();
 
 		$options = (array) get_option( 'no-unsafe-inline' );
-		if ( empty ( $options ) ) {
+		if ( empty( $options ) ) {
 			throw( new Exception( 'Option no-unsafe-inline is not an array' ) );
 		}
 
 		// Checkboxes.
-		foreach ( $this->managed_src_directives as $directive ) {
+		foreach ( $this->managed_directives as $directive ) {
 			$setting_name = $directive . '_enabled';
 
 			if ( isset( $input[ $setting_name ] ) ) {
@@ -603,24 +639,62 @@ class No_Unsafe_Inline_Admin {
 			$new_input['use_strict-dynamic'] = 0;
 		}
 
+		if ( isset( $input['hash_in_script-src'] ) ) {
+			$new_input['hash_in_script-src'] = 1;
+		} else {
+			$new_input['hash_in_script-src'] = 0;
+		}
+
+		if ( isset( $input['hash_in_style-src'] ) ) {
+			$new_input['hash_in_style-src'] = 1;
+		} else {
+			$new_input['hash_in_style-src'] = 0;
+		}
+
+		if ( isset( $input['hash_in_img-src'] ) ) {
+			$new_input['hash_in_img-src'] = 1;
+		} else {
+			$new_input['hash_in_img-src'] = 0;
+		}
+
+		if ( isset( $input['hash_in_all'] ) ) {
+			$new_input['hash_in_all'] = 1;
+		} else {
+			$new_input['hash_in_all'] = 0;
+		}
+
 		if ( isset( $input['sri_sha256'] ) ) {
 			$new_input['sri_sha256'] = 1;
 		} else {
 			$new_input['sri_sha256'] = 0;
 		}
+
 		if ( isset( $input['sri_sha384'] ) ) {
 			$new_input['sri_sha384'] = 1;
 		} else {
 			$new_input['sri_sha384'] = 0;
 		}
+
 		if ( isset( $input['sri_sha512'] ) ) {
 			$new_input['sri_sha512'] = 1;
 		} else {
 			$new_input['sri_sha512'] = 0;
 		}
-		// One hash has to be selected, if we are using SRI
-		if ( ( isset( $input['sri_script'] ) || isset( $input['sri_link'] ) ) &&
-			( ! isset( $input['sri_sha256'] ) && ! isset( $input['sri_sha384'] ) && ! isset( $input['sri_sha512'] ) )
+		// One hash has to be selected, if we are using SRI or one of hash_in opts.
+		if (
+			(
+			! empty( $input['sri_script'] ) ||
+			! empty( $input['sri_link'] ) ||
+			! empty( $input['hash_in_script-src'] ) ||
+			! empty( $input['hash_in_style-src'] ) ||
+			! empty( $input['hash_in_img-src'] ) ||
+			! empty( $input['hash_in_all'] )
+			) &&
+			(
+			empty( $input['sri_sha256'] ) &&
+			empty( $input['sri_sha384'] ) &&
+			empty( $input['sri_sha512'] )
+			)
 		) {
 			$new_input['sri_sha256'] = 1;
 		}
@@ -648,7 +722,7 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['fix_setattribute_style'] = 0;
 		}
-		
+
 		if ( isset( $input['add_wl_by_cluster_to_db'] ) ) {
 			$new_input['add_wl_by_cluster_to_db'] = 1;
 		} else {
@@ -710,97 +784,37 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Sanitize the base CSP -src sources
+	 * Sanitize the base CSP rules
 	 *
 	 * @param array<string> $input Contains the settings.
 	 * @return array<string>
 	 */
-	public function sanitize_base_src( $input ) {
+	public function sanitize_base_rule( $input ) {
 		$new_input = array();
-		$options   = (array) get_option( 'no-unsafe-inline-base-src' );
-		foreach ( $this->managed_src_directives as $directive ) {
-			$setting_name = $directive . '_base_source';
+		$options   = get_option( 'no-unsafe-inline-base-rule' );
+		foreach ( $this->managed_directives as $directive ) {
+			$setting_name = $directive . '_base_rule';
 			if ( isset( $input[ $setting_name ] ) ) {
 				$new_input[ $setting_name ] = sanitize_text_field( $input[ $setting_name ] );
 			}
 		}
-		$new_input = array_merge( $options, $new_input );
+		if ( is_array( $options ) ) {
+			$new_input = array_merge( $options, $new_input );
+		}
 		return $new_input;
 	}
 
+	/**
+	 * Options block
+	 */
 	/**
 	 * Print the fetch directives section info
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_fetch_directives_section(): void {
-		print esc_html__( 'Select the CSP fetch directives that you want to manage with this plugin.', 'no-unsafe-inline' );
-	}
-
-	/**
-	 * Print the tools section info
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_tools_section(): void {
-		print esc_html__( 'Manage plugin tools.', 'no-unsafe-inline' );
-	}
-
-	/**
-	 * Print the inline script mode section info
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_inline_script_mode_section(): void {
-		print esc_html__( 'Select how to identify whitelisted inline scripts.', 'no-unsafe-inline' );
-	}
-
-	/**
-	 * Print the misc section info
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_misc_section(): void {
-		print esc_html__( 'Misc options.', 'no-unsafe-inline' );
-	}
-
-	/**
-	 * Print the external source mode section info
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_external_host_mode_section(): void {
-		print esc_html__( 'Select how to identify external hosts.', 'no-unsafe-inline' );
-	}
-
-	/**
-	 * Print the use Subresource Integrity session
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_use_sri_section(): void {
-		printf(
-			esc_html__( 'Options to use %s', 'no-unsafe-inline' ),
-			'<a href="https://w3c.github.io/webappsec-subresource-integrity/" target="_blank">Subresource Integrity</a>'
-		);
-	}
-
-	/**
-	 * Print the base -src sources section info
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_base_src_section(): void {
-		print esc_html__( 'Input here the base sources allowed for each CSP -src directive', 'no-unsafe-inline' );
-		echo '<br />';
-		print esc_html__( 'You can populate these fields by ticking the checkboxes in the table below.', 'no-unsafe-inline' );
+	public function print_directives_section(): void {
+		print esc_html__( 'Select the CSP directives that you want to manage with this plugin.', 'no-unsafe-inline' );
 	}
 
 	/**
@@ -825,31 +839,228 @@ class No_Unsafe_Inline_Admin {
 			esc_html( $option_name ),
 			esc_html( $enabled ),
 			esc_html( $option_name ),
-			$label
+			// translators:: %s is a CSP directory link on w3.org specs for CSP3.
+			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label ) . '" target="_blank">' . esc_html( $label ) . '</a>' )
 		);
 	}
 
 	/**
-	 * Print the *-src directive option.
+	 * Print the external source mode section info
 	 *
 	 * @since 1.0.0
-	 * @param array<string> $args Function arguments.
 	 * @return void
 	 */
-	public function print_base_srcs( $args ): void {
-		$option_name = $args['option_name'];
-		$label       = $args['label'];
-		$options     = (array) get_option( 'no-unsafe-inline-base-src' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : '';
+	public function print_external_host_mode_section(): void {
+		print esc_html__( 'Select how to identify external hosts.', 'no-unsafe-inline' );
+	}
 
+	/**
+	 * Print the external host mode option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_external_host_mode_option(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['external_host_mode'] ) ? esc_attr( $options['external_host_mode'] ) : 'host';
+
+		echo (
+			'<div class="nunil-radio-div">' .
+			'<label for="resource" class="nunil-l-radio">' .
+			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="resource" value="resource" ' );
+		echo( checked( 'resource', $options['external_host_mode'], false ) );
+		echo( '/>' .
+			'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inline' ) . '</span>' .
+			'</label>' .
+			'<label for="sch-host" class="nunil-l-radio">' .
+			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="sch-host" value="sch-host" ' );
+
+		echo( checked( 'sch-host', $options['external_host_mode'], false ) );
+		echo( '/>' .
+			'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inline' ) . '</span>' .
+			'</label>' .
+			'<label for="host" class="nunil-l-radio">' .
+			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="host" value="host" ' );
+		echo( checked( 'host', $options['external_host_mode'], false ) );
+		echo( '/>' .
+			'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inline' ) . '</span>' .
+			'</label>' .
+
+			'<label for="domain" class="nunil-l-radio">' .
+			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="domain" value="domain" ' );
+		echo( checked( 'domain', $options['external_host_mode'], false ) );
+		echo( '/>' .
+			'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inline' ) . '</span>' .
+			'</label>' .
+			'</div>'
+		);
+
+	}
+
+	/**
+	 * Print the use hashes for external script session
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_ext_hashes(): void {
+		print esc_html__( 'Select directives in which you want to use hashes in addition to base rules.', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the hash_in_script-src option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_hash_in_script_src(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['hash_in_script-src'] ) ? esc_attr( $options['hash_in_script-src'] ) : 0;
+		$enabled = $value ? 'checked' : '';
 		printf(
-			'<div class="nunil-base-src-container">' .
-			'<label for="no-unsafe-inline-base-src[%1$s]" class="nunil-base-src"/>' .
-			'<input type="text" id="no-unsafe-inline-base-src[%1$s]" name="no-unsafe-inline-base-src[%1$s]" class="nunil-base-src" value="%3$s"/>%2$s</label>' .
-			'</div>',
-			esc_html( $option_name ),
-			esc_html( $label ),
-			esc_html( $value )
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_script-src]"' .
+			'name="no-unsafe-inline[hash_in_script-src]" %s />
+			<label for="no-unsafe-inline[hash_in_script-src]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add hashes in script-src.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the hash_in_style-src option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_hash_in_style_src(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['hash_in_style-src'] ) ? esc_attr( $options['hash_in_style-src'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_style-src]"' .
+			'name="no-unsafe-inline[hash_in_style-src]" %s />
+			<label for="no-unsafe-inline[hash_in_style-src]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add hashes in style-src.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the hash_in_img-src option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_hash_in_img_src(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['hash_in_img-src'] ) ? esc_attr( $options['hash_in_img-src'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_img-src]"' .
+			'name="no-unsafe-inline[hash_in_img-src]" %s />
+			<label for="no-unsafe-inline[hash_in_img-src]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add hashes in img-src.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the hash_in_all option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_hash_in_all(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['hash_in_all'] ) ? esc_attr( $options['hash_in_all'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_all]"' .
+			'name="no-unsafe-inline[hash_in_all]" %s />
+			<label for="no-unsafe-inline[hash_in_all]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add hashes in all directives where possible.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the select algos session
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_algo_in_use(): void {
+		print esc_html__( 'Select algos to be used in external resource identification', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the sri_sha256 option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_sri_sha256_option(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha256'] ) ? esc_attr( $options['sri_sha256'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha256]"' .
+			'name="no-unsafe-inline[sri_sha256]" %s />
+			<label for="no-unsafe-inline[sri_sha256]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add sha256 in csp and integrity attribute.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the sri_sha384 option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_sri_sha384_option(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha384'] ) ? esc_attr( $options['sri_sha384'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha384]"' .
+			'name="no-unsafe-inline[sri_sha384]" %s />
+			<label for="no-unsafe-inline[sri_sha384]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add sha384 in csp and integrity attribute.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the sri_sha512 option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_sri_sha512_option(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['sri_sha512'] ) ? esc_attr( $options['sri_sha512'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha512]"' .
+			'name="no-unsafe-inline[sri_sha512]" %s />
+			<label for="no-unsafe-inline[sri_sha512]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Add sha512 in csp and integrity attribute.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the use Subresource Integrity session
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_use_sri_section(): void {
+		printf(
+			// translators:: Subresource Integrity link.
+			esc_html__( 'Options to use %s', 'no-unsafe-inline' ),
+			'<a href="https://w3c.github.io/webappsec-subresource-integrity/" target="_blank">Subresource Integrity</a>'
 		);
 	}
 
@@ -892,83 +1103,13 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the use_strict-dynamic option
+	 * Print the inline script mode section info
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_use_strict_dynamic_option(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['use_strict-dynamic'] ) ? esc_attr( $options['use_strict-dynamic'] ) : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[use_strict-dynamic]"' .
-			'name="no-unsafe-inline[use_strict-dynamic]" %s />
-			<label for="no-unsafe-inline[use_strict-dynamic]">%s</label>',
-			esc_html( $enabled ),
-			sprintf( esc_html__( 'Add %s in script-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
-				esc_html__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
-				'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
-				'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>'
-			)
-		);
-	}
-
-	/**
-	 * Print the sri_sha256 option
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_sri_sha256_option(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha256'] ) ? esc_attr( $options['sri_sha256'] ) : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha256]"' .
-			'name="no-unsafe-inline[sri_sha256]" %s />
-			<label for="no-unsafe-inline[sri_sha256]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Use sha256 hash in integrity attributes.', 'no-unsafe-inline' )
-		);
-	}
-
-	/**
-	 * Print the sri_sha384 option
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_sri_sha384_option(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha384'] ) ? esc_attr( $options['sri_sha384'] ) : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha384]"' .
-			'name="no-unsafe-inline[sri_sha384]" %s />
-			<label for="no-unsafe-inline[sri_sha384]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Use sha384 hash in integrity attributes.', 'no-unsafe-inline' )
-		);
-	}
-
-	/**
-	 * Print the sri_sha512 option
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_sri_sha512_option(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha512'] ) ? esc_attr( $options['sri_sha512'] ) : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha512]"' .
-			'name="no-unsafe-inline[sri_sha512]" %s />
-			<label for="no-unsafe-inline[sri_sha512]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Use sha512 hash in integrity attributes.', 'no-unsafe-inline' )
-		);
+	public function print_inline_script_mode_section(): void {
+		print esc_html__( 'Select how to identify whitelisted inline scripts.', 'no-unsafe-inline' );
 	}
 
 	/**
@@ -1015,49 +1156,39 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the external host mode option
+	 * Print the misc section info
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_external_host_mode_option(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['external_host_mode'] ) ? esc_attr( $options['external_host_mode'] ) : 'host';
-
-		echo (
-			'<div class="nunil-radio-div">' .
-			'<label for="resource" class="nunil-l-radio">' .
-			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="resource" value="resource" ' );
-		echo( checked( 'resource', $options['external_host_mode'], false ) );
-		echo( '/>' .
-			'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inline' ) . '</span>' .
-			'</label>' .
-			'<label for="sch-host" class="nunil-l-radio">' .
-			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="sch-host" value="sch-host" ' );
-
-		echo( checked( 'sch-host', $options['external_host_mode'], false ) );
-		echo( '/>' .
-			'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inline' ) . '</span>' .
-			'</label>' .
-			'<label for="host" class="nunil-l-radio">' .
-			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="host" value="host" ' );
-		echo( checked( 'host', $options['external_host_mode'], false ) );
-		echo( '/>' .
-			'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inline' ) . '</span>' .
-			'</label>' .
-
-			'<label for="domain" class="nunil-l-radio">' .
-			'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="domain" value="domain" ' );
-		echo( checked( 'domain', $options['external_host_mode'], false ) );
-		echo( '/>' .
-			'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inline' ) . '</span>' .
-			'</label>' .
-			'</div>'
-		);
-
+	public function print_misc_section(): void {
+		print esc_html__( 'Misc options.', 'no-unsafe-inline' );
 	}
 
-
+	/**
+	 * Print the use_strict-dynamic option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_use_strict_dynamic_option(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['use_strict-dynamic'] ) ? esc_attr( $options['use_strict-dynamic'] ) : 0;
+		$enabled = $value ? 'checked' : '';
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[use_strict-dynamic]"' .
+			'name="no-unsafe-inline[use_strict-dynamic]" %s />
+			<label for="no-unsafe-inline[use_strict-dynamic]">%s</label>',
+			esc_html( $enabled ),
+			// translators:: strict-dynamic link.
+			sprintf( esc_html__( 'Add %s in script-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
+				// translators:: %1$s and %2$s are link to external websites.
+				esc_html__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
+				'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
+				'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>'
+			)
+		);
+	}
 
 	/**
 	 * Print the upgrade insecure requests option
@@ -1076,6 +1207,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[no-unsafe-inline_upgrade_insecure]" %s />
 			<label for="no-unsafe-inline[no-unsafe-inline_upgrade_insecure]">%s</label>',
 			esc_html( $enabled ),
+			// translators:: upgrade-insecure-requests link.
 			sprintf( esc_html__( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank"><b>upgrade-insecure-requests</b></a>' )
 		);
 	}
@@ -1185,6 +1317,18 @@ class No_Unsafe_Inline_Admin {
 		);
 	}
 
+	/**
+	 * Tools block
+	 */
+	/**
+	 * Print the tools section info
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_tools_section(): void {
+		print esc_html__( 'Manage plugin tools.', 'no-unsafe-inline' );
+	}
 
 	/**
 	 * Print the capture toggle option
@@ -1228,7 +1372,6 @@ class No_Unsafe_Inline_Admin {
 		);
 	}
 
-
 	/**
 	 * Print the test policy option
 	 *
@@ -1249,6 +1392,46 @@ class No_Unsafe_Inline_Admin {
 			esc_html__( 'Enable CSP protection.', 'no-unsafe-inline' )
 		);
 	}
+
+	/**
+	 * Base src block
+	 */
+	/**
+	 * Print the base -src sources section info
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_base_rule_section(): void {
+		print esc_html__( 'Input here the base sources allowed for each CSP -src directive and rules for document and navigation directives.', 'no-unsafe-inline' );
+		echo '<br />';
+		print esc_html__( 'You can populate some of these fields by ticking the checkboxes in the table below.', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the directive option.
+	 *
+	 * @since 1.0.0
+	 * @param array<string> $args Function arguments.
+	 * @return void
+	 */
+	public function print_base_rule( $args ): void {
+		$option_name = $args['option_name'];
+		$label       = $args['label'];
+		$options     = (array) get_option( 'no-unsafe-inline-base-rule' );
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : '';
+
+		printf(
+			'<div class="nunil-base-rule-container">' .
+			'<label for="no-unsafe-inline-base-rule[%1$s]" class="nunil-base-rule"/>' .
+			'<input type="text" id="no-unsafe-inline-base-rule[%1$s]" name="no-unsafe-inline-base-rule[%1$s]" class="nunil-base-rule" value="%3$s"/>%2$s</label>' .
+			'</div>',
+			esc_html( $option_name ),
+			esc_html( $label ),
+			esc_html( $value )
+		);
+	}
+
 
 	/**
 	 * Print the main tab admin options group
@@ -1290,11 +1473,11 @@ class No_Unsafe_Inline_Admin {
 					if ( null === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Tools', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=base-src" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab 
 					<?php
-					if ( 'base-src' === $tab ) :
+					if ( 'base-rule' === $tab ) :
 						?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Base -src', 'no-unsafe-inline' ) ); ?></a>
+						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Base rules', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab 
 					<?php
 					if ( 'external' === $tab ) :
@@ -1317,7 +1500,7 @@ class No_Unsafe_Inline_Admin {
 					if ( 'settings' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
-					
+
 					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab 
 					<?php
 					if ( 'logs' === $tab ) :
@@ -1331,8 +1514,8 @@ class No_Unsafe_Inline_Admin {
 					case 'settings':
 						self::print_options_page();
 						break;
-					case 'base-src':
-						self::print_base_src_page();
+					case 'base-rule':
+						self::print_base_rule_page();
 						break;
 					case 'external':
 						self::print_external_page();
@@ -1378,14 +1561,14 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Renders the base-src page
+	 * Renders the base rules page
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_base_src_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-base-src-list.php';
-		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-base-src.php';
+	public function print_base_rule_page(): void {
+		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-base-rule-list.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-base-rule.php';
 	}
 
 	/**
@@ -1466,12 +1649,12 @@ class No_Unsafe_Inline_Admin {
 			$type    = $notice['type'];
 			$message = $notice['message'];
 
-			if ( $type === 'warning' ) {
-				printf( '<div class="notice notice-warning is-dismissible"><p>%s</p></div>', $message );
-			} elseif ( $type === 'error' ) {
-				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', $message );
+			if ( 'warning' === $type ) {
+				printf( '<div class="notice notice-warning is-dismissible"><p>%s</p></div>', esc_html( $message ) );
+			} elseif ( 'error' === $type ) {
+				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( $message ) );
 			} else {
-				printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', $message );
+				printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html( $message ) );
 			}
 
 			delete_transient( 'no_unsafe_inline_admin_notice' );
@@ -1521,12 +1704,12 @@ class No_Unsafe_Inline_Admin {
 			'inline_scripts',
 			'occurences',
 		);
-		
+
 		$result_string = '<br><b> --- ' . esc_html__( 'DELETE ALL SCRIPTS FROM DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
 		$result_string = '<ul>';
 
 		foreach ( $tables as $table ) {
-			
+
 			$delete = DB::truncate_table( $table );
 
 			$delete_string = $delete ? esc_html__( 'succeded', 'no-unsafe-inline' ) : esc_html__( 'FAILED', 'no-unsafe-inline' );
@@ -1561,15 +1744,13 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function update_summary_tables(): void {
-		
-		$result = array();
+
+		$result             = array();
 		$result['global']   = DB::get_database_summary_data( 'global' );
 		$result['external'] = DB::get_database_summary_data( 'external_scripts' );
 		$result['inline']   = DB::get_database_summary_data( 'inline_scripts' );
 		$result['events']   = DB::get_database_summary_data( 'event_handlers' );
-		
-		//~ $result = DB::get_database_summary_data( 'inline_scripts' );
-		
+
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
 			echo json_encode( $result );
 		} else {
@@ -1586,10 +1767,10 @@ class No_Unsafe_Inline_Admin {
 	 * @access public
 	 * @return string The html of the table
 	 */
-	public function output_summary_tables() {
+	public static function output_summary_tables() {
 		$result = DB::get_database_summary_data( 'global' );
-		
-		$htb    = '
+
+		$htb = '
 		<table class="rwd-table">
 			<tr>
 			 <th>' . esc_html__( 'Type', 'no-unsafe-inline' ) . '</th>
@@ -1598,7 +1779,7 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_db_summary_body">';
-		if ( isset ( $result ) ) {
+		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->Type . '</td>';
@@ -1618,17 +1799,17 @@ class No_Unsafe_Inline_Admin {
 		return $htb;
 	}
 
-/**
+	/**
 	 * Output the summary table of external scripts
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 * @return string The html of the table
 	 */
-	public function output_summary_external_table() {
+	public static function output_summary_external_table() {
 		$result = DB::get_database_summary_data( 'external_scripts' );
-		
-		$htb    = '
+
+		$htb = '
 		<table class="rwd-table">
 			<tr>
 			 <th>' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '</th>
@@ -1638,7 +1819,7 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_external_table_summary_body">';
-		if ( isset ( $result ) ) {
+		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
@@ -1666,10 +1847,10 @@ class No_Unsafe_Inline_Admin {
 	 * @access public
 	 * @return string The html of the table
 	 */
-	public function output_summary_inline_table() {
+	public static function output_summary_inline_table() {
 		$result = DB::get_database_summary_data( 'inline_scripts' );
-		
-		$htb    = '
+
+		$htb = '
 		<table class="rwd-table">
 			<tr>
 			 <th>' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '</th>
@@ -1679,7 +1860,7 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_inline_table_summary_body">';
-		if ( isset ( $result ) ) {
+		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
@@ -1707,10 +1888,10 @@ class No_Unsafe_Inline_Admin {
 	 * @access public
 	 * @return string The html of the table
 	 */
-	public function output_summary_eventhandlers_table() {
+	public static function output_summary_eventhandlers_table() {
 		$result = DB::get_database_summary_data( 'event_handlers' );
-		
-		$htb    = '
+
+		$htb = '
 		<table class="rwd-table">
 			<tr>
 			 <th>' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '</th>
@@ -1720,7 +1901,7 @@ class No_Unsafe_Inline_Admin {
 			 <th>' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '</th>
 			</tr>
 			<tbody id="nunil_eventhandlers_table_summary_body">';
-		if ( isset ( $result ) ) {
+		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
 				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';

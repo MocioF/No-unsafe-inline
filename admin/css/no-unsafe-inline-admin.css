@@ -279,18 +279,18 @@ td.column-script div.ui-accordion div.ui-accordion-content{
 
 }
 */
-.nunil-base-src-container {
+.nunil-base-rule-container {
 	float: left;
 	margin-right: 20px;
 	width: 100%;
 }
 
-input.nunil-base-src,
-label.nunil-base-src {
+input.nunil-base-rule,
+label.nunil-base-rule {
 	display: block;
 }
 
-input.nunil-base-src {
+input.nunil-base-rule {
 	width: 100%;
 }
 

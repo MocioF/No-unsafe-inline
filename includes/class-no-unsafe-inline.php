@@ -63,7 +63,7 @@ class No_Unsafe_Inline {
 	 * @access   protected
 	 * @var      array    $managed_src_directive    The CSP -src directive managed from this plugin
 	 */
-	public $managed_src_directives;
+	public $managed_directives;
 
 
 	/**
@@ -84,7 +84,7 @@ class No_Unsafe_Inline {
 		}
 		$this->plugin_name = 'no-unsafe-inline';
 
-		$this->managed_src_directives = array(
+		$this->managed_directives = array(
 			'default-src',
 			'script-src',
 			'style-src',
@@ -97,10 +97,10 @@ class No_Unsafe_Inline {
 			'child-src',
 			'frame-src',
 			'worker-src',
-			'frame-ancestors',
-			'form-action',
-			'base-uri',
 			'manifest-src',
+			'base-uri',
+			'form-action',
+			'frame-ancestors',
 		);
 
 		$this->load_dependencies();
@@ -203,7 +203,7 @@ class No_Unsafe_Inline {
 	 * @return   void
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new No_Unsafe_Inline_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_managed_src_directives() );
+		$plugin_admin = new No_Unsafe_Inline_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_managed_directives() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 0 );
@@ -216,7 +216,7 @@ class No_Unsafe_Inline {
 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_options' );
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_tools_status' );
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_base_src_sources' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_base_rule' );
 
 		$this->loader->add_action( 'wp_ajax_nunil_update_summary_tables', $plugin_admin, 'update_summary_tables' );
 
@@ -298,9 +298,9 @@ class No_Unsafe_Inline {
 	 * Retrieve the CSP managed -src directives.
 	 *
 	 * @since     1.0.0
-	 * @return    array    The array of CSP -src directives, managed by the plugin.
+	 * @return    array    The array of CSP directives, managed by the plugin.
 	 */
-	public function get_managed_src_directives() {
-		return $this->managed_src_directives;
+	public function get_managed_directives() {
+		return $this->managed_directives;
 	}
 }

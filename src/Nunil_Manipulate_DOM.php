@@ -218,19 +218,20 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$this->events_rows = $events_rows;
 		}
 
-		if ( 1 === $plugin_options['sri_script'] || 1 === $plugin_options['sri_link'] ) {
-			$cache_key   = 'external_rows';
-			$cache_group = 'no-unsafe-inline';
-			$expire_secs = $gls->expire_secs[ $cache_key ];
+		if ( 1 === $tools['capture_enabled'] ) {
+			wp_cache_delete( $cache_key, $cache_group );
+		}
+		$cache_key   = 'external_rows';
+		$cache_group = 'no-unsafe-inline';
+		$expire_secs = $gls->expire_secs[ $cache_key ];
 
-			$external_rows = wp_cache_get( $cache_key, $cache_group );
-			if ( false === $external_rows ) {
-				$external_rows = DB::get_external_rows();
-				wp_cache_set( $cache_key, $external_rows, $cache_group, $expire_secs );
-			}
-			if ( is_array( $external_rows ) ) {
-				$this->external_rows = $external_rows;
-			}
+		$external_rows = wp_cache_get( $cache_key, $cache_group );
+		if ( false === $external_rows ) {
+			$external_rows = DB::get_external_rows();
+			wp_cache_set( $cache_key, $external_rows, $cache_group, $expire_secs );
+		}
+		if ( is_array( $external_rows ) ) {
+			$this->external_rows = $external_rows;
 		}
 
 		$this->inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
@@ -411,13 +412,21 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( ! is_array( $this->external_rows ) ) {
 			return;
 		}
+		$options = (array) get_option( 'no-unsafe-inline' );
+		if ( 1 === $options['hash_in_all'] ||
+			 1 === $options['hash_in_script-src'] ||
+			 1 === $options['hash_in_style-src'] ||
+			 1 === $options['hash_in_img-src'] ||
+			 1 === $options['sri_script'] ||
+			 1 === $options['sri_link'] ) {
 
-		foreach ( $this->managed_tags as $tag ) {
-			$node_list = $this->get_external_nodelist( $tag );
-			if ( $node_list ) {
-				foreach ( $node_list as $node ) {
-					$index = $this->check_external_whitelist( $node );
-					$this->manipulate_external_node( $node, $index, $tag->get_directive() );
+			foreach ( $this->managed_tags as $tag ) {
+				$node_list = $this->get_external_nodelist( $tag );
+				if ( $node_list ) {
+					foreach ( $node_list as $node ) {
+						$index = $this->check_external_whitelist( $node );
+						$this->manipulate_external_node( $node, $index, $tag->get_directive() );
+					}
 				}
 			}
 		}
@@ -709,13 +718,13 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	private function check_res_wl( $src_attrib ) {
 		$ext_wlist = $this->external_rows;
 		if ( ! is_array( $ext_wlist ) ) {
-			return false; // BL.
+			return false; // BL: no external whitelist present.
 		} else {
 			if ( 0 < count( $ext_wlist ) ) {
 				foreach ( $ext_wlist as $index => $obj ) {
 					if ( $src_attrib === $obj->src_attrib ) {
 						if ( '1' === $obj->whitelist ) {
-							return (int) $index; // WL.
+							return (int) $index; // WL (.
 						} else {
 							return false; // BL.
 						}
@@ -744,6 +753,17 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$use384  = ( 1 === $options['sri_sha384'] ) ? true : false;
 		$use512  = ( 1 === $options['sri_sha512'] ) ? true : false;
 
+		if (
+			1 === $options['hash_in_all'] ||
+			( 1 === $options['hash_in_script-src'] && 'script-src' === $directive ) ||
+			( 1 === $options['hash_in_style-src'] && 'style-src' === $directive ) ||
+			( 1 === $options['hash_in_img-src'] && 'img-src' === $directive )
+		) {
+			$add_hashes = true;
+		} else {
+			$add_hashes = false;
+		}
+
 		if ( ! is_null( $input_index ) ) { // If index has not been passed, don't do anything.
 
 			// Convert single index to array to perform loop.
@@ -756,39 +776,45 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			foreach ( $run_index as $index ) {
 
 				if ( false !== $index && ! is_null( $this->external_rows ) ) { // The node is whitelisted.
-					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs setted by others plugins.
+					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs set by others plugins.
 						$integrity_string = '';
 						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
 							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-							$local_wl          = array(
-								'directive' => $directive,
-								'source'    => $hash_with_options,
-							);
-							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
-								$this->csp_local_whitelist[] = $local_wl;
+							if ( $add_hashes ) {
+								$local_wl = array(
+									'directive' => $directive,
+									'source'    => $hash_with_options,
+								);
+								if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+									$this->csp_local_whitelist[] = $local_wl;
+								}
 							}
 						}
 						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
 							$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-							$local_wl          = array(
-								'directive' => $directive,
-								'source'    => $hash_with_options,
-							);
-							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
-								$this->csp_local_whitelist[] = $local_wl;
+							if ( $add_hashes ) {
+								$local_wl = array(
+									'directive' => $directive,
+									'source'    => $hash_with_options,
+								);
+								if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+									$this->csp_local_whitelist[] = $local_wl;
+								}
 							}
 						}
 						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
 							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-							$local_wl          = array(
-								'directive' => $directive,
-								'source'    => $hash_with_options,
-							);
-							if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
-								$this->csp_local_whitelist[] = $local_wl;
+							if ( $add_hashes ) {
+								$local_wl = array(
+									'directive' => $directive,
+									'source'    => $hash_with_options,
+								);
+								if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+									$this->csp_local_whitelist[] = $local_wl;
+								}
 							}
 						}
 						if ( ( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
@@ -803,7 +829,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$integrity        = $node->getAttribute( 'integrity' );
 						$crossorigin      = $node->getAttribute( 'crossorigin' );
 						$integrity_values = preg_split( '/\s+/', $integrity, -1 );
-						if ( $integrity_values ) {
+						if ( $integrity_values && $add_hashes ) {
 							foreach ( $integrity_values as $hash_with_options ) {
 								$this->csp_local_whitelist[] = array(
 									'directive' => $directive,
