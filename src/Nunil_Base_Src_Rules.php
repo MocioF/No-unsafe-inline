@@ -2,7 +2,7 @@
 /**
  * Base src Rules
  *
- * Class used to create "base" -src rules for external scripts in db.
+ * Class used to create "base" rules for external scripts in db.
  *
  * @package No unsafe inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/

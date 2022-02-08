@@ -1056,12 +1056,12 @@ class Nunil_Lib_Db {
 	public static function get_external_rows() {
 		global $wpdb;
 		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM `' . self::external_scripts_table() . '`'
-			 . ' WHERE `tagname`=\'link\' OR `tagname`=\'script\';';
+			 . ' WHERE `whitelist`= 1 ';
 		return $wpdb->get_results( $sql, OBJECT );
 	}
 
 	/**
-	 * Cluster and white list an inline script
+	 * Cluster and whitelist an inline script
 	 *
 	 * @since 1.0.0
 	 * @access public

@@ -263,7 +263,6 @@ class Nunil_Clustering {
 			$seg_fields = $wpdb->get_results( 'SELECT DISTINCT `' . $tbl['segmentation_field'] . "` FROM $table", 'ARRAY_A' );
 
 			foreach ( $seg_fields as $segment ) {
-				$sql = "SELECT DISTINCT `tagname` FROM $table WHERE `" . $tbl['segmentation_field'] . "` = '" . $segment[ $tbl['segmentation_field'] ] . "'";
 
 				$tagnames = $wpdb->get_results( "SELECT DISTINCT `tagname` FROM $table WHERE `" . $tbl['segmentation_field'] . "` = '" . $segment[ $tbl['segmentation_field'] ] . "'", 'ARRAY_A' );
 
