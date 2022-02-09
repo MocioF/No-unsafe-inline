@@ -3,7 +3,6 @@
 namespace NUNIL\log;
 
 /**
- * /***
  * Writer interface
  */
 interface Nunil_Lib_Log_Writer {

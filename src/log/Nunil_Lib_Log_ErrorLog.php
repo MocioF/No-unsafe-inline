@@ -3,7 +3,6 @@
 namespace NUNIL\log;
 
 /**
- * /***
  * Log writter that uses error_log()
  */
 class Nunil_Lib_Log_ErrorLog implements Nunil_Lib_Log_Writer {

@@ -293,7 +293,7 @@ class Nunil_Lib_Db {
 
 		$page_url = is_null( $page_url ) ? Nunil_Lib_Utils::get_page_url() : $page_url;
 
-		$sql = $wpdb->prepare(
+		$sql    = $wpdb->prepare(
 			'SELECT `ID` FROM ' . self::occurences_table() . ' WHERE `dbtable`=%s AND `itemid`=%d AND `pageurl`=%s',
 			$tbl_string,
 			intval( $id ),
@@ -938,7 +938,7 @@ class Nunil_Lib_Db {
 	 * Truncate table
 	 *
 	 * @since 1.0.0
-	 * @param string $table Internal table name
+	 * @param string $table Internal table name.
 	 * @return bool
 	 */
 	public static function truncate_table( $table ) {
@@ -953,7 +953,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param string $table The table name
+	 * @param string $table The table name.
 	 * @return array<\stdClass>|null
 	 */
 	public static function get_database_summary_data( $table ) {
@@ -982,19 +982,19 @@ class Nunil_Lib_Db {
 			case 'nunil_external_scripts':
 				$result = $wpdb->get_results(
 					'SELECT `directive`, `tagname`, '
-				.	'CASE '
-				.	'WHEN `tagname` =\'script\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
-				.	'WHEN `tagname` =\'link\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
-				.	'ELSE \'' . esc_html__( 'No', 'no-unsafe-inline' ) . '\' '
-				.	'END AS \'nonceable\', '
-				.	'CASE '
-				.	'WHEN `tagname` =\'script\' THEN `whitelist` '
-				.	'WHEN `tagname` =\'link\' THEN `whitelist` '
-				.	'ELSE \'--\' '
-				.	'END AS \'whitelist\', '
-				.	'COUNT(`ID`) AS \'num\' FROM ' . self::with_prefix( $table ) . ' '
-				.	'GROUP BY `whitelist`, `tagname`, `directive` '
-				.	'ORDER BY `nonceable` DESC, `directive` ASC, `tagname` ASC, `num` ASC, `whitelist` ASC;'
+					. 'CASE '
+					. 'WHEN `tagname` =\'script\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
+					. 'WHEN `tagname` =\'link\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
+					. 'ELSE \'' . esc_html__( 'No', 'no-unsafe-inline' ) . '\' '
+					. 'END AS \'nonceable\', '
+					. 'CASE '
+					. 'WHEN `tagname` =\'script\' THEN `whitelist` '
+					. 'WHEN `tagname` =\'link\' THEN `whitelist` '
+					. 'ELSE \'--\' '
+					. 'END AS \'whitelist\', '
+					. 'COUNT(`ID`) AS \'num\' FROM ' . self::with_prefix( $table ) . ' '
+					. 'GROUP BY `whitelist`, `tagname`, `directive` '
+					. 'ORDER BY `nonceable` DESC, `directive` ASC, `tagname` ASC, `num` ASC, `whitelist` ASC;'
 				);
 				break;
 
@@ -1065,8 +1065,8 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param int    $id The script ID
-	 * @param string $clustername The clustername
+	 * @param int    $id The script ID.
+	 * @param string $clustername The clustername.
 	 * @return int|false The number of rows updated, or false on error.
 	 */
 	public static function upd_inl_cl_wl( $id, $clustername ) {

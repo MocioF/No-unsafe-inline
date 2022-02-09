@@ -255,7 +255,7 @@ class Nunil_Clustering {
 		);
 
 		foreach ( $scripts_tables as $tbl ) {
-			
+
 			$result_string = $result_string . '<br>' . sprintf( esc_html__( 'Clustering %s', 'no-unsafe-inline' ), '<b>' . $tbl['table'] . '</b>' ) . '<br>';
 
 			$table = NO_UNSAFE_INLINE_TABLE_PREFIX . $tbl['table'];

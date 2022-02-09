@@ -1,7 +1,21 @@
 <?php
+/**
+ * Static utility functions
+ *
+ * @package No unsafe inline
+ * @link    https://wordpress.org/plugins/no-unsafe-inline/
+ * @since   1.0.0
+ */
 
 namespace NUNIL;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class with static utility functions used by the plugin
+ */
 class Nunil_Lib_Utils {
 
 	/**
@@ -27,7 +41,7 @@ class Nunil_Lib_Utils {
 	 * @since  1.0.0
 	 * @access public
 	 * @param string $message  The message to show.
-	 * @param string $type     Default: success, values: success, warning, error
+	 * @param string $type     Default: success, values: success, warning, error.
 	 * @return void
 	 */
 	public static function show_message( $message, $type = 'success' ): void {

@@ -12,7 +12,6 @@
 namespace NUNIL;
 
 /**
- * /***
  * Logger
  */
 class Nunil_Lib_Log {

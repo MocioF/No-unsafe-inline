@@ -11,6 +11,10 @@
 
 namespace NUNIL;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class with methods used to install and uninstall muplugin
  *
@@ -37,6 +41,7 @@ class Nunil_Manage_Muplugin {
 	 *
 	 * @since 1.0.0
 	 * @return void
+	 * @throws \Exception
 	 */
 	public static function toggle_nunil_muplugin_installation() {
 		$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
@@ -49,16 +54,19 @@ class Nunil_Manage_Muplugin {
 			'error'  => '',
 		);
 		if ( ! self::is_nunil_muplugin_installed() ) {
-			// INSTALL
+			// INSTALL.
 			if ( ! wp_mkdir_p( $mu_dir ) ) {
-				$result['error']  = sprintf(
+				$result['error'] = sprintf(
+					// translators: %s is the path to mu-plugin dir.
 					__( 'Error! The following directory could not be created: %s.', 'no-unsafe-inline' ),
 					$mu_dir
 				);
 				$result['status'] = 'ERROR';
+				// translators: %s is the path to mu-plugin dir.
 				Nunil_Lib_Log::error( sprintf( __( 'Error in installing mu-plugin! The following directory could not be created: %s.', 'no-unsafe-inline' ), $mu_dir ) );
+				// translators: %s is the path to mu-plugin dir.
 				throw new \Exception( sprintf( __( 'Error in installing mu-plugin! The following directory could not be created: %s.', 'no-unsafe-inline' ), $mu_dir ) );
-			} if ( $result['status'] !== 'ERROR' && ! copy( $source, $dest ) ) {
+			} if ( 'ERROR' !== $result['status'] && ! copy( $source, $dest ) ) {
 				$result['error']  = sprintf( __( 'Error! Could not copy Nunil MU - Plugin from % 1$s to % 2$s . ', 'no-unsafe-inline' ), $source, $dest );
 				$result['status'] = 'ERROR';
 				Nunil_Lib_Log::error( sprintf( __( 'Error! Could not copy Nunil MU - Plugin from % 1$s to % 2$s . ', 'no-unsafe-inline' ), $source, $dest ) );
@@ -72,8 +80,5 @@ class Nunil_Manage_Muplugin {
 				throw new \Exception( sprintf( __( 'Error ! Could not remove the Nunil MU - Plugin from % s . ', 'no-unsafe-inline' ), $dest ) );
 			}
 		}
-		// ~ header( 'Content - Type: application / json' );
-		// ~ echo json_encode( $result );
-		// ~ die();
 	}
 }

@@ -59,6 +59,7 @@ class Nunil_Base_Src_Rules {
 	 * Calls the WP-List child class to print the table.
 	 *
 	 * @since    1.0.0
+	 * @throws \Exception
 	 */
 	public function __construct() {
 		$cache_key   = 'external_scripts_directives';
@@ -75,8 +76,8 @@ class Nunil_Base_Src_Rules {
 		if ( is_array( $directives ) ) {
 			$this->directives = $directives;
 		} else {
-			Nunil_Lib_Log::error( '$directive should be an array' );
-			throw new \Exception( '$directive should be an array' );
+			Nunil_Lib_Log::error( '$directives should be an array' );
+			throw new \Exception( '$directives should be an array' );
 		}
 	}
 
@@ -156,7 +157,7 @@ class Nunil_Base_Src_Rules {
 	 * @since    1.0.0
 	 * @access   private
 	 *
-	 * @param array<\stdClass>|null $ext_scripts Array of OBJECT returned by wpdb::get_results
+	 * @param array<\stdClass>|null $ext_scripts Array of OBJECT returned by wpdb::get_results .
 	 * @return array<array{
 	 *     scheme:?string,
 	 *     user:?string,
@@ -184,16 +185,7 @@ class Nunil_Base_Src_Rules {
 	 * @since    1.0.0
 	 * @access   private
 	 *
-	 * @param array<array{
-	 *     scheme:?string,
-	 *     user:?string,
-	 *     pass:?string,
-	 *     host:?string,
-	 *     port:?int,
-	 *     path:string,
-	 *     query:?string,
-	 *     fragment:?string
-	 * }> $parsed_urls Array of League\Uri\UriString::parse results.
+	 * @param array<array{ scheme:?string, user:?string, pass:?string, host:?string, port:?int, path:string, query:?string, fragment:?string }> $parsed_urls Array of League\Uri\UriString::parse results.
 	 * @return array<string>
 	 */
 	private function get_host_source( $parsed_urls ) {
@@ -271,16 +263,7 @@ class Nunil_Base_Src_Rules {
 	 * @since    1.0.0
 	 * @access   public
 	 *
-	 * @param array<array{
-	 *     scheme:?string,
-	 *     user:?string,
-	 *     pass:?string,
-	 *     host:?string,
-	 *     port:?int,
-	 *     path:string,
-	 *     query:?string,
-	 *     fragment:?string
-	 * }> $parsed_urls Array of League\Uri\UriString::parse results.
+	 * @param array<array{ scheme:?string, user:?string, pass:?string, host:?string, port:?int, path:string, query:?string, fragment:?string }> $parsed_urls Array of League\Uri\UriString::parse results.
 	 * @return array<string>
 	 */
 	public function get_scheme_source( $parsed_urls ) {

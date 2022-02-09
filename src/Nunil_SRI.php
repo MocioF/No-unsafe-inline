@@ -17,7 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
 /**
  * Class with methods used to create base -src rules for external content
  *
@@ -28,7 +27,7 @@ class Nunil_SRI {
 
 	/**
 	 * Parses url in array
-	 * 
+	 *
 	 * Parese url using League\Uri\UriString
 	 *
 	 * @since 1.0.0
@@ -41,7 +40,7 @@ class Nunil_SRI {
 
 	/**
 	 * Check it uri is a local resource
-	 * 
+	 *
 	 * Checks a URL to determine whether or not the resource is "remote"
 	 * (served by a third-party) or whether the resource is local (and
 	 * is being served by the same webserver as this plugin is run on.)
@@ -62,7 +61,7 @@ class Nunil_SRI {
 
 	/**
 	 * Fetch resource
-	 * 
+	 *
 	 * Fetch a resource using wp_remote_get
 	 *
 	 * @since 1.0.0

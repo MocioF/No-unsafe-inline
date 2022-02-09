@@ -3,7 +3,6 @@
 namespace NUNIL\log;
 
 /**
- * /***
  * Log writer that uses the DB
  */
 class Nunil_Lib_Log_Db implements Nunil_Lib_Log_Writer {

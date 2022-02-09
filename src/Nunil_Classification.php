@@ -2,7 +2,7 @@
 /**
  * Classification class
  *
- * Class used on classification of new $hashes.
+ * Class used when testing classificator.
  *
  * @package No unsafe inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/

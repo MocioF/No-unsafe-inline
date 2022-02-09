@@ -33,13 +33,13 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 	 */
 	public function capture_violations( \WP_REST_Request $request ) {
 
-		$options = get_option( 'no-unsafe-inline' );
+		$options = (array) get_option( 'no-unsafe-inline' );
 
-		if ( ! is_array( $options ) ) {
+		if ( empty( $options ) ) {
 			Nunil_Lib_Log::error( 'The option no-unsafe-inline has to be an array' );
-			throw new \Exception( 'The option no-unsafe-inline has to be an array' );
+			exit( 'The option no-unsafe-inline has to be an array' );
 		}
-
+		//~ error_log( print_r( $request, true ) );
 		if (
 			1 === $options['font-src_enabled'] ||
 			1 === $options['child-src_enabled'] ||
@@ -51,7 +51,6 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 		) {
 			$body = $request->get_body();
 			$body = json_decode( $body, true );
-
 			if ( is_array( $body ) && is_array( $body['csp-report'] ) ) {
 
 				$csp_report = $body['csp-report'];
