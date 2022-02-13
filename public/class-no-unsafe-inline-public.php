@@ -204,7 +204,8 @@ class No_Unsafe_Inline_Public {
 				}
 
 				if ( isset( $header_csp ) ) {
-					if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] ) {
+					// The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.
+					if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] && 1 !== $tools['test_policy'] ) {
 						$header_csp = $header_csp . 'upgrade-insecure-requests; ';
 					}
 
@@ -213,7 +214,8 @@ class No_Unsafe_Inline_Public {
 					foreach ( $base_src as $directive => $base_sources ) {
 						$dir = str_replace( '_base_rule', '', $directive );
 						$csp = trim( strval( $base_sources ) );
-						if ( is_array( $this->csp_local_whitelist ) ) {
+						// If in base rules is set 'none' for a directive, don't add anything to that.
+						if ( is_array( $this->csp_local_whitelist ) && '\'none\'' !== $csp ) {
 							foreach ( $this->csp_local_whitelist as $local ) {
 								if ( $dir === $local['directive'] ) {
 									$csp = $csp . ' \'' . $local['source'] . '\'';
@@ -301,24 +303,14 @@ class No_Unsafe_Inline_Public {
 	public function register_capture_routes(): void {
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( 1 === $tools['capture_enabled'] ) {
-			$capture_1 = new NUNIL\Nunil_Capture();
-			$capture_2 = new NUNIL\Nunil_Capture_CSP_Violations();
+			
+			$capture_1 = new NUNIL\Nunil_Capture_CSP_Violations();
 			register_rest_route(
 				'no-unsafe-inline/v1',
 				'/capture-by-violation',
 				array(
 					'methods'             => array( 'GET', 'POST' ),
-					'callback'            => array( $capture_2, 'capture_violations' ),
-					'permission_callback' => '__return_true',
-				)
-			);
-			register_rest_route(
-				'no-unsafe-inline/v1',
-				'/capture-by-observer',
-				array(
-					'methods'             => array( 'POST' ),
-					'callback'            => array( $capture_1, 'insert_inline_observed_in_db' ),
-					'args'                => array( $capture_1->nunil_captbyo_get_endpoint_args() ),
+					'callback'            => array( $capture_1, 'capture_violations' ),
 					'permission_callback' => '__return_true',
 				)
 			);
