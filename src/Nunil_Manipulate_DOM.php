@@ -16,6 +16,7 @@ use Beager\Nilsimsa;
 use Phpml\Classification\KNearestNeighbors;
 use Spatie\Async\Pool;
 use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Lib_Log as Log;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -664,14 +665,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								$srcs = $this->get_srcs_from_srcset( $node->getAttribute( 'srcset' ) );
 								foreach ( $srcs as $single_src ) {
 									$res = $this->check_res_wl( $single_src );
-									if ( $res && ! in_array( $res, $int_result, true ) ) {
-										$int_result[] = $res;
+									if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
+										$int_result[] = intval( $res );
 									}
 								}
 							} else {
 								$res = $this->check_res_wl( $src_attrib );
-								if ( $res && ! in_array( $res, $int_result, true ) ) {
-									$int_result[] = $res;
+								if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
+									$int_result[] = intval( $res );
 								}
 							}
 						}
@@ -685,14 +686,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 										$srcs = $this->get_srcs_from_srcset( $child_node->getAttribute( 'srcset' ) );
 										foreach ( $srcs as $single_src ) {
 											$res = $this->check_res_wl( $single_src );
-											if ( $res && ! in_array( $res, $int_result, true ) ) {
-												$int_result[] = $res;
+											if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
+												$int_result[] = intval( $res );
 											}
 										}
 									} else {
 										$res = $this->check_res_wl( $src_attrib );
-										if ( $res && ! in_array( $res, $int_result, true ) ) {
-											$int_result[] = $res;
+										if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
+											$int_result[] = intval( $res );
 										}
 									}
 								}
@@ -767,9 +768,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( ! is_null( $input_index ) ) { // If index has not been passed, don't do anything.
 
 			// Convert single index to array to perform loop.
-			// This if statement, should never been run, because now index is always an array.
+			// This if statement, should never been run, because index should be always an array.
 			if ( ! is_array( $input_index ) ) {
 				$run_index[] = $input_index;
+				Log::debug( '$input_index was not array in manipulate_external_node()' );
 			} else {
 				$run_index = $input_index;
 			}
