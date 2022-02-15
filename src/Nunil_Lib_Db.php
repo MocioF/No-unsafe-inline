@@ -1077,5 +1077,59 @@ class Nunil_Lib_Db {
 		);
 		return $wpdb->update( self::inline_scripts_table(), $data, array( 'ID' => $id ), array( '%s', '%d' ), array( '%d' ) );
 	}
+
+	/**
+	 * Get scrattrib and hashes from external_script id
+	 *
+	 * @since 1.0.0
+	 * @param int $id The script ID.
+	 * @return \stdClass|null
+	 */
+	public static function get_ext_hashes_from_id( $id ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT `src_attrib`, `sha256`, `sha384`, `sha512`  FROM ' . self::external_scripts_table() . ' WHERE `ID` = %s',
+			$id
+		);
+
+		return $wpdb->get_row( $sql, OBJECT );
+	}
+
+	/**
+	 * Get whitelist status of an external script, identified by hashes
+	 *
+	 * @param \stdClass $data Object with ext script hashes.
+	 * @return int|null
+	 */
+	public static function get_ext_wl( $data ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT `whitelist` FROM ' . self::external_scripts_table() . ' WHERE `sha256` = %s AND `sha384` = %s AND `sha512` = %s LIMIT 1',
+			$data->sha256,
+			$data->sha384,
+			$data->sha512
+		);
+		$val = $wpdb->get_var( $sql );
+		if ( ! is_null( $val ) ) {
+			return intval( $val );
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Update hashes of an external script
+	 *
+	 * @since 1.0.0
+	 * @param array<string|int> $data  Array with ext script hashes and whitelist status.
+	 * @param int               $id The ID of script in DB table.
+	 * @param array<string>     $format An array of formats to be mapped to each of the values in $data.
+	 * @return int|false The number of rows updated, or false on error.
+	 */
+	public static function update_ext_hashes( $data, $id, $format ) {
+		global $wpdb;
+		return $wpdb->update( self::external_scripts_table(), $data, array( 'ID' => $id ), $format, array( '%d' ) );
+	}
+
 }
 
