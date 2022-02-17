@@ -497,6 +497,29 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc'
 		);
 
+		/*** Start deactivate section */
+		add_settings_section(
+			'no-unsafe-inline_deactivate',
+			esc_html__( 'Deactivation options', 'no-unsafe-inline' ),
+			array( $this, 'print_deactivate_section' ),
+			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'remove_tables',
+			esc_html__( 'Remove tables', 'no-unsafe-inline' ),
+			array( $this, 'print_remove_tables' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_deactivate'
+		);
+
+		add_settings_field(
+			'remove_options',
+			esc_html__( 'Remove options', 'no-unsafe-inline' ),
+			array( $this, 'print_remove_options' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_deactivate'
+		);
 	}
 
 	/**
@@ -733,6 +756,18 @@ class No_Unsafe_Inline_Admin {
 			$new_input['logs_enabled'] = 1;
 		} else {
 			$new_input['logs_enabled'] = 0;
+		}
+
+		if ( isset( $input['remove_tables'] ) ) {
+			$new_input['remove_tables'] = 1;
+		} else {
+			$new_input['remove_tables'] = 0;
+		}
+
+		if ( isset( $input['remove_options'] ) ) {
+			$new_input['remove_options'] = 1;
+		} else {
+			$new_input['remove_options'] = 0;
 		}
 
 		// Radio.
@@ -1314,6 +1349,58 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[logs_enabled]">%s</label>',
 			esc_html( $enabled ),
 			esc_html__( 'Enable logs in database.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the deactivate section info
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_deactivate_section(): void {
+		print esc_html__( 'Deactivation options.', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the remove_tables option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_remove_tables(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['remove_tables'] ) ? esc_attr( $options['remove_tables'] ) : 0;
+
+		$enabled = $value ? 'checked' : '';
+
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[remove_tables]"' .
+			'name="no-unsafe-inline[remove_tables]" %s />
+			<label for="no-unsafe-inline[remove_tables]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Remove data tables from DB on plugin deactivation.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the remove_tables option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_remove_options(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['remove_options'] ) ? esc_attr( $options['remove_options'] ) : 0;
+
+		$enabled = $value ? 'checked' : '';
+
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[remove_options]"' .
+			'name="no-unsafe-inline[remove_options]" %s />
+			<label for="no-unsafe-inline[remove_options]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Remove plugin options from DB on plugin deactivation.', 'no-unsafe-inline' )
 		);
 	}
 
