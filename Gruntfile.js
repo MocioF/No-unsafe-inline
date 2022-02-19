@@ -161,10 +161,6 @@ module.exports = function( grunt ) {
         'readme'
     ]);
 
-    grunt.registerTask('googlefonts', [
-        'curl:google-fonts-source'
-    ]);
-
 	grunt.util.linefeed = '\n';
 
 };

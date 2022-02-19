@@ -461,7 +461,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'use_unsafe-hashes',
-			// translators:: %s is unsafe-hashes link to w3.org site.
+			// translators: %s is unsafe-hashes link to w3.org site.
 			sprintf( esc_html__( 'Use \'%s\' for JS event handlers attributes of HTML elements. (Say NO)', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#unsafe-hashes-usage" target="_blank">unsafe-hashes</a>' ),
 			array( $this, 'print_use_unsafe_hashes' ),
 			'no-unsafe-inline-options',
@@ -471,7 +471,7 @@ class No_Unsafe_Inline_Admin {
 		add_settings_field(
 			'fix_setattribute_style',
 			sprintf(
-				// translators:: %1$s is setAttribute link, %2$s is jQuery htmlPrefilte link.
+				// translators: %1$s is setAttribute link, %2$s is jQuery htmlPrefilte link.
 				esc_html__( 'Fix the use of %1$s in 3th party libraries and override %2$s', 'no-unsafe-inline' ),
 				'<a href="https://csplite.com/csp/test343/" target="_blank">setAttribute(\'style\')</a>',
 				'<a href="https://csplite.com/csp/test433/" target="_blank">jQuery htmlPrefilter()(\'style\')</a>'
@@ -874,7 +874,7 @@ class No_Unsafe_Inline_Admin {
 			esc_html( $option_name ),
 			esc_html( $enabled ),
 			esc_html( $option_name ),
-			// translators:: %s is a CSP directory link on w3.org specs for CSP3.
+			// translators: %s is a CSP directory link on w3.org specs for CSP3.
 			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label ) . '" target="_blank">' . esc_html( $label ) . '</a>' )
 		);
 	}
@@ -1093,7 +1093,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_use_sri_section(): void {
 		printf(
-			// translators:: Subresource Integrity link.
+			// translators: Subresource Integrity link.
 			esc_html__( 'Options to use %s', 'no-unsafe-inline' ),
 			'<a href="https://w3c.github.io/webappsec-subresource-integrity/" target="_blank">Subresource Integrity</a>'
 		);
@@ -1215,9 +1215,9 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[use_strict-dynamic]" %s />
 			<label for="no-unsafe-inline[use_strict-dynamic]">%s</label>',
 			esc_html( $enabled ),
-			// translators:: strict-dynamic link.
+			// translators: strict-dynamic link.
 			sprintf( esc_html__( 'Add %s in script-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
-				// translators:: %1$s and %2$s are link to external websites.
+				// translators: %1$s and %2$s are link to external websites.
 				esc_html__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
 				'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
 				'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>'
@@ -1242,7 +1242,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[no-unsafe-inline_upgrade_insecure]" %s />
 			<label for="no-unsafe-inline[no-unsafe-inline_upgrade_insecure]">%s</label>',
 			esc_html( $enabled ),
-			// translators:: upgrade-insecure-requests link.
+			// translators: upgrade-insecure-requests link.
 			sprintf( esc_html__( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank"><b>upgrade-insecure-requests</b></a>' )
 		);
 	}

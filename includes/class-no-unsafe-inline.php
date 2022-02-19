@@ -61,7 +61,7 @@ class No_Unsafe_Inline {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      array    $managed_src_directive    The CSP -src directive managed from this plugin
+	 * @var      array<string>  $managed_directive    The CSP directives managed from this plugin
 	 */
 	public $managed_directives;
 

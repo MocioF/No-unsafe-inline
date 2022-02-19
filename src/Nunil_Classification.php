@@ -8,7 +8,10 @@
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
+
 namespace NUNIL;
+
+use NUNIL\Nunil_Lib_Db as DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -16,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Phpml\Classification\KNearestNeighbors;
 
+/**
+ * Classification class
+ *
+ * Class used when testing classificator.
+ */
 class Nunil_Classification {
 
 	/**
@@ -23,18 +31,10 @@ class Nunil_Classification {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param string $tagname The tagname in inline_scripts rows we want to cluster
+	 * @param string $tagname The tagname in inline_scripts rows we want to cluster.
 	 * @return array{samples: array<array<int>>, labels: array<string>}>
 	 */
-	public function get_samples( $tagname ) {
-		global $wpdb;
-
-		$table = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-
-		$sql_select = "SELECT `nilsimsa` AS 'hexDigest', `clustername`, `whitelist` FROM $table ";
-		$sql_where  = "WHERE (`whitelist` = true AND `clustername` <> 'Unclustered' ) OR `clustername` = 'Unclustered' ";
-
-		$sql = $sql_select . $sql_where;
+	public function get_samples( $tagname = '' ) {
 
 		$cache_key   = 'training_inline_classifier';
 		$cache_group = 'no-unsafe-inline';
@@ -42,7 +42,7 @@ class Nunil_Classification {
 
 		$rows = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $rows ) {
-			$rows = $wpdb->get_results( $sql );
+			$rows = DB::get_classification_samples( $tagname );
 			wp_cache_set( $cache_key, $rows, $cache_group, $expire_secs );
 		}
 
@@ -63,34 +63,6 @@ class Nunil_Classification {
 	}
 
 	/**
-	 * Get cases for test classifier
-	 *
-	 * @since 1.0.0
-	 * @return array<array{exp_labels: string, nilsimsa: string}>>
-	 */
-	public function get_cases() {
-		global $wpdb;
-
-		$table = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-
-		$sql = "SELECT `clustername` AS 'exp_label', `nilsimsa` AS 'hexDvalue' from $table WHERE `whitelist` = false and `clustername` = 'Unclustered'";
-
-		$cache_key   = 'test_cases';
-		$cache_group = 'no-unsafe-inline';
-		$expire_secs = 10;
-
-		$rows = wp_cache_get( $cache_key, $cache_group );
-		if ( false === $rows ) {
-			$rows = $wpdb->get_results( $sql, ARRAY_A );
-		}
-		foreach ( $rows as &$row ) {
-			$row = (array) $row;
-		}
-
-		return $rows;
-	}
-
-	/**
 	 * Performs a test of classifier
 	 *
 	 * @since 1.0.0
@@ -103,7 +75,7 @@ class Nunil_Classification {
 		$cases = array();
 
 		for ( $i = 0; $i < 5; $i++ ) {
-			$row     = Nunil_Lib_Db::get_random_cluster_data( 'inline_scripts' );
+			$row     = DB::get_random_cluster_data( 'inline_scripts' );
 			$cases[] = $row;
 		}
 
@@ -114,10 +86,14 @@ class Nunil_Classification {
 		$result_string     = $result_string . '<br><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no-unsafe-inline' ) . ' --- </b><br>';
 		$result_string     = $result_string . esc_html__( 'Start time DB GET: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
-		$database      = $this->get_samples( 'script' );
+		$suitable_tags = array( 'script', 'style' );
+		$rd_key        = array_rand( $suitable_tags, 1 );
+
+		$database      = $this->get_samples( $suitable_tags[ $rd_key ] );
 		$nums          = count( $database['samples'] );
 		$end_time      = microtime( true );
 		$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Tag: ', 'no-unsafe-inline' ) . "<b>$suitable_tags[$rd_key]</b>" . '<br>';
 		$result_string = $result_string . esc_html__( 'Num of hashes: ', 'no-unsafe-inline' ) . "<b>$nums</b>" . '<br>';
 
 		$execution_time = ( $end_time - $start_time );

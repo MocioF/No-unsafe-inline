@@ -214,6 +214,9 @@ class No_Unsafe_Inline_Public {
 					foreach ( $base_src as $directive => $base_sources ) {
 						$dir = str_replace( '_base_rule', '', $directive );
 						$csp = trim( strval( $base_sources ) );
+						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
+							$csp = $csp . ' \'strict-dynamic\'';
+						}
 						// If in base rules is set 'none' for a directive, don't add anything to that.
 						if ( is_array( $this->csp_local_whitelist ) && '\'none\'' !== $csp ) {
 							foreach ( $this->csp_local_whitelist as $local ) {
@@ -225,9 +228,6 @@ class No_Unsafe_Inline_Public {
 							'frame-ancestors' !== $dir ) {
 								$csp = $csp . ' \'report-sample\'';
 							}
-						}
-						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
-							$csp = $csp . ' \'strict-dynamic\'';
 						}
 						$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
 					}

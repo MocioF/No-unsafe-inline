@@ -98,7 +98,7 @@ class Nunil_SRI {
 
 		foreach ( $my_ids as $id ) {
 
-			// $wpdb->get_var always return a string
+			// $wpdb->get_var always return a string.
 			$id = intval( $id );
 
 			$data = DB::get_ext_hashes_from_id( $id );
