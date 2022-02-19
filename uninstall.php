@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Fired when the plugin is uninstalled.
  *
@@ -29,3 +28,58 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+global $wpdb;
+
+// If we are in multisite we delete for all blogs (deletion = network level).
+if ( is_multisite() ) {
+
+	// Get all blogs in the network and delete tables on each one.
+	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+
+	foreach ( $blog_ids as $site_id ) {
+
+		switch_to_blog( $site_id );
+
+		no_unsafe_inline_uninstall_plugin();
+
+		restore_current_blog();
+	}
+} else {
+
+	no_unsafe_inline_uninstall_plugin();
+
+}
+
+/**
+ * Remove all options and tables on uninstall
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function no_unsafe_inline_uninstall_plugin() {
+
+	global $wpdb;
+
+	// Let's remove all options.
+	foreach ( wp_load_alloptions() as $option => $value ) {
+		if ( strpos( $option, 'no-unsafe-inline_' ) === 0 ) {
+			// for site options in Multisite.
+			delete_option( $option );
+		}
+	};
+
+	// let's drop the tables.
+	$tables_name = array(
+		'inline_scripts',
+		'external_scripts',
+		'event_handlers',
+		'occurences',
+		'nunil_logs',
+	);
+
+	foreach ( $tables_name as $table ) {
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nunil_$table" );
+	}
+}
+

@@ -31,8 +31,11 @@ add_action(
 		for ( $i = 0; $i < $levels; $i++ ) {
 			$final .= ob_get_clean();
 		}
-		$tools = get_option( 'no-unsafe-inline-tools' );
-		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] || 1 === $tools['capture_enabled'] ) {
+		$tools = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( ( isset( $tools['test_policy'] ) && 1 === $tools['test_policy'] ) ||
+		( isset( $tools['enable_protection'] ) && 1 === $tools['enable_protection'] ) ||
+		( isset( $tools['capture_enabled'] ) && 1 === $tools['capture_enabled'] )
+		) {
 			/**
 			 * Apply any filters to the final output
 			 */
@@ -42,7 +45,7 @@ add_action(
 		} else {
 			$manipulated = $final;
 		}
-		
+		// phpcs:ignore
 		echo $manipulated;
 	},
 	0

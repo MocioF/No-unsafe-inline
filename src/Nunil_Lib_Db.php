@@ -148,7 +148,7 @@ class Nunil_Lib_Db {
 				PRIMARY KEY  (ID),
 				KEY sha256_ind (`sha256`),
 				KEY sha384_ind (`sha384`),
-				KEY sha512_ind (`sha512`),
+				KEY sha512_ind (`sha512`)
 				) $charset_collate;";
 		dbDelta( $sql );
 
@@ -179,8 +179,8 @@ class Nunil_Lib_Db {
 				clustername VARCHAR(64) COLLATE ascii_bin NOT NULL DEFAULT 'Unclustered',
 				whitelist TINYINT(1) NOT NULL DEFAULT '0',
 				PRIMARY KEY  (ID),
-				KEY sha256_ind (`sha256`)
-				KEY sha384_ind (`sha384`)
+				KEY sha256_ind (`sha256`),
+				KEY sha384_ind (`sha384`),
 				KEY sha512_ind (`sha512`)
 				) $charset_collate;";
 		dbDelta( $sql );
@@ -1118,6 +1118,26 @@ class Nunil_Lib_Db {
 	}
 
 	/**
+	 * Get samples for classification test.
+	 *
+	 * @since 1.0.0
+	 * @param string $tagname The HTML tag to get samples for.
+	 * @return array<\stdClass>
+	 */
+	public static function get_classification_samples( $tagname = '' ) {
+		global $wpdb;
+		$sql = 'SELECT `nilsimsa` AS \'hexDigest\', `clustername`, `whitelist` FROM ' . self::inline_scripts_table()
+		. ' WHERE (`whitelist` = true AND `clustername` <> \'Unclustered\' ) OR `clustername` = \'Unclustered\'';
+
+		if ( '' !== $tagname ) {
+			$sql = $sql . ' AND `tagname` = %s';
+			$sql = $wpdb->prepare( $sql, $tagname );
+		}
+
+		return $wpdb->get_results( $sql );
+	}
+
+	/**
 	 * Update hashes of an external script
 	 *
 	 * @since 1.0.0
@@ -1131,5 +1151,39 @@ class Nunil_Lib_Db {
 		return $wpdb->update( self::external_scripts_table(), $data, array( 'ID' => $id ), $format, array( '%d' ) );
 	}
 
+	/**
+	 * Get a list of blogs (sites in multisites installations) ids
+	 *
+	 * @since 1.0.0
+	 * @return array<int> Array indexed from 0 by SQL result row number.
+	 */
+	public static function get_blogs_ids() {
+		global $wpdb;
+		return $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	}
+
+	/**
+	 * Remove data tables from database
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function remove_data_tables() {
+		global $wpdb;
+		$structure = 'DROP TABLE IF EXISTS ' . self::inline_scripts_table();
+		$wpdb->query( $structure );
+
+		$structure = 'DROP TABLE IF EXISTS ' . self::external_scripts_table();
+		$wpdb->query( $structure );
+
+		$structure = 'DROP TABLE IF EXISTS ' . self::event_handlers_table();
+		$wpdb->query( $structure );
+
+		$structure = 'DROP TABLE IF EXISTS ' . self::occurences_table();
+		$wpdb->query( $structure );
+
+		$structure = 'DROP TABLE IF EXISTS ' . self::logs_table();
+		$wpdb->query( $structure );
+	}
 }
 

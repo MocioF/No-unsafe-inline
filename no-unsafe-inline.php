@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -54,19 +53,27 @@ define( 'NO_UNSAFE_INLINE_TABLE_PREFIX', $nunil_table_prefix );
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-no-unsafe-inline-activator.php
+ *
+ * @since 1.0.0
+ * @param bool $network_wide True if plugin is network-wide activated.
+ * @return void
  */
-function activate_no_unsafe_inline() {
+function activate_no_unsafe_inline( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
-	No_Unsafe_Inline_Activator::activate();
+	No_Unsafe_Inline_Activator::activate( $network_wide );
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-no-unsafe-inline-deactivator.php
+ *
+ * @since 1.0.0
+ * @param bool $network_wide True if plugin is network-wide activated.
+ * @return void
  */
-function deactivate_no_unsafe_inline() {
+function deactivate_no_unsafe_inline( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
-	No_Unsafe_Inline_Deactivator::deactivate();
+	No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 }
 
 register_activation_hook( __FILE__, 'activate_no_unsafe_inline' );
@@ -81,12 +88,12 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline.php';
 /**
  * Include all dependencies, managed by composer.
  */
-require plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) .'vendor/autoload.php';
+require plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) . 'vendor/autoload.php';
 
 /**
  * Extra settings for visualization in plugin list.
  */
-//~ require_once plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) . 'settings.php';
+// ~ require_once plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) . 'settings.php';
 
 
 /**
@@ -97,11 +104,50 @@ require plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) .'vendor/autoload.php';
  * not affect the page life cycle.
  *
  * @since    1.0.0
+ * @return   void
  */
 function run_no_unsafe_inline() {
 
-	$plugin = new No_Unsafe_Inline();
-	$plugin->run();
+	add_action(
+		'init',
+		function () {
+
+			$plugin = new No_Unsafe_Inline();
+
+			$plugin->run();
+
+			// if we have a new blog on a multisite let's set it up.
+			add_action( 'wp_initialize_site', 'no_unsafe_inline_run_multisite_new_site' );
+
+			// if a blog is removed, let's remove the settings.
+			add_action( 'wp_uninitialize_site', 'no_unsafe_inline_run_multisite_delete' );
+
+		}
+	);
 
 }
 run_no_unsafe_inline();
+
+/**
+ * Trigger plugin activation on a new blog creations
+ *
+ * @since 1.0.0
+ * @param \WP_Site $params New site object.
+ * @return void
+ */
+function no_unsafe_inline_run_multisite_new_site( $params ) {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
+	No_Unsafe_Inline_Activator::add_blog( $params );
+}
+
+/**
+ * Trigger table removes on blog deletion
+ *
+ * @since 1.0.0
+ * @param array<mixed> $params Site params.
+ * @return void
+ */
+function no_unsafe_inline_run_multisite_delete( $params ) {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
+	No_Unsafe_Inline_Deactivator::remove_blog( $params );
+}

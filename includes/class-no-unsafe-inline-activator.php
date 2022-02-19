@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Fired during plugin activation
  *
@@ -12,6 +11,8 @@
 
 use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Db as DB;
+
 /**
  * Fired during plugin activation.
  *
@@ -25,6 +26,37 @@ use NUNIL\Nunil_Lib_Log as Log;
 class No_Unsafe_Inline_Activator {
 
 	/**
+	 * Run activation routine for multisite plugin.
+	 *
+	 * If is a multisite installation, we run an activation routine for each blog.
+	 *
+	 * @since 1.0.0
+	 * @param bool $network_wide Indicates if the plugin is network activated.
+	 * @return void
+	 */
+	public static function activate( $network_wide ): void {
+		$check_versions = self::nunil_check_minimum_versions();
+		if ( true === $check_versions ) {
+			if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
+
+				$blogids = DB::get_blogs_ids();
+
+				foreach ( $blogids as $blog_id ) {
+					switch_to_blog( $blog_id );
+					self::single_activate();
+				}
+				restore_current_blog();
+			} else {
+				self::single_activate();
+			}
+		} else {
+			// translators: %1$s is a php version; %2$s is a wp version.
+			$error = sprintf( esc_html__( 'no-unsafe-inline requires minimum php version %1$s and minimum WP version %2$s.', 'no-unsafe-inline' ), NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION, NO_UNSAFE_INLINE_MINIMUM_WP_VERSION );
+			die( esc_html( $error ) );
+		}
+	}
+
+	/**
 	 * Activate the plugin.
 	 *
 	 * On plugin activation we install the mu-plugin and create the tables.
@@ -32,11 +64,10 @@ class No_Unsafe_Inline_Activator {
 	 * @since    1.0.0
 	 * @return void
 	 */
-	public static function activate(): void {
-		global $wpdb;
+	public static function single_activate(): void {
 		set_time_limit( 360 );
 		self::disable_all_tools();
-		\NUNIL\Nunil_Lib_Db::db_create();
+		DB::db_create();
 		self::set_default_options();
 
 		try {
@@ -46,7 +77,8 @@ class No_Unsafe_Inline_Activator {
 		} catch ( Exception $ex ) {
 			Log::error( 'Impossible to install mu-plugin: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
 			Log::error( 'no-unsafe-inline cannot work without mu-plugin. Deactivate.' );
-			No_Unsafe_Inline_Deactivator::deactivate;
+			require_once dirname( __FILE__ ) . '/class-no-unsafe-inline-deactivator.php';
+			\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 		}
 		Log::info( 'Activated plugin.' );
 	}
@@ -84,37 +116,71 @@ class No_Unsafe_Inline_Activator {
 			}
 			$plugin_options['prefetch-src_enabled'] = 0;
 
-			$plugin_options['external_host_mode']      = 'sch-host';
-			$plugin_options['sri_script']              = 1;
-			$plugin_options['sri_link']                = 1;
-			$plugin_options['use_strict-dynamic']      = 0;
-			$plugin_options['sri_sha256']              = 1;
-			$plugin_options['sri_sha384']              = 0;
-			$plugin_options['sri_sha512']              = 0;
-			$plugin_options['inline_scripts_mode']     = 'sha256';
-			$plugin_options['protect_admin']           = 1;
-			$plugin_options['use_unsafe-hashes']       = 0;
-			$plugin_options['fix_setattribute_style']  = 1;
-			$plugin_options['add_wl_by_cluster_to_db'] = 1;
-			$plugin_options['logs_enabled']            = 1;
-			
-			$plugin_options['hash_in_script-src']      = 1;
-			$plugin_options['hash_in_style-src']       = 1;
-			$plugin_options['hash_in_img-src']         = 0;
-			$plugin_options['hash_in_all']             = 0;
+			$plugin_options['external_host_mode']                = 'sch-host';
+			$plugin_options['hash_in_script-src']                = 1;
+			$plugin_options['hash_in_style-src']                 = 1;
+			$plugin_options['hash_in_img-src']                   = 0;
+			$plugin_options['hash_in_all']                       = 0;
+			$plugin_options['sri_sha256']                        = 1;
+			$plugin_options['sri_sha384']                        = 0;
+			$plugin_options['sri_sha512']                        = 0;
+			$plugin_options['sri_script']                        = 1;
+			$plugin_options['sri_link']                          = 1;
+			$plugin_options['inline_scripts_mode']               = 'sha256';
+			$plugin_options['use_strict-dynamic']                = 0;
+			$plugin_options['no-unsafe-inline_upgrade_insecure'] = 1;
+			$plugin_options['protect_admin']                     = 1;
+			$plugin_options['use_unsafe-hashes']                 = 0;
+			$plugin_options['fix_setattribute_style']            = 1;
+			$plugin_options['add_wl_by_cluster_to_db']           = 1;
+			$plugin_options['logs_enabled']                      = 1;
+			$plugin_options['remove_tables']                     = 0;
+			$plugin_options['remove_options']                    = 0;
 
 		}
 		update_option( 'no-unsafe-inline', $plugin_options );
+
+		$tools                      = array();
+		$tools['capture_enabled']   = 0;
+		$tools['test_policy']       = 0;
+		$tools['enable_protection'] = 0;
+		update_option( 'no-unsafe-inline-tools', $tools );
 	}
 
-	// TUTTO DA FARE, E NON QUI
-	private function check_php_version() {
-		$php_version = phpversion();
-		if ( version_compare( $php_version, 'NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION', '<' ) ) {
-			$string = sprintf( esc_html__( 'no-unsafe-inline requires minimum php version %s.', 'no-unsafe-inline' ), NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION );
-			// deactivate your plugin or abort installing your theme and tell the user why
+	/**
+	 * Running setup whenever a new blog is created
+	 *
+	 * @since 1.0.0
+	 * @param \WP_Site $params New site object.
+	 * @return void
+	 */
+	public static function add_blog( $params ) {
+
+		if ( is_plugin_active_for_network( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
+
+			switch_to_blog( $params->blog_id );
+
+			self::single_activate();
+
+			restore_current_blog();
 		}
 	}
 
+	/**
+	 * Check if installed php version is compatible with plugin
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private static function nunil_check_minimum_versions() {
+		global $wp_version;
+		$php_version = phpversion();
+		if ( version_compare( $php_version, NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION, '<' ) ||
+		version_compare( $wp_version, NO_UNSAFE_INLINE_MINIMUM_WP_VERSION, '<' ) ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 }
