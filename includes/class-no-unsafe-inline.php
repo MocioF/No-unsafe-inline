@@ -210,7 +210,6 @@ class No_Unsafe_Inline {
 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'nunil_upgrade', 10, 0 );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'nunil_admin_options_submenu' );
-		// ~ $this->loader->add_action( 'admin_load', $plugin_admin, 'nunil_set_screen' );
 
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
 
@@ -226,7 +225,9 @@ class No_Unsafe_Inline {
 
 		$this->loader->add_filter( 'plugin_action_links_' . NO_UNSAFE_INLINE_PLUGIN_BASENAME, $plugin_admin, 'plugin_directory_links' );
 		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'nunil_get_extra_meta_links', 10, 2 );
-		// ~ $this->loader->add_filter( 'set_screen_option_nunil_inline_per_page', $plugin_admin, 'nunil_set_screen_options', 10, 3 );
+
+		$this->loader->add_filter( 'set-screen-option', $plugin_admin, 'save_screen_options', 10, 3 );
+
 	}
 
 	/**

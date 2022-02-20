@@ -9,7 +9,7 @@
  * @subpackage No_Unsafe_Inline/admin
  */
 
-use NUNIL\Nunil_Lib_Db As DB;
+use NUNIL\Nunil_Lib_Db as DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -98,7 +98,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && ! empty( $_GET['_wpnonce'] ) ) {
 				$nonce  = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
-				$action = $_GET['action'];
+				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
 		} else {
 				$action = '';
 		}
@@ -110,15 +110,15 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::ext_whitelist( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::ext_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
-					$selected      = $_POST['ext-select'];
-					$affected      = DB::ext_whitelist( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['ext-select'] ) );
+					$affected = DB::ext_whitelist( $selected );
 				}
 				break;
 
@@ -127,15 +127,15 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::ext_whitelist( $script_id, false );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::ext_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
-					$selected      = $_POST['ext-select'];
-					$affected      = DB::ext_whitelist( $selected, false );
+					$selected = sanitize_text_field( wp_unslash( $_POST['ext-select'] ) );
+					$affected = DB::ext_whitelist( $selected, false );
 				}
 				break;
 
@@ -144,15 +144,15 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::ext_delete( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::ext_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
-					$selected      = $_POST['ext-select'];
-					$affected      = DB::ext_delete( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['ext-select'] ) );
+					$affected = DB::ext_delete( $selected );
 				}
 				break;
 
@@ -169,7 +169,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 
 			case 'hash-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
-					$selected = $_POST['ext-select'];
+					$selected = sanitize_text_field( wp_unslash( $_POST['ext-select'] ) );
 					$sri      = new \NUNIL\Nunil_SRI();
 					$sri->put_hashes_in_db( $selected, $overwrite = false );
 				}
@@ -191,14 +191,13 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 
 			case 'rehash-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
-					$selected = $_POST['ext-select'];
+					$selected = sanitize_text_field( wp_unslash( $_POST['ext-select'] ) );
 					$sri      = new \NUNIL\Nunil_SRI();
 					$sri->put_hashes_in_db( $selected, $overwrite = true );
 				}
 				break;
 			default:
-				// do nothing or something else
-				return;
+				// do nothing or something else.
 				break;
 		}
 
@@ -209,7 +208,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the src_attrib column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -251,7 +250,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha256 column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -266,7 +265,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha384 column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -281,7 +280,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha512 column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -296,7 +295,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the whitelist column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -379,7 +378,6 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			'sha512'     => __( 'sha512', 'no-unsafe-inline' ),
 			'whitelist'  => __( 'WhiteList', 'no-unsafe-inline' ),
 
-			// Aggiungi i parametri calcolati per Frequenza e Attendibilità
 		);
 
 		return $columns;
@@ -400,18 +398,20 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 
 		$sql = "SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM $tbl_ext "
 			 . "WHERE 1 $do_search ";
-			 //~ . "WHERE ( `tagname`='link' OR `tagname`='script' ) $do_search ";
 
-		$columns  = $this->get_columns();
-		$hidden   = array();
-		$sortable = $this->get_sortable_columns();
-
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = $this->get_column_info();
 
 		$this->process_bulk_action();
 
-		$per_page = 20;
-		$paged    = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
+		$user          = get_current_user_id();
+		$screen        = get_current_screen();
+		$screen_option = $screen->get_option( 'per_page', 'option' );
+		$per_page      = get_user_meta( $user, $screen_option, true );
+		if ( empty( $per_page ) || $per_page < 1 ) {
+			$per_page = $screen->get_option( 'per_page', 'default' );
+		}
+
+		$paged = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
 
 		$order = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'ASC', 'DESC', 'asc', 'desc' ) ) ) ? $_REQUEST['order'] : 'ASC';
 

@@ -10,7 +10,7 @@
  */
 
 use Highlight\Highlighter;
-use NUNIL\Nunil_Lib_Db As DB;
+use NUNIL\Nunil_Lib_Db as DB;
 
 defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
 
@@ -96,7 +96,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && ! empty( $_GET['_wpnonce'] ) ) {
 				$nonce  = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
-				$action = $_GET['action'];
+				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
 		} else {
 				$action = '';
 		}
@@ -108,15 +108,15 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::evh_whitelist( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::evh_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
-					$selected      = $_POST['evh-select'];
-					$affected      = DB::evh_whitelist( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['evh-select'] ) );
+					$affected = DB::evh_whitelist( $selected );
 				}
 				break;
 
@@ -125,15 +125,15 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::evh_whitelist( $script_id, false );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::evh_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
-					$selected      = $_POST['evh-select'];
-					$affected      = DB::evh_whitelist( $selected, false );
+					$selected = sanitize_text_field( wp_unslash( $_POST['evh-select'] ) );
+					$affected = DB::evh_whitelist( $selected, false );
 				}
 				break;
 
@@ -142,15 +142,15 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::evh_delete( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::evh_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
-					$selected      = $_POST['evh-select'];
-					$affected      = DB::evh_delete( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['evh-select'] ) );
+					$affected = DB::evh_delete( $selected );
 				}
 				break;
 
@@ -159,14 +159,13 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::evh_uncluster( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::evh_uncluster( $script_id );
 				}
 				break;
 
 			default:
-				// do nothing or something else
-				return;
+				// do nothing or something else.
 				break;
 		}
 
@@ -176,12 +175,11 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	/**
 	 * Render the script column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
 	public function column_script( $item ) {
-
 		$admin_page_url = admin_url( 'options-general.php' );
 
 		$hl = new \Highlight\Highlighter();
@@ -213,7 +211,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	/**
 	 * Render the whitelist column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -248,7 +246,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	/**
 	 * Render the clustername column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -281,7 +279,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	/**
 	 * Render the pages column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -312,7 +310,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			case 'occurences':
 				return $item[ $column_name ];
 			default:
-				return print_r( $item, true ); // Show the whole array for troubleshooting purposes
+				return print_r( $item, true ); // Show the whole array for troubleshooting purposes.
 		}
 	}
 
@@ -339,7 +337,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	/**
 	 * Define which columns are hidden
 	 *
-	 * @return Array
+	 * @return array
 	 */
 	public function get_hidden_columns() {
 		$hidden_columns = array(
@@ -366,8 +364,6 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			'whitelist'       => __( 'WhiteList', 'no-unsafe-inline' ),
 			'pages'           => __( 'Pages', 'no-unsafe-inline' ),
 			'lastseen'        => __( 'Last Seen', 'no-unsafe-inline' ),
-
-			// Aggiungi i parametri calcolati per Frequenza e Attendibilità
 		);
 
 		return $columns;
@@ -378,7 +374,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 */
-	function prepare_items() {
+	public function prepare_items() {
 		global $wpdb;
 
 		$tbl_evh = NO_UNSAFE_INLINE_TABLE_PREFIX . 'event_handlers';
@@ -402,18 +398,19 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			 . $do_search
 			 . "GROUP BY (CASE WHEN `clustername` <> 'Unclustered' THEN `clustername` ELSE `ID` END) ";
 
-		$columns = $this->get_columns();
-		// ~ $hidden                = $this->get_hidden_columns();
-		$hidden = array();
-
-		$sortable = $this->get_sortable_columns();
-
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = $this->get_column_info();
 
 		$this->process_bulk_action();
 
-		$per_page = 20;
-		$paged    = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
+		$user          = get_current_user_id();
+		$screen        = get_current_screen();
+		$screen_option = $screen->get_option( 'per_page', 'option' );
+		$per_page      = get_user_meta( $user, $screen_option, true );
+		if ( empty( $per_page ) || $per_page < 1 ) {
+			$per_page = $screen->get_option( 'per_page', 'default' );
+		}
+
+		$paged = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
 
 		$order = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'ASC', 'DESC', 'asc', 'desc' ) ) ) ? $_REQUEST['order'] : 'ASC';
 

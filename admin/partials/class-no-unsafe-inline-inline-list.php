@@ -10,7 +10,7 @@
  */
 
 use Highlight\Highlighter;
-use NUNIL\Nunil_Lib_Db As DB;
+use NUNIL\Nunil_Lib_Db as DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -98,7 +98,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && ! empty( $_GET['_wpnonce'] ) ) {
 				$nonce  = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
-				$action = $_GET['action'];
+				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
 		} else {
 				$action = '';
 		}
@@ -110,15 +110,15 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::inl_whitelist( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::inl_whitelist( $script_id );
 				}
 				break;
 
 			case 'whitelist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
-					$selected      = $_POST['inl-select'];
-					$affected      = DB::inl_whitelist( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['inl-select'] ) );
+					$affected = DB::inl_whitelist( $selected );
 				}
 				break;
 
@@ -127,15 +127,15 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::inl_whitelist( $script_id, false );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::inl_whitelist( $script_id, false );
 				}
 				break;
 
 			case 'blacklist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
-					$selected      = $_POST['inl-select'];
-					$affected      = DB::inl_whitelist( $selected, false );
+					$selected = sanitize_text_field( wp_unslash( $_POST['inl-select'] ) );
+					$affected = DB::inl_whitelist( $selected, false );
 				}
 				break;
 
@@ -144,15 +144,15 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::inl_delete( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::inl_delete( $script_id );
 				}
 				break;
 
 			case 'delete-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
-					$selected      = $_POST['inl-select'];
-					$affected      = DB::inl_delete( $selected );
+					$selected = sanitize_text_field( wp_unslash( $_POST['inl-select'] ) );
+					$affected = DB::inl_delete( $selected );
 				}
 				break;
 
@@ -161,14 +161,13 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id     = intval( $_GET['script_id'] );
-					$affected      = DB::inl_uncluster( $script_id );
+					$script_id = intval( $_GET['script_id'] );
+					$affected  = DB::inl_uncluster( $script_id );
 				}
 				break;
 
 			default:
-				// do nothing or something else
-				return;
+				// do nothing or something else.
 				break;
 		}
 
@@ -178,7 +177,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	/**
 	 * Render the script column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -215,7 +214,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	/**
 	 * Render the whitelist column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -250,7 +249,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	/**
 	 * Render the clustername column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -283,7 +282,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	/**
 	 * Render the pages column
 	 *
-	 * @param array $item
+	 * @param array $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -400,18 +399,19 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			 . $do_search
 			 . "GROUP BY (CASE WHEN `clustername` <> 'Unclustered' THEN `clustername` ELSE `id` END) ";
 
-		$columns = $this->get_columns();
-		// ~ $hidden                = $this->get_hidden_columns();
-		$hidden = array();
-
-		$sortable = $this->get_sortable_columns();
-
-		$this->_column_headers = array( $columns, $hidden, $sortable );
+		$this->_column_headers = $this->get_column_info();
 
 		$this->process_bulk_action();
 
-		$per_page = 20;
-		$paged    = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
+		$user          = get_current_user_id();
+		$screen        = get_current_screen();
+		$screen_option = $screen->get_option( 'per_page', 'option' );
+		$per_page      = get_user_meta( $user, $screen_option, true );
+		if ( empty( $per_page ) || $per_page < 1 ) {
+			$per_page = $screen->get_option( 'per_page', 'default' );
+		}
+
+		$paged = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
 
 		$order = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'ASC', 'DESC', 'asc', 'desc' ) ) ) ? $_REQUEST['order'] : 'ASC';
 
