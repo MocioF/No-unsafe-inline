@@ -887,7 +887,7 @@ class Nunil_Lib_Db {
 							$wpdb->prepare(
 								$del_sc_occ,
 								$id,
-								substr( $table, strlen( NO_UNSAFE_INLINE_TABLE_PREFIX ) )
+								substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
 							)
 						);
 					}
@@ -912,7 +912,7 @@ class Nunil_Lib_Db {
 					if ( true === $delete_occurences ) {
 						$in_str = '(';
 						foreach ( $ids as $rid ) {
-							$in_str = $in_str . "('" . substr( $table, strlen( NO_UNSAFE_INLINE_TABLE_PREFIX ) ) . "', $rid->id), ";
+							$in_str = $in_str . "('" . substr( $table, strlen( $wpdb->prefix . 'nunil_' ) ) . "', $rid->id), ";
 						}
 						$in_str = substr( $in_str, 0, strlen( $in_str ) - 2 );
 						$in_str = $in_str . ')';
@@ -1185,5 +1185,212 @@ class Nunil_Lib_Db {
 		$structure = 'DROP TABLE IF EXISTS ' . self::logs_table();
 		$wpdb->query( $structure );
 	}
-}
 
+	/**
+	 * Unprepared sql for inline_list table
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @param string $search String to be searched.
+	 * @return string $sql The unprepared sql for get_inline_list and get_inline_total_num
+	 */
+
+	private static function get_inline_sql( $search = '' ) {
+		global $wpdb;
+		$do_search = ( '' !== $search ) ? $wpdb->prepare( ' WHERE inl.`script` LIKE \'%%%s%%\' ', $search ) : '';
+
+		return 'SELECT inl.`ID`, inl.`directive`, inl.`tagname`, inl.`script`, inl.`clustername`, inl.`whitelist`, '
+			. '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
+			. ' GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR \'\\n\') END) AS \'pages\', '
+			. ' occ.lastseen AS \'lastseen\', COUNT(inl.`id`) AS \'occurences\' '
+			. 'FROM `' . self::inline_scripts_table() . '` AS inl LEFT JOIN '
+			. '    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `' . self::occurences_table() . '`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR \'\\n\') AS \'pageurls\', '
+			. '    MAX(`lastseen`) as lastseen'
+			. '    FROM `' . self::occurences_table() . '` '
+			. '    WHERE '
+			. '    `' . self::occurences_table() . '`.`dbtable` = \'inline_scripts\' '
+			. '    GROUP BY itemid) AS occ '
+			. 'ON inl.id = occ.itemid '
+			. $do_search
+			. 'GROUP BY (CASE WHEN `clustername` <> \'Unclustered\' THEN `clustername` ELSE `id` END) ';
+	}
+
+	/**
+	 * Get data of inline scripts for admin list table
+	 *
+	 * @since 1.0.0
+	 * @param string $orderby ORDER BY statement.
+	 * @param int    $per_page Number of results to retrieve.
+	 * @param int    $paged Number of results for OFFSET.
+	 * @param string $search String to be searched.
+	 * @return array{'ID': int, 'directive': string, 'tagname': string, 'script': string, 'clustername': string,
+	 *               'whitelist': int, 'pages': string, 'occurences': int, 'lastseen': int}|null
+	 */
+	public static function get_inline_list( $orderby, $per_page, $paged, $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_inline_sql( $search );
+		$sql = $sql . $orderby;
+
+		$limit = 'LIMIT %d OFFSET %d;';
+		$sql   = $sql . $limit;
+
+		$sql_prepared = $wpdb->prepare(
+			$sql,
+			$per_page,
+			$paged
+		);
+
+		return $wpdb->get_results( $sql_prepared, ARRAY_A );
+	}
+
+	/**
+	 * Get num of total query results.
+	 *
+	 * @since 1.0.0
+	 * @param string $search String to be searched.
+	 * @return int
+	 */
+	public static function get_inline_total_num( $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_inline_sql( $search );
+
+		return $wpdb->query( $sql );
+	}
+
+	/**
+	 * Unprepared sql for external_list table
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @param string $search String to be searched.
+	 * @return string $sql The unprepared sql for get_external_list and get_external_total_num
+	 */
+
+	private static function get_external_sql( $search = '' ) {
+		global $wpdb;
+		$do_search = ( $search ) ? $wpdb->prepare( ' AND `src_attrib` LIKE \'%%%s%%\' ', $search ) : '';
+
+		return 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM ' . self::external_scripts_table()
+			 . ' WHERE 1 ' . $do_search;
+	}
+
+	/**
+	 * Get data of external scripts for admin list table
+	 *
+	 * @since 1.0.0
+	 * @param string $orderby ORDER BY statement.
+	 * @param int    $per_page Number of results to retrieve.
+	 * @param int    $paged Number of results for OFFSET.
+	 * @param string $search String to be searched.
+	 * @return array{'ID': int, 'directive': string, 'tagname': string, 'src_attrib': string,
+	 *               'sha256': string, 'sha384': string, 'sha512': string, 'whitelist': int}|null
+	 */
+	public static function get_external_list( $orderby, $per_page, $paged, $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_external_sql( $search );
+		$sql = $sql . $orderby;
+
+		$limit = 'LIMIT %d OFFSET %d;';
+		$sql   = $sql . $limit;
+
+		$sql_prepared = $wpdb->prepare(
+			$sql,
+			$per_page,
+			$paged
+		);
+
+		return $wpdb->get_results( $sql_prepared, ARRAY_A );
+	}
+
+	/**
+	 * Get num of total query results.
+	 *
+	 * @since 1.0.0
+	 * @param string $search String to be searched.
+	 * @return int
+	 */
+	public static function get_external_total_num( $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_external_sql( $search );
+
+		return $wpdb->query( $sql );
+	}
+
+	/**
+	 * Unprepared sql for events_list table
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @param string $search String to be searched.
+	 * @return string $sql The unprepared sql for get_events_list and get_events_total_num
+	 */
+
+	private static function get_events_sql( $search = '' ) {
+		global $wpdb;
+		$do_search = ( $search ) ? $wpdb->prepare( ' WHERE evh.`script` LIKE \'%%%s%%\' ', $search ) : '';
+
+		return 'SELECT evh.`ID`, evh.`tagname`, evh.`tagid`, evh.`event_attribute`, evh.`script`, evh.`clustername`, evh.`whitelist`, '
+			 . '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
+			 . ' GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR \'\\n\') END) AS \'pages\', '
+			 . ' occ.lastseen AS \'lastseen\', COUNT(evh.`ID`) AS \'occurences\' '
+			 . 'FROM `' . self::event_handlers_table() . '` AS evh LEFT JOIN '
+			 . '    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `' . self::occurences_table() . '`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR \'\\n\') AS \'pageurls\', '
+			 . '    MAX(`lastseen`) as lastseen'
+			 . '    FROM `' . self::occurences_table() . '` '
+			 . '    WHERE '
+			 . '    `' . self::occurences_table() . '`.`dbtable` = \'event_handlers\' '
+			 . '    GROUP BY itemid) AS occ '
+			 . 'ON evh.ID = occ.itemid '
+			 . $do_search
+			 . 'GROUP BY (CASE WHEN `clustername` <> \'Unclustered\' THEN `clustername` ELSE `ID` END) ';
+	}
+
+	/**
+	 * Get data of events scripts for admin list table
+	 *
+	 * @since 1.0.0
+	 * @param string $orderby ORDER BY statement.
+	 * @param int    $per_page Number of results to retrieve.
+	 * @param int    $paged Number of results for OFFSET.
+	 * @param string $search String to be searched.
+	 * @return array{'ID': int, 'tagname': string, 'tagid': string, 'event_attribute': string, 'script': string,
+	 *               'clustername': string, 'whitelist': int, 'pages': string, 'occurences': int, 'lastseen': int}|null
+	 */
+	public static function get_events_list( $orderby, $per_page, $paged, $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_events_sql( $search );
+		$sql = $sql . $orderby;
+
+		$limit = 'LIMIT %d OFFSET %d;';
+		$sql   = $sql . $limit;
+
+		$sql_prepared = $wpdb->prepare(
+			$sql,
+			$per_page,
+			$paged
+		);
+
+		return $wpdb->get_results( $sql_prepared, ARRAY_A );
+	}
+
+	/**
+	 * Get num of total query results.
+	 *
+	 * @since 1.0.0
+	 * @param string $search String to be searched.
+	 * @return int
+	 */
+	public static function get_events_total_num( $search = '' ) {
+		global $wpdb;
+
+		$sql = self::get_events_sql( $search );
+
+		return $wpdb->query( $sql );
+	}
+
+}

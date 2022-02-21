@@ -51,6 +51,15 @@ class No_Unsafe_Inline_Admin {
 	private $managed_directives;
 
 	/**
+	 * WP_List_Table object.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      \WP_List_Table    $show_table
+	 */
+	private $show_table;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -84,7 +93,7 @@ class No_Unsafe_Inline_Admin {
 		 * class.
 		 */
 		$screen = get_current_screen();
-		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
+		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.css', array(), $this->version, 'all' );
 
 			$wp_scripts = wp_scripts();
@@ -124,14 +133,14 @@ class No_Unsafe_Inline_Admin {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-		 ( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
+		( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
 		) {
 			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
 		}
 
 		$screen = get_current_screen();
-		if ( ! is_null( $screen ) && 'no-unsafe-inline' === $screen->id ) {
+		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
 
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
 
@@ -229,7 +238,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function nunil_set_screen(): void {
-		set_current_screen( 'no-unsafe-inline' );
 		$current_screen = get_current_screen();
 		if ( ! is_null( $current_screen ) ) {
 			// Get the active tab from the $_GET param.
@@ -253,7 +261,8 @@ class No_Unsafe_Inline_Admin {
 						'option'  => 'nunil_external_per_page',
 					);
 					add_screen_option( 'per_page', $args );
-
+					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
+					$this->show_table = new No_Unsafe_Inline_External_List();
 					break;
 				case 'inline':
 					$help_tabs->set_help_tabs( 'inline' );
@@ -263,6 +272,8 @@ class No_Unsafe_Inline_Admin {
 						'option'  => 'nunil_inline_per_page',
 					);
 					add_screen_option( 'per_page', $args );
+					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
+					$this->show_table = new No_Unsafe_Inline_Inline_List();
 					break;
 				case 'events':
 					$help_tabs->set_help_tabs( 'events' );
@@ -272,6 +283,8 @@ class No_Unsafe_Inline_Admin {
 						'option'  => 'nunil_events_per_page',
 					);
 					add_screen_option( 'per_page', $args );
+					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
+					$this->show_table = new No_Unsafe_Inline_Events_List();
 					break;
 				default:
 					$help_tabs->set_help_tabs( 'nunil-tools' );
@@ -1649,13 +1662,12 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Save screen options.
 	 *
-	 * @param boolean $status false by default, return this to not save options
-	 * @param string  $option the option name, a key in user_meta
-	 * @param mixed   $value  the option value for user_meta
+	 * @param boolean $status false by default, return this to not save options.
+	 * @param string  $option The option name, a key in user_meta.
+	 * @param mixed   $value  The option value for user_meta.
 	 * @return mixed
 	 */
 	public function save_screen_options( $status, $option, $value ) {
-		error_log( print_r( $_REQUEST, true ) );
 		$this_page = isset( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
 		switch ( $this_page ) {
 			case 'no-unsafe-inline':
@@ -1702,7 +1714,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_external_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
+		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-external.php';
 	}
 
@@ -1713,7 +1725,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_inline_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
+		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-inline.php';
 	}
 
@@ -1724,7 +1736,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_events_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
+		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-events.php';
 	}
 

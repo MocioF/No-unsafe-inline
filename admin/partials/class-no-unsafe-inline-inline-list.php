@@ -376,28 +376,8 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	 * @since 1.0.0
 	 */
 	function prepare_items() {
-		global $wpdb;
 
-		$tbl_inl = NO_UNSAFE_INLINE_TABLE_PREFIX . 'inline_scripts';
-		$tbl_occ = NO_UNSAFE_INLINE_TABLE_PREFIX . 'occurences';
-
-		$search    = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
-		$do_search = ( $search ) ? $wpdb->prepare( " WHERE inl.`script` LIKE '%%%s%%' ", $search ) : '';
-
-		$sql = 'SELECT inl.`ID`, inl.`directive`, inl.`tagname`, inl.`script`, inl.`clustername`, inl.`whitelist`, '
-			 . "(CASE WHEN `clustername` = 'Unclustered' THEN occ.pageurls ELSE "
-			 . " GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR '\\n') END) AS 'pages', "
-			 . " occ.lastseen AS 'lastseen', COUNT(inl.`id`) AS 'occurences' "
-			 . "FROM `$tbl_inl` AS inl LEFT JOIN "
-			 . "    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `$tbl_occ`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR '\\n') AS 'pageurls', "
-			 . '    MAX(`lastseen`) as lastseen'
-			 . "    FROM `$tbl_occ` "
-			 . '    WHERE '
-			 . "    `$tbl_occ`.`dbtable` = 'inline_scripts' "
-			 . '    GROUP BY itemid) AS occ '
-			 . 'ON inl.id = occ.itemid '
-			 . $do_search
-			 . "GROUP BY (CASE WHEN `clustername` <> 'Unclustered' THEN `clustername` ELSE `id` END) ";
+		$search = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
 
 		$this->_column_headers = $this->get_column_info();
 
@@ -421,46 +401,33 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 
 			switch ( $_REQUEST['orderby'] ) {
 				case 'directive':
-					// ~ $orderby .= "directive $order, tagname, clustername, whitelist, occurences, lastseen, id ";
 					$orderby .= "directive $order ";
 					break;
 				case 'tagname':
-					// ~ $orderby .= "tagname $order, directive, clustername, whitelist, occurences, lastseen, id ";
 					$orderby .= "tagname $order ";
 					break;
 				case 'clustername':
-					// ~ $orderby .= "clustername $order, directive, tagname, whitelist, occurences, lastseen, id ";
 					$orderby .= "clustername $order ";
 					break;
 				case 'whitelist':
-					// ~ $orderby .= "whitelist $order, directive, tagname, clustername, occurences, lastseen, id ";
 					$orderby .= "whitelist $order ";
 					break;
 				case 'occurences':
-					// ~ $orderby .= "occurences $order, directive, tagname, clustername, whitelist, lastseen, id ";
 					$orderby .= "occurences $order ";
 					break;
 				case 'lastseen':
-					// ~ $orderby .= "lastseen $order, directive, tagname, clustername, whitelist, occurences, id ";
 					$orderby .= "lastseen $order ";
 					break;
 				default:
-					// ~ $orderby .= "directive $order, tagname, clustername, whitelist, occurences, lastseen, id ";
 					$orderby .= "directive $order ";
 			}
 		} else {
 			$orderby .= 'whitelist ASC ';
 		}
 
-		$sql .= $orderby;
+		$total_items = DB::get_inline_total_num( $search );
 
-		$total_items = $wpdb->query( $sql );
-
-		$limit    = 'LIMIT %d OFFSET %d;';
-		$sql     .= $limit;
-		$prepared = $wpdb->prepare( $sql, $per_page, $paged );
-
-		$data = $wpdb->get_results( $prepared, ARRAY_A );
+		$data = DB::get_inline_list( $orderby, $per_page, $paged, $search );
 
 		$current_page = $this->get_pagenum();
 

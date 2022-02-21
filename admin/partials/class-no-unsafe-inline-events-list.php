@@ -375,28 +375,8 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function prepare_items() {
-		global $wpdb;
 
-		$tbl_evh = NO_UNSAFE_INLINE_TABLE_PREFIX . 'event_handlers';
-		$tbl_occ = NO_UNSAFE_INLINE_TABLE_PREFIX . 'occurences';
-
-		$search    = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
-		$do_search = ( $search ) ? $wpdb->prepare( " WHERE evh.`script` LIKE '%%%s%%' ", $search ) : '';
-
-		$sql = 'SELECT evh.`ID`, evh.`tagname`, evh.`tagid`, evh.`event_attribute`, evh.`script`, evh.`clustername`, evh.`whitelist`, '
-			 . "(CASE WHEN `clustername` = 'Unclustered' THEN occ.pageurls ELSE "
-			 . " GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR '\\n') END) AS 'pages', "
-			 . " occ.lastseen AS 'lastseen', COUNT(evh.`ID`) AS 'occurences' "
-			 . "FROM `$tbl_evh` AS evh LEFT JOIN "
-			 . "    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `$tbl_occ`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR '\\n') AS 'pageurls', "
-			 . '    MAX(`lastseen`) as lastseen'
-			 . "    FROM `$tbl_occ` "
-			 . '    WHERE '
-			 . "    `$tbl_occ`.`dbtable` = 'event_handlers' "
-			 . '    GROUP BY itemid) AS occ '
-			 . 'ON evh.ID = occ.itemid '
-			 . $do_search
-			 . "GROUP BY (CASE WHEN `clustername` <> 'Unclustered' THEN `clustername` ELSE `ID` END) ";
+		$search = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
 
 		$this->_column_headers = $this->get_column_info();
 
@@ -447,15 +427,9 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			$orderby .= 'ID ASC ';
 		}
 
-		$sql .= $orderby;
+		$total_items = DB::get_events_total_num();
 
-		$total_items = $wpdb->query( $sql );
-
-		$limit    = 'LIMIT %d OFFSET %d;';
-		$sql     .= $limit;
-		$prepared = $wpdb->prepare( $sql, $per_page, $paged );
-
-		$data = $wpdb->get_results( $prepared, ARRAY_A );
+		$data = DB::get_events_list( $orderby, $per_page, $paged, $search );
 
 		$current_page = $this->get_pagenum();
 

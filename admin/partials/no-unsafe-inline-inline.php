@@ -7,13 +7,13 @@
 	$order   = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
 	$search  = filter_input( INPUT_GET, 's', FILTER_SANITIZE_STRING );
 
-	printf( '<input type="hidden" name="page" value="%s" />', $page );
-	printf( '<input type="hidden" name="paged" value="%d" />', $paged );
-	printf( '<input type="hidden" name="orderby" value="%d" />', $orderby );
-	printf( '<input type="hidden" name="order" value="%d" />', $order );
-	printf( '<input type="hidden" name="s" value="%s" />', $search );
+	printf( '<input type="hidden" name="page" value="%s" />', esc_html( $page ) );
+	printf( '<input type="hidden" name="paged" value="%d" />', esc_html( $paged ) );
+	printf( '<input type="hidden" name="orderby" value="%d" />', esc_html( $orderby ) );
+	printf( '<input type="hidden" name="order" value="%d" />', esc_html( $order ) );
+	printf( '<input type="hidden" name="s" value="%s" />', esc_html( $search ) );
 
-	$sources_obj = new No_Unsafe_Inline_Inline_List();
+	$sources_obj = $this->show_table;
 	$sources_obj->prepare_items();
 	$sources_obj->search_box( esc_html__( 'Search script', 'no-unsafe-inline' ), 'script' );
 	$sources_obj->display();

@@ -389,15 +389,8 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	 * @since 1.0.0
 	 */
 	function prepare_items() {
-		global $wpdb;
-
-		$tbl_ext = NO_UNSAFE_INLINE_TABLE_PREFIX . 'external_scripts';
 
 		$search    = ( isset( $_REQUEST['s'] ) ) ? $_REQUEST['s'] : false;
-		$do_search = ( $search ) ? $wpdb->prepare( " AND `src_attrib` LIKE '%%%s%%' ", $search ) : '';
-
-		$sql = "SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM $tbl_ext "
-			 . "WHERE 1 $do_search ";
 
 		$this->_column_headers = $this->get_column_info();
 
@@ -437,15 +430,9 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			$orderby .= 'whitelist ASC ';
 		}
 
-		$sql .= $orderby;
+		$total_items = DB::get_external_total_num();
 
-		$total_items = $wpdb->query( $sql );
-
-		$limit    = 'LIMIT %d OFFSET %d;';
-		$sql     .= $limit;
-		$prepared = $wpdb->prepare( $sql, $per_page, $paged );
-
-		$data = $wpdb->get_results( $prepared, ARRAY_A );
+		$data = DB::get_external_list( $orderby, $per_page, $paged, $search );
 
 		$current_page = $this->get_pagenum();
 
