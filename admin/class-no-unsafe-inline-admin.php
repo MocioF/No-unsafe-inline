@@ -54,10 +54,10 @@ class No_Unsafe_Inline_Admin {
 	 * WP_List_Table object.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access   public
 	 * @var      \WP_List_Table    $show_table
 	 */
-	private $show_table;
+	public $show_table;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -195,6 +195,8 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Updates the plugin version number in the database
 	 *
+	 * This method is hooked on admin_init.
+	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
@@ -205,7 +207,7 @@ class No_Unsafe_Inline_Admin {
 		if ( $old_ver === $new_ver ) {
 			return;
 		}
-		// controlla l'azione
+		// Calls the callback functions that have been added to the nunil_upgrade action hook.
 		do_action( 'nunil_upgrade', $new_ver, $old_ver );
 		update_option( 'no-unsafe-inline_version', $new_ver );
 	}
@@ -529,6 +531,46 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc'
 		);
 
+		/*** Start report section */
+		add_settings_section(
+			'no-unsafe-inline_report',
+			esc_html__( 'Violation report options', 'no-unsafe-inline' ),
+			array( $this, 'print_report_section' ),
+			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'use_reports',
+			esc_html__( 'Report CSP violations to endpoints', 'no-unsafe-inline' ),
+			array( $this, 'print_use_reports' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report'
+		);
+
+		add_settings_field(
+			'group_name',
+			esc_html__( 'Group name', 'no-unsafe-inline' ),
+			array( $this, 'print_group_name' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report'
+		);
+
+		add_settings_field(
+			'max_age',
+			esc_html__( 'Max age', 'no-unsafe-inline' ),
+			array( $this, 'print_max_age' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report'
+		);
+
+		add_settings_field(
+			'endpoints',
+			esc_html__( 'Endpoints', 'no-unsafe-inline' ),
+			array( $this, 'print_endpoints' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report'
+		);
+
 		/*** Start deactivate section */
 		add_settings_section(
 			'no-unsafe-inline_deactivate',
@@ -653,11 +695,14 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Sanitize the settings
 	 *
-	 * @throws \Exception
-	 * @param array<int|string> $input Contains the settings.
-	 * @return array<int|string>
+	 * @throws \Exception Main option is not an array.
+	 * @param array<string|array<string>> $input Contains the settings.
+	 * @return array<mixed>
 	 */
 	public function sanitize_options( $input ) {
+		// This field is used just to populate array of endopoints in UI.
+		unset( $input['new_endpoint'] );
+
 		$new_input = array();
 
 		$options = (array) get_option( 'no-unsafe-inline' );
@@ -802,6 +847,12 @@ class No_Unsafe_Inline_Admin {
 			$new_input['remove_options'] = 0;
 		}
 
+		if ( isset( $input['use_reports'] ) ) {
+			$new_input['use_reports'] = 1;
+		} else {
+			$new_input['use_reports'] = 0;
+		}
+
 		// Radio.
 		$inline_script_modes = array( 'nonce', 'sha256', 'sha384', 'sha512' );
 		if ( in_array( $input['inline_scripts_mode'], $inline_script_modes, true ) ) {
@@ -816,6 +867,20 @@ class No_Unsafe_Inline_Admin {
 			$new_input['external_host_mode'] = 'sch-host';
 		}
 
+		// text.
+		if ( isset( $input['group_name'] ) && is_string( $input['group_name'] ) ) {
+			$new_input['group_name'] = sanitize_text_field( $input['group_name'] );
+		}
+
+		if ( isset( $input['max_age'] ) && is_string( $input['max_age'] ) ) {
+			$new_input['max_age'] = intval( sanitize_text_field( $input['max_age'] ) );
+		}
+
+		unset( $options['endpoints'] );
+		if ( isset( $input['endpoints'] ) && is_array( $input['endpoints'] ) ) {
+			$new_input['endpoints'] = array_map( 'sanitize_url', $input['endpoints'], $protocols = array( 'https' ) );
+		}
+
 		$new_input = array_merge( $options, $new_input );
 		return $new_input;
 	}
@@ -824,7 +889,7 @@ class No_Unsafe_Inline_Admin {
 	 * Sanitize the tools status
 	 *
 	 * @param array<int> $input Contains the settings.
-	 * @return array<int>
+	 * @return array<mixed>
 	 */
 	public function sanitize_tools( $input ) {
 		$new_input = array();
@@ -929,7 +994,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_external_host_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['external_host_mode'] ) ? esc_attr( $options['external_host_mode'] ) : 'host';
+		$value   = isset( $options['external_host_mode'] ) ? strval( $options['external_host_mode'] ) : 'host';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -982,7 +1047,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_hash_in_script_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_script-src'] ) ? esc_attr( $options['hash_in_script-src'] ) : 0;
+		$value   = isset( $options['hash_in_script-src'] ) ? $options['hash_in_script-src'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_script-src]"' .
@@ -1001,7 +1066,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_hash_in_style_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_style-src'] ) ? esc_attr( $options['hash_in_style-src'] ) : 0;
+		$value   = isset( $options['hash_in_style-src'] ) ? $options['hash_in_style-src'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_style-src]"' .
@@ -1020,7 +1085,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_hash_in_img_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_img-src'] ) ? esc_attr( $options['hash_in_img-src'] ) : 0;
+		$value   = isset( $options['hash_in_img-src'] ) ? $options['hash_in_img-src'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_img-src]"' .
@@ -1039,7 +1104,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_hash_in_all(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_all'] ) ? esc_attr( $options['hash_in_all'] ) : 0;
+		$value   = isset( $options['hash_in_all'] ) ? $options['hash_in_all'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_all]"' .
@@ -1068,7 +1133,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_sri_sha256_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha256'] ) ? esc_attr( $options['sri_sha256'] ) : 0;
+		$value   = isset( $options['sri_sha256'] ) ? $options['sri_sha256'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha256]"' .
@@ -1087,7 +1152,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_sri_sha384_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha384'] ) ? esc_attr( $options['sri_sha384'] ) : 0;
+		$value   = isset( $options['sri_sha384'] ) ? $options['sri_sha384'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha384]"' .
@@ -1106,7 +1171,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_sri_sha512_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_sha512'] ) ? esc_attr( $options['sri_sha512'] ) : 0;
+		$value   = isset( $options['sri_sha512'] ) ? $options['sri_sha512'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_sha512]"' .
@@ -1139,7 +1204,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_sri_script_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_script'] ) ? esc_attr( $options['sri_script'] ) : 0;
+		$value   = isset( $options['sri_script'] ) ? $options['sri_script'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_script]"' .
@@ -1158,7 +1223,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_sri_link_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['sri_link'] ) ? esc_attr( $options['sri_link'] ) : 0;
+		$value   = isset( $options['sri_link'] ) ? $options['sri_link'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[sri_link]"' .
@@ -1187,7 +1252,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_inline_script_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['inline_scripts_mode'] ) ? esc_attr( $options['inline_scripts_mode'] ) : 'nonce';
+		$value   = isset( $options['inline_scripts_mode'] ) ? strval( $options['inline_scripts_mode'] ) : 'nonce';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -1240,7 +1305,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_use_strict_dynamic_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['use_strict-dynamic'] ) ? esc_attr( $options['use_strict-dynamic'] ) : 0;
+		$value   = isset( $options['use_strict-dynamic'] ) ? $options['use_strict-dynamic'] : 0;
 		$enabled = $value ? 'checked' : '';
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[use_strict-dynamic]"' .
@@ -1265,7 +1330,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_upgrade_insecure(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['no-unsafe-inline_upgrade_insecure'] ) ? esc_attr( $options['no-unsafe-inline_upgrade_insecure'] ) : 0;
+		$value   = isset( $options['no-unsafe-inline_upgrade_insecure'] ) ? $options['no-unsafe-inline_upgrade_insecure'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1287,7 +1352,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_protect_admin(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['protect_admin'] ) ? esc_attr( $options['protect_admin'] ) : 0;
+		$value   = isset( $options['protect_admin'] ) ? $options['protect_admin'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1308,7 +1373,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_use_unsafe_hashes(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['use_unsafe-hashes'] ) ? esc_attr( $options['use_unsafe-hashes'] ) : 0;
+		$value   = isset( $options['use_unsafe-hashes'] ) ? $options['use_unsafe-hashes'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1329,7 +1394,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_fix_setattribute_style(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['fix_setattribute_style'] ) ? esc_attr( $options['fix_setattribute_style'] ) : 0;
+		$value   = isset( $options['fix_setattribute_style'] ) ? $options['fix_setattribute_style'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1350,7 +1415,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_add_wl_by_cluster_to_db(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['add_wl_by_cluster_to_db'] ) ? esc_attr( $options['add_wl_by_cluster_to_db'] ) : 0;
+		$value   = isset( $options['add_wl_by_cluster_to_db'] ) ? $options['add_wl_by_cluster_to_db'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1371,7 +1436,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_logs_enabled(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['logs_enabled'] ) ? esc_attr( $options['logs_enabled'] ) : 0;
+		$value   = isset( $options['logs_enabled'] ) ? $options['logs_enabled'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1383,6 +1448,137 @@ class No_Unsafe_Inline_Admin {
 			esc_html__( 'Enable logs in database.', 'no-unsafe-inline' )
 		);
 	}
+
+	/**
+	 * Print the report section info
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_report_section(): void {
+		print esc_html__( 'Violation reports options.', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the use_reports option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_use_reports(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['use_reports'] ) ? $options['use_reports'] : 0;
+
+		$enabled = $value ? 'checked' : '';
+
+		printf(
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[use_reports]"' .
+			'name="no-unsafe-inline[use_reports]" %s />
+			<label for="no-unsafe-inline[use_reports]">%s</label>',
+			esc_html( $enabled ),
+			esc_html__( 'Use report-to and report-uri.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the group_name option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_group_name(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = ( isset( $options['group_name'] ) && is_string( $options['group_name'] ) ) ? $options['group_name'] : 'csp-endpoint';
+
+		$in_use = isset( $options['use_reports'] ) ? $options['use_reports'] : '';
+
+		$disabled = ( '' !== $in_use ) ? '' : 'disabled';
+
+		printf(
+			'<input class="nunil-text-group" type="text" id="no-unsafe-inline[group_name]"' .
+			'name="no-unsafe-inline[group_name]" value="%s" %s />
+			<label for="no-unsafe-inline[group_name]">%s</label>',
+			esc_html( $value ),
+			esc_html( $disabled ),
+			esc_html__( 'Optional. If a group name is not specified, the endpoint is given a name of "default".', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the max_age option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_max_age(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['max_age'] ) ? $options['max_age'] : 10886400;
+
+		$in_use = isset( $options['use_reports'] ) ? $options['use_reports'] : '';
+
+		$disabled = ( '' !== $in_use ) ? '' : 'disabled';
+
+		printf(
+			'<input class="nunil-text-maxage" type="text" id="no-unsafe-inline[max_age]"' .
+			'name="no-unsafe-inline[max_age]" value="%d" %s />
+			<label for="no-unsafe-inline[max_age]">%s</label>',
+			intval( $value ),
+			esc_html( $disabled ),
+			esc_html__( 'Required. A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
+	 * Print the endpoints option
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_endpoints(): void {
+		$options   = (array) get_option( 'no-unsafe-inline' );
+		$endpoints = ( isset( $options['endpoints'] ) && is_array( $options['endpoints'] ) ) ? $options['endpoints'] : array();
+
+		$in_use = isset( $options['use_reports'] ) ? $options['use_reports'] : '';
+
+		$disabled = ( '' !== $in_use ) ? '' : 'disabled';
+
+		// Add new endpoint button.
+		printf(
+			'<input class="nunil-btn nunil-btn-addnew" type="button" id="no-unsafe-inline[add_new_endpoint]"' .
+			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
+			'<input class="nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
+			'name="no-unsafe-inline[new_endpoint]" %s /> 
+			<label for="nunil-btn nunil-btn-addnew">%s</label>',
+			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
+			esc_html( $disabled ),
+			esc_html( $disabled ),
+			esc_html__( 'Required. An array of JSON objects that specify the actual URL of your report collector.', 'no-unsafe-inline' )
+		);
+
+		print( '<ol class="nunil-endpoints-list" id="nunil-endpoints-list">' );
+		if ( is_array( $endpoints ) ) {
+			// Add a line for each url.
+			foreach ( $endpoints as $index => $endpoint ) {
+				printf(
+					'<li>
+					<input class="nunil-btn nunil-btn-del-endpoint" type="button" ' .
+					'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]" value="&#x2425;">
+					<span class="nunil-endpoint-string txt-active">%s</span>
+					<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]"' .
+					'name="no-unsafe-inline[endpoints][%d]" value="%s" />
+					</li>',
+					esc_html( $index ),
+					esc_html( $index ),
+					esc_html( $endpoint ),
+					esc_html( $index ),
+					esc_html( $index ),
+					esc_html( $endpoint )
+				);
+			}
+		}
+		print( '</ol>' );
+	}
+
 
 	/**
 	 * Print the deactivate section info
@@ -1402,7 +1598,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_remove_tables(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['remove_tables'] ) ? esc_attr( $options['remove_tables'] ) : 0;
+		$value   = isset( $options['remove_tables'] ) ? $options['remove_tables'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1411,7 +1607,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[remove_tables]" %s />
 			<label for="no-unsafe-inline[remove_tables]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Remove data tables from DB on plugin deactivation.', 'no-unsafe-inline' )
+			esc_html__( 'Remove data tables from DB on single site plugin deactivation.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1423,7 +1619,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_remove_options(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['remove_options'] ) ? esc_attr( $options['remove_options'] ) : 0;
+		$value   = isset( $options['remove_options'] ) ? $options['remove_options'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1432,7 +1628,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[remove_options]" %s />
 			<label for="no-unsafe-inline[remove_options]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Remove plugin options from DB on plugin deactivation.', 'no-unsafe-inline' )
+			esc_html__( 'Remove plugin options from DB on single site plugin deactivation.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1457,7 +1653,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_capture_enabled(): void {
 		$options = (array) get_option( 'no-unsafe-inline-tools' );
-		$value   = isset( $options['capture_enabled'] ) ? esc_attr( $options['capture_enabled'] ) : 0;
+		$value   = isset( $options['capture_enabled'] ) ? $options['capture_enabled'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1478,7 +1674,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_test_policy(): void {
 		$options = (array) get_option( 'no-unsafe-inline-tools' );
-		$value   = isset( $options['test_policy'] ) ? esc_attr( $options['test_policy'] ) : 0;
+		$value   = isset( $options['test_policy'] ) ? $options['test_policy'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1499,7 +1695,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_enable_protection(): void {
 		$options = (array) get_option( 'no-unsafe-inline-tools' );
-		$value   = isset( $options['enable_protection'] ) ? esc_attr( $options['enable_protection'] ) : 0;
+		$value   = isset( $options['enable_protection'] ) ? $options['enable_protection'] : 0;
 
 		$enabled = $value ? 'checked' : '';
 
@@ -1668,11 +1864,10 @@ class No_Unsafe_Inline_Admin {
 	 * @return mixed
 	 */
 	public function save_screen_options( $status, $option, $value ) {
-		$this_page = isset( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
+		$this_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
 		switch ( $this_page ) {
 			case 'no-unsafe-inline':
 				return $value;
-				break;
 		}
 		return $status;
 	}
@@ -1714,7 +1909,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_external_page(): void {
-		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-external.php';
 	}
 
@@ -1725,7 +1919,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_inline_page(): void {
-		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-inline.php';
 	}
 
@@ -1736,7 +1929,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_events_page(): void {
-		// ~ require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-events.php';
 	}
 
@@ -1786,7 +1978,11 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function trigger_clustering(): void {
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'nunil_trigger_clustering_nonce' ) ) {
+
+		if ( ! (
+		isset( $_REQUEST['nonce'] )
+		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_clustering_nonce' )
+		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
 
@@ -1794,11 +1990,12 @@ class No_Unsafe_Inline_Admin {
 
 		$result = $obj->cluster_by_dbscan();
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
-
-			echo json_encode( $result );
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+			echo wp_json_encode( $result );
 		} else {
-			header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+			}
 		}
 
 		wp_die();
@@ -1811,7 +2008,10 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function clean_database(): void {
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'nunil_trigger_clean_database' ) ) {
+		if ( ! (
+		isset( $_REQUEST['nonce'] )
+		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_clean_database' )
+		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
 
@@ -1843,10 +2043,13 @@ class No_Unsafe_Inline_Admin {
 			'type'   => 'success',
 			'report' => $result_string,
 		);
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
-			echo json_encode( $result );
+
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+			echo wp_json_encode( $result );
 		} else {
-			header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+			}
 		}
 
 		wp_die();
@@ -1868,10 +2071,12 @@ class No_Unsafe_Inline_Admin {
 		$result['inline']   = DB::get_database_summary_data( 'inline_scripts' );
 		$result['events']   = DB::get_database_summary_data( 'event_handlers' );
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
-			echo json_encode( $result );
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+			echo wp_json_encode( $result );
 		} else {
-			header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+			}
 		}
 
 		wp_die();
@@ -1899,15 +2104,15 @@ class No_Unsafe_Inline_Admin {
 		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->Type . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->type . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {
 					$wl_text = __( 'WL', 'no-unsafe-inline' );
 				}
 				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->Num . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->Clusters . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->clusters . '</td>';
 				$htb = $htb . '</tr>';
 			}
 		}
@@ -2047,7 +2252,10 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function test_classifier(): void {
-		if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'nunil_test_classifier_nonce' ) ) {
+		if ( ! (
+		isset( $_REQUEST['nonce'] )
+		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_test_classifier_nonce' )
+		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
 		$test = new NUNIL\Nunil_Classification();
@@ -2057,10 +2265,12 @@ class No_Unsafe_Inline_Admin {
 			'type'   => 'success',
 			'report' => $result_string,
 		);
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
-			echo json_encode( $result );
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+			echo wp_json_encode( $result );
 		} else {
-			header( 'Location: ' . $_SERVER['HTTP_REFERER'] );
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+			}
 		}
 
 		wp_die();

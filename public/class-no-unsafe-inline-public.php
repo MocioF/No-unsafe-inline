@@ -204,6 +204,16 @@ class No_Unsafe_Inline_Public {
 				}
 
 				if ( isset( $header_csp ) ) {
+
+					if ( 1 === $options['use_reports']
+						&& isset( $options['endpoints'] )
+						&& is_array( $options['endpoints'] )
+						&& ! empty( $options['endpoints'] ) ) {
+							$endpoints_in_use = true;
+					} else {
+						$endpoints_in_use = false;
+					}
+
 					// The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.
 					if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] && 1 !== $tools['test_policy'] ) {
 						$header_csp = $header_csp . 'upgrade-insecure-requests; ';
@@ -224,8 +234,8 @@ class No_Unsafe_Inline_Public {
 									$csp = $csp . ' \'' . $local['source'] . '\'';
 								}
 							}
-							if ( 1 === $tools['capture_enabled'] &&
-							'frame-ancestors' !== $dir ) {
+							if ( ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) &&
+							'script-src' === $dir || 'style-src' === $dir ) {
 								$csp = $csp . ' \'report-sample\'';
 							}
 						}
@@ -236,25 +246,69 @@ class No_Unsafe_Inline_Public {
 					$header_report_to = '';
 					$report_to        = '';
 
-					/**
-					 * La riga commentata è solo per fare test con csp scanner.
-					 *
-					   if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection']) {
-					 */
-					if ( 1 === $tools['capture_enabled'] ) {
-						$report_uri       = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
-						$header_report_to = $header_report_to
-							. '{ "group": "csp-captbyv", '
-							. '"max_age": 10886400, '
-							. '"endpoints": [{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }]'
-							. ' }';
-						$report_to        = $report_to . 'csp-captbyv';
+					if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) {
+						if ( 1 === $tools['capture_enabled'] ) {
+							$report_uri = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
+						}
+						if ( true === $endpoints_in_use ) {
+							if ( is_array( $options['endpoints'] ) ) { // This check should be unuseful.
+								foreach ( $options['endpoints'] as $url ) {
+									$report_uri = $report_uri . $url . ' ';
+								}
+							}
+						}
+
+						if ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) {
+							$header_report_to = $header_report_to
+							. '{ "group": ';
+							if ( '' !== $options['group_name'] && true === $endpoints_in_use ) {
+								$header_report_to = $header_report_to . '"' . $options['group_name'] . '", ';
+							} else {
+								$header_report_to = $header_report_to . '"csp-captbyv", ';
+							}
+							$header_report_to = $header_report_to
+							. '"max_age": ';
+							if ( '' !== $options['max_age'] && true === $endpoints_in_use ) {
+								$header_report_to = $header_report_to . $options['max_age'] . ', ';
+							} else {
+								$header_report_to = $header_report_to . '10886400, ';
+							}
+							$header_report_to = $header_report_to
+							. '"endpoints": [';
+							if ( 1 === $tools['capture_enabled'] ) {
+								$header_report_to = $header_report_to
+								. '{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }';
+							}
+							if ( true === $endpoints_in_use ) {
+								$my_endpoints = '';
+								if ( is_array( $options['endpoints'] ) ) { // This check should be unuseful.
+									foreach ( $options['endpoints'] as $url ) {
+										$my_endpoints = $my_endpoints
+										. '{ "url": "' . $url . '" }, ';
+									}
+									$my_endpoints = substr( $my_endpoints, 0, strlen( $my_endpoints ) - 2 );
+								}
+
+								if ( 1 === $tools['capture_enabled'] ) {
+									$header_report_to = $header_report_to . ', ' . $my_endpoints;
+								} else {
+									$header_report_to = $header_report_to . $my_endpoints;
+								}
+							}
+							$header_report_to = $header_report_to . '] }';
+
+							$report_to = $report_to . 'csp-captbyv';
+						}
 					}
 					if ( 0 < strlen( $report_uri ) ) {
 						$header_csp = $header_csp . ' report-uri ' . $report_uri . ';';
 					}
 					if ( 0 < strlen( $report_to ) ) {
-						$header_csp = $header_csp . ' report-to ' . $report_to . ';';
+						if ( true === $endpoints_in_use && '' !== $options['group_name'] ) {
+							$header_csp = $header_csp . ' report-to ' . $options['group_name'] . ';';
+						} else {
+							$header_csp = $header_csp . ' report-to ' . $report_to . ';';
+						}
 					}
 
 					if ( 0 < strlen( $header_report_to ) ) {
@@ -303,7 +357,6 @@ class No_Unsafe_Inline_Public {
 	public function register_capture_routes(): void {
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( 1 === $tools['capture_enabled'] ) {
-			
 			$capture_1 = new NUNIL\Nunil_Capture_CSP_Violations();
 			register_rest_route(
 				'no-unsafe-inline/v1',

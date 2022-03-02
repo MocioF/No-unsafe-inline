@@ -259,6 +259,16 @@
 		);
 	}
 
+	function isValidReportUrl(_string) {
+		let url_string;
+		try {
+			url_string = new URL(_string);
+		} catch (_) {
+			return false;
+		}
+		return url_string.protocol === 'http:' || url_string.protocol === 'https:' ;
+	}
+
 	$( window ).on(
 		'load',
 		function() {
@@ -269,7 +279,7 @@
 					$('#contextual-help-link').click();
 				}
 			);
-		
+
 			// Trigger checkboxes check on select-all click.
 			$( '#cb-select-all-1' ).on(
 				'click',
@@ -326,10 +336,8 @@
 				);
 
 				var tb   = $( 'table.nunil-ext-sources tbody' );
-				//~ var size = tb.find( 'tr' ).length;
 				tb.find( 'tr' ).each(
 					function( index, element ) {
-						//~ var colSize = $( element ).find( 'td' ).length;
 						$( element )
 						.find( 'td' )
 						.each(
@@ -343,7 +351,6 @@
 					}
 				);
 
-				// Per ciascuna delle opzioni prelevate dalla stringa, devo fare il check della box
 				const managedDirectives = [
 					'base-uri',
 					'default-src',
@@ -387,7 +394,7 @@
 				);
 			}
 			// END base rules main tab.
-			
+
 			// START inline main tab.
 			if ('no-unsafe-inline' === mypage && ( 'inline' === mytab || 'events' === mytab ) ) {
 
@@ -404,8 +411,12 @@
 				$( 'div[class^=\'code-accordion-\']' ).each( function() { $( this ).accordion( acc_options ); } );
 				$( 'div[class^=\'pages-accordion-\']' ).each( function() { $( this ).accordion( acc_options ); } );
 			}
-			
+
 			// START settings main tab.
+			// Used for endpoints list.
+			let a;
+			a = $('#nunil-endpoints-list li').length;
+
 			// Handle SRI options in settings tab.
 			if ('no-unsafe-inline' === mypage && 'settings' === mytab) {
 				$( 'input[type=\'checkbox\'][name=\'no-unsafe-inline[sri_script]\']' ).change(
@@ -434,9 +445,76 @@
 						}
 					}
 				);
+				// END SRI options in External script tab.
 
+				// Enable and disable endpoints fields on use_reports toggle.
+				if ( ! $( 'input[type=\'checkbox\'][name=\'no-unsafe-inline[use_reports]\']' ).prop( 'checked' ) ) {
+					$( 'input[type=\'text\'][name=\'no-unsafe-inline[group_name]\']' ).prop( 'disabled', true );
+					$( 'input[type=\'text\'][name=\'no-unsafe-inline[max_age]\']' ).prop( 'disabled', true );
+					$( 'input[type=\'button\'][name=\'no-unsafe-inline[add_new_endpoint]\']' ).prop( 'disabled', true );
+					$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).prop( 'disabled', true );
+					$( '.nunil-btn-del-endpoint' ).prop( 'disabled', true );
+					$( '.nunil-hidden-endpoint' ).prop( 'disabled', true );
+					$( '.nunil-endpoint-string' ).removeClass('txt-active');
+					$( '.nunil-endpoint-string' ).addClass('txt-inactive');
+				}
+				$( 'input[type=\'checkbox\'][name=\'no-unsafe-inline[use_reports]\']' ).change(
+					function() {
+						var $chk = $( this );
+						if ($chk.prop( 'checked' )) {
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[group_name]\']' ).prop( 'disabled', false );
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[max_age]\']' ).prop( 'disabled', false );
+							$( 'input[type=\'button\'][name=\'no-unsafe-inline[add_new_endpoint]\']' ).prop( 'disabled', false );
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).prop( 'disabled', false );
+							$( '.nunil-btn-del-endpoint' ).prop( 'disabled', false );
+							$( '.nunil-hidden-endpoint' ).prop( 'disabled', false );
+							$( '.nunil-endpoint-string' ).removeClass('txt-inactive');
+							$( '.nunil-endpoint-string' ).addClass('txt-active');
+						} else {
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[group_name]\']' ).prop( 'disabled', true );
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[max_age]\']' ).prop( 'disabled', true );
+							$( 'input[type=\'button\'][name=\'no-unsafe-inline[add_new_endpoint]\']' ).prop( 'disabled', true );
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).prop( 'disabled', true );
+							$( '.nunil-btn-del-endpoint' ).prop( 'disabled', true );
+							$( '.nunil-hidden-endpoint' ).prop( 'disabled', true );
+							$( '.nunil-endpoint-string' ).removeClass('txt-active');
+							$( '.nunil-endpoint-string' ).addClass('txt-inactive');
+						}
+					}
+				);
+				// needed for event delegation.
+				// https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
+				$('#nunil-endpoints-list').on('click', '.nunil-btn-del-endpoint', function(){
+					$( this ).closest('li').remove();
+				});
+				$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).focus(
+					function() {
+						$( this ).removeClass('nunil-error-input');
+						}
+				);
+				$( 'input[type=\'button\'][name=\'no-unsafe-inline[add_new_endpoint]\']' ).click(
+					function() {
+						let new_endpoint;
+						if ( isValidReportUrl( $( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).val() ) ) {
+							new_endpoint = $( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).val().trim();
+							$('#nunil-endpoints-list').append(
+								'<li>' +
+								'<input  class="nunil-btn nunil-btn-del-endpoint" type="button" id="no-unsafe-inline[del-endpoint][' + a + ']" ' +
+								'name="no-unsafe-inline[del-endpoint][' + a + ']" value="&#x2425;">' +
+								'<span class="nunil-endpoint-string txt-active txt-newly">' + new_endpoint + '</span>' +
+								'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][' + a + ']"' +
+								'name="no-unsafe-inline[endpoints][' + a + ']" value="' + new_endpoint + '" />' +
+								'</li>');
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).val('');
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).removeClass('nunil-error-input');
+							a = a + 1;
+						} else {
+							$( 'input[type=\'text\'][name=\'no-unsafe-inline[new_endpoint]\']' ).addClass('nunil-error-input');
+						}
+					}
+				);
 			}
-			// END SRI options in External script tab.
+			// END endpoint section.
 			
 			// START tools main tab.
 			$( '#nunil-db-sum-tabs' ).tabs({

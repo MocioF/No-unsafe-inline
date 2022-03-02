@@ -519,3 +519,83 @@ div.nunil_temp_div {
 	background: #01263a;
 	color: #fff;
 }
+
+.nunil-btn {
+	background-color: #4CAF50; /* Green */
+	border: none;
+	border-radius: 4px;
+	color: white;
+	padding: 4px 9px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+	margin: 2px 2px;
+	box-sizing: border-box;
+	transition-duration: 0.4s;
+	cursor: pointer;
+}
+.nunil-new-endpoint {
+	width: 100%;
+	min-width: 15em;
+	max-width: 19em;
+}
+.nunil-btn-addnew {
+	background-color: white; 
+	color: black; 
+	border: 2px solid #4CAF50;
+	min-width: 10em;
+}
+.nunil-btn-addnew:hover:enabled {
+	background-color: #4CAF50;
+	color: white;
+}
+.nunil-btn-del-endpoint {
+	background-color: white; 
+	color: #f44336; 
+	border: 2px solid #f44336;
+}
+.nunil-btn-del-endpoint:hover:enabled {
+	background-color: #f44336;
+	color: white;
+}
+.nunil-endpoint-string {
+	display: inline-block;
+	padding: 5px 10px;
+	font-size: 1em;
+	margin: 2px 2px;
+	min-width: 25em;
+	transition-duration: 0.4s;
+}
+.txt-active {
+	background-color: #fffff7;
+	color: black;
+}
+.txt-inactive {
+	background-color: #a7aaad;
+	color: white;
+}
+.txt-newly {
+	font-style: italic;
+}
+.nunil-endpoints-list {
+	list-style-type:none;
+	margin: 0;
+	padding: 0;
+}
+.nunil-error-input {
+	background-color: #ff9696!important;
+}
+.nunil-text-group {
+}
+.nunil-text-group:focus {
+	background-color: LightCyan;
+}
+.nunil-text-maxage {
+}
+.nunil-text-maxage:focus {
+	background-color: LightCyan;
+}
+.nunil-new-endpoint:focus {
+	background-color: LightCyan;
+}
