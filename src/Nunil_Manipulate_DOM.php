@@ -627,7 +627,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return string
 	 */
 	private function generate_nonce() {
-		$bytes = random_bytes( 6 );
+		$bytes = random_bytes( 32 );
 
 		return bin2hex( $bytes );
 	}

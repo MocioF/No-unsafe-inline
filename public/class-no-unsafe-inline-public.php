@@ -263,8 +263,10 @@ class No_Unsafe_Inline_Public {
 							. '{ "group": ';
 							if ( '' !== $options['group_name'] && true === $endpoints_in_use ) {
 								$header_report_to = $header_report_to . '"' . $options['group_name'] . '", ';
+								$report_to        = $report_to . $options['group_name'];
 							} else {
-								$header_report_to = $header_report_to . '"csp-captbyv", ';
+								$header_report_to = $header_report_to . '"csp-endpoint", ';
+								$report_to        = $report_to . 'csp-endpoint';
 							}
 							$header_report_to = $header_report_to
 							. '"max_age": ';
@@ -296,19 +298,13 @@ class No_Unsafe_Inline_Public {
 								}
 							}
 							$header_report_to = $header_report_to . '] }';
-
-							$report_to = $report_to . 'csp-captbyv';
 						}
 					}
 					if ( 0 < strlen( $report_uri ) ) {
 						$header_csp = $header_csp . ' report-uri ' . $report_uri . ';';
 					}
 					if ( 0 < strlen( $report_to ) ) {
-						if ( true === $endpoints_in_use && '' !== $options['group_name'] ) {
-							$header_csp = $header_csp . ' report-to ' . $options['group_name'] . ';';
-						} else {
-							$header_csp = $header_csp . ' report-to ' . $report_to . ';';
-						}
+						$header_csp = $header_csp . ' report-to ' . $report_to . ';';
 					}
 
 					if ( 0 < strlen( $header_report_to ) ) {
