@@ -32,7 +32,7 @@ class Nunil_Classification {
 	 * @since 1.0.0
 	 * @access public
 	 * @param string $tagname The tagname in inline_scripts rows we want to cluster.
-	 * @return array{samples: array<array<int>>, labels: array<string>}>
+	 * @return array{samples: array<array<int>>, labels: array<string>}|false
 	 */
 	public function get_samples( $tagname = '' ) {
 
@@ -49,17 +49,19 @@ class Nunil_Classification {
 		$samples = array();
 
 		$labels = array();
-
-		foreach ( $rows as $row ) {
-			$samples[] = Nunil_Clustering::convertHexDigestToArray( $row->hexDigest );
-			$labels[]  = $row->clustername;
+		if ( is_array( $rows ) ) {
+			foreach ( $rows as $row ) {
+				$samples[] = Nunil_Clustering::convertHexDigestToArray( $row->hexDigest );
+				$labels[]  = $row->clustername;
+			}
+			$results            = array();
+			$results['samples'] = $samples;
+			$results['labels']  = $labels;
+		} else {
+			$results = false;
 		}
-		$results            = array();
-		$results['samples'] = $samples;
-		$results['labels']  = $labels;
 
 		return $results;
-
 	}
 
 	/**
@@ -89,49 +91,53 @@ class Nunil_Classification {
 		$suitable_tags = array( 'script', 'style' );
 		$rd_key        = array_rand( $suitable_tags, 1 );
 
-		$database      = $this->get_samples( $suitable_tags[ $rd_key ] );
-		$nums          = count( $database['samples'] );
-		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no-unsafe-inline' ) . $end_time . '<br>';
-		$result_string = $result_string . esc_html__( 'Tag: ', 'no-unsafe-inline' ) . "<b>$suitable_tags[$rd_key]</b>" . '<br>';
-		$result_string = $result_string . esc_html__( 'Num of hashes: ', 'no-unsafe-inline' ) . "<b>$nums</b>" . '<br>';
+		$database = $this->get_samples( $suitable_tags[ $rd_key ] );
+		if ( is_array( $database ) ) {
+			$nums          = count( $database['samples'] );
+			$end_time      = microtime( true );
+			$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+			$result_string = $result_string . esc_html__( 'Tag: ', 'no-unsafe-inline' ) . "<b>$suitable_tags[$rd_key]</b>" . '<br>';
+			$result_string = $result_string . esc_html__( 'Num of hashes: ', 'no-unsafe-inline' ) . "<b>$nums</b>" . '<br>';
 
-		$execution_time = ( $end_time - $start_time );
-		$result_string  = $result_string . esc_html__( 'Execution time DB GET (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
+			$execution_time = ( $end_time - $start_time );
+			$result_string  = $result_string . esc_html__( 'Execution time DB GET (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
-		$start_time    = microtime( true );
-		$result_string = $result_string . esc_html__( 'Start time Training: ', 'no-unsafe-inline' ) . $start_time . '<br>';
+			$start_time    = microtime( true );
+			$result_string = $result_string . esc_html__( 'Start time Training: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
-		$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, new Nunil_Hamming_Distance() );
+			$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, new Nunil_Hamming_Distance() );
 
-		$classifier->train( $database['samples'], $database['labels'] );
+			$classifier->train( $database['samples'], $database['labels'] );
 
-		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time Training: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+			$end_time      = microtime( true );
+			$result_string = $result_string . esc_html__( 'End time Training: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 
-		$execution_time = ( $end_time - $start_time );
-		$result_string  = $result_string . esc_html__( 'Execution time Training (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
+			$execution_time = ( $end_time - $start_time );
+			$result_string  = $result_string . esc_html__( 'Execution time Training (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 
-		$start_time    = microtime( true );
-		$result_string = $result_string . esc_html__( 'Start time Classifying: ', 'no-unsafe-inline' ) . $start_time . '<br>';
-		$result_string = $result_string . '<br>';
+			$start_time    = microtime( true );
+			$result_string = $result_string . esc_html__( 'Start time Classifying: ', 'no-unsafe-inline' ) . $start_time . '<br>';
+			$result_string = $result_string . '<br>';
 
-		foreach ( $cases as $case ) {
-			if ( is_array( $case ) ) {
-				$test = Nunil_Clustering::convertHexDigestToArray( $case['hexDvalue'] );
+			foreach ( $cases as $case ) {
+				if ( is_array( $case ) ) {
+					$test = Nunil_Clustering::convertHexDigestToArray( $case['hexDvalue'] );
 
-				$calc_label = $classifier->predict( $test );
+					$calc_label = $classifier->predict( $test );
 
-				$result_string = $result_string . $case['hexDvalue'] . '<br>';
-				$result_string = $result_string . esc_html__( 'Expected:', 'no-unsafe-inline' ) . '     ' . $case['exp_label'] . '<br>';
-				$result_string = $result_string . esc_html__( 'Returned:', 'no-unsafe-inline' ) . '     ' . $calc_label . '<br>';
-				$result_string = $result_string . '<br>';
+					$result_string = $result_string . $case['hexDvalue'] . '<br>';
+					$result_string = $result_string . esc_html__( 'Expected:', 'no-unsafe-inline' ) . '     ' . $case['exp_label'] . '<br>';
+					$result_string = $result_string . esc_html__( 'Returned:', 'no-unsafe-inline' ) . '     ' . $calc_label . '<br>';
+					$result_string = $result_string . '<br>';
+				}
 			}
+
+			$end_time      = microtime( true );
+			$result_string = $result_string . esc_html__( 'End time Classifying: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+		} else {
+			$end_time      = microtime( true );
+			$result_string = $result_string . esc_html__( 'Table is empty. No test performed.', 'no-unsafe-inline' ) . '<br>';
 		}
-
-		$end_time      = microtime( true );
-		$result_string = $result_string . esc_html__( 'End time Classifying: ', 'no-unsafe-inline' ) . $end_time . '<br>';
-
 		$end_time_global = $end_time;
 		$execution_time  = ( $end_time_global - $start_time_global );
 		$result_string   = $result_string . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';

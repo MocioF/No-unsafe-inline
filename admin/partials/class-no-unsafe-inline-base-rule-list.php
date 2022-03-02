@@ -1,6 +1,6 @@
 <?php
 /**
- * The class used to render the table in external whitelist tab.
+ * The class used to render the helper table in base rules tab.
  *
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
@@ -16,14 +16,12 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 }
 
 /**
- * The admin-specific functionality of the plugin.
+ * The class used to render the helper table in base rules tab.
  *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
+ * Extends WP_List_Table to show plugin logs.
  *
  * @package    No_Unsafe_Inline
  * @subpackage No_Unsafe_Inline/admin
- * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 
@@ -44,7 +42,7 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	 *
 	 * @since @1.0.0
 	 *
-	 * @return mixed
+	 * @return array<array{ID: int, directive: string, source: string}>>
 	 */
 	public static function get_sources() {
 
@@ -55,12 +53,12 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	}
 
 	/**
-	 * Render a column when no column specific method exists.
+	 * Process any column for which no special method is defined.
 	 *
-	 * @param object|array $item
-	 * @param string       $column_name
-	 *
-	 * @return mixed
+	 * @since 1.0.0
+	 * @param array<string> $item Data in row.
+	 * @param string        $column_name Column name.
+	 * @return string|void
 	 */
 	public function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
@@ -76,7 +74,7 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	/**
 	 * Render the bulk edit checkbox
 	 *
-	 * @param array $item The current item.
+	 * @param array<string> $item Query row.
 	 *
 	 * @return string
 	 */
@@ -105,7 +103,7 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	/**
 	 * Columns to make sortable.
 	 *
-	 * @return array
+	 * @return array<string, array<int, bool|string>>
 	 */
 	public function get_sortable_columns() {
 		$sortable_columns = array(
@@ -118,6 +116,9 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 
 	/**
 	 * Handles data query and filter, sorting, and pagination.
+	 *
+	 * @since 1.0.0
+	 * @return void
 	 */
 	public function prepare_items() {
 		$columns               = $this->get_columns();

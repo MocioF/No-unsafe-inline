@@ -132,7 +132,7 @@ run_no_unsafe_inline();
  * Trigger plugin activation on a new blog creations
  *
  * @since 1.0.0
- * @param \WP_Site $params New site object.
+ * @param WP_Site $params New site object.
  * @return void
  */
 function no_unsafe_inline_run_multisite_new_site( $params ) {
@@ -144,7 +144,7 @@ function no_unsafe_inline_run_multisite_new_site( $params ) {
  * Trigger table removes on blog deletion
  *
  * @since 1.0.0
- * @param array<mixed> $params Site params.
+ * @param WP_Site $params Old site object.
  * @return void
  */
 function no_unsafe_inline_run_multisite_delete( $params ) {

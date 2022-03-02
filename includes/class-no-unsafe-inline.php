@@ -60,8 +60,8 @@ class No_Unsafe_Inline {
 	 * The CSP src directive managed by this plugin
 	 *
 	 * @since    1.0.0
-	 * @access   protected
-	 * @var      array<string>  $managed_directive    The CSP directives managed from this plugin
+	 * @access   public
+	 * @var      array<string>  $managed_directives    The CSP directives managed from this plugin
 	 */
 	public $managed_directives;
 
@@ -126,6 +126,7 @@ class No_Unsafe_Inline {
 	 *
 	 * @since    1.0.0
 	 * @access   private
+	 * @return   void
 	 */
 	private function load_dependencies() {
 
@@ -164,7 +165,7 @@ class No_Unsafe_Inline {
 	 * @return void
 	 */
 	public function load_logger() {
-		$options      = get_option( 'no-unsafe-inline', array() );
+		$options      = (array) get_option( 'no-unsafe-inline', array() );
 		$enabled_logs = isset( $options['logs_enabled'] ) && 1 === $options['logs_enabled'];
 
 		if ( $enabled_logs ) {
@@ -299,7 +300,7 @@ class No_Unsafe_Inline {
 	 * Retrieve the CSP managed -src directives.
 	 *
 	 * @since     1.0.0
-	 * @return    array    The array of CSP directives, managed by the plugin.
+	 * @return    array<string>    The array of CSP directives, managed by the plugin.
 	 */
 	public function get_managed_directives() {
 		return $this->managed_directives;

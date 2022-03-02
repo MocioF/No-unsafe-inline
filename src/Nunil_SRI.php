@@ -84,8 +84,8 @@ class Nunil_SRI {
 	 * Insert calculated hashes in database
 	 *
 	 * @since 1.0.0
-	 * @param int|array<int|string> $id The id of the _external_script record.
-	 * @param bool                  $overwrite True to overwrite existing hashes.
+	 * @param string|int|array<string|int>  $id The id of the _external_script record.
+	 * @param bool                          $overwrite True to overwrite existing hashes.
 	 * @return void
 	 */
 	public function put_hashes_in_db( $id, $overwrite = false ): void {

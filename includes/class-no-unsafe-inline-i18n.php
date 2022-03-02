@@ -31,6 +31,7 @@ class No_Unsafe_Inline_i18n {
 	 * Load the plugin text domain for translation.
 	 *
 	 * @since    1.0.0
+	 * @return   void
 	 */
 	public function load_plugin_textdomain() {
 

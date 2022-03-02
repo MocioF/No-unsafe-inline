@@ -121,7 +121,7 @@ class Nunil_Lib_Db {
 	public static function db_create() {
 		global $wpdb;
 
-		$db_version = get_option( 'nunil_db_version' );
+		$db_version = get_option( 'no-unsafe-inline_db_version' );
 
 		// We need this for dbDelta() to work.
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -210,7 +210,7 @@ class Nunil_Lib_Db {
 			 * //   if ( $db_version == 1 ) {
 			 * //   }
 			 */
-			update_option( 'no_unsafe_inline_db_version', NO_UNSAFE_INLINE_DB_VERSION );
+			update_option( 'no-unsafe-inline_db_version', NO_UNSAFE_INLINE_DB_VERSION );
 		}
 	}
 
@@ -620,8 +620,8 @@ class Nunil_Lib_Db {
 	/**
 	 * WhiteList a inline script
 	 *
-	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
-	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $wl (true will Whiteliste, false to blacklist).
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -634,8 +634,8 @@ class Nunil_Lib_Db {
 	/**
 	 * WhiteList an external script
 	 *
-	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
-	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $wl (true will Whiteliste, false to blacklist).
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -648,8 +648,8 @@ class Nunil_Lib_Db {
 	/**
 	 * WhiteList an external script
 	 *
-	 * @param mixed $id The external script id or an ARRAY_N of script_id.
-	 * @param bool  $wl (true will Whiteliste, false to blacklist).
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $wl (true will Whiteliste, false to blacklist).
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -662,9 +662,9 @@ class Nunil_Lib_Db {
 	/**
 	 * WhiteList/BlackList a script
 	 *
-	 * @param string $table The script table.
-	 * @param mixed  $id The inline script id or an ARRAY_N of script_id.
-	 * @param bool   $wl (true will Whiteliste, false to blacklist).
+	 * @param string               $table The script table.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $wl (true will Whiteliste, false to blacklist).
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -730,7 +730,7 @@ class Nunil_Lib_Db {
 	/**
 	 * Uncluster an inline event cluster
 	 *
-	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
+	 * @param string $id The inline script id or an ARRAY_N of script_id.
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -743,7 +743,7 @@ class Nunil_Lib_Db {
 	/**
 	 * Uncluster a event_handler script cluster
 	 *
-	 * @param mixed $id The event script id or an ARRAY_N of script_id.
+	 * @param string $id The event script id or an ARRAY_N of script_id.
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -757,8 +757,8 @@ class Nunil_Lib_Db {
 	 * Removes a cluster from database, setting it to 'Uncluster'
 	 * in previously clustered script
 	 *
-	 * @param string $table The script table (one of $this->tbl_inl $this->tbl_evh).
-	 * @param mixed  $id The script id or an ARRAY_N of script_id.
+	 * @param string               $table The script table (one of $this->tbl_inl $this->tbl_evh).
+	 * @param string|array<string> $id The script id or an ARRAY_N of script_id.
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -802,8 +802,8 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed $id The inline script id or an ARRAY_N of script_id.
-	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
 	 * @return int The number of affected rows
 	 */
 	public static function inl_delete( $id, $delete_occurences = true ) {
@@ -816,8 +816,8 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed $id The handler script id or an ARRAY_N of script_id.
-	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
 	 * @return int The number of affected rows
 	 */
 	public static function evh_delete( $id, $delete_occurences = true ) {
@@ -829,8 +829,8 @@ class Nunil_Lib_Db {
 	 * Removes a script from external_scripts table
 	 *
 	 * @since 1.0.0
-	 * @param mixed $id The external script id or an ARRAY_N of script_id.
-	 * @param bool  $delete_occurences True to delete occurences records of the script.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
 	 * @return int The number of affected rows
 	 */
 	public static function ext_delete( $id, $delete_occurences = false ) {
@@ -842,9 +842,9 @@ class Nunil_Lib_Db {
 	 * Removes a script or a cluster of scripts
 	 * from the database
 	 *
-	 * @param string $table The script full table name.
-	 * @param mixed  $id The inline script id or an ARRAY_N of script_id.
-	 * @param bool   $delete_occurences True to remove entryes from occurences table.
+	 * @param string               $table The script full table name.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to remove entryes from occurences table.
 	 * @since 1.0.0
 	 *
 	 * @return int The number of affected rows
@@ -963,8 +963,8 @@ class Nunil_Lib_Db {
 			case 'global':
 			case 'nunil_global':
 				$result = $wpdb->get_results(
-					'SELECT \'External Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', '
-					. '`whitelist`, \'--\' AS \'Clusters\' FROM ' . self::external_scripts_table() . ' '
+					'SELECT \'External Scripts\' AS \'type\', COUNT(`ID`) AS \'num\', '
+					. '`whitelist`, \'--\' AS \'clusters\' FROM ' . self::external_scripts_table() . ' '
 					. 'GROUP BY `whitelist` '
 					. 'UNION ALL '
 					. 'SELECT \'Inline Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', `whitelist`, '
@@ -1149,17 +1149,6 @@ class Nunil_Lib_Db {
 	public static function update_ext_hashes( $data, $id, $format ) {
 		global $wpdb;
 		return $wpdb->update( self::external_scripts_table(), $data, array( 'ID' => $id ), $format, array( '%d' ) );
-	}
-
-	/**
-	 * Get a list of blogs (sites in multisites installations) ids
-	 *
-	 * @since 1.0.0
-	 * @return array<int> Array indexed from 0 by SQL result row number.
-	 */
-	public static function get_blogs_ids() {
-		global $wpdb;
-		return $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 	}
 
 	/**
