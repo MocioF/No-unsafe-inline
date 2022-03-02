@@ -38,14 +38,34 @@ class No_Unsafe_Inline_Activator {
 		$check_versions = self::nunil_check_minimum_versions();
 		if ( true === $check_versions ) {
 			if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
-
-				$blogids = DB::get_blogs_ids();
-
-				foreach ( $blogids as $blog_id ) {
-					switch_to_blog( $blog_id );
-					self::single_activate();
+				if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) ) {
+					$args  = array(
+						'orderby' => 'id',
+						'order'   => 'asc',
+						'fields'  => 'ids',
+					);
+					$sites = get_sites( $args );
+				} else {
+					// WP < 4.6; however it is unsupported.
+					$sites = wp_get_sites();
 				}
-				restore_current_blog();
+				if ( is_iterable( $sites ) && ! empty( $sites ) ) {
+					foreach ( $sites as $site ) {
+						if ( is_object( $site ) ) {
+							switch_to_blog( $site->blog_id );
+						} else {
+							switch_to_blog( $site['blog_id'] );
+						}
+						if ( ! is_plugin_active( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
+							self::single_activate();
+						}
+						restore_current_blog();
+					}
+				} else {
+					// on wp < 4.6 wp_get_sites() return empty array if nework is bigger than 10000 sites.
+					$error = esc_html__( 'no-unsafe-inline cannot be network activated on very big networks.', 'no-unsafe-inline' );
+					die( esc_html( $error ) );
+				}
 			} else {
 				self::single_activate();
 			}
@@ -62,12 +82,13 @@ class No_Unsafe_Inline_Activator {
 	 * On plugin activation we install the mu-plugin and create the tables.
 	 *
 	 * @since    1.0.0
+	 * @param bool $network_wide Indicates if the plugin is network activated.
 	 * @return void
 	 */
-	public static function single_activate(): void {
+	public static function single_activate( $network_wide = false ): void {
 		set_time_limit( 360 );
-		self::disable_all_tools();
 		DB::db_create();
+		self::disable_all_tools();
 		self::set_default_options();
 
 		try {
@@ -91,12 +112,16 @@ class No_Unsafe_Inline_Activator {
 	 * @return void
 	 */
 	private static function disable_all_tools(): void {
+		$tools          = get_option( 'no-unsafe-inline-tools' );
 		$tools_disabled = array(
 			'capture_enabled'   => 0,
 			'test_policy'       => 0,
 			'enable_protection' => 0,
 		);
-		update_option( 'no-unsafe-inline-tools', $tools_disabled );
+		if ( false !== $tools ) {
+			delete_option( 'no-unsafe-inline-tools' );
+		}
+		add_option( 'no-unsafe-inline-tools', $tools_disabled );
 	}
 
 	/**
@@ -108,7 +133,7 @@ class No_Unsafe_Inline_Activator {
 	 */
 	private static function set_default_options(): void {
 		$plugin_options = get_option( 'no-unsafe-inline' );
-		if ( ! $plugin_options ) {
+		if ( false === $plugin_options ) {
 			$plugin_options = array();
 			$class          = new No_Unsafe_Inline();
 			foreach ( $class->managed_directives as $src_directive ) {
@@ -136,29 +161,26 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['logs_enabled']                      = 1;
 			$plugin_options['remove_tables']                     = 0;
 			$plugin_options['remove_options']                    = 0;
+			$plugin_options['use_reports']                       = 0;
+			$plugin_options['group_name']                        = 'csp-endpoint';
+			$plugin_options['max_age']                           = 10886400;
 
 		}
-		update_option( 'no-unsafe-inline', $plugin_options );
-
-		$tools                      = array();
-		$tools['capture_enabled']   = 0;
-		$tools['test_policy']       = 0;
-		$tools['enable_protection'] = 0;
-		update_option( 'no-unsafe-inline-tools', $tools );
+		add_option( 'no-unsafe-inline', $plugin_options );
 	}
 
 	/**
 	 * Running setup whenever a new blog is created
 	 *
 	 * @since 1.0.0
-	 * @param \WP_Site $params New site object.
+	 * @param WP_Site $params New site object.
 	 * @return void
 	 */
 	public static function add_blog( $params ) {
 
 		if ( is_plugin_active_for_network( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
 
-			switch_to_blog( $params->blog_id );
+			switch_to_blog( intval( $params->blog_id ) );
 
 			self::single_activate();
 
