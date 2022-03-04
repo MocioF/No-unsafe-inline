@@ -523,18 +523,10 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc'
 		);
 
-		add_settings_field(
-			'logs_enabled',
-			esc_html__( 'Enable Server Logs', 'no-unsafe-inline' ),
-			array( $this, 'print_logs_enabled' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_misc'
-		);
-
 		/*** Start report section */
 		add_settings_section(
 			'no-unsafe-inline_report',
-			esc_html__( 'Violation report options', 'no-unsafe-inline' ),
+			esc_html__( 'Violations report options', 'no-unsafe-inline' ),
 			array( $this, 'print_report_section' ),
 			'no-unsafe-inline-options'
 		);
@@ -569,6 +561,30 @@ class No_Unsafe_Inline_Admin {
 			array( $this, 'print_endpoints' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_report'
+		);
+
+		/*** Logging section */
+		add_settings_section(
+			'no-unsafe-inline_logs',
+			esc_html__( 'Logs', 'no-unsafe-inline' ),
+			array( $this, 'print_logs_section' ),
+			'no-unsafe-inline-options'
+		);
+
+		add_settings_field(
+			'log_driver',
+			esc_html__( 'Log driver', 'no-unsafe-inline' ),
+			array( $this, 'print_log_driver' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_logs'
+		);
+
+		add_settings_field(
+			'log_level',
+			esc_html__( 'Log level', 'no-unsafe-inline' ),
+			array( $this, 'print_log_level' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_logs'
 		);
 
 		/*** Start deactivate section */
@@ -829,12 +845,6 @@ class No_Unsafe_Inline_Admin {
 			$new_input['add_wl_by_cluster_to_db'] = 0;
 		}
 
-		if ( isset( $input['logs_enabled'] ) ) {
-			$new_input['logs_enabled'] = 1;
-		} else {
-			$new_input['logs_enabled'] = 0;
-		}
-
 		if ( isset( $input['remove_tables'] ) ) {
 			$new_input['remove_tables'] = 1;
 		} else {
@@ -874,6 +884,13 @@ class No_Unsafe_Inline_Admin {
 
 		if ( isset( $input['max_age'] ) && is_string( $input['max_age'] ) ) {
 			$new_input['max_age'] = intval( sanitize_text_field( $input['max_age'] ) );
+		}
+
+		if ( isset( $input['log_driver'] ) && is_string( $input['log_driver'] ) ) {
+			$new_input['log_driver'] = sanitize_text_field( $input['log_driver'] );
+		}
+		if ( isset( $input['log_level'] ) && is_string( $input['log_level'] ) ) {
+			$new_input['log_level'] = sanitize_text_field( $input['log_level'] );
 		}
 
 		unset( $options['endpoints'] );
@@ -1429,23 +1446,56 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the logs_enabled option
+	 * Print the los section
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_logs_enabled(): void {
+	public function print_logs_section(): void {
+		print esc_html__( 'Plugin logs', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the logs driver setting
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_log_driver(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['logs_enabled'] ) ? $options['logs_enabled'] : 0;
+		$value   = ( isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) ) ? esc_attr( $options['log_driver'] ) : 'errorlog';
 
-		$enabled = $value ? 'checked' : '';
-
+		$print_selected = function( $val ) use ( $value ) {
+			return $val == $value ? 'selected' : '';
+		};
 		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[logs_enabled]"' .
-			'name="no-unsafe-inline[logs_enabled]" %s />
-			<label for="no-unsafe-inline[logs_enabled]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Enable logs in database.', 'no-unsafe-inline' )
+			'<select name="no-unsafe-inline[log_driver]" id="no-unsafe-inline[log_driver]">' .
+			'<option value="errorlog" ' . $print_selected( 'errorlog' ) . '>PHP - error_log()</option>' .
+			'<option value="db"' . $print_selected( 'db' ) . '>Database</option>' .
+			'</select>'
+		);
+	}
+
+	/**
+	 * Print the logs level setting
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function print_log_level(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = ( isset( $options['log_level'] ) && is_string( $options['log_level'] ) ) ? esc_attr( $options['log_level'] ) : 'error';
+
+		$print_selected = function( $val ) use ( $value ) {
+			return $val == $value ? 'selected' : '';
+		};
+		printf(
+			'<select name="no-unsafe-inline[log_level]" id="no-unsafe-inline[log_level]">' .
+			'<option value="error" ' . $print_selected( 'error' ) . '>Error</option>' .
+			'<option value="warning"' . $print_selected( 'warning' ) . '>Warning</option>' .
+			'<option value="info"' . $print_selected( 'info' ) . '>Info</option>' .
+			'<option value="debug"' . $print_selected( 'debug' ) . '>Debug</option>' .
+			'</select>'
 		);
 	}
 
@@ -1500,7 +1550,7 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[group_name]">%s</label>',
 			esc_html( $value ),
 			esc_html( $disabled ),
-			esc_html__( 'Optional. If a group name is not specified, the endpoint is given a name of "default".', 'no-unsafe-inline' )
+			esc_html__( 'Optional. If a group name is not specified, the endpoint is given a name of "csp-endpoint".', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1939,6 +1989,11 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_logs_page(): void {
+		$options      = (array) get_option( 'no-unsafe-inline', array() );
+		$enabled_logs = isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) && $options['log_driver'] === 'db';
+		if ( ! $enabled_logs ) {
+			$message = esc_html__( 'You are using a logger that does not support the Log viewer (supported: Database)', 'no-unsafe-inline' );
+		}
 		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-admin-logs-table.php';
 		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-logs.php';
 	}

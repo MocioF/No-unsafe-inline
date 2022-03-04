@@ -165,16 +165,17 @@ class No_Unsafe_Inline {
 	 * @return void
 	 */
 	public function load_logger() {
-		$options      = (array) get_option( 'no-unsafe-inline', array() );
-		$enabled_logs = isset( $options['logs_enabled'] ) && 1 === $options['logs_enabled'];
+		$options = (array) get_option( 'no-unsafe-inline', array() );
+		$driver  = ( isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) ) ? $options['log_driver'] : 'errorlog';
+		$level   = ( isset( $options['log_level'] ) && is_string( $options['log_level'] ) ) ? $options['log_level'] : 'error';
 
-		if ( $enabled_logs ) {
+		if ( 'db' === $driver ) {
 			$logger = new \NUNIL\log\Nunil_Lib_Log_Db();
-			\NUNIL\Nunil_Lib_Log::init( $logger, \NUNIL\Nunil_Lib_Log::DEBUG );
+			$logger->delete_old_logs( 10 );
 		} else {
 			$logger = new \NUNIL\log\Nunil_Lib_Log_ErrorLog();
-			\NUNIL\Nunil_Lib_Log::init( $logger, \NUNIL\Nunil_Lib_Log::ERROR );
 		}
+		\NUNIL\Nunil_Lib_Log::init( $logger, \NUNIL\Nunil_Lib_Log::string_to_level( $level ) );
 	}
 
 	/**

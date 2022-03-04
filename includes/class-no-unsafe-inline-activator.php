@@ -158,7 +158,8 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['use_unsafe-hashes']                 = 0;
 			$plugin_options['fix_setattribute_style']            = 1;
 			$plugin_options['add_wl_by_cluster_to_db']           = 1;
-			$plugin_options['logs_enabled']                      = 1;
+			$plugin_options['log_level']                         = 'error';
+			$plugin_options['log_driver']                        = 'db';
 			$plugin_options['remove_tables']                     = 0;
 			$plugin_options['remove_options']                    = 0;
 			$plugin_options['use_reports']                       = 0;
