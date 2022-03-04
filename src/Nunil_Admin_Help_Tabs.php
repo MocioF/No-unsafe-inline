@@ -281,57 +281,33 @@ class Nunil_Admin_Help_Tabs {
 
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-upgrade-script-dynamic',
-						'title'   => __( 'script-dynamic', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-upgrade-script-dynamic' ),
+						'id'      => 'nunil-misc',
+						'title'   => __( 'Misc options', 'no-unsafe-inline' ),
+						'content' => $this->content( 'nunil-misc' ),
 					)
 				);
 
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-upgrade-insecure',
-						'title'   => __( 'Set upgrade-insecure-requests directive', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-upgrade-insecure' ),
+						'id'      => 'nunil-violations-report',
+						'title'   => __( 'Violations report', 'no-unsafe-inline' ),
+						'content' => $this->content( 'nunil-violations-report' ),
 					)
 				);
 
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-csp-admin',
-						'title'   => __( 'Enforce policy in admin', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-csp-admin' ),
+						'id'      => 'nunil-logs',
+						'title'   => __( 'Plugin Logs', 'no-unsafe-inline' ),
+						'content' => $this->content( 'nunil-logs' ),
 					)
 				);
 
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-use-unsafe-hashes',
-						'title'   => __( 'Use \'unsafe-hashes\' for JS', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-use-unsafe-hashes' ),
-					)
-				);
-
-				$this->screen->add_help_tab(
-					array(
-						'id'      => 'nunil-fix-setattribute',
-						'title'   => __( 'Fix the use of setAttribute(\'style\')', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-fix-setattribute' ),
-					)
-				);
-
-				$this->screen->add_help_tab(
-					array(
-						'id'      => 'nunil-add-wl-by-classification',
-						'title'   => __( 'Add whitelisted scripts to the database', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-add-wl-by-classification' ),
-					)
-				);
-
-				$this->screen->add_help_tab(
-					array(
-						'id'      => 'nunil-server-log',
-						'title'   => __( 'Enable Server Logs', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-server-log' ),
+						'id'      => 'nunil-deactivation',
+						'title'   => __( 'Deactivation', 'no-unsafe-inline' ),
+						'content' => $this->content( 'nunil-deactivation' ),
 					)
 				);
 
@@ -638,15 +614,20 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'You can delete an event handler script (or scripts clustered together) from your database using the link in each row of the "Script" column or the commands for bulk action.', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-settings-main']           = '<p>'
-			. esc_html__( 'From this page you can set the main options that regulate the operation of the plugin.', 'no-unsafe-inline' )
+			. esc_html__( 'From this page, you can set the main options that regulate the operation of the plugin.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'You can use the links contained on the page to check the specifications of the individual directives that the set plugin.', 'no-unsafe-inline' )
+			. esc_html__( 'You can use the links contained on the page to check the specifications of the individual directives that the plugin can manage.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'Every single option is documented in the additional help pages.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-directives-managed']      = '<p>'
+		$content['nunil-directives-managed']      = '<h1>' . esc_html__( 'Directives managed', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Options name', 'no-unsafe-inline' ) . ': </i><b>directive</b>_enabled<br>'
+			. '<i>' . esc_html__( 'Options values', 'no-unsafe-inline' ) . ': <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'This version of the plugin can handle some: fetch directives, document directives, navigation directives, reporting directives and the "upgrade-insecure-requests" directive.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
@@ -664,15 +645,41 @@ class Nunil_Admin_Help_Tabs {
 			)
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'This settings manage how external sources will be included in your CSP.', 'no-unsafe-inline' )
+			. esc_html__( 'These settings manage how external sources will be included in your CSP.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-sources-base']  = '<p>'
+		$content['nunil-external-sources-base']  = '<h1>' . esc_html__( 'External sources, base identification.', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>external_host_mode</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
+			. '<b>\'host\'</b>: ' . esc_html__( 'hostname', 'no-unsafe-inline' ) . ', '
+			. '<b>\'sch-host\'</b>: ' . esc_html__( 'scheme://hostname', 'no-unsafe-inline' ) . ', '
+			. '<b>\'domain\'</b>: ' . esc_html__( 'domain', 'no-unsafe-inline' ) . ', '
+			. '<b>\'resource\'</b>: ' . esc_html__( 'resource url', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'With this option you can choose the scheme with which the sources, found in your pages, will be suggested to you in the "Base rules" tab.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'This option does not prevent you from manually entering sources in, using a scheme other than the one selected.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-single-hashes'] = '<p>'
+		$content['nunil-external-single-hashes'] = '<h1>' . esc_html__( 'Use single hashes in directives', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_script-src</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_style-src</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_img-src</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_all</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'In addition to the traditional mode of identifying external resources allowed, provided by the CSP2 specifications, the CSP3 specifications allow you to indicate the hashes of some external resources to authorize them individually.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
@@ -682,7 +689,19 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'The plugin will dynamically add individual hashes in the CSP directives related to external resources in advance authorized by the "External whitelist" tab only in the individual pages of your site where these resources are used.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-hash-algos']    = '<p>'
+		$content['nunil-external-hash-algos']    = '<h1>' . esc_html__( 'Select which hashes to use', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_sha256</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_sha384</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_sha512</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
 			. esc_html__( 'These options allow you to choose which algorithms use for the calculation of the cryptographic hashes used for external resources.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
@@ -694,7 +713,15 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'Elements would be allowed to execute only if they contain integrity metadata that matches the policy.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-use-sri']                = '<p>'
+		$content['nunil-use-sri']                = '<h1>' . esc_html__( 'Use Subresource Integrity', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_script</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_link</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
 			. esc_html__( 'Subresource Integrity is a mechanism by which user agents may verify that a fetched resource has been delivered without unexpected manipulation.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
@@ -712,38 +739,130 @@ class Nunil_Admin_Help_Tabs {
 			) . '<br>'
 			. esc_html__( 'A Note in specs says: "A future revision of this specification is likely to include integrity support for all possible subresources, i.e., a, audio, embed, iframe, img, link, object, script, source, track, and video elements."', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-inline-script-mode']       = '<p>'
-			. '</p>'
+		$content['nunil-inline-script-mode'] = '<h1>' . esc_html__( 'Inline script mode', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>inline_scripts_mode</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
+			. '<b>\'nonce\'</b>: ' . esc_html__( 'nonce', 'no-unsafe-inline' ) . ', '
+			. '<b>\'sha256\'</b>: ' . esc_html__( 'sha256', 'no-unsafe-inline' ) . ', '
+			. '<b>\'sha384\'</b>: ' . esc_html__( 'sha384', 'no-unsafe-inline' ) . ', '
+			. '<b>\'sha512\'</b>: ' . esc_html__( 'sha512', 'no-unsafe-inline' )
+			. '</pre>'
 			. '<p>'
 			. esc_html__( 'With this option you can choose how inline contents, present in your pages and authorized in the "Inline Whitelist" tab, will be identified in your "Content Security Policy".', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'You can choose to identify these contents through a cryptographic hash or by means of a nonce generated at each view.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-upgrade-script-dynamic']   = '<p>'
+
+		$content['nunil-misc']              = '<h1>' . esc_html__( 'Misc Options', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_strict-dynamic</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'Choose here if to add \'strict-dynamic\' in script-src or not.', 'no-unsafe-inline' )
-			. '</p>';
-		$content['nunil-upgrade-insecure']         = '<p>'
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>no-unsafe-inline_upgrade_insecure</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'Choose here if to add \'upgrade-insecure-requests\'  to your "Content Security Policy"; this will instruct a user agent to upgrade a priori insecure resource requests to secure transport before fetching them.', 'no-unsafe-inline' )
-			. '</p>';
-		$content['nunil-csp-admin']                = '<p>'
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>protect_admin</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'Choose here if to output "Content Security Policy"\'s header in admin pages of your site.', 'no-unsafe-inline' )
-			. '</p>';
-		$content['nunil-use-unsafe-hashes']        = '<p>'
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_unsafe-hashes</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'The \'unsafe-hashes\' Content Security Policy (CSP) keyword allows the execution of inline scripts within a JavaScript event handler attribute of a HTML element. This is not safe and this plugin can handle event handlers HTML attributes without \'unsafe-hashes\'.', 'no-unsafe-inline' )
-			. '</p>';
-		$content['nunil-fix-setattribute']         = '<p>'
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>fix_setattribute_style</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'By enabling this option, scripts will be injected into your pages to get around some uses of the SetAttribute() function in the scripts in your pages.', 'no-unsafe-inline' )
-			. '</p>';
-		$content['nunil-add-wl-by-classification'] = '<p>'
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>add_wl_by_cluster_to_db</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'By enabling this option, the plugin will add to an authorized cluster of inline scripts or event handlers scripts, the new scripts detected on the page and authorized by the classification function.', 'no-unsafe-inline' ) . '<br>'
 			. esc_html__( 'You may need to activate this option to avoid having to frequently enable the capturing phase as it is not possible to know the cluster\'s shape and to know a minimum needed numerosity of each cluster.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'However, this option can present a potential security risk if an attacker may be able to obtain the authorization for some scripts by voluntarily forcing the shape of the cluster to which they are brought back by the classification function.', 'no-unsafe-inline' ) . '<br>'
-			. '</p>';
-		$content['nunil-server-log']               = '<p>'
+			. '</p>'
+			. '<hr>';
+		$content['nunil-logs']              = '<h1>' . esc_html__( 'Plugin', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>log_driver</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>db</b>: ' . esc_html__( 'Log to database', 'no-unsafe-inline' ) . ', <b>errorlog</b>: ' . esc_html__( 'PHP error_log()', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
 			. esc_html__( 'Choose here if to enable plugin to write log messages to the database.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>log_level</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>debug</b> (0), <b>info</b> (1), <b>warning</b> (2), <b>error</b> (3)  ' . esc_html__( 'Log level to record', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'Select logs level to record in the database or to report by error_log().', 'no-unsafe-inline' )
+			. '</p>';
+		$content['nunil-violations-report'] = '<h1>' . esc_html__( 'Violations report', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_reports</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. esc_html__( 'In this section you can add endpoints where to report captured violation.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'The plugin will add both a report-uri and a report-to directive.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'If no group name will be specified, the plugin will use \'csp-endpoint\' as a default one.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. sprintf(
+				// translators: %s is the link to a paragraph in CSP3 specifications.
+				esc_html__( 'Read %s for info about reporting directives."', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank">https://www.w3.org/TR/CSP3/#directive-report-to</a>'
+			)
+			. '</p>'
+			. '<p>'
+			. '<b>' . esc_html__( 'Remember to save options after you added or removed report urls.', 'no-unsafe-inline' ) . '</b>'
+			. '</p>';
+		$content['nunil-deactivation'] = '<h1>' . esc_html__( 'Deactivation options', 'no-unsafe-inline' ) . '</h1>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>remove_tables</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>remove_options</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. esc_html__( 'If no option is selected, no data will be removed from the database upon plugin deactivation.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'Here you can select if you want options or tables to be removed upon deactivation.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'These options will be honored only on single site activation. No data will be removed on network deactivation.', 'no-unsafe-inline' )
 			. '</p>';
 
 		if ( ! empty( $content[ $name ] ) ) {
@@ -763,7 +882,9 @@ class Nunil_Admin_Help_Tabs {
 	public function sidebar(): void {
 		$content  = '<p><strong>' . __( 'For more information:', 'no-unsafe-inline' ) . '</strong></p>';
 		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://wordpress.org/plugins/no-unsafe-inline/' ) . __( 'Plugin page on WordPress.org', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://wordpress.org/support/plugin/no-unsafe-inline/' ) . __( 'Support forum', 'no-unsafe-inline' ) . '</a></p>';
 		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://github.com/MocioF/No-unsafe-inline' ) . __( 'Code page on GitHub', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://github.com/MocioF/No-unsafe-inline/issues' ) . __( 'Report issues', 'no-unsafe-inline' ) . '</a></p>';
 		$this->screen->set_help_sidebar( $content );
 	}
 
