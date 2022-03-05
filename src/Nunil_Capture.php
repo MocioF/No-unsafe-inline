@@ -16,7 +16,8 @@ use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use NUNIL\Nunil_Lib_Log as Log;
 
-use League\Uri\UriString;
+use League\Uri\Uri;
+use League\Uri\UriModifier;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -635,7 +636,7 @@ class Nunil_Capture {
 											} else {
 												$src_attrib         = $child_node->getAttribute( $stored_attr );
 												$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-												// ~ $external_script_id = $this->insert_external_tag_in_db( $directive, $child_node->nodeName, $src_attrib );
+
 												if ( $external_script_id ) {
 													$sri = new Nunil_SRI();
 													$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
@@ -806,6 +807,8 @@ class Nunil_Capture {
 
 		if ( '' !== $src_attrib ) {
 
+			$src_attrib = $this->clean_random_params( $src_attrib );
+
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
 
 			if ( is_null( $external_script_id ) ) { // The script is not in the db.
@@ -856,4 +859,29 @@ class Nunil_Capture {
 		return $srcs;
 	}
 
+	/**
+	 * Removes some params from URI
+	 *
+	 * Used to remove random params from URI, before inserting external scripts in DB
+	 * or checking for whitelist external script
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
+	 * @param string $uri_string The original URI.
+	 * @return string
+	 */
+	protected function clean_random_params( $uri_string ) {
+		$removed_params = array(
+			'rand',
+			'random',
+		);
+
+		$uri = Uri::createFromString( $uri_string );
+
+		foreach ( $removed_params as $param ) {
+			$new_uri = UriModifier::removeParams( $uri, $param );
+		}
+		return $new_uri->__toString();
+	}
 }
