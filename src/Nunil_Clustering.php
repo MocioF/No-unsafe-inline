@@ -13,6 +13,8 @@ namespace NUNIL;
 
 use Beager\Nilsimsa;
 use Phpml\Clustering\DBSCAN;
+use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Lib_Log as Log;
 
 /**
  * Class with methods used to cluster scripts
@@ -38,63 +40,6 @@ class Nunil_Clustering {
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Function to get an array of obj from inline_scripts made of
-	 * ID and nilsimsa hexDigest
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $table The scripts table to be clustered: one of inline_scripts or event_handlers.
-	 * @param string $segmentation_field Optional: the field used to segment clustering.
-	 * @param string $segmentation_value Optional: the value of the field used to segment clustering.
-	 * @param string $tagname     Optional: the tagname we want to cluster.
-	 * @param string $clustername Optional: the clustername we want to cluster.
-	 * @return array<\stdClass> of obj
-	 */
-	private static function get_nilsimsa_hashes( $table, $segmentation_field = null, $segmentation_value = null, $tagname = null, $clustername = null ) {
-		global $wpdb;
-
-		$where = '';
-
-		$limit = 100000;
-
-		$args = array();
-
-		if ( func_num_args() > 0 ) {
-
-			if ( $segmentation_field ) {
-				$where  = $where . " $segmentation_field = %s AND";
-				$args[] = $segmentation_value;
-			}
-
-			if ( $tagname ) {
-				$where  = $where . ' tagname = %s AND';
-				$args[] = $tagname;
-			}
-
-			if ( $clustername ) {
-				$where  = $where . ' clustername = %s AND';
-				$args[] = $clustername;
-			}
-		}
-
-		if ( '' !== $where ) {
-			$where = substr( $where, 0, strlen( $where ) - 4 );
-			$where = 'WHERE ' . $where;
-		}
-		$args[] = $limit;
-
-		$hashes = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID, nilsimsa FROM $table $where LIMIT %d",
-				$args
-			),
-			OBJECT
-		);
-
-		return $hashes;
 	}
 
 	/**
@@ -156,14 +101,13 @@ class Nunil_Clustering {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string                   $table The scripts table to be clustered: one of inline_scripts or event_handlers (prefixed).
+	 * @param string                   $table The scripts table to be clustered: one of inline_scripts or event_handlers.
 	 * @param array<\stdClass>         $obj_collection the get-results array of obj made of [ID] [nilsimsa hexDigest].
 	 * @param array<array<array<int>>> $dbscan_results An array of clustered arrays returned by make_db_scan().
 	 *
 	 * @return array<\stdClass>    $obj_collection
 	 */
 	private static function cluster_digests( $table, $obj_collection, $dbscan_results ) {
-		global $wpdb;
 
 		$dbscan_array = array();
 
@@ -203,14 +147,14 @@ class Nunil_Clustering {
 			$where = array(
 				'ID' => $element->ID,
 			);
-			$wpdb->update( $table, $data, $where );
 
+			DB::update_cluster( $table, $data, $where );
 		}
 
-		/* If one of the elements are whitelisted, we whitelist all the cluster. */
-		$clusters = $wpdb->get_results( "SELECT DISTINCT `clustername` FROM $table WHERE `clustername` <> 'Unclustered'" );
+		// If one of the elements is whitelisted, we whitelist all the cluster.
+		$clusters = DB::get_clusters_in_table( $table );
 		foreach ( $clusters as $cluster ) {
-			$wl = $wpdb->get_var( "SELECT MAX(`whitelist`) from $table WHERE `clustername` = '" . $cluster->clustername . "'" );
+			$wl = DB::get_max_wl_in_cluster( $table, $cluster->clustername );
 
 			$data  = array(
 				'whitelist' => intval( $wl ),
@@ -218,7 +162,7 @@ class Nunil_Clustering {
 			$where = array(
 				'clustername' => $cluster->clustername,
 			);
-			$wpdb->update( $table, $data, $where );
+			DB::update_cluster( $table, $data, $where );
 		}
 		return $obj_collection;
 	}
@@ -231,7 +175,6 @@ class Nunil_Clustering {
 	 * @return array{type: string, report:string} A report of performed operarions.
 	 */
 	public static function cluster_by_dbscan() {
-		global $wpdb;
 
 		$gls = new Nunil_Global_Settings();
 
@@ -255,19 +198,19 @@ class Nunil_Clustering {
 		);
 
 		foreach ( $scripts_tables as $tbl ) {
-
+			// translators:: %s is the table internal name.
 			$result_string = $result_string . '<br>' . sprintf( esc_html__( 'Clustering %s', 'no-unsafe-inline' ), '<b>' . $tbl['table'] . '</b>' ) . '<br>';
 
-			$table = NO_UNSAFE_INLINE_TABLE_PREFIX . $tbl['table'];
+			$table = $tbl['table'];
 
-			$seg_fields = $wpdb->get_results( 'SELECT DISTINCT `' . $tbl['segmentation_field'] . "` FROM $table", 'ARRAY_A' );
+			$seg_fields = DB::get_segmentation_values( $tbl['segmentation_field'], $tbl['table'] );
 
 			foreach ( $seg_fields as $segment ) {
 
-				$tagnames = $wpdb->get_results( "SELECT DISTINCT `tagname` FROM $table WHERE `" . $tbl['segmentation_field'] . "` = '" . $segment[ $tbl['segmentation_field'] ] . "'", 'ARRAY_A' );
+				$tagnames = DB::get_tagnames( $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $table );
 
 				foreach ( $tagnames as $tagname ) {
-					$obj_collection = self::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
+					$obj_collection = DB::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
 
 					$result_string    = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
 					$result_string    = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
@@ -278,6 +221,7 @@ class Nunil_Clustering {
 				}
 			}
 			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>';
+			Log::info( 'Performed clustering on ' . $tbl['table'] );
 		}
 		$end_time = microtime( true );
 

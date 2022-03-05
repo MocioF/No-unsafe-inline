@@ -1397,4 +1397,145 @@ class Nunil_Lib_Db {
 		return $wpdb->query( $sql );
 	}
 
+	/**
+	 * Function to get an array of obj from inline_scripts made of
+	 * ID and nilsimsa hexDigest
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $table The scripts table to be clustered: one of inline_scripts or event_handlers.
+	 * @param string $segmentation_field Optional: the field used to segment clustering.
+	 * @param string $segmentation_value Optional: the value of the field used to segment clustering.
+	 * @param string $tagname     Optional: the tagname we want to cluster.
+	 * @param string $clustername Optional: the clustername we want to cluster.
+	 * @return array<\stdClass>
+	 */
+	public static function get_nilsimsa_hashes( $table, $segmentation_field = null, $segmentation_value = null, $tagname = null, $clustername = null ) {
+		global $wpdb;
+
+		$where = '';
+
+		$limit = 100000;
+
+		$args = array();
+
+		if ( func_num_args() > 0 ) {
+
+			if ( $segmentation_field ) {
+				$where  = $where . " $segmentation_field = %s AND";
+				$args[] = $segmentation_value;
+			}
+
+			if ( $tagname ) {
+				$where  = $where . ' tagname = %s AND';
+				$args[] = $tagname;
+			}
+
+			if ( $clustername ) {
+				$where  = $where . ' clustername = %s AND';
+				$args[] = $clustername;
+			}
+		}
+
+		if ( '' !== $where ) {
+			$where = substr( $where, 0, strlen( $where ) - 4 );
+			$where = ' WHERE ' . $where;
+		}
+		$args[] = $limit;
+
+		$hashes = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT ID, nilsimsa FROM ' . self::with_prefix( $table ) . $where . ' LIMIT %d',
+				$args
+			),
+			OBJECT
+		);
+
+		return $hashes;
+	}
+
+	/**
+	 * Get array of segmentation values in table
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $segmentation_field The table field where to look for distinct values (directive or event_attribute).
+	 * @param string $table The scripts table to be clustered: one of inline_scripts or event_handlers.
+	 * @return array<array<string>>
+	 */
+	public static function get_segmentation_values( $segmentation_field, $table ) {
+		global $wpdb;
+		return $wpdb->get_results(
+			'SELECT DISTINCT `' . $segmentation_field . '` FROM ' . self::with_prefix( $table ),
+			ARRAY_A
+		);
+	}
+
+	/**
+	 * Get array of tagnames
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $segmentation_field The table field where to look for distinct values (directive or event_attribute).
+	 * @param string $segment The table field where to look for distinct values .
+	 * @param string $table The scripts table to be clustered: one of inline_scripts or event_handlers.
+	 * @return array<array{'tagname': string}>
+	 */
+	public static function get_tagnames( $segmentation_field, $segment, $table ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT DISTINCT `tagname` FROM '
+			. self::with_prefix( $table )
+			. ' WHERE `' . $segmentation_field . '` = %s',
+			$segment
+		);
+		return $wpdb->get_results( $sql, ARRAY_A );
+	}
+
+	/**
+	 * Update clustername or whitelist in database
+	 *
+	 * @param string                    $table The scripts table to be clustered: one of inline_scripts or event_handlers.
+	 * @param array<string, string|int> $data Data to be update (clustername or whitelist).
+	 * @param array<string, int>        $where Where (ID) to update clustername.
+	 * @return void
+	 */
+	public static function update_cluster( $table, $data, $where ) {
+		global $wpdb;
+		$wpdb->update( self::with_prefix( $table ), $data, $where );
+	}
+
+	/**
+	 * Get all clusters in table
+	 *
+	 * @since 1.0.0
+	 * @param string $table The table name: one of inline_scripts or event_handlers.
+	 * @return array<\stdClass>
+	 */
+	public static function get_clusters_in_table( $table ) {
+		global $wpdb;
+		return $wpdb->get_results(
+			'SELECT DISTINCT `clustername` FROM '
+			. self::with_prefix( $table )
+			. ' WHERE `clustername` <> \'Unclustered\''
+		);
+	}
+
+	/**
+	 * Get max (1 or 0) whitelist in cluster
+	 *
+	 * @param string $table The table name: one of inline_scripts or event_handlers.
+	 * @param string $clustername The name of the cluster.
+	 * @return string
+	 */
+	public static function get_max_wl_in_cluster( $table, $clustername ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT MAX(`whitelist`) FROM '
+			. self::with_prefix( $table )
+			. ' WHERE `clustername` = %s',
+			$clustername
+		);
+		return $wpdb->get_var( $sql );
+	}
 }
