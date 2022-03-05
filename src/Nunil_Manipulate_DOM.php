@@ -513,8 +513,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	/**
 	 * Select all nodes matching a tag
 	 *
-	 * Builds XPath query to get all nodes matching a Nunil_HTML_Tag.
-	 *
 	 * @since 1.0.0
 	 * @access private
 	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
@@ -522,6 +520,21 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function get_external_nodelist( $tag ) {
 		$x            = new \DOMXPath( $this->domdocument );
+		$x_path_query = $this->build_xpath_query( $tag );
+
+		return $x->query( $x_path_query );
+	}
+
+	/**
+	 * Builds XPath query to get all nodes matching a Nunil_HTML_Tag.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
+	 * @return string
+	 */
+	public function build_xpath_query( $tag ) {
+
 		$x_path_query = '//' . $tag->get_name();
 
 		$storedattrs = $tag->get_storedattrs();
@@ -616,7 +629,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				}
 			}
 		}
-		return $x->query( $x_path_query );
+		return $x_path_query;
 	}
 
 	/**
@@ -722,6 +735,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			return false; // BL: no external whitelist present.
 		} else {
 			if ( 0 < count( $ext_wlist ) ) {
+
+				$src_attrib = $this->clean_random_params( $src_attrib );
+
 				foreach ( $ext_wlist as $index => $obj ) {
 					if ( $src_attrib === $obj->src_attrib ) {
 						if ( '1' === $obj->whitelist ) {
