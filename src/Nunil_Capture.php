@@ -876,8 +876,11 @@ class Nunil_Capture {
 			'rand',
 			'random',
 		);
-
-		$uri = Uri::createFromString( $uri_string );
+		try {
+			$uri = Uri::createFromString( $uri_string );
+		} catch ( \Exception $e ) {
+			return $uri_string;
+		}
 
 		foreach ( $removed_params as $param ) {
 			$new_uri = UriModifier::removeParams( $uri, $param );

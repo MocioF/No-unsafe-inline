@@ -12,6 +12,8 @@
 
 namespace NUNIL;
 
+use NUNIL\Nunil_Lib_Log as Log;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -37,7 +39,7 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( empty( $options ) ) {
-			Nunil_Lib_Log::error( 'The option no-unsafe-inline has to be an array' );
+			Log::error( 'The option no-unsafe-inline has to be an array' );
 			exit( 'The option no-unsafe-inline has to be an array' );
 		}
 
@@ -111,19 +113,33 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 						),
 						true
 					) ) {
-						error_log( 'BLOCKED URL:' . $blocked_url );
 						if ( 'inline' === $blocked_url && isset( $source_file ) ) {
-							error_log( print_r( $csp_violation, true ) );
-							// ~ $this->report_log( $csp_report );
-							// ~
-							// ~ Qui il problema è che script-sample è limitato a 40 chars
-								// ~ $capture->put_inline_content_in_database(
-								// ~ $csp_report['violated-directive'],
-								// ~ substr( $csp_report['violated-directive'], 0, strpos( $csp_report['violated-directive'], '-') ),
-								// ~ $csp_report['script-sample'],
-								// ~ $csp_report['document-uri']
-							// ~ );
-							// ~
+
+							if ( isset( $csp_violation['column-number'] ) ) {
+								$column_number = $csp_violation['column-number'];
+							} elseif ( isset( $csp_violation['columnNumber'] ) ) {
+								$column_number = $csp_violation['columnNumber'];
+							} else {
+								$column_number = '';
+							}
+
+							if ( isset( $csp_violation['line-number'] ) ) {
+								$line_number = $csp_violation['line-number'];
+							} elseif ( isset( $csp_violation['lineNumber'] ) ) {
+								$line_number = $csp_violation['lineNumber'];
+							} else {
+								$line_number = '';
+							}
+
+							$partial = 'document-uri: ' . $document_uri;
+							if ( '' !== $column_number ) {
+								$partial .= ' column-number: ' . $column_number . ' ';
+							}
+							if ( '' !== $line_number ) {
+								$partial .= ' line-number: ' . $line_number;
+							}
+
+							Log::warning( "CSP blocked inline script while capture is enabled: $partial" );
 						}
 						if ( 'eval' === $blocked_url || 'empty' === $blocked_url ) {
 							$capture->insert_external_tag_in_db(
