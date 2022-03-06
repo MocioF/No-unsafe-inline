@@ -445,7 +445,7 @@ div.nunil_temp_div {
 	grid-auto-rows: 1fr;
 	text-align:center;
 	justify-content: space-between;
-	align-items: center;
+	align-items: start;
 }
 
 @media (max-width: 480px) {
@@ -494,7 +494,8 @@ div.nunil_temp_div {
 
 .no-unsafe-inline-clean-database,
 .no-unsafe-inline-test-classifier,
-.no-unsafe-inline-clustering {
+.no-unsafe-inline-clustering,
+.no-unsafe-inline-prune-database {
 	background-color: #ffffff;
 }
 

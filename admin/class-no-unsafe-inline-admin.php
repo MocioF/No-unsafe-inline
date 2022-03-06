@@ -1990,7 +1990,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_logs_page(): void {
 		$options      = (array) get_option( 'no-unsafe-inline', array() );
-		$enabled_logs = isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) && $options['log_driver'] === 'db';
+		$enabled_logs = isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) && 'db' === $options['log_driver'];
 		if ( ! $enabled_logs ) {
 			$message = esc_html__( 'You are using a logger that does not support the Log viewer (supported: Database)', 'no-unsafe-inline' );
 		}
@@ -2078,7 +2078,7 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		$result_string = '<br><b> --- ' . esc_html__( 'DELETE ALL SCRIPTS FROM DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
-		$result_string = '<ul>';
+		$result_string = $result_string . '<ul>';
 
 		foreach ( $tables as $table ) {
 
@@ -2093,6 +2093,45 @@ class No_Unsafe_Inline_Admin {
 
 		\NUNIL\Nunil_Lib_Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'cleaned up the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
 		\NUNIL\Nunil_Lib_Log::info( 'cleaned up the database at the user\'s request' );
+
+		$result = array(
+			'type'   => 'success',
+			'report' => $result_string,
+		);
+
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+			echo wp_json_encode( $result );
+		} else {
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+			}
+		}
+
+		wp_die();
+	}
+
+	/**
+	 * Prunes script tables
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function prune_database(): void {
+		if ( ! (
+		isset( $_REQUEST['nonce'] )
+		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_prune_database' )
+		) ) {
+			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
+		}
+
+		$prune = new \NUNIL\Nunil_Prune_Db();
+
+		$result_string = '<br><b> --- ' . esc_html__( 'Pruning data from database', 'no-unsafe-inline' ) . ' --- </b><br>';
+		$result_string = $result_string . $prune->delete_orphan_occurences();
+		$result_string = $result_string . $prune->prune_big_clusters();
+
+		\NUNIL\Nunil_Lib_Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'pruned the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
+		\NUNIL\Nunil_Lib_Log::info( 'pruned the database at the user\'s request' );
 
 		$result = array(
 			'type'   => 'success',

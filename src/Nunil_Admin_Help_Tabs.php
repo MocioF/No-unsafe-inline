@@ -624,8 +624,8 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>';
 		$content['nunil-directives-managed']      = '<h1>' . esc_html__( 'Directives managed', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
-			. '<i>' . esc_html__( 'Options name', 'no-unsafe-inline' ) . ': </i><b>directive</b>_enabled<br>'
-			. '<i>' . esc_html__( 'Options values', 'no-unsafe-inline' ) . ': <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Options name', 'no-unsafe-inline' ) . '</i>: <b>directive</b>_enabled<br>'
+			. '<i>' . esc_html__( 'Options values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
 			. esc_html__( 'This version of the plugin can handle some: fetch directives, document directives, navigation directives, reporting directives and the "upgrade-insecure-requests" directive.', 'no-unsafe-inline' )

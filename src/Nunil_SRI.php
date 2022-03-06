@@ -42,27 +42,6 @@ class Nunil_SRI {
 	}
 
 	/**
-	 * Check it uri is a local resource
-	 *
-	 * Checks a URL to determine whether or not the resource is "remote"
-	 * (served by a third-party) or whether the resource is local (and
-	 * is being served by the same webserver as this plugin is run on.)
-	 *
-	 * @since 1.0.0
-	 * @param string $uri The URI of the resource to inspect.
-	 * @return bool True if the resource is local, false if the resource is remote.
-	 */
-	public static function isLocalResource( $uri ) {
-		$rsrc_host = UriString::parse( $uri )['host'];
-		$this_host = UriString::parse( get_site_url() )['host'];
-		if ( is_string( $rsrc_host ) && is_string( $this_host ) ) {
-			return ( 0 === strpos( $rsrc_host, $this_host ) ) ? true : false;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Fetch resource
 	 *
 	 * Fetch a resource using wp_remote_get

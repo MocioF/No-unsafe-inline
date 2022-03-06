@@ -917,7 +917,7 @@ class Nunil_Lib_Db {
 						$in_str = substr( $in_str, 0, strlen( $in_str ) - 2 );
 						$in_str = $in_str . ')';
 
-						$del_cl_occur = 'DELETE FROM ' . $table . ' WHERE (`dbtable`,`itemid`) IN $in_str';
+						$del_cl_occur = 'DELETE FROM ' . $table . ' WHERE (`dbtable`,`itemid`) IN ' . $in_str;
 						$del_occur    = $wpdb->query( $del_cl_occur );
 					}
 				}
@@ -1538,4 +1538,114 @@ class Nunil_Lib_Db {
 		);
 		return $wpdb->get_var( $sql );
 	}
+
+
+	/**
+	 * Get orphaned occurences ID for table's scripts
+	 *
+	 * @param string $table The internal table name.
+	 * @since 1.0.0
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_orpaned_occurences( $table ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			' SELECT inlineids.occ_id FROM ( '
+			. 'SELECT ' . self::occurences_table() . '.`ID` AS \'occ_id\', '
+			. self::with_prefix( $table ) . ' .`ID` AS \'scrID\' FROM ' . self::occurences_table()
+			. ' LEFT JOIN ' . self::with_prefix( $table ) . ' ON ' . self::occurences_table() . '.`itemid` = ' . self::with_prefix( $table ) . '.`ID` '
+			. 'WHERE ' . self::occurences_table() . '.`dbtable` = %s ) AS inlineids WHERE inlineids.scrID IS NULL;',
+			$table
+		);
+		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Delete single occurence
+	 *
+	 * @param string $id The occurence ID.
+	 * @since 1.0.0
+	 * @return int|false
+	 */
+	public static function delete_occurence( $id ) {
+		global $wpdb;
+
+		$sql = $wpdb->prepare(
+			'DELETE FROM ' . self::occurences_table() . ' WHERE `ID` = %d',
+			$id
+		);
+		return $wpdb->query( $sql );
+	}
+
+	/**
+	 * Select clustername in table with numerosity bigger than limit
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @param string $table The internal table name.
+	 * @param int    $limit The max allowed numerosity.
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_big_clusters( $table, $limit = 150 ) {
+		$tables = array( 'inline_scripts', 'event_handlers' );
+		if ( ! in_array( $table, $tables ) ) {
+			return null;
+		}
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT `clustername`, COUNT(`ID`) AS num FROM ' . self::with_prefix( $table ) .
+			' GROUP BY `clustername` HAVING num > %d AND `clustername` <> \'Unclustered\';',
+			$limit
+		);
+		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Returns cluster numerosity
+	 *
+	 * @since 1.0.0
+	 * @access private
+	 * @param string $table The internal table name.
+	 * @param string $clustername The name of the cluster.
+	 * @return int
+	 */
+	private static function count_cluster_num( $table, $clustername ) {
+		global $wpdb;
+		$sql = $wpdb->prepare(
+			'SELECT COUNT(*) FROM ' . self::with_prefix( $table ) . ' WHERE `clustername` = %s;',
+			$clustername
+		);
+		return intval( $wpdb->get_var( $sql ) );
+	}
+
+	/**
+	 * Retuns a list of scripts id to be pruned from database
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @param string $table The internal table name.
+	 * @param string $clustername The name of the cluster.
+	 * @param int    $maxnum The number of ids not included (the $maxnum lastseen scripts of the cluster).
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_oldest_scripts_id( $table, $clustername, $maxnum = 150 ) {
+		global $wpdb;
+
+		$cl_numerosity = self::count_cluster_num( $table, $clustername );
+		$limit         = max( 0, $cl_numerosity - $maxnum );
+
+		$sql = $wpdb->prepare(
+			'SELECT ' . self::with_prefix( $table ) . '.`ID`, `clustername`, MaxLastseen, `pageurl` FROM '
+			. self::with_prefix( $table ) . ' LEFT JOIN ('
+			. 'SELECT `dbtable`, `itemid`, `pageurl`, MAX(`lastseen`) AS MaxLastseen FROM ' . self::occurences_table()
+			. ' WHERE `dbtable` = %s GROUP BY `itemid` ) AS occurences '
+			. 'ON ' . self::with_prefix( $table ) . '.`ID` = occurences.`itemid` WHERE `clustername` = %s ORDER BY MaxLastseen ASC '
+			. 'LIMIT %d;',
+			$table,
+			$clustername,
+			$limit
+		);
+		return $wpdb->get_results( $sql );
+	}
+
 }

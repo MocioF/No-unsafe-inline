@@ -223,6 +223,7 @@ class No_Unsafe_Inline {
 
 		$this->loader->add_action( 'wp_ajax_nunil_trigger_clustering', $plugin_admin, 'trigger_clustering' );
 		$this->loader->add_action( 'wp_ajax_nunil_clean_database', $plugin_admin, 'clean_database' );
+		$this->loader->add_action( 'wp_ajax_nunil_prune_database', $plugin_admin, 'prune_database' );
 		$this->loader->add_action( 'wp_ajax_nunil_test_classifier', $plugin_admin, 'test_classifier' );
 
 		$this->loader->add_filter( 'plugin_action_links_' . NO_UNSAFE_INLINE_PLUGIN_BASENAME, $plugin_admin, 'plugin_directory_links' );

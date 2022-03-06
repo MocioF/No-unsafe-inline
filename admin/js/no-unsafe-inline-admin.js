@@ -161,7 +161,7 @@
 								label,
 								function( index, value ) {
 									nunil_db_summary_data += '<tr>';
-									nunil_db_summary_data += '<td data-th="' + __( 'Type', 'no-unsafe-inline' ) + '">' + value.Type + '</td>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Type', 'no-unsafe-inline' ) + '">' + value.type + '</td>';
 									var wlText = '';
 									if ( '1' === value.whitelist) {
 										wlText = __( 'WL', 'no-unsafe-inline' );
@@ -169,8 +169,8 @@
 										wlText = __( 'BL', 'no-unsafe-inline' );
 									}
 									nunil_db_summary_data += '<td data-th="' + __( 'Whitelist', 'no-unsafe-inline' ) + '">' + wlText + '</td>';
-									nunil_db_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.Num + '</td>';
-									nunil_db_summary_data += '<td data-th="' + __( 'Num. Clusters', 'no-unsafe-inline' ) + '">' + value.Clusters + '</td>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Num.', 'no-unsafe-inline' ) + '">' + value.num + '</td>';
+									nunil_db_summary_data += '<td data-th="' + __( 'Num. Clusters', 'no-unsafe-inline' ) + '">' + value.clusters + '</td>';
 									nunil_db_summary_data += '</tr>';
 								}
 							);}
@@ -590,10 +590,12 @@
 				}
 			);
 
+			// AJAX for Clean Database Button.
 			$( '#nunil_clean_database' ).click(
 				function( e ) {
 					if ( window.confirm( __( 'Are you sure you want to clean db data?\n(This will not clear your base rules)', 'no-unsafe-inline' ) )) {
 						e.preventDefault();
+						$( '#nunil_clean_database' ).prop( 'disabled', true );
 						var db_clean_nonce = $( '#clean_db_nonce' ).val();
 						$.ajax(
 							{
@@ -623,6 +625,43 @@
 					}
 				}
 			);
+
+			// AJAX for Prune Database Button.
+			$( '#nunil_prune_database' ).click(
+				function( e ) {
+					if ( window.confirm( __( 'Are you sure you want to prune db data?\n(This will reduce cluster size and remove orphans entries from occurences table)', 'no-unsafe-inline' ) )) {
+						e.preventDefault();
+						$( '#nunil_prune_database' ).prop( 'disabled', true );
+						var db_prune_nonce = $( '#prune_db_nonce' ).val();
+						$.ajax(
+							{
+								type: 'post',
+								dataType: 'json',
+								url: nunil_object.ajax_url,
+								data: {
+									action: 'nunil_prune_database',
+									nonce: db_prune_nonce
+								},
+								success: function( res ) {
+									if (res.type === 'success') {
+										$( 'div#nunil_tools_operation_report' ).append( res.report );
+										$( '#nunil_prune_database' ).prop( 'disabled', false );
+										updateSummaryTablesWorker( 'once' );
+									} else {
+										$( 'div#nunil_tools_operation_report' ).append(
+											microtime( true ) + __( 'Error in pruning tables.', 'no-unsafe-inline' ) + '<br>'
+										);
+										$( '#nunil_prune_database' ).prop( 'disabled', false );
+									}
+								},
+							}
+						);
+					} else {
+						return false;
+					}
+				}
+			);
+
 			if ('no-unsafe-inline' === mypage &&
 			('tools' === mytab || null === mytab || false === mytab)) {
 				$( 'input#submit' ).prop( 'disabled', true );
