@@ -35,15 +35,11 @@ Moreover, in order to ease the adoption of nonce-based CSP, they proposed the â€
 	
 	Usually, a WordPress project is a mix of code written by different authors who contributed to the Core and or wrote plugins and themes.
 	If it is possible to whitelist every external script loaded by a `<script src="">`, the real thruth is that in a WordPress project you can 	have dozens of those scripts included by your plugins and calculate a criptographical hash for each of them to be included in your CSP header can be a frustrating job. However there are many browser's extensions and WordPress' plugins that can help you in this job.
-2. Inline scripts / Inline styles
+2. Inline scripts
 
 	WordPress core, and plugins uses inline scripts. For those scripts, you can calculate hashes to manually insert in your policy, only if those scripts do not change at any page load. Unfortunately, this is not very common because it is frequent to include variable values calculated server side in inline scripts. And this means that your inline scripts changes too often to manually add their hashes to your policy.
 	This commonly happens when scripts are ["localized"](https://github.com/WordPress/WordPress/blob/a793be201b9c23dbe8b90a6ecd53ab52336f0f91/wp-includes/script-loader.php#L636).
-	You got a similar problem when inline styles are used in HTML tags:
-	
-		<h1 style="color:blue;text-align:center;">This is a heading</h1>
-		<p style="color:red;">This is a paragraph.</p>
-	
+		
 3.	WordPress has no API to implement nonces for CSP
 
 	Even if it is easy to generate a nonce for each page view, this nonce has to be inserted in every script tag used to embed inline scripts in your page as
@@ -57,11 +53,23 @@ Moreover, in order to ease the adoption of nonce-based CSP, they proposed the â€
 		script-src 'nonce-rAnd0m';
 		
 	And, of course, a nonce must be unique for each HTTP response.
-4. Unsafe hashes
+4. Unsafe hashes / Inline styles
 
 	Sometimes, HTML elements as images or button uses HTML Event Attributes (onclick, onsubmit...) to let events trigger actions in a browser.
-	You cannot use hashes or nonces for script included in event attributes and, adopting a strict CSP requires refactoring those patterns into safer alternatives.
-	
+	You cannot use hashes or nonces for script included in event attributes and, adopting a strict CSP, requires refactoring those patterns into safer alternatives or to use 'unsafe-hashes'.
+	You got a similar problem when inline styles are used in HTML tags:
+
+		<h1 style="color:blue;text-align:center;">This is a heading</h1>
+		<p style="color:red;">This is a paragraph.</p>
+
+	CSP Level 2 browsers may be ok with just putting the hash in your style-src directive. However, to allow hashes in the style attribute on inline CSS on browsers that support CSP Level 3, you may get an error like this
+
+		<pre>
+		Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'self' 'sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='". Either the 'unsafe-inline' keyword, a hash ('sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='), or a nonce ('nonce-...') is required to enable inline execution.
+		</pre>
+
+	To allow inline styles you need to use 'unsafe-hashes' in your style-src directive (that is, in facts, unsafe).
+
 == This plugin approach ==
 This plugin affords those problems in this way.
 1. During a capturing phase, it detects scripts, styles and other embedded content present in your website pages and records them on the database.
