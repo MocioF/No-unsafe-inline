@@ -329,13 +329,13 @@ class Nunil_Admin_Help_Tabs {
 		$content                         = array();
 		$content['nunil-tools-overview'] = '<p>'
 			. esc_html__( 'Welcome to the main page of the no-unsafe-inline plugin.', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( 'This plugin helps you create a restrictive content security policy without having to use the \'unsafe-inline\' keyword. To achieve this result the plugin uses Machine Learning techniques that you can govern from this page.', 'no-unsafe-inline' ) . '<br>'
+			. esc_html__( 'This plugin helps you create a restrictive content security policy without having to use the \'unsafe-inline\' keyword. To achieve this result, the plugin uses Machine Learning techniques that you can govern from this page.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
 			. '<p><b>'
 			. esc_html__( 'The steps you are supposed to do are the following.', 'no-unsafe-inline' )
 			. '</b>'
 			. '<ol>'
-			. '<li>' . esc_html__( 'Activate the capture of the tags and use your site by visiting all the pages or making them visit from your users for a long time long period based on the use of your site (hours or days).', 'no-unsafe-inline' ) . '</li>'
+			. '<li>' . esc_html__( 'Activate the capture of the tags and use your site by visiting all the pages or making them visits from your users for a long time long period based on the use of your site (hours or days).', 'no-unsafe-inline' ) . '</li>'
 			. '<li>' . esc_html__( 'Perform the data clustering in the database.', 'no-unsafe-inline' ) . '</li>'
 			. '<li>' . esc_html__( 'Visit the page related to the base rules and include in the CSP directives the desired values ​​(help you with the table at the bottom of the page).', 'no-unsafe-inline' ) . '</li>'
 			. '<li>' . esc_html__( 'Visit the pages related to external scripts, inline scripts and scripts invoked by event handlers and authorize the execution of all the legitimate scripts present on the pages of your site.', 'no-unsafe-inline' ) . '</li>'
