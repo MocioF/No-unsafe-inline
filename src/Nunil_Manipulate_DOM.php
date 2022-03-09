@@ -652,7 +652,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * If the node asks for more sources returns an array.
 	 *
 	 * @access private
-	 * @param \DomElement $node The selected DomNode.
+	 * @param \DOMElement $node The selected DOMNode.
 	 * @return array<int|false> An array where each element is the index of external_rows array if resource is whitelisted, false if not.
 	 */
 	private function check_external_whitelist( $node ) {
@@ -759,7 +759,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DomElement                $node The DomNode passed by reference.
+	 * @param \DOMElement                $node The DOMNode passed by reference.
 	 * @param int|false|array<int|false> $input_index The index of the whitelisted source in $this->external_rows array.
 	 * @param string                     $directive The -src directive.
 	 * @return void
@@ -1037,7 +1037,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DomElement   $node The DOMElement passed by reference.
+	 * @param \DOMElement   $node The DOMElement passed by reference.
 	 * @param array<string> $hashes Array of sha hashes.
 	 * @param string        $directive The csp -src directive.
 	 * @return void
@@ -1161,7 +1161,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DomElement $node The currente DomNode.
+	 * @param \DOMElement $node The current DOMNode.
 	 * @param string      $evh The event handler attribute name.
 	 * @return void
 	 */
@@ -1191,7 +1191,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DomElement $node The DomNode passed by reference.
+	 * @param \DOMElement $node The DOMNode passed by reference.
 	 * @param string      $class The new class to be added.
 	 * @return void
 	 */

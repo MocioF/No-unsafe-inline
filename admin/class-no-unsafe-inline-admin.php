@@ -895,7 +895,7 @@ class No_Unsafe_Inline_Admin {
 
 		unset( $options['endpoints'] );
 		if ( isset( $input['endpoints'] ) && is_array( $input['endpoints'] ) ) {
-			$new_input['endpoints'] = array_map( 'sanitize_url', $input['endpoints'], $protocols = array( 'https' ) );
+			$new_input['endpoints'] = array_map( 'esc_url_raw', $input['endpoints'], $protocols = array( 'https' ) );
 		}
 
 		$new_input = array_merge( $options, $new_input );

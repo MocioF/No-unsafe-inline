@@ -50,7 +50,7 @@ class No_Unsafe_Inline_Deactivator {
 			if ( is_iterable( $sites ) && ! empty( $sites ) ) {
 				$remove_mu_plugin = true;
 				foreach ( $sites as $site ) {
-					if ( is_object( $site ) ) {
+					if ( is_object( $site ) &&( isset( $site->blog_id ) ) ) {
 						switch_to_blog( $site->blog_id );
 					} else {
 						switch_to_blog( $site['blog_id'] );

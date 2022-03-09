@@ -344,7 +344,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access publics
-	 * @return \DOMNodeList<\DomNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNode>|false A DOMNodeList
 	 */
 	public function get_nodes_w_events() {
 		$event_attributes = new Nunil_Event_Attributes();
@@ -371,7 +371,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access publics
-	 * @return \DOMNodeList<\DomNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNode>|false A DOMNodeList
 	 */
 	public function get_nodes_w_inline_style() {
 		$x            = new \DOMXPath( $this->domdocument );
@@ -506,7 +506,7 @@ class Nunil_Capture {
 	 * @since  1.0.0
 	 * @access private
 	 * @param  array<array<string>>|null  $attrs An array of [attr_name] => value.
-	 * @param  \IvoPetkov\HTML5DOMElement $node  An HTML5DomElement.
+	 * @param  \IvoPetkov\HTML5DOMElement $node  An HTML5DOMElement.
 	 * @return bool True if the node has all attrs and values or if $attrs is empty.
 	 */
 	private function check_attrs( $attrs, $node ) {
@@ -673,7 +673,7 @@ class Nunil_Capture {
 	}
 
 	/**
-	 * Clean textContent from HTML5DomDocument adds
+	 * Clean textContent from HTML5DOMDocument adds
 	 *
 	 * @since 1.0.0
 	 * @access private

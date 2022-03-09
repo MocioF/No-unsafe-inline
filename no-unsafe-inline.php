@@ -22,6 +22,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       no-unsafe-inline
  * Domain Path:       /languages
+ * Requires at least: 4.7
+ * Requires PHP: 7.2
  */
 
 // If this file is called directly, abort.
