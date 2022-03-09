@@ -62,7 +62,7 @@ Moreover, in order to ease the adoption of nonce-based CSP, they proposed the â€
 	Sometimes, HTML elements as images or button uses HTML Event Attributes (onclick, onsubmit...) to let events trigger actions in a browser.
 	You cannot use hashes or nonces for script included in event attributes and, adopting a strict CSP requires refactoring those patterns into safer alternatives.
 	
-##This plugin approach##
+## This plugin approach ##
 This plugin affords those problems in this way.
 1. During a capturing phase, it detects scripts, styles and other embedded content present in your website pages and records them on the database.
 2. Then you have to whitelist these contents from plugin admin.
