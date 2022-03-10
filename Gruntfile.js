@@ -57,8 +57,11 @@ module.exports = function( grunt ) {
 					'public/js/no-unsafe-inline-admin.min.js' : [
 						'public/js/no-unsafe-inline-admin.js'
 					],
-					'include/js/no-unsafe-inline-admin.min.js' : [
-						'include/js/no-unsafe-inline-admin.js'
+					'includes/js/no-unsafe-inline-fix-style.min.js' : [
+						'includes/js/no-unsafe-inline-fix-style.js'
+					],
+					'includes/js/no-unsafe-inline-prefilter-override.min.js' : [
+						'includes/js/no-unsafe-inline-prefilter-override.js'
 					]
 				}
 			},
@@ -76,9 +79,21 @@ module.exports = function( grunt ) {
 					'public/js/no-unsafe-inline-admin.min.js' : [
 						'public/js/no-unsafe-inline-admin.js'
 					],
-					'include/js/no-unsafe-inline-admin.min.js' : [
-						'include/js/no-unsafe-inline-admin.js'
+					'includes/js/no-unsafe-inline-fix-style.min.js' : [
+						'includes/js/no-unsafe-inline-fix-style.js'
+					],
+					'includes/js/no-unsafe-inline-prefilter-override.min.js' : [
+						'includes/js/no-unsafe-inline-prefilter-override.js'
 					]
+				}
+			}
+		},
+
+		cssmin: {
+			dist:{
+				files: {
+					'admin/css/no-unsafe-inline-admin.min.css':'admin/css/no-unsafe-inline-admin.css',
+					'public/css/no-unsafe-inline-public.min.css':'public/css/no-unsafe-inline-public.css'
 				}
 			}
 		},
@@ -144,7 +159,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.loadNpmTasks( 'grunt-wp-readme-to-markdown' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
-	
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.registerTask( 'i18n', ['addtextdomain', 'makepot'] );
 	grunt.registerTask( 'readme', ['wp_readme_to_markdown'] );
 	grunt.registerTask( 'jshint', ['jshint'] );
