@@ -42,7 +42,6 @@ class No_Unsafe_Inline_Activator {
 					$args  = array(
 						'orderby' => 'id',
 						'order'   => 'asc',
-						'fields'  => 'ids',
 					);
 					$sites = get_sites( $args );
 				} else {
@@ -51,7 +50,7 @@ class No_Unsafe_Inline_Activator {
 				}
 				if ( is_iterable( $sites ) && ! empty( $sites ) ) {
 					foreach ( $sites as $site ) {
-						if ( is_object( $site ) &&( isset( $site->blog_id ) ) ) {
+						if ( is_object( $site ) && ( isset( $site->blog_id ) ) ) {
 							switch_to_blog( $site->blog_id );
 						} else {
 							switch_to_blog( $site['blog_id'] );
@@ -168,6 +167,39 @@ class No_Unsafe_Inline_Activator {
 
 		}
 		add_option( 'no-unsafe-inline', $plugin_options );
+
+		$base_rule = get_option( 'no-unsafe-inline-base-rule' );
+
+		if ( false === $base_rule ) {
+			$base_rule = array();
+		} else {
+			$base_rule = (array) $base_rule;
+		}
+		$class = new No_Unsafe_Inline();
+		foreach ( $class->managed_directives as $src_directive ) {
+			switch ( $src_directive ) {
+				case 'object-src':
+					if ( ! array_key_exists( $src_directive . '_base_rule', $base_rule ) || '' === trim( strval( $base_rule[ $src_directive . '_base_rule' ] ) ) ) {
+						$base_rule[ $src_directive . '_base_rule' ] = '\'none\'';
+					}
+					break;
+				case 'prefetch-src':
+					if ( ! array_key_exists( $src_directive . '_base_rule', $base_rule ) || '' === trim( strval( $base_rule[ $src_directive . '_base_rule' ] ) ) ) {
+						$base_rule[ $src_directive . '_base_rule' ] = '\'none\'';
+					}
+					break;
+				case 'frame-ancestors':
+					if ( ! array_key_exists( $src_directive . '_base_rule', $base_rule ) || '' === trim( strval( $base_rule[ $src_directive . '_base_rule' ] ) ) ) {
+						$base_rule[ $src_directive . '_base_rule' ] = 'https:';
+					}
+					break;
+				default:
+					if ( ! array_key_exists( $src_directive . '_base_rule', $base_rule ) || '' === trim( strval( $base_rule[ $src_directive . '_base_rule' ] ) ) ) {
+						$base_rule[ $src_directive . '_base_rule' ] = '\'self\'';
+					}
+			}
+		}
+		update_option( 'no-unsafe-inline-base-rule', $base_rule );
 	}
 
 	/**
