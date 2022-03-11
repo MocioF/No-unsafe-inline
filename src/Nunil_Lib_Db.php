@@ -338,12 +338,12 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_inl_id( $tagname, $hash ) {
 		global $wpdb;
-		$sql    = $wpdb->prepare(
+		$sql = $wpdb->prepare(
 			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `tagname`=%s AND ' . self::src_hash( $hash ) . ' LIMIT 1',
 			$tagname,
 			$hash
 		);
-		error_log($sql);
+
 		$result = $wpdb->get_var( $sql );
 
 		if ( ! is_null( $result ) ) {
@@ -393,20 +393,21 @@ class Nunil_Lib_Db {
 	 * @param  bool   $sticky  True if the script is sticky to the pages.
 	 *  Sticky (whitelisted) scripts will always be
 	 *  inserted in CSP for the page.
+	 * @param bool   $utf8 Set to true only for inline js scripts.
 	 * @return int The ID of inserted row
 	 */
-	public static function insert_inl_in_db( $directive, $tagname, $content, $sticky ) {
+	public static function insert_inl_in_db( $directive, $tagname, $content, $sticky, $utf8 ) {
 		global $wpdb;
 
 		$lsh = new \Beager\Nilsimsa( $content );
 
-		$data = array(
+		$data   = array(
 			'directive' => $directive,
 			'tagname'   => $tagname,
 			'script'    => $content,
-			'sha256'    => Nunil_Capture::calculate_hash( 'sha256', $content, $utf8 = true ),
-			'sha384'    => Nunil_Capture::calculate_hash( 'sha384', $content, $utf8 = true ),
-			'sha512'    => Nunil_Capture::calculate_hash( 'sha512', $content, $utf8 = true ),
+			'sha256'    => Nunil_Capture::calculate_hash( 'sha256', $content, $utf8 ),
+			'sha384'    => Nunil_Capture::calculate_hash( 'sha384', $content, $utf8 ),
+			'sha512'    => Nunil_Capture::calculate_hash( 'sha512', $content, $utf8 ),
 			'nilsimsa'  => $lsh->hexDigest(),
 			'sticky'    => $sticky,
 		);

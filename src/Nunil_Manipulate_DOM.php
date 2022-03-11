@@ -449,7 +449,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 				$content = $node->textContent;
 				$content = $this->clean_text_content( $content );
-				if ( 'script' === $tagname ) {
+				if ( 'script' === $tagname || 'style' === $tagname ) {
 					$utf8 = true;
 				} else {
 					$utf8 = false;

@@ -739,7 +739,7 @@ class Nunil_Capture {
 	 * @return void
 	 */
 	private function insert_inline_content_in_db( $directive, $tagname, $content, $sticky = false, $page_url = null ): void {
-		if ( 'script' === $tagname ) {
+		if ( 'script' === $tagname || 'style' === $tagname ) {
 			$utf8 = true;
 		} else {
 			$utf8 = false;
@@ -768,7 +768,7 @@ class Nunil_Capture {
 		if ( is_null( $inline_script_id ) ) { // The script is not in the db.
 
 			// Insert row in inline_scripts.
-			$inline_script_id = Nunil_Lib_Db::insert_inl_in_db( $directive, $tagname, $content, $sticky );
+			$inline_script_id = Nunil_Lib_Db::insert_inl_in_db( $directive, $tagname, $content, $sticky, $utf8 );
 
 			// Insert row in occurences.
 			$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $inline_script_id, 'inline_scripts', $page_url );
