@@ -339,10 +339,11 @@ class Nunil_Lib_Db {
 	public static function get_inl_id( $tagname, $hash ) {
 		global $wpdb;
 		$sql    = $wpdb->prepare(
-			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `tagname`=%s AND ' . self::src_hash( $hash ),
+			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `tagname`=%s AND ' . self::src_hash( $hash ) . ' LIMIT 1',
 			$tagname,
 			$hash
 		);
+		error_log($sql);
 		$result = $wpdb->get_var( $sql );
 
 		if ( ! is_null( $result ) ) {
@@ -912,7 +913,7 @@ class Nunil_Lib_Db {
 					if ( true === $delete_occurences ) {
 						$in_str = '(';
 						foreach ( $ids as $rid ) {
-							$in_str = $in_str . "('" . substr( $table, strlen( $wpdb->prefix . 'nunil_' ) ) . "', $rid->id), ";
+							$in_str = $in_str . "('" . substr( $table, strlen( $wpdb->prefix . 'nunil_' ) ) . "', $rid->ID), ";
 						}
 						$in_str = substr( $in_str, 0, strlen( $in_str ) - 2 );
 						$in_str = $in_str . ')';
