@@ -64,9 +64,7 @@ Moreover, in order to ease the adoption of nonce-based CSP, they proposed the â€
 
 	CSP Level 2 browsers may be ok with just putting the hash in your style-src directive. However, to allow hashes in the style attribute on inline CSS on browsers that support CSP Level 3, you may get an error like this
 
-		<pre>
-		Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'self' 'sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='". Either the 'unsafe-inline' keyword, a hash ('sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='), or a nonce ('nonce-...') is required to enable inline execution.
-		</pre>
+		`Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'self' 'sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='". Either the 'unsafe-inline' keyword, a hash ('sha256-nMxMqdZhkHxz5vAuW/PAoLvECzzsmeAxD/BNwG15HuA='), or a nonce ('nonce-...') is required to enable inline execution.`
 
 	To allow inline styles you need to use 'unsafe-hashes' in your style-src directive (that is, in facts, unsafe).
 
