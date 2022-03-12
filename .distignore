@@ -7,6 +7,7 @@
 .eslintrc
 .git
 .gitignore
+.github
 .gitlab-ci.yml
 .travis.yml
 .DS_Store
@@ -34,9 +35,9 @@ webpack.config.js
 wp-cli.local.yml
 yarn.lock
 tests
-vendor
 stubs
 node_modules
 *.sql
 *.tar.gz
 *.zip
+.wordpress-org
