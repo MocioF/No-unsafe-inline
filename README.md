@@ -9,7 +9,7 @@
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
-No unsafe-inline helps you to build a Content Security Policy avoiding the use 'unsafe-inline' and 'unsafe-hashes'.
+No unsafe-inline helps you to build a Content Security Policy avoiding to use 'unsafe-inline' and 'unsafe-hashes'.
 
 ## Description ##
 
