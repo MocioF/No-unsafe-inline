@@ -34,13 +34,11 @@ class No_Unsafe_Inline_i18n {
 	 * @return   void
 	 */
 	public function load_plugin_textdomain() {
-
 		load_plugin_textdomain(
 			'no-unsafe-inline',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
-
 	}
 
 

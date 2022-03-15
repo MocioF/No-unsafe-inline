@@ -6,13 +6,13 @@ use NUNIL\Nunil_Lib_Db as Db;
 final class Nunil_Lib_LogTest extends WP_UnitTestCase
 {
 	public function tear_down(): void {
-		deactivate_no_unsafe_inline( false );
+		no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 	
     protected function setUp(): void {
 		parent::set_up();
-		activate_no_unsafe_inline( false );
+		no_unsafe_inline_activate( false );
 		
 		// setting log level to debug
 		$options = get_option( 'no-unsafe-inline');

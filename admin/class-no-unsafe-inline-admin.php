@@ -141,7 +141,6 @@ class No_Unsafe_Inline_Admin {
 
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
-
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.min.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
 
 			wp_localize_script(
@@ -671,7 +670,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function register_base_rule(): void {
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		register_setting(
@@ -1049,7 +1047,6 @@ class No_Unsafe_Inline_Admin {
 		'</label>' .
 		'</div>'
 		);
-
 	}
 
 	/**
@@ -2039,7 +2036,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function trigger_clustering(): void {
-
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
 		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_clustering_nonce' )
@@ -2087,13 +2083,11 @@ class No_Unsafe_Inline_Admin {
 		$result_string = $result_string . '<ul>';
 
 		foreach ( $tables as $table ) {
-
 			$delete = DB::truncate_table( $table );
 
 			$delete_string = $delete ? esc_html__( 'succeded', 'no-unsafe-inline' ) : esc_html__( 'FAILED', 'no-unsafe-inline' );
 
 			$result_string = $result_string . ( "<li>TRUNCATE $table: $delete_string</li>" );
-
 		}
 		$result_string = $result_string . '</ul>';
 
@@ -2164,7 +2158,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function update_summary_tables(): void {
-
 		$result             = array();
 		$result['global']   = DB::get_database_summary_data( 'global' );
 		$result['external'] = DB::get_database_summary_data( 'external_scripts' );
@@ -2374,6 +2367,5 @@ class No_Unsafe_Inline_Admin {
 		}
 
 		wp_die();
-
 	}
 }

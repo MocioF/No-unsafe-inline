@@ -40,7 +40,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				'ajax'     => false, // should this table support ajax?
 			)
 		);
-
 	}
 
 	/**
@@ -68,7 +67,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			'blacklist-bulk' => __( 'BlackList', 'no-unsafe-inline' ),
 			'delete-bulk'    => __( 'Delete', 'no-unsafe-inline' ),
 		);
-
 	}
 
 	/**
@@ -87,7 +85,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			wp_die( esc_html__( 'User is not allowed to perform this action', 'no-unsafe-inline' ) );
 		}
 		if ( isset( $_POST['_wpnonce'] ) && ! empty( $_POST['_wpnonce'] ) ) {
-
 			$nonce  = strval( filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_STRING ) );
 			$action = 'bulk-' . $this->_args['plural'];
 
@@ -95,7 +92,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 				wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 			}
 			$action = $this->current_action();
-
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && ! empty( $_GET['_wpnonce'] ) ) {
 				$nonce  = strval( filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING ) );
 				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
@@ -105,7 +101,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 		}
 
 		switch ( $action ) {
-
 			case 'whitelist':
 				if ( ! wp_verify_nonce( $nonce, 'whitelist_inl_script_nonce' ) ) {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
@@ -185,7 +180,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_script( $item ) {
-
 		$admin_page_url = admin_url( 'options-general.php' );
 
 		$hl = new \Highlight\Highlighter();
@@ -221,7 +215,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_whitelist( $item ) {
-
 		$admin_page_url = admin_url( 'options-general.php' );
 
 		$actions = array();
@@ -255,7 +248,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_clustername( $item ) {
-
 		$admin_page_url = admin_url( 'options-general.php' );
 
 		if ( 'Unclustered' !== $item['clustername'] ) {
@@ -277,7 +269,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 		} else {
 			return $item['clustername'];
 		}
-
 	}
 
 	/**
@@ -367,7 +358,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-
 		if ( isset( $_REQUEST['s'] ) ) {
 			$search = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 		} else {
@@ -397,7 +387,6 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 		$orderby = 'ORDER BY ';
 
 		if ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) {
-
 			switch ( $_REQUEST['orderby'] ) {
 				case 'directive':
 					$orderby .= "directive $order ";

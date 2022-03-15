@@ -110,7 +110,6 @@ class Nunil_SRI {
 					unset( $data['src_attrib'] );
 
 					$affected = DB::update_ext_hashes( $data, $id, $format );
-
 				} else {
 					Log::warning( 'Unable to fetch ' . $data->src_attrib );
 				}

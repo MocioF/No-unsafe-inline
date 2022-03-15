@@ -487,7 +487,6 @@ class Nunil_Lib_Db {
 	 * @return int The ID of the row in occurences
 	 */
 	public static function insert_occ_in_db( $id, $tbl_string, $page_url = null ) {
-
 		global $wpdb;
 
 		$page_url = is_null( $page_url ) ? Nunil_Lib_Utils::get_page_url() : $page_url;
@@ -682,9 +681,7 @@ class Nunil_Lib_Db {
 		$affected = 0;
 
 		foreach ( $my_ids as $id ) {
-
 			if ( self::external_scripts_table() !== $table ) {
-
 				$sel_cluster = 'SELECT `clustername`, `tagname` FROM ' . $table . ' WHERE `ID` = %d';
 				$row         = $wpdb->get_row(
 					$wpdb->prepare(
@@ -862,9 +859,7 @@ class Nunil_Lib_Db {
 		$affected = 0;
 
 		foreach ( $my_ids as $id ) {
-
 			if ( self::external_scripts_table() !== $table ) {
-
 				$sel_cluster = 'SELECT `clustername`, `tagname` FROM ' . $table . ' WHERE `ID` = %d';
 				$row         = $wpdb->get_row(
 					$wpdb->prepare(
@@ -1422,7 +1417,6 @@ class Nunil_Lib_Db {
 		$args = array();
 
 		if ( func_num_args() > 0 ) {
-
 			if ( $segmentation_field ) {
 				$where  = $where . " $segmentation_field = %s AND";
 				$args[] = $segmentation_value;

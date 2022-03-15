@@ -244,7 +244,6 @@ class Nunil_Capture {
 	 * @return void
 	 */
 	private function insert_handler_in_db( $row ): void {
-
 		switch ( $this->hash_in_use ) {
 			case 'sha256':
 				$hash = self::calculate_hash( 'sha256', $row['script'], $utf8 = true );
@@ -260,9 +259,7 @@ class Nunil_Capture {
 				break;
 		}
 		if ( $hash ) {
-
 			$event_script_id = Nunil_Lib_Db::get_evh_id( $row['tagname'], $row['tagid'], $row['event_attribute'], $hash );
-
 		} else {
 			$event_script_id = null;
 		}
@@ -272,16 +269,13 @@ class Nunil_Capture {
 			$event_script_id = Nunil_Lib_Db::insert_evh_in_db( $row );
 
 			$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $event_script_id, 'event_handlers' );
-
 		} else {
 			// The script is already in the db.
 			// Now check if there is an occurence for the script in the page.
 			$occurrence_id = Nunil_Lib_Db::get_occ_id( $event_script_id, 'event_handlers' );
 
 			if ( is_null( $occurrence_id ) ) {
-
 				$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $event_script_id, 'event_handlers' );
-
 			} else {
 
 				// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
@@ -305,7 +299,6 @@ class Nunil_Capture {
 
 		foreach ( $attributes as $attribute ) {
 			if ( $node->getAttribute( $attribute['attr'] ) ) {
-
 				$row = array(
 					'tagname'         => $node->nodeName,
 					'tagid'           => $node->getAttribute( 'id' ),
@@ -517,7 +510,6 @@ class Nunil_Capture {
 		$check_attrs = true;
 
 		foreach ( $attrs as $attr ) {
-
 			foreach ( $attr as $key => $value ) {
 				// The tag asks to exclude HTML tags with this attribute.
 				if ( '!' === substr( trim( $value ), 0, 1 ) ) {
@@ -551,23 +543,19 @@ class Nunil_Capture {
 	 * @return void
 	 */
 	private function put_tags_in_database( $tag ): void {
-
 		$nodelist  = $this->matches;
 		$processed = $this->processed;
 
 		$node_index = 0;
 
 		foreach ( $nodelist as $node ) {
-
 			$node_key        = sprintf( '%d', $node_index );
 			$index_processed = array_key_exists( $node_key, $processed );
 
 			if ( ! $index_processed ) {
-
 				$inline = false;
 
 				if ( $this->check_attrs( $tag->get_neededattrs(), $node ) ) {
-
 					$stored_attrs = $tag->get_storedattrs();
 					$directive    = $tag->get_directive();
 					$tagname      = $tag->get_name();
@@ -591,7 +579,6 @@ class Nunil_Capture {
 										}
 
 										$processed[ $node_key ] = true;
-
 									}
 								} else { // $stored_attr is not 'srcset'.
 									$src_attrib         = $node->getAttribute( $stored_attr );
@@ -606,7 +593,6 @@ class Nunil_Capture {
 									}
 
 									$processed[ $node_key ] = true;
-
 								}
 							} else {
 								if ( $tag->capture_inline() ) {
@@ -660,7 +646,6 @@ class Nunil_Capture {
 					$content = $this->clean_text_content( $content );
 
 					if ( '' !== $content ) {
-
 						$this->insert_inline_content_in_db( $directive, $tagname, $content );
 
 						$processed[ $node_key ] = true;
@@ -772,20 +757,15 @@ class Nunil_Capture {
 
 			// Insert row in occurences.
 			$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $inline_script_id, 'inline_scripts', $page_url );
-
 		} else {
 			// The script is in already in the db.
 			// Now check if there is an occurence for the script in the page.
 			$occurrence_id = Nunil_Lib_Db::get_occ_id( $inline_script_id, 'inline_scripts', $page_url );
 
 			if ( is_null( $occurrence_id ) ) {
-
 				$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $inline_script_id, 'inline_scripts', $page_url );
-
 			} else {
-
 				Nunil_Lib_Db::update_lastseen( $occurrence_id );
-
 			}
 		}
 	}
@@ -802,11 +782,9 @@ class Nunil_Capture {
 	 * @return false|int $external_script_id the ID (as int) of the inserted tag or false if not new tag to insert
 	 */
 	protected function insert_external_tag_in_db( $directive, $tagname, $src_attrib, $this_page_url = null ) {
-
 		$returned_id = false;
 
 		if ( '' !== $src_attrib ) {
-
 			$src_attrib = $this->clean_random_params( $src_attrib );
 
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
@@ -819,16 +797,13 @@ class Nunil_Capture {
 
 				// Insert row in occurences.
 				$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
-
 			} else {
 				// The script is in already in the db.
 				// Now check if there is an occurence for the script in the page.
 				$occurrence_id = Nunil_Lib_Db::get_occ_id( $external_script_id, 'external_scripts', $this_page_url );
 
 				if ( is_null( $occurrence_id ) ) {
-
 					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
-
 				} else {
 					// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
 					Nunil_Lib_Db::update_lastseen( $occurrence_id );

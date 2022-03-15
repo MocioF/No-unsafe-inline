@@ -35,7 +35,6 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 	 * @return \WP_REST_Response|void
 	 */
 	public function capture_violations( \WP_REST_Request $request ) {
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( empty( $options ) ) {
@@ -57,7 +56,6 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 				$csp_violation = $this->get_csp_report_body( $report );
 
 				if ( $csp_violation ) {
-
 					$capture = new Nunil_Capture();
 
 					// effective-directory has had a delaied (and inconsistent) implementation.
@@ -114,7 +112,6 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 						true
 					) ) {
 						if ( 'inline' === $blocked_url && isset( $source_file ) ) {
-
 							if ( isset( $csp_violation['column-number'] ) ) {
 								$column_number = $csp_violation['column-number'];
 							} elseif ( isset( $csp_violation['columnNumber'] ) ) {

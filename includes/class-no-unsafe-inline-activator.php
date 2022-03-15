@@ -164,7 +164,6 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['use_reports']                       = 0;
 			$plugin_options['group_name']                        = 'csp-endpoint';
 			$plugin_options['max_age']                           = 10886400;
-
 		}
 		add_option( 'no-unsafe-inline', $plugin_options );
 
@@ -210,9 +209,7 @@ class No_Unsafe_Inline_Activator {
 	 * @return void
 	 */
 	public static function add_blog( $params ) {
-
 		if ( is_plugin_active_for_network( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
-
 			switch_to_blog( intval( $params->blog_id ) );
 
 			self::single_activate();

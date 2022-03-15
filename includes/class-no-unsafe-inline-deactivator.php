@@ -35,7 +35,6 @@ class No_Unsafe_Inline_Deactivator {
 	 * @return   void
 	 */
 	public static function deactivate( $network_wide ) {
-
 		if ( is_multisite() && $network_wide ) {
 			if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) ) {
 				$args  = array(
@@ -115,12 +114,10 @@ class No_Unsafe_Inline_Deactivator {
 	 * @return void
 	 */
 	public static function remove_blog( $params ) {
-
 		switch_to_blog( intval( $params->blog_id ) );
 
 		DB::remove_data_tables();
 
 		restore_current_blog();
-
 	}
 }

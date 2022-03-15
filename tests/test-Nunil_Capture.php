@@ -4,24 +4,22 @@ use NUNIL\Nunil_Lib_Db as Db;
 final class Nunil_CaptureTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
-		deactivate_no_unsafe_inline( false );
+		no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 
 	protected function setUp(): void {
 		parent::set_up();
-		activate_no_unsafe_inline( false );
+		no_unsafe_inline_activate( false );
 
 		$plugin = new No_Unsafe_Inline();
 		$plugin->run();
-
 	}
 
 	/**
 	 * @dataProvider tagListProvider
 	 */
 	public function testcapture_tag( string $tagname, array $taglist, int $num_ext, int $num_inl, string $source ): void {
-
 		global $wpdb;
 
 		$capture = new NUNIL\Nunil_Capture();
@@ -51,7 +49,6 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 	}
 
 	public function tagListProvider(): array {
-
 		$directive     = 'script-src';
 		$tag           = 'script';
 		$stored_attrs  = 'src';

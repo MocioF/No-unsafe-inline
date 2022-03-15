@@ -60,7 +60,7 @@ define( 'NO_UNSAFE_INLINE_TABLE_PREFIX', $nunil_table_prefix );
  * @param bool $network_wide True if plugin is network-wide activated.
  * @return void
  */
-function activate_no_unsafe_inline( $network_wide ) {
+function no_unsafe_inline_activate( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
 	No_Unsafe_Inline_Activator::activate( $network_wide );
 }
@@ -73,13 +73,13 @@ function activate_no_unsafe_inline( $network_wide ) {
  * @param bool $network_wide True if plugin is network-wide activated.
  * @return void
  */
-function deactivate_no_unsafe_inline( $network_wide ) {
+function no_unsafe_inline_deactivate( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
 	No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 }
 
-register_activation_hook( __FILE__, 'activate_no_unsafe_inline' );
-register_deactivation_hook( __FILE__, 'deactivate_no_unsafe_inline' );
+register_activation_hook( __FILE__, 'no_unsafe_inline_activate' );
+register_deactivation_hook( __FILE__, 'no_unsafe_inline_deactivate' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -108,12 +108,10 @@ require plugin_dir_path( NO_UNSAFE_INLINE_PLUGIN ) . 'vendor/autoload.php';
  * @since    1.0.0
  * @return   void
  */
-function run_no_unsafe_inline() {
-
+function no_unsafe_inline_run() {
 	add_action(
 		'init',
 		function () {
-
 			$plugin = new No_Unsafe_Inline();
 
 			$plugin->run();
@@ -123,12 +121,10 @@ function run_no_unsafe_inline() {
 
 			// if a blog is removed, let's remove the settings.
 			add_action( 'wp_uninitialize_site', 'no_unsafe_inline_run_multisite_delete' );
-
 		}
 	);
-
 }
-run_no_unsafe_inline();
+no_unsafe_inline_run();
 
 /**
  * Trigger plugin activation on a new blog creations

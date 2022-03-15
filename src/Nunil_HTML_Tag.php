@@ -137,7 +137,6 @@ class Nunil_HTML_Tag {
 		} else {
 			$this->inline = $inline;
 		}
-
 	}
 
 	/**

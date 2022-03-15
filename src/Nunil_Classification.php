@@ -35,7 +35,6 @@ class Nunil_Classification {
 	 * @return array{samples: array<array<int>>, labels: array<string>}|false
 	 */
 	public function get_samples( $tagname = '' ) {
-
 		$cache_key   = 'training_inline_classifier';
 		$cache_group = 'no-unsafe-inline';
 		$expire_secs = 10;
@@ -71,7 +70,6 @@ class Nunil_Classification {
 	 * @return string
 	 */
 	public function test_cases() {
-
 		$result_string = '';
 
 		$cases = array();

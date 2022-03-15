@@ -109,7 +109,6 @@ class Nunil_Global_Settings {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-
 		$def_opts = array(
 
 			/* php-ml settings */

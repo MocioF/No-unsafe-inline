@@ -168,7 +168,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-
 		parent::__construct();
 
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
@@ -343,7 +342,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return void
 	 */
 	private function manipulate_inline_scripts(): void {
-
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( 1 === $plugin_options['script-src_enabled'] ) {
@@ -420,7 +418,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			 1 === $options['hash_in_img-src'] ||
 			 1 === $options['sri_script'] ||
 			 1 === $options['sri_link'] ) {
-
 			foreach ( $this->managed_tags as $tag ) {
 				$node_list = $this->get_external_nodelist( $tag );
 				if ( $node_list ) {
@@ -446,7 +443,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 0 < $inline_list->length ) {
 			$directive = $tagname . '-src';
 			foreach ( $inline_list as $node ) {
-
 				$content = $node->textContent;
 				$content = $this->clean_text_content( $content );
 				if ( 'script' === $tagname || 'style' === $tagname ) {
@@ -458,7 +454,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 				$wl_index = $this->check_single_whitelist( $hashes, $tagname );
 				if ( $wl_index ) {
-
 					$this->allow_whitelisted( $node, $hashes, $directive );
 					// Devi aggiornare un lastseen ?
 				} else {
@@ -534,7 +529,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return string
 	 */
 	public function build_xpath_query( $tag ) {
-
 		$x_path_query = '//' . $tag->get_name();
 
 		$storedattrs = $tag->get_storedattrs();
@@ -543,7 +537,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$stored      = array();
 
 		if ( ! $tag->has_childs() && ! is_null( $storedattrs ) ) {
-
 			foreach ( $storedattrs as $storedattr ) {
 				$stored[] = '@' . $storedattr;
 			}
@@ -578,7 +571,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				$x_path_query = $x_path_query . '[' . $stored_attrs . ']';
 			}
 		} else {
-
 			$tmp_subquery = '';
 			$childs       = $tag->get_childs();
 			if ( is_array( $childs ) && ! is_null( $storedattrs ) ) {
@@ -735,7 +727,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			return false; // BL: no external whitelist present.
 		} else {
 			if ( 0 < count( $ext_wlist ) ) {
-
 				$src_attrib = $this->clean_random_params( $src_attrib );
 
 				foreach ( $ext_wlist as $index => $obj ) {
@@ -792,7 +783,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				$run_index = $input_index;
 			}
 			foreach ( $run_index as $index ) {
-
 				if ( false !== $index && ! is_null( $this->external_rows ) ) { // The node is whitelisted.
 					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs set by others plugins.
 						$integrity_string = '';
@@ -957,7 +947,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						'1' === $obj->whitelist
 						) {
 							return $predicted_label;
-
 						}
 					}
 					return false;
@@ -996,14 +985,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return void
 	 */
 	private function insert_new_inline_in_db( $tagname, $content, $hashes, $nilsimsa, $predicted_label ): void {
-
 		$cache_key   = 'inline_rows';
 		$cache_group = 'no-unsafe-inline';
 		$inline_rows = wp_cache_delete( $cache_key, $cache_group );
 
 		$this->insert_pool->add(
 			function () use ( $tagname, $content, $hashes, $predicted_label ) {
-
 				$in_use    = $hashes['in_use'];
 				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 
@@ -1018,7 +1005,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 					if ( ! is_null( $occ_id ) ) {
 						DB::update_lastseen( $occ_id );
-
 					} else {
 						$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
 					}
@@ -1083,7 +1069,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return void
 	 */
 	private function script_clean_unsafe_hashes(): void {
-
 		$nodelist = $this->get_nodes_w_events();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
@@ -1096,7 +1081,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					if ( false !== $index ) {
 						$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
 					} else {
-
 						$lsh        = new Nilsimsa( $row['script'] );
 						$lsh_digest = $lsh->digest();
 
@@ -1121,11 +1105,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return void
 	 */
 	private function style_clean_unsafe_hashes(): void {
-
 		$nodelist = $this->get_nodes_w_inline_style();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-
 				$row = $this->get_inline_style_in_node( $node );
 
 				if ( false !== $row ) {
@@ -1137,7 +1119,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$class = 'nunil-' . $this->generate_nonce();
 						$this->ils_allow_wl_hash( $node, $class );
 					} else {
-
 						$lsh        = new Nilsimsa( $row['script'] );
 						$lsh_digest = $lsh->digest();
 
@@ -1179,7 +1160,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$line           = "document.getElementById(\"$tag_id\").addEventListener(\"$event_listener\", function() {\n\t$script;\n});\n";
 
 		$this->injected_inline_script = $this->injected_inline_script . $line;
-
 	}
 
 	/**
@@ -1229,7 +1209,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function inject_inline_script(): void {
 		if ( $this->injected_inline_script ) {
-
 			$content = $this->injected_inline_script;
 
 			$script_node = $this->domdocument->createElement( 'script' );
@@ -1248,7 +1227,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					'directive' => 'script-src',
 					'source'    => $in_use . '-' . $hashes[ $in_use ],
 				);
-
 			}
 			$body_node = $this->domdocument->getElementsByTagName( 'body' );
 			if ( 0 < $body_node->length ) {
@@ -1271,7 +1249,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function inject_inline_style(): void {
 		if ( $this->injected_inline_style ) {
-
 			$content = $this->injected_inline_style;
 
 			$style_node = $this->domdocument->createElement( 'style' );
@@ -1290,7 +1267,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					'directive' => 'style-src',
 					'source'    => $in_use . '-' . $hashes[ $in_use ],
 				);
-
 			}
 			$head_node = $this->domdocument->getElementsByTagName( 'head' );
 			if ( 0 < $head_node->length ) {

@@ -8,13 +8,13 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 	protected $nunil_tag2;
 
 	public function tear_down() {
-		deactivate_no_unsafe_inline( false );
+		no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
     protected function setUp(): void
     {
 		parent::set_up();
-		activate_no_unsafe_inline( false );
+		no_unsafe_inline_activate( false );
         $directive    = 'script-src';
 		$tag          = 'script';
 		$stored_attr  = 'src';

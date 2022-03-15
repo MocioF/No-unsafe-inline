@@ -34,7 +34,6 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 				'ajax'     => false, // should this table support ajax?
 			)
 		);
-
 	}
 
 	/**
@@ -45,7 +44,6 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	 * @return array<array{ID: int, directive: string, source: string}>>
 	 */
 	public static function get_sources() {
-
 		$basesrc = new NUNIL\Nunil_Base_Src_Rules();
 
 		$result = $basesrc->get_db_entries();
@@ -126,6 +124,5 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 		$sortable              = $this->get_sortable_columns();
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 		$this->items           = self::get_sources();
-
 	}
 }

@@ -68,7 +68,6 @@ class Nunil_Base_Src_Rules {
 
 		$directives = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $directives ) {
-
 			$directives = Nunil_Lib_Db::get_directive_in_ext();
 
 			wp_cache_set( $cache_key, $directives, $cache_group, $expire_secs );
@@ -138,7 +137,6 @@ class Nunil_Base_Src_Rules {
 
 		$ext_scripts = wp_cache_get( $cache_key, $cache_group );
 		if ( false === $ext_scripts ) {
-
 			$ext_scripts = Nunil_Lib_Db::get_attrs_for_dir_in_ext( $directive );
 
 			wp_cache_set( $cache_key, $ext_scripts, $cache_group, $expire_secs );
@@ -194,7 +192,6 @@ class Nunil_Base_Src_Rules {
 
 		$local_site_url = get_site_url();
 		foreach ( $parsed_urls as $parsed_url ) {
-
 			$site_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
 
 			if ( $local_site_url === $site_url ) {

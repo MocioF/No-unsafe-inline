@@ -3,7 +3,7 @@
  * The file that turns on output buffering
  *
  * This file is a mu-plugin that turns on output buffering to buffer the
- * entire WP proces. It collects the buffer's output in the final output
+ * entire WP process. It collects the buffer's output in the final output
  * that the plugin will parse and manipulate.
  *
  * @package    No_Unsafe_Inline
@@ -39,7 +39,7 @@ add_action(
 			/**
 			 * Apply any filters to the final output
 			 */
-			$manipulated = apply_filters( 'final_output', $final );
+			$manipulated = apply_filters( 'no_unsafe_inline_final_output', $final );
 
 			do_action( 'nunil_output_csp_headers' );
 		} else {

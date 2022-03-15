@@ -52,7 +52,6 @@ class Nunil_Clustering {
 	 * @return array<array<array<int>>> Array of cluster made of arrays
 	 */
 	private static function make_db_scan( $obj_hashes, $table ) {
-
 		$samples = array();
 
 		$gls = new Nunil_Global_Settings();
@@ -108,7 +107,6 @@ class Nunil_Clustering {
 	 * @return array<\stdClass>    $obj_collection
 	 */
 	private static function cluster_digests( $table, $obj_collection, $dbscan_results ) {
-
 		$dbscan_array = array();
 
 		foreach ( $dbscan_results as $cluster_key => $cluster ) {
@@ -117,7 +115,6 @@ class Nunil_Clustering {
 			$cluster_name = 'Cl_' . str_pad( strval( random_int( 1, 999999999 ) ), 9, '0', STR_PAD_LEFT );
 
 			foreach ( $cluster as $arrayDigest ) {
-
 				$hexDigest = self::convertArraytoHexDigest( $arrayDigest );
 
 				$dbscan_array[] = array(
@@ -128,13 +125,11 @@ class Nunil_Clustering {
 		}
 
 		foreach ( $obj_collection as &$element ) {
-
 			$dbscan_key = array_search( $element->nilsimsa, array_column( $dbscan_array, 'hexDigest' ), true );
 
 			$element = (array) $element;
 			if ( $dbscan_key ) {
 				$element['clustername'] = $dbscan_array[ $dbscan_key ]['cluster_name'];
-
 			} else {
 				$element['clustername'] = 'Unclustered';
 			}
@@ -175,7 +170,6 @@ class Nunil_Clustering {
 	 * @return array{type: string, report:string} A report of performed operarions.
 	 */
 	public static function cluster_by_dbscan() {
-
 		$gls = new Nunil_Global_Settings();
 
 		set_time_limit( $gls->clustering_time_limit );
@@ -206,7 +200,6 @@ class Nunil_Clustering {
 			$seg_fields = DB::get_segmentation_values( $tbl['segmentation_field'], $tbl['table'] );
 
 			foreach ( $seg_fields as $segment ) {
-
 				$tagnames = DB::get_tagnames( $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $table );
 
 				foreach ( $tagnames as $tagname ) {

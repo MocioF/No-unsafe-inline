@@ -57,10 +57,8 @@ class No_Unsafe_Inline_Loader {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-
 		$this->actions = array();
 		$this->filters = array();
-
 	}
 
 	/**
@@ -119,7 +117,6 @@ class No_Unsafe_Inline_Loader {
 	 *              }>                    The collection of actions and filters registered with WordPress.
 	 */
 	private function add( $hooks, $hook, $component, $callback, $priority, $accepted_args ) {
-
 		$hooks[] = array(
 			'hook'          => $hook,
 			'component'     => $component,
@@ -129,7 +126,6 @@ class No_Unsafe_Inline_Loader {
 		);
 
 		return $hooks;
-
 	}
 
 	/**
@@ -139,7 +135,6 @@ class No_Unsafe_Inline_Loader {
 	 * @return   void
 	 */
 	public function run() {
-
 		foreach ( $this->filters as $hook ) {
 			add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
 		}
@@ -147,7 +142,6 @@ class No_Unsafe_Inline_Loader {
 		foreach ( $this->actions as $hook ) {
 			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
 		}
-
 	}
 
 }

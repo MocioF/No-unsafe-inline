@@ -108,7 +108,6 @@ class No_Unsafe_Inline {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -154,7 +153,6 @@ class No_Unsafe_Inline {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-no-unsafe-inline-public.php';
 
 		$this->loader = new No_Unsafe_Inline_Loader();
-
 	}
 
 	/**
@@ -189,11 +187,8 @@ class No_Unsafe_Inline {
 	 * @return void
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new No_Unsafe_Inline_i18n();
-
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -230,7 +225,6 @@ class No_Unsafe_Inline {
 		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'nunil_get_extra_meta_links', 10, 2 );
 
 		$this->loader->add_filter( 'set-screen-option', $plugin_admin, 'save_screen_options', 10, 3 );
-
 	}
 
 	/**
@@ -251,7 +245,7 @@ class No_Unsafe_Inline {
 		$this->loader->add_action( 'nunil_output_csp_headers', $plugin_public, 'output_csp_headers', 100, 1 );
 
 		// This is the main filter hook applied by the mu-plugin.
-		$this->loader->add_filter( 'final_output', $plugin_public, 'filter_final_output' );
+		$this->loader->add_filter( 'no_unsafe_inline_final_output', $plugin_public, 'filter_final_output' );
 
 		// Register a route to capture CSP violation of some -src directives.
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_capture_routes' );

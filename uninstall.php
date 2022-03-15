@@ -35,20 +35,17 @@ global $wpdb;
 if ( is_multisite() ) {
 
 	// Get all blogs in the network and delete tables on each one.
-	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$no_unsafe_inline_blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
-	foreach ( $blog_ids as $site_id ) {
-
-		switch_to_blog( $site_id );
+	foreach ( $no_unsafe_inline_blog_ids as $no_unsafe_inline_site_id ) {
+		switch_to_blog( $no_unsafe_inline_site_id );
 
 		no_unsafe_inline_uninstall_plugin();
 
 		restore_current_blog();
 	}
 } else {
-
 	no_unsafe_inline_uninstall_plugin();
-
 }
 
 /**
@@ -58,7 +55,6 @@ if ( is_multisite() ) {
  * @return void
  */
 function no_unsafe_inline_uninstall_plugin() {
-
 	global $wpdb;
 
 	// Let's remove all options.

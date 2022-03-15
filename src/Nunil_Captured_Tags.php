@@ -31,7 +31,6 @@ class Nunil_Captured_Tags {
 	 * @return array<\NUNIL\Nunil_HTML_Tag>
 	 */
 	public static function get_captured_tags() {
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		$tags = array();
@@ -142,7 +141,6 @@ class Nunil_Captured_Tags {
 			$stored_attrs = array( 'src', 'srcset' );
 			$childs       = array( 'source', 'img' );
 			$tags[]       = new Nunil_HTML_Tag( $directive, $tag, $stored_attrs, $needed_attrs = null, $childs, $inline );
-
 		}
 
 		if ( 1 === $options['frame-src_enabled'] ) {

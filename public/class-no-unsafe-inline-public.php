@@ -56,7 +56,6 @@ class No_Unsafe_Inline_Public {
 	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 	}
@@ -115,7 +114,6 @@ class No_Unsafe_Inline_Public {
 			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.js', array( 'jquery' ), $this->version, false );
 			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.js', array(), $this->version, false );
 		}
-
 	}
 
 	/**
@@ -144,7 +142,6 @@ class No_Unsafe_Inline_Public {
 	 *                the input htmlsource if it is not enabled or it is a json answer.
 	 */
 	public function filter_final_output( $htmlsource ) {
-
 		if ( $this->is_json( $htmlsource ) ) {
 			return $htmlsource;
 		}
@@ -190,7 +187,6 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function output_csp_headers() {
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
@@ -204,7 +200,6 @@ class No_Unsafe_Inline_Public {
 				}
 
 				if ( isset( $header_csp ) ) {
-
 					if ( 1 === $options['use_reports']
 						&& isset( $options['endpoints'] )
 						&& is_array( $options['endpoints'] )

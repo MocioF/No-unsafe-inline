@@ -4,16 +4,15 @@ final class No_Unsafe_Inline_ActivatorTest extends WP_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
-		activate_no_unsafe_inline( false );
+		no_unsafe_inline_activate( false );
 	}
 
 	public function tear_down() {
-		deactivate_no_unsafe_inline( false );
+		no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 
 	function test_reset_tools() {
-
 		$tools = get_option( 'no-unsafe-inline-tools' );
 
 		$expected = array(
@@ -26,7 +25,6 @@ final class No_Unsafe_Inline_ActivatorTest extends WP_UnitTestCase {
 	}
 
 	function test_default_options() {
-
 		$default = get_option( 'no-unsafe-inline' );
 
 		$plugin_options['default-src_enabled']               = 1;
