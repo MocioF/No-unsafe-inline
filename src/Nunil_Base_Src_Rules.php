@@ -204,6 +204,9 @@ class Nunil_Base_Src_Rules {
 					case '\'strict-dynamic\'':
 						$host = '\'strict-dynamic\'';
 						break;
+					case 'data':
+						$host = 'data:';
+						break;
 					default:
 						$host = '\'self\'';
 				}
