@@ -186,7 +186,7 @@ class Nunil_Admin_Help_Tabs {
 				$this->screen->add_help_tab(
 					array(
 						'id'      => 'nunil-events-main',
-						'title'   => __( 'Event hanlers', 'no-unsafe-inline' ),
+						'title'   => __( 'Event handlers', 'no-unsafe-inline' ),
 						'content' => $this->content( 'nunil-events-main' ),
 					)
 				);
@@ -379,22 +379,19 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<p>'
 			. sprintf(
-				// translators: %1$s is the link opening tag.
-				// translators: %2$s is the link closing tag.
-				esc_html__( 'no-unsafe-inline uses %1$s DBSCAN %2$s as a clustering algorithm performed on local-sensitive hashes.', 'no-unsafe-inline' ),
+				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
+				esc_html__( 'no-unsafe-inline uses %1$sDBSCAN%2$s as a clustering algorithm performed on local-sensitive hashes.', 'no-unsafe-inline' ),
 				'<a href="https://wikipedia.org/wiki/DBSCAN" target="_blank"><b>',
 				'</b></a>'
 			) . '<br>'
 			. sprintf(
-				// translators: %1$s is the link opening tag.
-				// translators: %2$s is the link closing tag.
+				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
 				esc_html__( 'The hashing algorithm used is %1$snilsimsa%2$s.', 'no-unsafe-inline' ),
 				'<a href="https://wikipedia.org/wiki/Nilsimsa_Hash" target="_blank"><b>',
 				'</b></a>'
 			) . '<br>'
 			. sprintf(
-				// translators: %1$s is the link opening tag.
-				// translators: %2$s is the link closing tag.
+				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
 				esc_html__( 'The distance measurement is %1$sHamming distance%2$s.', 'no-unsafe-inline' ),
 				'<a href="https://wikipedia.org/wiki/Hamming_distance" target="_blank"><b>',
 				'</b></a>'
@@ -412,7 +409,7 @@ class Nunil_Admin_Help_Tabs {
 		$content['nunil-tools-test-policy']       = '<p>'
 			. esc_html__( 'By enabling the "Content Security Policy" test you will be able to check your settings in the developer console of your browser.', 'no-unsafe-inline' )
 			. '</p><p>'
-			. esc_html__( 'In addition, during the test, additional information is captured in the database to help refine your "Content Security Policy"', 'no-unsafe-inline' )
+			. esc_html__( 'In addition, during the test, additional information is captured in the database to help refine your "Content Security Policy".', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-tools-enable-protection'] = '<p>'
 			. esc_html__( 'By enabling the protection, your "Content Security Policy" will be used by WordPress in the pages of the site.', 'no-unsafe-inline' )
@@ -427,7 +424,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'Furthermore, with the option enabled, the dynamic scripts present in the page are compared with those present in the database and if the classifier recognizes them as classifiable in an authorized cluster, they are authorized in the sent policy and inserted into the database.', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-tools-clean-database']    = '<p>'
-			. esc_html__( 'If you have updated numerous plugins, changed themes, or upgraded your WordPress version, you may want to delete all data in the database and restart the capture process.', 'no-unsafe-inline' )
+			. esc_html__( 'If you have updated many plugins, changed themes, or upgraded your WordPress version, you may want to delete all data in the database and restart the capture process.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'The procedure will not:', 'no-unsafe-inline' ) . '<ul>'
@@ -437,7 +434,7 @@ class Nunil_Admin_Help_Tabs {
 			. '</ul>'
 			. '</p>';
 		$content['nunil-base-src']                = '<p>'
-			. esc_html__( 'From this page you can add <hotst-source>, <scheme-source> and keywords that will be used in the CSP directives in all protected pages of your site.', 'no-unsafe-inline' )
+			. esc_html__( 'From this page you can add <host-source>, <scheme-source> and keywords that will be used in the CSP directives in all protected pages of your site.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'Adding sources or keywords here is equivalent to inserting a CSP policy in the .htacces file or in the configuration file of your web server.', 'no-unsafe-inline' )
@@ -449,15 +446,15 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'In the table at the bottom of the page you will find some suggested sources which, if included in your CSP policy, would authorize the execution of external scripts captured while viewing the pages of your site; selecting the records of the table, these sources will be respectively inserted and removed from the corresponding directives.', 'no-unsafe-inline' )
 			. esc_html__( 'The format of the sources is determined by the "External hosts identification" option which, however, does not limit the ability to manually insert elements in directives not listed in the table.', 'no-unsafe-inline' )
 			. '<p>'
-			. esc_html__( 'Avoid adding unsafe directives like \'unsafe-hashes\' and \'unsafe-inline\.', 'no-unsafe-inline' )
-			. esc_html__( 'If some scripts on your site use the eval () function you will be prompted to insert \'unsafe-eval\' in the table. This is not safe, but in order to get rid of this keyword without impacting the functionality of the site it is necessary to rewrite the code that uses this function.', 'no-unsafe-inline' )
+			. esc_html__( 'Avoid adding unsafe directives like \'unsafe-hashes\' and \'unsafe-inline\'.', 'no-unsafe-inline' )
+			. esc_html__( 'If some scripts on your site use the eval() function you will be prompted to insert \'unsafe-eval\' in the table. This is not safe, but in order to get rid of this keyword without impacting the functionality of the site it is necessary to rewrite the code that uses this function.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'Do not use the \'strict-dynamic\' and \'report-sample\' keywords which are directly managed by the plugin.', 'no-unsafe-inline' )
 			. esc_html__( 'Do not enter hashes for inline scripts and styles, which are managed directly by the plugin.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'We cannot detect any needed source for all active directives, so if you have known sources you need (for worker-src connect-src frame-ancestors etc..) please add them here manually.', 'no-unsafe-inline' )
+			. esc_html__( 'We cannot detect every needed source for all active directives, so if you have known sources you need (for worker-src connect-src frame-ancestors etc..) please add them here manually.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p><b>'
 			. esc_html__( 'Remember to save your settings before exiting this tab.', 'no-unsafe-inline' )
@@ -466,11 +463,11 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'In the table on this page you can view all the scripts and styles inserted in your site as files external to the html page.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'The table shows the CSP directive used to authorize the execution of the script or the insertion of the style, the html tag used for this purpose in your pages, the URI of the resource (including the query) with which it is inserted in yours pages, if and which hashes sha have been calculated on the resource and if the resource is included in the whitelist of those authorized by you or not.', 'no-unsafe-inline' )
+			. esc_html__( 'The table shows the CSP directive used to authorize the execution of the script or the insertion of the style, the html tag used for this purpose in your pages, the URI of the resource (including the query) with which it is inserted in yours pages, if and which SHA hashes have been calculated on the resource and if the resource is included in the whitelist of those authorized by you or not.', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-external-whitelist']      = '<p>'
 			. esc_html__( 'To authorize external scripts (or styles) you must explicitly whitelist them (using the link present in each line in the corresponding column, or selecting the scripts and using the selection and the massive operations button).', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( ' Scripts and styles already whitelisted can be excluded by using the corresponding link or massive action in the same way.', 'no-unsafe-inline' )
+			. esc_html__( 'Scripts and styles already whitelisted can be excluded by using the corresponding link or massive action in the same way.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'If the options for using SRI are set, only the hashes of authorized scripts and styles will be dynamically inserted in your CSP policy.', 'no-unsafe-inline' )
@@ -491,7 +488,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'If multiple sets of integrity metadata are specified for a script, the request will match a policy’s hash-sources if and only if each item in a script\'s integrity metadata matches the policy.', 'no-unsafe-inline' )
 			. '</i></p>'
 			. '</p>'
-			. esc_html__( 'When a script or external style is found and inserted into the database, the sha hashes for this resource are calculated.', 'no-unsafe-inline' )
+			. esc_html__( 'When a script or external style is found and inserted into the database, the SHA hashes for this resource are calculated.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'In case the resource has been modified you can perform the hash calculation again.', 'no-unsafe-inline' ) . '<br>'
@@ -534,7 +531,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'The table shows the CSP directive used to authorize the execution of the script or the insertion of the style and the HTML tag used to insert the inline stuff.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p><strong>'
-			. esc_html__( 'Clusters:', 'no-unsafe-inline' )
+			. esc_html__( 'Cluster:', 'no-unsafe-inline' )
 			. '</strong></br>'
 			. esc_html__( 'The name of the cluster to which the script is assigned is displayed in the "Cluster" column.', 'no-unsafe-inline' ) . '<br>'
 			. esc_html__( 'This name is generated randomly when the database data is processed by the clustering procedure. The name is not important, but if the column shows \'Unclustered\' it means that the script or style has not been grouped with others like it.', 'no-unsafe-inline' ) . '<br><b>'
@@ -555,7 +552,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'The "Uncluster" link under the cluster name (if any) in the "Cluster" column allows you to make ungrouped the codes that have been grouped by removing the cluster from the database.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'Clusters can only be produced by the clustering procedure executable from the tools tab.', 'no-unsafe-inline' )
+			. esc_html__( 'Clusters can only be produced by the clustering procedure, executable from the tools tab.', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-inline-whitelist']        = '<p>'
 			. esc_html__( 'To authorize inline scripts or internal styles you must explicitly whitelist them (using the link present in each line in the corresponding column, or selecting the scripts and styles and using the selection and the bulk operations button).', 'no-unsafe-inline' ) . '<br>'
@@ -571,10 +568,10 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'By examining its contents, you can make certain it is a legitimate script and not code injected by an attacker when the capture option is on.', 'no-unsafe-inline' ) . '</strong>'
 			. '</p>'
 			. '<p><strong>'
-			. esc_html__( 'Event handler scripts can be authorized either by using the \'unsafe-hashes\' directive (not recommended, which authorizes all event handler scripts present, significantly reducing the level of protection offered) or by injecting in your pages an inline script created on the fly by the plugin and that only includes scripts whitelisted through this tab.', 'no-unsafe-inline' ) . '</strong>'
+			. esc_html__( 'Event handler scripts can be authorized either by using the \'unsafe-hashes\' keyword (not recommended, which authorizes all event handlers scripts present, significantly reducing the level of protection offered) or by injecting in your pages an inline script created on the fly by the plugin and that only includes scripts whitelisted through this tab.', 'no-unsafe-inline' ) . '</strong>'
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'The authorization mode of the event handler scripts can be chosen by selecting the appropriate option.', 'no-unsafe-inline' )
+			. esc_html__( 'The authorization mode of the event handlers scripts can be chosen by selecting the appropriate option.', 'no-unsafe-inline' )
 			. '<p>'
 			. '</p>'
 			. '<p>'
@@ -586,7 +583,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'Clusters:', 'no-unsafe-inline' )
 			. '</strong></br>'
 			. esc_html__( 'The name of the cluster to which the script is assigned is displayed in the "Cluster" column.', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( 'This name is generated randomly when the database data is processed by the clustering procedure. The name is not important, but if the column shows \'Unclustered\' it means the script has not been grouped with other similar..', 'no-unsafe-inline' ) . '<br><b>'
+			. esc_html__( 'This name is generated randomly when the database data is processed by the clustering procedure. The name is not important, but if the column shows \'Unclustered\' it means the script has not been grouped with other similar.', 'no-unsafe-inline' ) . '<br><b>'
 			. esc_html__( 'We aim to cluster together scripts generated by the same backend code.', 'no-unsafe-inline' ) . '</b><br>'
 			. esc_html__( 'The "Cl.\'s Numerosity" column indicates the number of scripts grouped in the cluster (if the script does not belong to any cluster, this number is 1).', 'no-unsafe-inline' )
 			. '</p>'
@@ -608,7 +605,7 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>';
 		$content['nunil-events-whitelist']        = '<p>'
 			. esc_html__( 'To authorize inline event handlers scripts you must explicitly whitelist them (using the link present in each line in the corresponding column, or selecting the scripts and using the selection and the bulk operations button).', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( 'Script already whitelisted can be excluded by using the corresponding link or massive action in the same way.', 'no-unsafe-inline' )
+			. esc_html__( 'Scripts already whitelisted can be excluded by using the corresponding link or massive action in the same way.', 'no-unsafe-inline' )
 			. '</p>';
 		$content['nunil-events-delete']           = '<p>'
 			. esc_html__( 'You can delete an event handler script (or scripts clustered together) from your database using the link in each row of the "Script" column or the commands for bulk action.', 'no-unsafe-inline' )
@@ -708,7 +705,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'You have to select at least one if you are using the SRI and/or if you are using the identification of external resources with individual hashes.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'If you use more algorithms, the hashes calculated with the latter will all be used (both as sources in CSP directives, and as like integrity metadata).', 'no-unsafe-inline' )
+			. esc_html__( 'If you use more algorithms, the hashes calculated with these latter will all be used (both as sources in CSP directives, and as like integrity metadata).', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'Elements would be allowed to execute only if they contain integrity metadata that matches the policy.', 'no-unsafe-inline' )
@@ -769,7 +766,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
-			. esc_html__( 'Choose here if to add \'upgrade-insecure-requests\'  to your "Content Security Policy"; this will instruct a user agent to upgrade a priori insecure resource requests to secure transport before fetching them.', 'no-unsafe-inline' )
+			. esc_html__( 'Choose here if to add \'upgrade-insecure-requests\' to your "Content Security Policy"; this will instruct a user agent to upgrade a priori insecure resource requests to secure transport before fetching them.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
@@ -802,19 +799,19 @@ class Nunil_Admin_Help_Tabs {
 			. '</pre>'
 			. '<p>'
 			. esc_html__( 'By enabling this option, the plugin will add to an authorized cluster of inline scripts or event handlers scripts, the new scripts detected on the page and authorized by the classification function.', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( 'You may need to activate this option to avoid having to frequently enable the capturing phase as it is not possible to know the cluster\'s shape and to know a minimum needed numerosity of each cluster.', 'no-unsafe-inline' ) . '<br>'
+			. esc_html__( 'You may need to activate this option to avoid having to frequently enable the capturing phase as it is not possible to know the clusters\' shape and to know a minimum needed numerosity of each cluster.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'However, this option can present a potential security risk if an attacker may be able to obtain the authorization for some scripts by voluntarily forcing the shape of the cluster to which they are brought back by the classification function.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
 			. '<hr>';
-		$content['nunil-logs']              = '<h1>' . esc_html__( 'Plugin', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-logs']              = '<h1>' . esc_html__( 'Log', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>log_driver</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>db</b>: ' . esc_html__( 'Log to database', 'no-unsafe-inline' ) . ', <b>errorlog</b>: ' . esc_html__( 'PHP error_log()', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
-			. esc_html__( 'Choose here if to enable plugin to write log messages to the database.', 'no-unsafe-inline' )
+			. esc_html__( 'Choose here if to allow the plugin to write log messages to the database.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
@@ -840,7 +837,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. sprintf(
 				// translators: %s is the link to a paragraph in CSP3 specifications.
-				esc_html__( 'Read %s for info about reporting directives."', 'no-unsafe-inline' ),
+				esc_html__( 'Read %s for info about reporting directives.', 'no-unsafe-inline' ),
 				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank">https://www.w3.org/TR/CSP3/#directive-report-to</a>'
 			)
 			. '</p>'

@@ -35,8 +35,8 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			array(
-				'singular' => __( 'nunil-inl-script', 'no-unsafe-inline' ),
-				'plural'   => __( 'nunil-inl-scripts', 'no-unsafe-inline' ),
+				'singular' => 'nunil-inl-script',
+				'plural'   => 'nunil-inl-scripts',
 				'ajax'     => false, // should this table support ajax?
 			)
 		);

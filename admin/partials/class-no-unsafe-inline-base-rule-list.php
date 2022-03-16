@@ -29,8 +29,8 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			array(
-				'singular' => __( 'nunil-ext-source', 'no-unsafe-inline' ),
-				'plural'   => __( 'nunil-ext-sources', 'no-unsafe-inline' ),
+				'singular' => 'nunil-ext-source',
+				'plural'   => 'nunil-ext-sources',
 				'ajax'     => false, // should this table support ajax?
 			)
 		);

@@ -364,7 +364,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'hash_in_script-src',
-			esc_html__( 'script-src', 'no-unsafe-inline' ),
+			'script-src',
 			array( $this, 'print_hash_in_script_src' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_ext_hashes'
@@ -372,7 +372,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'hash_in_style-src',
-			esc_html__( 'style-src', 'no-unsafe-inline' ),
+			'style-src',
 			array( $this, 'print_hash_in_style_src' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_ext_hashes'
@@ -380,7 +380,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'hash_in_img-src',
-			esc_html__( 'img-src', 'no-unsafe-inline' ),
+			'img-src',
 			array( $this, 'print_hash_in_img_src' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_ext_hashes'
@@ -1402,7 +1402,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[use_unsafe-hashes]" %s />
 			<label for="no-unsafe-inline[use_unsafe-hashes]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'The unsafe-hashes Content Security Policy (CSP) keyword allows the execution of inline scripts within a JavaScript event handler attribute of a HTML element. This is not safe and this plugin can handle event handlers HTML attributes without \'unsafe-hashes\'.', 'no-unsafe-inline' )
+			esc_html__( 'The \'unsafe-hashes\' Content Security Policy (CSP) keyword allows the execution of inline scripts within a JavaScript event handler attribute of a HTML element. This is not safe and this plugin can handle event handlers HTML attributes without \'unsafe-hashes\'.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1553,7 +1553,7 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[group_name]">%s</label>',
 			esc_html( $value ),
 			esc_html( $disabled ),
-			esc_html__( 'Optional. If a group name is not specified, the endpoint is given a name of "csp-endpoint".', 'no-unsafe-inline' )
+			esc_html__( 'Optional. If a group name is not specified, the endpoints\' group is given the name of "csp-endpoint".', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1773,7 +1773,7 @@ class No_Unsafe_Inline_Admin {
 	public function print_base_rule_section(): void {
 		print esc_html__( 'Input here the base sources allowed for each CSP -src directive and rules for document and navigation directives.', 'no-unsafe-inline' );
 		echo '<br />';
-		print esc_html__( 'You can populate some of these fields by ticking the checkboxes in the table below.', 'no-unsafe-inline' );
+		print esc_html__( 'You can populate some of these fields by ticking the checkboxes in the table at the bottom of the page.', 'no-unsafe-inline' );
 	}
 
 	/**

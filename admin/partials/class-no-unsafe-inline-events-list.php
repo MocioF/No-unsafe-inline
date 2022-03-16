@@ -35,8 +35,8 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			array(
-				'singular' => __( 'nunil-evh-script', 'no-unsafe-inline' ),
-				'plural'   => __( 'nunil-evh-scripts', 'no-unsafe-inline' ),
+				'singular' => 'nunil-evh-script',
+				'plural'   => 'nunil-evh-scripts',
 				'ajax'     => false, // should this table support ajax?
 			)
 		);
