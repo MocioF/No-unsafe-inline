@@ -38,8 +38,8 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 
 	
 	/**
-     * @dataProvider tagProvider_1
-     */
+	 * @dataProvider tagProvider_1
+	 */
     public function testXQueryCanBeCreatedFromTag_1( string $expected ): void
     {
 		$Nunil_Manipulate_DOM = new NUNIL\Nunil_Manipulate_DOM();
@@ -57,8 +57,8 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 	}
 
 	/**
-     * @dataProvider tagProvider_2
-     */
+	 * @dataProvider tagProvider_2
+	 */
     public function testXQueryCanBeCreatedFromTag_2( string $expected ): void
     {
 		$Nunil_Manipulate_DOM = new NUNIL\Nunil_Manipulate_DOM();

@@ -390,9 +390,9 @@ class Nunil_Lib_Db {
 	 * @param string $directive The CSP -src directive.
 	 * @param string $tagname The HTML tagname.
 	 * @param string $content The inline content.
-	 * @param  bool   $sticky  True if the script is sticky to the pages.
-	 *  Sticky (whitelisted) scripts will always be
-	 *  inserted in CSP for the page.
+	 * @param bool   $sticky  True if the script is sticky to the pages.
+	 *                        Sticky (whitelisted) scripts will always be
+	 *                        inserted in CSP for the page.
 	 * @param bool   $utf8 Set to true only for inline js scripts.
 	 * @return int The ID of inserted row
 	 */

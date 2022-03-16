@@ -41,8 +41,8 @@ final class Nunil_Lib_LogTest extends WP_UnitTestCase
 	}
 	
 	/**
-     * @dataProvider logsInputArray
-     */
+	 * @dataProvider logsInputArray
+	 */
 	public function testLogWriter( string $method, int $level, string $message ) {
 		global $wpdb;
 		
