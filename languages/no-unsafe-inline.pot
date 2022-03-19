@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: No unsafe-inline 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/no-unsafe-inline\n"
-"POT-Creation-Date: 2022-03-16 00:39:50+00:00\n"
+"POT-Creation-Date: 2022-03-19 19:01:31+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1965,14 +1965,6 @@ msgstr ""
 
 #: src/Nunil_Clustering.php:225
 msgid "Execution time of script (sec): "
-msgstr ""
-
-#: src/Nunil_Lib_Db.php:983 src/Nunil_Lib_Db.php:984
-msgid "Yes"
-msgstr ""
-
-#: src/Nunil_Lib_Db.php:985
-msgid "No"
 msgstr ""
 
 #: src/Nunil_Manage_Muplugin.php:61

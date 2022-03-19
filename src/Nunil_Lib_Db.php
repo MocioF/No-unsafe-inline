@@ -980,9 +980,9 @@ class Nunil_Lib_Db {
 				$result = $wpdb->get_results(
 					'SELECT `directive`, `tagname`, '
 					. 'CASE '
-					. 'WHEN `tagname` =\'script\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
-					. 'WHEN `tagname` =\'link\' THEN \'' . esc_html__( 'Yes', 'no-unsafe-inline' ) . '\' '
-					. 'ELSE \'' . esc_html__( 'No', 'no-unsafe-inline' ) . '\' '
+					. 'WHEN `tagname` =\'script\' THEN \'Yes\' '
+					. 'WHEN `tagname` =\'link\' THEN \'Yes\' '
+					. 'ELSE \'No\' '
 					. 'END AS \'nonceable\', '
 					. 'CASE '
 					. 'WHEN `tagname` =\'script\' THEN `whitelist` '
