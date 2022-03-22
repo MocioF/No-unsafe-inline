@@ -9,7 +9,7 @@
  *
  * @link              https://profiles.wordpress.org/mociofiletto/
  * @since             1.0.0
- * @package           No_Unsafe_Inline
+ * @package           No_unsafe-inline
  *
  * @wordpress-plugin
  * Plugin Name:       No unsafe-inline

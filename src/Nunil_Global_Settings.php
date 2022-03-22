@@ -7,7 +7,7 @@
  * Site admins can override them by placing an option named no-unsafe-inline-global-settings
  * in wp_otions table
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -20,8 +20,7 @@ namespace NUNIL;
  * This is used to define some settings used inside the plugin not available for users.
  *
  * @since      1.0.0
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/src
+ * @package    No_unsafe-inline
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class Nunil_Global_Settings {

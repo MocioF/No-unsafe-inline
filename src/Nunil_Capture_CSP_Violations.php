@@ -5,7 +5,7 @@
  * Class used on capturing CSP violations.
  * Contains functions to populate the db tables.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class with methods used to capture CSP violations
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Capture_CSP_Violations extends Nunil_Capture {

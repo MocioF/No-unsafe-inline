@@ -14,10 +14,10 @@
 	printf( '<input type="hidden" name="order" value="%s" />', esc_html( strval( $order ) ) );
 	printf( '<input type="hidden" name="s" value="%s" />', esc_html( strval( $search ) ) );
 
-	$No_Unsafe_Inline_sources_obj = $this->show_table;
-	$No_Unsafe_Inline_sources_obj->prepare_items();
-	$No_Unsafe_Inline_sources_obj->search_box( esc_html__( 'Search script', 'no-unsafe-inline' ), 'script' );
-	$No_Unsafe_Inline_sources_obj->display();
+	$no_unsafe_inline_sources_obj = $this->show_table;
+	$no_unsafe_inline_sources_obj->prepare_items();
+	$no_unsafe_inline_sources_obj->search_box( esc_html__( 'Search script', 'no-unsafe-inline' ), 'script' );
+	$no_unsafe_inline_sources_obj->display();
 ?>
 </form>
 </div>

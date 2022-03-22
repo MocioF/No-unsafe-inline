@@ -4,7 +4,7 @@
  *
  * Class used to create integrity values for external scripts and styles.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class with methods used to create base -src rules for external content
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_SRI {
@@ -63,8 +63,8 @@ class Nunil_SRI {
 	 * Insert calculated hashes in database
 	 *
 	 * @since 1.0.0
-	 * @param string|int|array<string|int>  $id The id of the _external_script record.
-	 * @param bool                          $overwrite True to overwrite existing hashes.
+	 * @param string|int|array<string|int> $id The id of the _external_script record.
+	 * @param bool                         $overwrite True to overwrite existing hashes.
 	 * @return void
 	 */
 	public function put_hashes_in_db( $id, $overwrite = false ): void {

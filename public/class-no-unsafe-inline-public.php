@@ -5,8 +5,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/public
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/public
  */
 
 /**
@@ -15,8 +15,8 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/public
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/public
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline_Public {
@@ -80,8 +80,7 @@ class No_Unsafe_Inline_Public {
 		 * class.
 		 */
 
-		//~ wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-public.min.css', array(), $this->version, 'all' );
-
+		// ~ wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-public.min.css', array(), $this->version, 'all' );
 	}
 
 	/**
@@ -104,7 +103,7 @@ class No_Unsafe_Inline_Public {
 		 * class.
 		 */
 
-		//~ wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-public.min.js', array( 'jquery' ), $this->version, false );
+		// ~ wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-public.min.js', array( 'jquery' ), $this->version, false );
 
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );

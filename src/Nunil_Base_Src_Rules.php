@@ -4,7 +4,7 @@
  *
  * Class used to create "base" rules for external scripts in db.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -20,7 +20,7 @@ use League\Uri\UriString;
 /**
  * Class with methods used to create base -src rules for external content
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Base_Src_Rules {

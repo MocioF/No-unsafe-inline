@@ -6,8 +6,8 @@
  * entire WP process. It collects the buffer's output in the final output
  * that the plugin will parse and manipulate.
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/mu-plugins
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/mu-plugins
  *
  * @link  https://profiles.wordpress.org/mociofiletto/
  * @link  https://stackoverflow.com/a/22818089/17718976

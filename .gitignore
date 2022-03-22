@@ -7,8 +7,8 @@ vendor/
 *.log
 phpunit.xml
 phpcs.xml
-.phpcs.xml
 node_modules
 npm-debug.log
 docs
 .sass-cache
+/.phpunit.result.cache

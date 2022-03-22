@@ -4,7 +4,7 @@
  *
  * Class used to copy and delete mu-plugin
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class with methods used to install and uninstall muplugin
  *
- * @package no-unsafe-inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Manage_Muplugin {

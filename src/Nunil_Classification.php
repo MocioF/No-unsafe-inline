@@ -4,7 +4,7 @@
  *
  * Class used when testing classificator.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */

@@ -10,9 +10,9 @@
 
 	if ( $enabled_logs ) {
 		printf( '<input type="hidden" name="page" value="%s" />', esc_html( strval( $page ) ) );
-		$No_Unsafe_Inline_sources_obj = new No_Unsafe_Inline_Admin_Logs_Table();
-		$No_Unsafe_Inline_sources_obj->prepare_items();
-		$No_Unsafe_Inline_sources_obj->display();
+		$no_unsafe_inline_sources_obj = new No_Unsafe_Inline_Admin_Logs_Table();
+		$no_unsafe_inline_sources_obj->prepare_items();
+		$no_unsafe_inline_sources_obj->display();
 	}
 	?>
 </form>

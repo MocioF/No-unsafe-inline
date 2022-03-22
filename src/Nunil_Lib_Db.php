@@ -4,7 +4,7 @@
  *
  * Class has static methods to operate DB operations.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -14,7 +14,7 @@ namespace NUNIL;
 /**
  * Class with static methods called while operating on db
  *
- * @package no-unsafe-inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Lib_Db {

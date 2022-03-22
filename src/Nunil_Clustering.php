@@ -4,7 +4,7 @@
  *
  * This class is used for clustering scripts, trying to find script that cannot work without unsafe-inline
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -19,7 +19,7 @@ use NUNIL\Nunil_Lib_Log as Log;
 /**
  * Class with methods used to cluster scripts
  *
- * @package no-unsafe-inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Clustering {

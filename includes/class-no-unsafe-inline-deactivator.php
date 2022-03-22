@@ -5,8 +5,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  */
 
 use NUNIL\Nunil_Manage_Muplugin;
@@ -19,8 +19,8 @@ use NUNIL\Nunil_Lib_Db as DB;
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline_Deactivator {
@@ -49,7 +49,7 @@ class No_Unsafe_Inline_Deactivator {
 			if ( is_iterable( $sites ) && ! empty( $sites ) ) {
 				$remove_mu_plugin = true;
 				foreach ( $sites as $site ) {
-					if ( is_object( $site ) &&( isset( $site->blog_id ) ) ) {
+					if ( is_object( $site ) && ( isset( $site->blog_id ) ) ) {
 						switch_to_blog( $site->blog_id );
 					} else {
 						switch_to_blog( $site['blog_id'] );

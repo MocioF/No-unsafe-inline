@@ -4,7 +4,7 @@
  *
  * This class provides Custom Distance Function used for DBSCAN Clustering
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -17,7 +17,7 @@ use Beager\Nilsimsa;
 /**
  * Hamming Distance for Clustering
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Hamming_Distance implements Distance {

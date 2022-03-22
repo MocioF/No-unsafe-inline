@@ -8,8 +8,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  */
 
 /**
@@ -22,8 +22,8 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline {
@@ -238,7 +238,7 @@ class No_Unsafe_Inline {
 	private function define_public_hooks() {
 		$plugin_public = new No_Unsafe_Inline_Public( $this->get_plugin_name(), $this->get_version() );
 
-		//~ $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		// ~ $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 0 );
 
 		// This will output CSP (and Report-To) headers.

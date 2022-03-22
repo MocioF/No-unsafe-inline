@@ -6,8 +6,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  */
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -19,8 +19,8 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  *
  * Extends WP_List_Table to show plugin logs.
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  */
 class No_Unsafe_Inline_Admin_Logs_Table extends WP_List_Table {
 	private const MAX_LENGTH = 1500;

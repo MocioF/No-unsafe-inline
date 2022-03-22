@@ -5,8 +5,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  */
 
 use NUNIL\Nunil_Lib_Db as DB;
@@ -17,8 +17,8 @@ use NUNIL\Nunil_Lib_Db as DB;
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline_Admin {

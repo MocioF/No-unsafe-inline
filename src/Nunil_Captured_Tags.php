@@ -4,7 +4,7 @@
  *
  * Class used to return an array of NUNIL\Nunil_HTML_tag object to be captured
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class with method used to return the array of captured tags object
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Captured_Tags {

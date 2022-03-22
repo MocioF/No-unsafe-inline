@@ -6,7 +6,7 @@
 	?>
 </form>
 <?php
-	$No_Unsafe_Inline_sources_obj = new No_Unsafe_Inline_Base_Rule_List();
-	$No_Unsafe_Inline_sources_obj->prepare_items();
-	$No_Unsafe_Inline_sources_obj->display();
+	$no_unsafe_inline_sources_obj = new No_Unsafe_Inline_Base_Rule_List();
+	$no_unsafe_inline_sources_obj->prepare_items();
+	$no_unsafe_inline_sources_obj->display();
 ?>

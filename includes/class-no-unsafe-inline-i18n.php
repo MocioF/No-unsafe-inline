@@ -9,8 +9,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  */
 
 /**
@@ -20,8 +20,8 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/includes
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/includes
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
 class No_Unsafe_Inline_i18n {

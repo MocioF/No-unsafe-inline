@@ -4,7 +4,7 @@
  *
  * Class used to manipulate the DOM including hashes/nonce and creating an inline script.
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @link    https://wordpress.org/plugins/no-unsafe-inline/
  * @since   1.0.0
  */
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class with methods used to manipulate the DOM
  *
- * @package No unsafe inline
+ * @package No_unsafe-inline
  * @since   1.0.0
  */
 class Nunil_Manipulate_DOM extends Nunil_Capture {

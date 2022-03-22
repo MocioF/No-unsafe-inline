@@ -5,8 +5,8 @@
  * @link       https://profiles.wordpress.org/mociofiletto/
  * @since      1.0.0
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  */
 
 use Highlight\Highlighter;
@@ -26,8 +26,8 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  *
  * Extends WP_List_Table to select events in handlers.
  *
- * @package    No_Unsafe_Inline
- * @subpackage No_Unsafe_Inline/admin
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
  */
 class No_Unsafe_Inline_Events_List extends WP_List_Table {
 
