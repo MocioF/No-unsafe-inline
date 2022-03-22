@@ -44,8 +44,10 @@ if ( is_multisite() ) {
 
 		restore_current_blog();
 	}
+	no_unsafe_inline_mu_plugin_delete();
 } else {
 	no_unsafe_inline_uninstall_plugin();
+	no_unsafe_inline_mu_plugin_delete();
 }
 
 /**
@@ -79,3 +81,17 @@ function no_unsafe_inline_uninstall_plugin() {
 	}
 }
 
+/**
+ * Remove the mu-plugin on uninstall
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function no_unsafe_inline_mu_plugin_delete() {
+	$mu_dir    = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
+	$mu_dir    = untrailingslashit( $mu_dir );
+	$mu_plugin = $mu_dir . '/no-unsafe-inline-output-buffering.php';
+	if ( file_exists( $mu_plugin ) ) {
+		unlink( $mu_plugin );
+	}
+}
