@@ -12,6 +12,7 @@
 use Highlight\Highlighter;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -115,7 +116,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			case 'whitelist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['evh-select'] ), 'sanitize_text_field' );
-					if ( is_array( $selected ) ) {
+					if ( Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::evh_whitelist( $selected );
 					}
 				}
@@ -134,7 +135,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			case 'blacklist-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['evh-select'] ), 'sanitize_text_field' );
-					if ( is_array( $selected ) ) {
+					if ( Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::evh_whitelist( $selected, false );
 					}
 				}
@@ -153,7 +154,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			case 'delete-bulk':
 				if ( isset( $_POST['evh-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['evh-select'] ), 'sanitize_text_field' );
-					if ( is_array( $selected ) ) {
+					if ( Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::evh_delete( $selected );
 					}
 				}

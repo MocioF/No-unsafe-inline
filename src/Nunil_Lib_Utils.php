@@ -63,4 +63,28 @@ class Nunil_Lib_Utils {
 		delete_transient( 'no_unsafe_inline_admin_notice' );
 	}
 
+
+	/**
+	 * Checks if all values in array are integers
+	 *
+	 * @since 1.0.0
+	 * @param mixed $array The array to check.
+	 * @return bool True if all values of $array are integers, false otherwise
+	 */
+	public static function is_array_of_integer_strings( $array ) {
+		if ( ! is_array( $array ) ) {
+			return false;
+		}
+		foreach ( $array as $value ) {
+			if ( ! is_numeric( $value ) ) {
+				return false;
+			} else {
+				if ( ! ctype_digit( $value ) ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }
