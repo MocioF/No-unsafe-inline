@@ -24,6 +24,7 @@ final class Nunil_Lib_UtilsTest extends WP_UnitTestCase
 		[ true, false ],
 		[ false, false ],
 		['100', false ],
+		[ array( '1' ), true ],
 		];
 	}
 
