@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: custom-wordpress:5.9-php7.4-apache
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - no-unsafe-inline-net
+    volumes:
+      - .:/var/www/html/wp-content/plugins/no-unsafe-inline/
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+      WORDPRESS_DEBUG: 1
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - no-unsafe-inline-net
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+
+networks:
+  no-unsafe-inline-net:
