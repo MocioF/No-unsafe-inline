@@ -115,7 +115,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			case 'whitelist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['inl-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::inl_whitelist( $selected );
 					}
 				}
@@ -134,7 +134,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			case 'blacklist-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['inl-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::inl_whitelist( $selected, false );
 					}
 				}
@@ -153,7 +153,7 @@ class No_Unsafe_Inline_Inline_List extends WP_List_Table {
 			case 'delete-bulk':
 				if ( isset( $_POST['inl-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['inl-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::inl_delete( $selected );
 					}
 				}

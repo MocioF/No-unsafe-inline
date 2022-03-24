@@ -116,7 +116,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'whitelist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::ext_whitelist( $selected );
 					}
 				}
@@ -135,7 +135,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'blacklist-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::ext_whitelist( $selected, false );
 					}
 				}
@@ -154,7 +154,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'delete-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$affected = DB::ext_delete( $selected );
 					}
 				}
@@ -174,7 +174,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'hash-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$sri = new \NUNIL\Nunil_SRI();
 						$sri->put_hashes_in_db( $selected, $overwrite = false );
 					}
@@ -195,7 +195,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'rehash-bulk':
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
-					if ( Utils::is_array_of_integer_strings( $selected ) ) {
+					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
 						$sri = new \NUNIL\Nunil_SRI();
 						$sri->put_hashes_in_db( $selected, $overwrite = true );
 					}
