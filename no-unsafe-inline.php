@@ -22,8 +22,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       no-unsafe-inline
  * Domain Path:       /languages
- * Requires at least: 4.7
- * Requires PHP: 7.2
+ * Requires at least: 5.3
+ * Requires PHP: 7.4
  */
 
 // If this file is called directly, abort.
@@ -38,8 +38,8 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'NO_UNSAFE_INLINE_VERSION', '1.0.0' );
 define( 'NO_UNSAFE_INLINE_DB_VERSION', '1.0' );
-define( 'NO_UNSAFE_INLINE_MINIMUM_WP_VERSION', '4.7' );
-define( 'NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION', '7.2' );
+define( 'NO_UNSAFE_INLINE_MINIMUM_WP_VERSION', '5.3' );
+define( 'NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION', '7.4' );
 define( 'NO_UNSAFE_INLINE_PLUGIN', __FILE__ );
 define( 'NO_UNSAFE_INLINE_PLUGIN_BASENAME', plugin_basename( NO_UNSAFE_INLINE_PLUGIN ) );
 define( 'NO_UNSAFE_INLINE_PLUGIN_NAME', trim( dirname( NO_UNSAFE_INLINE_PLUGIN_BASENAME ), '/' ) );
