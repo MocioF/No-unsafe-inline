@@ -16,6 +16,9 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 	exit( 1 );
 }
 
+// https://make.wordpress.org/core/2021/09/27/changes-to-the-wordpress-core-php-test-suite/
+require_once dirname( dirname( __FILE__ ) ) . "/vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php";
+
 // Give access to tests_add_filter() function.
 require_once $_tests_dir . '/includes/functions.php';
 
