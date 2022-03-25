@@ -8,7 +8,7 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 		parent::tear_down();
 	}
 
-	protected function setUp(): void {
+	public function set_up(): void {
 		parent::set_up();
 		no_unsafe_inline_activate( false );
 

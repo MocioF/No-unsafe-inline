@@ -16,7 +16,7 @@
         "php-ai/php-ml": "^0.9.0",
         "league/uri": "^6.5",
         "scrivo/highlight.php": "^9.18",
-        "spatie/async": "^1.5",
+        "spatie/async": "1.5.3",
         "league/uri-components": "^2.4"
     },
     "autoload": {

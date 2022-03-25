@@ -11,7 +11,7 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 		no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
-    protected function setUp(): void
+    public function set_up(): void
     {
 		parent::set_up();
 		no_unsafe_inline_activate( false );
