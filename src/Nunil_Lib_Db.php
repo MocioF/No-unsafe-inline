@@ -316,9 +316,15 @@ class Nunil_Lib_Db {
 	 */
 	public static function update_lastseen( $occurrence_id ) {
 		global $wpdb;
-		$data   = array(
-			'lastseen' => wp_date( 'Y-m-d H:i:s' ),
-		);
+		if ( function_exists( 'wp_date' ) ) {
+			$data = array(
+				'lastseen' => wp_date( 'Y-m-d H:i:s' ),
+			);
+		} else {
+			$data = array(
+				'lastseen' => date( 'Y-m-d H:i:s' ),
+			);
+		}
 		$where  = array(
 			'ID' => intval( $occurrence_id ),
 		);
@@ -492,11 +498,15 @@ class Nunil_Lib_Db {
 		$page_url = is_null( $page_url ) ? Nunil_Lib_Utils::get_page_url() : $page_url;
 
 		$data = array(
-			'dbtable'  => $tbl_string,
-			'itemid'   => intval( $id ),
-			'pageurl'  => $page_url,
-			'lastseen' => wp_date( 'Y-m-d H:i:s' ),
+			'dbtable' => $tbl_string,
+			'itemid'  => intval( $id ),
+			'pageurl' => $page_url,
 		);
+		if ( function_exists( 'wp_date' ) ) {
+			$data['lastseen'] = wp_date( 'Y-m-d H:i:s' );
+		} else {
+			$data['lastseen'] = date( 'Y-m-d H:i:s' );
+		}
 
 		$format = array( '%s', '%d', '%s', '%s' );
 
