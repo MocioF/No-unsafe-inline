@@ -135,8 +135,8 @@ class No_Unsafe_Inline_Admin {
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 		( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
 		) {
-			wp_enqueue_script( 'jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.min.js', array( 'jquery' ), $this->version, false );
-			wp_enqueue_script( 'fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.min.js', array(), $this->version, false );
+			wp_enqueue_script( $this->plugin_name . '_jquery-htmlprefilter-override', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-prefilter-override.min.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name . '_fix_setattribute_style', plugin_dir_url( __FILE__ ) . '../includes/js/no-unsafe-inline-fix-style.min.js', array(), $this->version, false );
 		}
 
 		$screen = get_current_screen();

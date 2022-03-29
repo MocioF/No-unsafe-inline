@@ -412,18 +412,22 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			return;
 		}
 		$options = (array) get_option( 'no-unsafe-inline' );
-		if ( 1 === $options['hash_in_all'] ||
-			 1 === $options['hash_in_script-src'] ||
-			 1 === $options['hash_in_style-src'] ||
-			 1 === $options['hash_in_img-src'] ||
-			 1 === $options['sri_script'] ||
-			 1 === $options['sri_link'] ) {
+		if (
+			1 === $options['hash_in_all'] ||
+			1 === $options['hash_in_script-src'] ||
+			1 === $options['hash_in_style-src'] ||
+			1 === $options['hash_in_img-src'] ||
+			1 === $options['sri_script'] ||
+			1 === $options['sri_link']
+			) {
 			foreach ( $this->managed_tags as $tag ) {
 				$node_list = $this->get_external_nodelist( $tag );
 				if ( $node_list ) {
 					foreach ( $node_list as $node ) {
-						$index = $this->check_external_whitelist( $node );
-						$this->manipulate_external_node( $node, $index, $tag->get_directive() );
+						if ( $node instanceof \DOMElement ) {
+							$index = $this->check_external_whitelist( $node );
+							$this->manipulate_external_node( $node, $index, $tag->get_directive() );
+						}
 					}
 				}
 			}
@@ -1009,7 +1013,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
 					}
 				} else {
-					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false );
+					if ( 'script' === $tagname || 'style' === $tagname ) {
+						$utf8 = true;
+					} else {
+						$utf8 = false;
+					}
+					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false, $utf8 );
 					$affected  = DB::upd_inl_cl_wl( $script_id, $predicted_label );
 
 					$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
@@ -1072,21 +1081,23 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$nodelist = $this->get_nodes_w_events();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				$rows = $this->get_event_handlers_in_node( $node );
-				foreach ( $rows as $row ) {
-					$hashes = $this->get_hashes( $row['script'], $utf8 = true );
+				if ( $node instanceof \DOMElement ) {
+					$rows = $this->get_event_handlers_in_node( $node );
+					foreach ( $rows as $row ) {
+						$hashes = $this->get_hashes( $row['script'], $utf8 = true );
 
-					$index = $this->check_single_whitelist( $hashes, $row['tagname'], $row['event_attribute'] );
+						$index = $this->check_single_whitelist( $hashes, $row['tagname'], $row['event_attribute'] );
 
-					if ( false !== $index ) {
-						$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
-					} else {
-						$lsh        = new Nilsimsa( $row['script'] );
-						$lsh_digest = $lsh->digest();
-
-						$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'], $row['event_attribute'] );
-						if ( false !== $wl_cluster ) {
+						if ( false !== $index ) {
 							$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
+						} else {
+							$lsh        = new Nilsimsa( $row['script'] );
+							$lsh_digest = $lsh->digest();
+
+							$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'], $row['event_attribute'] );
+							if ( false !== $wl_cluster ) {
+								$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
+							}
 						}
 					}
 				}
@@ -1108,24 +1119,26 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$nodelist = $this->get_nodes_w_inline_style();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				$row = $this->get_inline_style_in_node( $node );
+				if ( $node instanceof \DOMElement ) {
+					$row = $this->get_inline_style_in_node( $node );
 
-				if ( false !== $row ) {
-					$hashes = $this->get_hashes( $row['script'], $utf8 = false );
+					if ( false !== $row ) {
+						$hashes = $this->get_hashes( $row['script'], $utf8 = false );
 
-					$index = $this->check_single_whitelist( $hashes, $row['tagname'] );
+						$index = $this->check_single_whitelist( $hashes, $row['tagname'] );
 
-					if ( false !== $index ) {
-						$class = 'nunil-' . $this->generate_nonce();
-						$this->ils_allow_wl_hash( $node, $class );
-					} else {
-						$lsh        = new Nilsimsa( $row['script'] );
-						$lsh_digest = $lsh->digest();
-
-						$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'] );
-						if ( false !== $wl_cluster ) {
+						if ( false !== $index ) {
 							$class = 'nunil-' . $this->generate_nonce();
 							$this->ils_allow_wl_hash( $node, $class );
+						} else {
+							$lsh        = new Nilsimsa( $row['script'] );
+							$lsh_digest = $lsh->digest();
+
+							$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'] );
+							if ( false !== $wl_cluster ) {
+								$class = 'nunil-' . $this->generate_nonce();
+								$this->ils_allow_wl_hash( $node, $class );
+							}
 						}
 					}
 				}

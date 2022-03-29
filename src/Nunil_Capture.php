@@ -174,8 +174,10 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				$rows     = $this->get_event_handlers_in_node( $node );
-				$all_rows = array_merge( $all_rows, $rows );
+				if( $node instanceof \DOMElement ) {
+					$rows     = $this->get_event_handlers_in_node( $node );
+					$all_rows = array_merge( $all_rows, $rows );
+				}
 			}
 		}
 		return $all_rows;
@@ -196,9 +198,11 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				$row = $this->get_inline_style_in_node( $node );
-				if ( false !== $row ) {
-					$all_rows[] = $row;
+				if( $node instanceof \DOMElement ) {
+					$row = $this->get_inline_style_in_node( $node );
+					if ( false !== $row ) {
+						$all_rows[] = $row;
+					}
 				}
 			}
 		}
@@ -552,7 +556,7 @@ class Nunil_Capture {
 			$node_key        = sprintf( '%d', $node_index );
 			$index_processed = array_key_exists( $node_key, $processed );
 
-			if ( ! $index_processed ) {
+			if ( ! $index_processed && ( $node instanceof \IvoPetkov\HTML5DOMElement ) ) {
 				$inline = false;
 
 				if ( $this->check_attrs( $tag->get_neededattrs(), $node ) ) {
