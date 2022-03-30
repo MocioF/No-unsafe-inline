@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: No unsafe-inline 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/no-unsafe-inline\n"
-"POT-Creation-Date: 2022-03-19 19:01:31+00:00\n"
+"POT-Creation-Date: 2022-03-30 22:54:26+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -33,7 +33,7 @@ msgid "Leave a review"
 msgstr ""
 
 #: admin/class-no-unsafe-inline-admin.php:192
-#: admin/class-no-unsafe-inline-admin.php:1870
+#: admin/class-no-unsafe-inline-admin.php:1930
 msgid "Settings"
 msgstr ""
 
@@ -41,309 +41,315 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:229
+#: admin/class-no-unsafe-inline-admin.php:257
 msgid "Management of no-unsafe-inline settings"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:230
+#: admin/class-no-unsafe-inline-admin.php:258
 msgid "CSP settings"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:266
+#: admin/class-no-unsafe-inline-admin.php:294
 msgid "External scripts per page"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:277
+#: admin/class-no-unsafe-inline-admin.php:305
 msgid "Inline scripts per page"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:288
+#: admin/class-no-unsafe-inline-admin.php:316
 msgid "Events per page"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:317 src/Nunil_Admin_Help_Tabs.php:622
+#: admin/class-no-unsafe-inline-admin.php:345 src/Nunil_Admin_Help_Tabs.php:622
 msgid "Directives managed"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:344 src/Nunil_Admin_Help_Tabs.php:237
+#: admin/class-no-unsafe-inline-admin.php:372 src/Nunil_Admin_Help_Tabs.php:237
 #. translators: %s is the CSP -src directive, as script-src.
 msgid "External source identification"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:351
+#: admin/class-no-unsafe-inline-admin.php:379
 msgid "External sources, base identification"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:360
+#: admin/class-no-unsafe-inline-admin.php:388
 msgid "Use single hashes in directives:"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:391
+#: admin/class-no-unsafe-inline-admin.php:419
 msgid "Whenever is possible"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:400 src/Nunil_Admin_Help_Tabs.php:689
+#: admin/class-no-unsafe-inline-admin.php:428 src/Nunil_Admin_Help_Tabs.php:689
 msgid "Select which hashes to use"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:407
-#: admin/class-no-unsafe-inline-admin.php:1290
-#: admin/partials/class-no-unsafe-inline-external-list.php:377
+#: admin/class-no-unsafe-inline-admin.php:435
+#: admin/class-no-unsafe-inline-admin.php:1330
+#: admin/partials/class-no-unsafe-inline-external-list.php:379
 #: src/Nunil_Admin_Help_Tabs.php:744
 msgid "sha256"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:415
-#: admin/class-no-unsafe-inline-admin.php:1297
-#: admin/partials/class-no-unsafe-inline-external-list.php:378
+#: admin/class-no-unsafe-inline-admin.php:443
+#: admin/class-no-unsafe-inline-admin.php:1337
+#: admin/partials/class-no-unsafe-inline-external-list.php:380
 #: src/Nunil_Admin_Help_Tabs.php:745
 msgid "sha384"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:423
-#: admin/class-no-unsafe-inline-admin.php:1304
-#: admin/partials/class-no-unsafe-inline-external-list.php:379
+#: admin/class-no-unsafe-inline-admin.php:451
+#: admin/class-no-unsafe-inline-admin.php:1344
+#: admin/partials/class-no-unsafe-inline-external-list.php:381
 #: src/Nunil_Admin_Help_Tabs.php:746
 msgid "sha512"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:432 src/Nunil_Admin_Help_Tabs.php:269
+#: admin/class-no-unsafe-inline-admin.php:460 src/Nunil_Admin_Help_Tabs.php:269
 #: src/Nunil_Admin_Help_Tabs.php:713
 msgid "Use Subresource Integrity"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:439
+#: admin/class-no-unsafe-inline-admin.php:467
 msgid "SRI for <script>"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:447
+#: admin/class-no-unsafe-inline-admin.php:475
 msgid "SRI for <link>"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:456
-#: admin/class-no-unsafe-inline-admin.php:463 src/Nunil_Admin_Help_Tabs.php:277
+#: admin/class-no-unsafe-inline-admin.php:484
+#: admin/class-no-unsafe-inline-admin.php:491 src/Nunil_Admin_Help_Tabs.php:277
 #: src/Nunil_Admin_Help_Tabs.php:739
 msgid "Inline script mode"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:472 src/Nunil_Admin_Help_Tabs.php:285
+#: admin/class-no-unsafe-inline-admin.php:500 src/Nunil_Admin_Help_Tabs.php:285
 msgid "Misc options"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:479
+#: admin/class-no-unsafe-inline-admin.php:507
 msgid "Use sctrict-dynamic in <script>"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:487
+#: admin/class-no-unsafe-inline-admin.php:515
 msgid "Set upgrade-insecure-requests directive"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:495
+#: admin/class-no-unsafe-inline-admin.php:523
 msgid "Enforce policy in admin"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:504
+#: admin/class-no-unsafe-inline-admin.php:532
 #. translators: %s is unsafe-hashes link to w3.org site.
 msgid "Use '%s' for JS event handlers attributes of HTML elements. (Say NO)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:514
+#: admin/class-no-unsafe-inline-admin.php:542
 #. translators: %1$s is setAttribute link, %2$s is jQuery htmlPrefilte link.
 msgid "Fix the use of %1$s in 3th party libraries and override %2$s"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:525
+#: admin/class-no-unsafe-inline-admin.php:553
 msgid ""
 "Add to the database the scripts authorized by classification in a "
 "whitelisted cluster."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:534
+#: admin/class-no-unsafe-inline-admin.php:561
+msgid ""
+"Define the max response HTTP header size, based on your server / hosting "
+"provider."
+msgstr ""
+
+#: admin/class-no-unsafe-inline-admin.php:570
 msgid "Violations report options"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:541
+#: admin/class-no-unsafe-inline-admin.php:577
 msgid "Report CSP violations to endpoints"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:549
+#: admin/class-no-unsafe-inline-admin.php:585
 msgid "Group name"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:557
+#: admin/class-no-unsafe-inline-admin.php:593
 msgid "Max age"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:565
+#: admin/class-no-unsafe-inline-admin.php:601
 msgid "Endpoints"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:574
-#: admin/class-no-unsafe-inline-admin.php:1876
+#: admin/class-no-unsafe-inline-admin.php:610
+#: admin/class-no-unsafe-inline-admin.php:1936
 msgid "Logs"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:581
+#: admin/class-no-unsafe-inline-admin.php:617
 msgid "Log driver"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:589
+#: admin/class-no-unsafe-inline-admin.php:625
 msgid "Log level"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:598 src/Nunil_Admin_Help_Tabs.php:847
+#: admin/class-no-unsafe-inline-admin.php:634 src/Nunil_Admin_Help_Tabs.php:858
 msgid "Deactivation options"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:605
+#: admin/class-no-unsafe-inline-admin.php:641
 msgid "Remove tables"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:613
+#: admin/class-no-unsafe-inline-admin.php:649
 msgid "Remove options"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:635
+#: admin/class-no-unsafe-inline-admin.php:671
 msgid "No unsafe-inline tools"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:642 src/Nunil_Admin_Help_Tabs.php:69
+#: admin/class-no-unsafe-inline-admin.php:678 src/Nunil_Admin_Help_Tabs.php:69
 msgid "Enable tag capture"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:650 src/Nunil_Admin_Help_Tabs.php:85
+#: admin/class-no-unsafe-inline-admin.php:686 src/Nunil_Admin_Help_Tabs.php:85
 msgid "Test current csp policy"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:658 src/Nunil_Admin_Help_Tabs.php:93
+#: admin/class-no-unsafe-inline-admin.php:694 src/Nunil_Admin_Help_Tabs.php:93
 msgid "Enable csp protection"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:683
+#: admin/class-no-unsafe-inline-admin.php:719
 msgid "Base CSP rules"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:697
+#: admin/class-no-unsafe-inline-admin.php:733
 #. translators: %s is the CSP directive, like script-src.
 msgid "Base rules for the %s directive."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:705
+#: admin/class-no-unsafe-inline-admin.php:741
 #. translators: %s is the CSP directive, like script-src.
 msgid "Base %s sources"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:970
+#: admin/class-no-unsafe-inline-admin.php:1010
 msgid "Select the CSP directives that you want to manage with this plugin."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:996
+#: admin/class-no-unsafe-inline-admin.php:1036
 #. translators: %s is a CSP directory link on w3.org specs for CSP3.
 msgid "Enable managing of the %s directive."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1007
+#: admin/class-no-unsafe-inline-admin.php:1047
 msgid "Select how to identify external hosts."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1026
+#: admin/class-no-unsafe-inline-admin.php:1066
 msgid "resource (eg. https://www.example.org/script.js)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1033
+#: admin/class-no-unsafe-inline-admin.php:1073
 msgid "scheme-host (eg. https://www.example.org)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1039
+#: admin/class-no-unsafe-inline-admin.php:1079
 msgid "host (eg. www.example.org)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1046
+#: admin/class-no-unsafe-inline-admin.php:1086
 msgid "domain (eg *.example.org)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1059
+#: admin/class-no-unsafe-inline-admin.php:1099
 msgid "Select directives in which you want to use hashes in addition to base rules."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1077
+#: admin/class-no-unsafe-inline-admin.php:1117
 msgid "Add hashes in script-src."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1096
+#: admin/class-no-unsafe-inline-admin.php:1136
 msgid "Add hashes in style-src."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1115
+#: admin/class-no-unsafe-inline-admin.php:1155
 msgid "Add hashes in img-src."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1134
+#: admin/class-no-unsafe-inline-admin.php:1174
 msgid "Add hashes in all directives where possible."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1145
+#: admin/class-no-unsafe-inline-admin.php:1185
 msgid "Select algos to be used in external resource identification"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1163
+#: admin/class-no-unsafe-inline-admin.php:1203
 msgid "Add sha256 in csp and integrity attribute."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1182
+#: admin/class-no-unsafe-inline-admin.php:1222
 msgid "Add sha384 in csp and integrity attribute."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1201
+#: admin/class-no-unsafe-inline-admin.php:1241
 msgid "Add sha512 in csp and integrity attribute."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1214
+#: admin/class-no-unsafe-inline-admin.php:1254
 #. translators: Subresource Integrity link.
 msgid "Options to use %s"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1234
+#: admin/class-no-unsafe-inline-admin.php:1274
 msgid "Add integrity attribute to external resources loaded by <script> tag."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1253
+#: admin/class-no-unsafe-inline-admin.php:1293
 msgid "Add integrity attribute to external resources loaded by <link> tag."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1264
+#: admin/class-no-unsafe-inline-admin.php:1304
 msgid "Select how to identify whitelisted inline scripts."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1283
+#: admin/class-no-unsafe-inline-admin.php:1323
 #: src/Nunil_Admin_Help_Tabs.php:743
 msgid "nonce"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1317
+#: admin/class-no-unsafe-inline-admin.php:1357
 msgid "Misc options."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1336
+#: admin/class-no-unsafe-inline-admin.php:1376
 #. translators: strict-dynamic link.
 msgid "Add %s in script-src."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1338
+#: admin/class-no-unsafe-inline-admin.php:1378
 #. translators: %1$s and %2$s are link to external websites.
 msgid "This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1363
+#: admin/class-no-unsafe-inline-admin.php:1403
 #. translators: upgrade-insecure-requests link.
 msgid "Set the CSP directive: %s"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1384
+#: admin/class-no-unsafe-inline-admin.php:1424
 msgid "Enforce CSP policy when true === is_admin()."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1405
+#: admin/class-no-unsafe-inline-admin.php:1445
 #: src/Nunil_Admin_Help_Tabs.php:785
 msgid ""
 "The 'unsafe-hashes' Content Security Policy (CSP) keyword allows the "
@@ -352,35 +358,41 @@ msgid ""
 "HTML attributes without 'unsafe-hashes'."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1426
+#: admin/class-no-unsafe-inline-admin.php:1466
 msgid ""
 "Global replacing Element.setAttribute() with Element.style.property = val "
 "and override jQuery htmlPrefilter() for CSP-safe applying of inline styles."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1447
+#: admin/class-no-unsafe-inline-admin.php:1487
 msgid "Add auto-authorized scripts in db."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1458
+#: admin/class-no-unsafe-inline-admin.php:1506
+msgid ""
+"Write here the HTTP Response Header Size Limit allowed by your server (in "
+"bytes). See: "
+msgstr ""
+
+#: admin/class-no-unsafe-inline-admin.php:1518
 msgid "Plugin logs"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1512
+#: admin/class-no-unsafe-inline-admin.php:1572
 msgid "Violation reports options."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1532
+#: admin/class-no-unsafe-inline-admin.php:1592
 msgid "Use report-to and report-uri."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1556
+#: admin/class-no-unsafe-inline-admin.php:1616
 msgid ""
 "Optional. If a group name is not specified, the endpoints' group is given "
 "the name of \"csp-endpoint\"."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1580
+#: admin/class-no-unsafe-inline-admin.php:1640
 msgid ""
 "Required. A non-negative integer that defines the lifetime of the endpoint "
 "in seconds (how long the browser should use the endpoint and report errors "
@@ -388,224 +400,224 @@ msgid ""
 "the user agent’s reporting cache."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1605
+#: admin/class-no-unsafe-inline-admin.php:1665
 msgid "Add a new endpoint"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1608
+#: admin/class-no-unsafe-inline-admin.php:1668
 msgid ""
 "Required. An array of JSON objects that specify the actual URL of your "
 "report collector."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1643
+#: admin/class-no-unsafe-inline-admin.php:1703
 msgid "Deactivation options."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1663
+#: admin/class-no-unsafe-inline-admin.php:1723
 msgid "Remove data tables from DB on single site plugin deactivation."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1684
+#: admin/class-no-unsafe-inline-admin.php:1744
 msgid "Remove plugin options from DB on single site plugin deactivation."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1698
+#: admin/class-no-unsafe-inline-admin.php:1758
 msgid "Manage plugin tools."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1718
+#: admin/class-no-unsafe-inline-admin.php:1778
 msgid "Enable tag capturing on this site."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1739
+#: admin/class-no-unsafe-inline-admin.php:1799
 msgid "Test policy with Content-Security-Policy-Report-Only."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1760
+#: admin/class-no-unsafe-inline-admin.php:1820
 msgid "Enable CSP protection."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1774
+#: admin/class-no-unsafe-inline-admin.php:1834
 msgid ""
 "Input here the base sources allowed for each CSP -src directive and rules "
 "for document and navigation directives."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1776
+#: admin/class-no-unsafe-inline-admin.php:1836
 msgid ""
 "You can populate some of these fields by ticking the checkboxes in the "
 "table at the bottom of the page."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1821
+#: admin/class-no-unsafe-inline-admin.php:1881
 msgid "No unsafe-inline Settings"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1827
+#: admin/class-no-unsafe-inline-admin.php:1887
 #. translators: %1$s is the opening a tag %2$s is the closing a tag.
 msgid "All the settings are described in the %1$sinline help%2$s."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1843
+#: admin/class-no-unsafe-inline-admin.php:1903
 msgid "Tools"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1848
+#: admin/class-no-unsafe-inline-admin.php:1908
 msgid "Base rules"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1853
+#: admin/class-no-unsafe-inline-admin.php:1913
 msgid "External whitelist"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1858
+#: admin/class-no-unsafe-inline-admin.php:1918
 msgid "Inline whitelist"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1864
+#: admin/class-no-unsafe-inline-admin.php:1924
 msgid "Events whitelist"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:1998
+#: admin/class-no-unsafe-inline-admin.php:2058
 msgid ""
 "You are using a logger that does not support the Log viewer (supported: "
 "Database)"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2043
-#: admin/class-no-unsafe-inline-admin.php:2072
-#: admin/class-no-unsafe-inline-admin.php:2124
-#: admin/class-no-unsafe-inline-admin.php:2352
-#: admin/partials/class-no-unsafe-inline-events-list.php:93
-#: admin/partials/class-no-unsafe-inline-events-list.php:107
-#: admin/partials/class-no-unsafe-inline-events-list.php:126
-#: admin/partials/class-no-unsafe-inline-events-list.php:145
-#: admin/partials/class-no-unsafe-inline-events-list.php:164
-#: admin/partials/class-no-unsafe-inline-external-list.php:92
-#: admin/partials/class-no-unsafe-inline-external-list.php:106
-#: admin/partials/class-no-unsafe-inline-external-list.php:125
-#: admin/partials/class-no-unsafe-inline-external-list.php:144
-#: admin/partials/class-no-unsafe-inline-external-list.php:163
-#: admin/partials/class-no-unsafe-inline-external-list.php:184
-#: admin/partials/class-no-unsafe-inline-inline-list.php:92
-#: admin/partials/class-no-unsafe-inline-inline-list.php:106
-#: admin/partials/class-no-unsafe-inline-inline-list.php:125
-#: admin/partials/class-no-unsafe-inline-inline-list.php:144
-#: admin/partials/class-no-unsafe-inline-inline-list.php:163
+#: admin/class-no-unsafe-inline-admin.php:2103
+#: admin/class-no-unsafe-inline-admin.php:2132
+#: admin/class-no-unsafe-inline-admin.php:2184
+#: admin/class-no-unsafe-inline-admin.php:2412
+#: admin/partials/class-no-unsafe-inline-events-list.php:94
+#: admin/partials/class-no-unsafe-inline-events-list.php:108
+#: admin/partials/class-no-unsafe-inline-events-list.php:127
+#: admin/partials/class-no-unsafe-inline-events-list.php:146
+#: admin/partials/class-no-unsafe-inline-events-list.php:165
+#: admin/partials/class-no-unsafe-inline-external-list.php:94
+#: admin/partials/class-no-unsafe-inline-external-list.php:108
+#: admin/partials/class-no-unsafe-inline-external-list.php:127
+#: admin/partials/class-no-unsafe-inline-external-list.php:146
+#: admin/partials/class-no-unsafe-inline-external-list.php:165
+#: admin/partials/class-no-unsafe-inline-external-list.php:186
+#: admin/partials/class-no-unsafe-inline-inline-list.php:93
+#: admin/partials/class-no-unsafe-inline-inline-list.php:107
+#: admin/partials/class-no-unsafe-inline-inline-list.php:126
+#: admin/partials/class-no-unsafe-inline-inline-list.php:145
+#: admin/partials/class-no-unsafe-inline-inline-list.php:164
 msgid "Nope! Security check failed!"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2082
+#: admin/class-no-unsafe-inline-admin.php:2142
 msgid "DELETE ALL SCRIPTS FROM DATABASE"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2088
+#: admin/class-no-unsafe-inline-admin.php:2148
 msgid "succeded"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2088
+#: admin/class-no-unsafe-inline-admin.php:2148
 msgid "FAILED"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2094
+#: admin/class-no-unsafe-inline-admin.php:2154
 msgid "cleaned up the database at the user's request"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2129
+#: admin/class-no-unsafe-inline-admin.php:2189
 msgid "Pruning data from database"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2133
+#: admin/class-no-unsafe-inline-admin.php:2193
 msgid "pruned the database at the user's request"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2191
-#: admin/class-no-unsafe-inline-admin.php:2200
+#: admin/class-no-unsafe-inline-admin.php:2251
+#: admin/class-no-unsafe-inline-admin.php:2260
 msgid "Type"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2192
-#: admin/class-no-unsafe-inline-admin.php:2206
-#: admin/class-no-unsafe-inline-admin.php:2233
-#: admin/class-no-unsafe-inline-admin.php:2248
-#: admin/class-no-unsafe-inline-admin.php:2274
-#: admin/class-no-unsafe-inline-admin.php:2289
-#: admin/class-no-unsafe-inline-admin.php:2315
-#: admin/class-no-unsafe-inline-admin.php:2330
+#: admin/class-no-unsafe-inline-admin.php:2252
+#: admin/class-no-unsafe-inline-admin.php:2266
+#: admin/class-no-unsafe-inline-admin.php:2293
+#: admin/class-no-unsafe-inline-admin.php:2308
+#: admin/class-no-unsafe-inline-admin.php:2334
+#: admin/class-no-unsafe-inline-admin.php:2349
+#: admin/class-no-unsafe-inline-admin.php:2375
+#: admin/class-no-unsafe-inline-admin.php:2390
 msgid "Whitelist"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2193
-#: admin/class-no-unsafe-inline-admin.php:2207
-#: admin/class-no-unsafe-inline-admin.php:2234
-#: admin/class-no-unsafe-inline-admin.php:2249
-#: admin/class-no-unsafe-inline-admin.php:2275
-#: admin/class-no-unsafe-inline-admin.php:2290
-#: admin/class-no-unsafe-inline-admin.php:2316
-#: admin/class-no-unsafe-inline-admin.php:2331
+#: admin/class-no-unsafe-inline-admin.php:2253
+#: admin/class-no-unsafe-inline-admin.php:2267
+#: admin/class-no-unsafe-inline-admin.php:2294
+#: admin/class-no-unsafe-inline-admin.php:2309
+#: admin/class-no-unsafe-inline-admin.php:2335
+#: admin/class-no-unsafe-inline-admin.php:2350
+#: admin/class-no-unsafe-inline-admin.php:2376
+#: admin/class-no-unsafe-inline-admin.php:2391
 msgid "Num."
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2194
-#: admin/class-no-unsafe-inline-admin.php:2208
+#: admin/class-no-unsafe-inline-admin.php:2254
+#: admin/class-no-unsafe-inline-admin.php:2268
 msgid "Num. Clusters"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2202
-#: admin/class-no-unsafe-inline-admin.php:2244
-#: admin/class-no-unsafe-inline-admin.php:2285
-#: admin/class-no-unsafe-inline-admin.php:2326
-#: admin/partials/class-no-unsafe-inline-events-list.php:237
-#: admin/partials/class-no-unsafe-inline-external-list.php:316
-#: admin/partials/class-no-unsafe-inline-inline-list.php:233
+#: admin/class-no-unsafe-inline-admin.php:2262
+#: admin/class-no-unsafe-inline-admin.php:2304
+#: admin/class-no-unsafe-inline-admin.php:2345
+#: admin/class-no-unsafe-inline-admin.php:2386
+#: admin/partials/class-no-unsafe-inline-events-list.php:238
+#: admin/partials/class-no-unsafe-inline-external-list.php:318
+#: admin/partials/class-no-unsafe-inline-inline-list.php:234
 msgid "BL"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2204
-#: admin/class-no-unsafe-inline-admin.php:2246
-#: admin/class-no-unsafe-inline-admin.php:2287
-#: admin/class-no-unsafe-inline-admin.php:2328
-#: admin/partials/class-no-unsafe-inline-events-list.php:242
-#: admin/partials/class-no-unsafe-inline-external-list.php:321
-#: admin/partials/class-no-unsafe-inline-inline-list.php:238
+#: admin/class-no-unsafe-inline-admin.php:2264
+#: admin/class-no-unsafe-inline-admin.php:2306
+#: admin/class-no-unsafe-inline-admin.php:2347
+#: admin/class-no-unsafe-inline-admin.php:2388
+#: admin/partials/class-no-unsafe-inline-events-list.php:243
+#: admin/partials/class-no-unsafe-inline-external-list.php:323
+#: admin/partials/class-no-unsafe-inline-inline-list.php:239
 msgid "WL"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2230
-#: admin/class-no-unsafe-inline-admin.php:2240
-#: admin/class-no-unsafe-inline-admin.php:2271
-#: admin/class-no-unsafe-inline-admin.php:2281
-#: admin/partials/class-no-unsafe-inline-external-list.php:374
-#: admin/partials/class-no-unsafe-inline-inline-list.php:342
+#: admin/class-no-unsafe-inline-admin.php:2290
+#: admin/class-no-unsafe-inline-admin.php:2300
+#: admin/class-no-unsafe-inline-admin.php:2331
+#: admin/class-no-unsafe-inline-admin.php:2341
+#: admin/partials/class-no-unsafe-inline-external-list.php:376
+#: admin/partials/class-no-unsafe-inline-inline-list.php:343
 msgid "Directive"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2231
-#: admin/class-no-unsafe-inline-admin.php:2241
-#: admin/class-no-unsafe-inline-admin.php:2272
-#: admin/class-no-unsafe-inline-admin.php:2282
-#: admin/class-no-unsafe-inline-admin.php:2312
-#: admin/class-no-unsafe-inline-admin.php:2322
+#: admin/class-no-unsafe-inline-admin.php:2291
+#: admin/class-no-unsafe-inline-admin.php:2301
+#: admin/class-no-unsafe-inline-admin.php:2332
+#: admin/class-no-unsafe-inline-admin.php:2342
+#: admin/class-no-unsafe-inline-admin.php:2372
+#: admin/class-no-unsafe-inline-admin.php:2382
 msgid "Tagname"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2232
-#: admin/class-no-unsafe-inline-admin.php:2242
+#: admin/class-no-unsafe-inline-admin.php:2292
+#: admin/class-no-unsafe-inline-admin.php:2302
 msgid "Nonceable"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2273
-#: admin/class-no-unsafe-inline-admin.php:2283
-#: admin/class-no-unsafe-inline-admin.php:2314
-#: admin/class-no-unsafe-inline-admin.php:2324
-#: admin/partials/class-no-unsafe-inline-events-list.php:353
-#: admin/partials/class-no-unsafe-inline-inline-list.php:344
+#: admin/class-no-unsafe-inline-admin.php:2333
+#: admin/class-no-unsafe-inline-admin.php:2343
+#: admin/class-no-unsafe-inline-admin.php:2374
+#: admin/class-no-unsafe-inline-admin.php:2384
+#: admin/partials/class-no-unsafe-inline-events-list.php:354
+#: admin/partials/class-no-unsafe-inline-inline-list.php:345
 msgid "Cluster"
 msgstr ""
 
-#: admin/class-no-unsafe-inline-admin.php:2313
-#: admin/class-no-unsafe-inline-admin.php:2323
+#: admin/class-no-unsafe-inline-admin.php:2373
+#: admin/class-no-unsafe-inline-admin.php:2383
 msgid "Event Attribute"
 msgstr ""
 
@@ -621,104 +633,104 @@ msgstr ""
 msgid "source"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:67
-#: admin/partials/class-no-unsafe-inline-events-list.php:236
-#: admin/partials/class-no-unsafe-inline-events-list.php:355
-#: admin/partials/class-no-unsafe-inline-external-list.php:65
-#: admin/partials/class-no-unsafe-inline-external-list.php:315
-#: admin/partials/class-no-unsafe-inline-external-list.php:380
-#: admin/partials/class-no-unsafe-inline-inline-list.php:66
-#: admin/partials/class-no-unsafe-inline-inline-list.php:232
-#: admin/partials/class-no-unsafe-inline-inline-list.php:346
+#: admin/partials/class-no-unsafe-inline-events-list.php:68
+#: admin/partials/class-no-unsafe-inline-events-list.php:237
+#: admin/partials/class-no-unsafe-inline-events-list.php:356
+#: admin/partials/class-no-unsafe-inline-external-list.php:67
+#: admin/partials/class-no-unsafe-inline-external-list.php:317
+#: admin/partials/class-no-unsafe-inline-external-list.php:382
+#: admin/partials/class-no-unsafe-inline-inline-list.php:67
+#: admin/partials/class-no-unsafe-inline-inline-list.php:233
+#: admin/partials/class-no-unsafe-inline-inline-list.php:347
 msgid "WhiteList"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:68
-#: admin/partials/class-no-unsafe-inline-events-list.php:241
-#: admin/partials/class-no-unsafe-inline-external-list.php:320
-#: admin/partials/class-no-unsafe-inline-inline-list.php:67
-#: admin/partials/class-no-unsafe-inline-inline-list.php:237
+#: admin/partials/class-no-unsafe-inline-events-list.php:69
+#: admin/partials/class-no-unsafe-inline-events-list.php:242
+#: admin/partials/class-no-unsafe-inline-external-list.php:322
+#: admin/partials/class-no-unsafe-inline-inline-list.php:68
+#: admin/partials/class-no-unsafe-inline-inline-list.php:238
 msgid "BlackList"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:69
-#: admin/partials/class-no-unsafe-inline-events-list.php:209
-#: admin/partials/class-no-unsafe-inline-external-list.php:68
-#: admin/partials/class-no-unsafe-inline-external-list.php:244
-#: admin/partials/class-no-unsafe-inline-inline-list.php:68
-#: admin/partials/class-no-unsafe-inline-inline-list.php:206
+#: admin/partials/class-no-unsafe-inline-events-list.php:70
+#: admin/partials/class-no-unsafe-inline-events-list.php:210
+#: admin/partials/class-no-unsafe-inline-external-list.php:70
+#: admin/partials/class-no-unsafe-inline-external-list.php:246
+#: admin/partials/class-no-unsafe-inline-inline-list.php:69
+#: admin/partials/class-no-unsafe-inline-inline-list.php:207
 #: src/Nunil_Admin_Help_Tabs.php:146 src/Nunil_Admin_Help_Tabs.php:178
 #: src/Nunil_Admin_Help_Tabs.php:210
 msgid "Delete"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:86
-#: admin/partials/class-no-unsafe-inline-external-list.php:85
-#: admin/partials/class-no-unsafe-inline-inline-list.php:85
+#: admin/partials/class-no-unsafe-inline-events-list.php:87
+#: admin/partials/class-no-unsafe-inline-external-list.php:87
+#: admin/partials/class-no-unsafe-inline-inline-list.php:86
 msgid "User is not allowed to perform this action"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:191
-#: admin/partials/class-no-unsafe-inline-inline-list.php:188
+#: admin/partials/class-no-unsafe-inline-events-list.php:192
+#: admin/partials/class-no-unsafe-inline-inline-list.php:189
 msgid "View code"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:271
-#: admin/partials/class-no-unsafe-inline-inline-list.php:266
+#: admin/partials/class-no-unsafe-inline-events-list.php:272
+#: admin/partials/class-no-unsafe-inline-inline-list.php:267
 #: src/Nunil_Admin_Help_Tabs.php:164 src/Nunil_Admin_Help_Tabs.php:196
 msgid "Uncluster"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:289
-#: admin/partials/class-no-unsafe-inline-inline-list.php:283
+#: admin/partials/class-no-unsafe-inline-events-list.php:290
+#: admin/partials/class-no-unsafe-inline-inline-list.php:284
 msgid "View pages"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:349
-#: admin/partials/class-no-unsafe-inline-inline-list.php:341
+#: admin/partials/class-no-unsafe-inline-events-list.php:350
+#: admin/partials/class-no-unsafe-inline-inline-list.php:342
 msgid "Script"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:350
-#: admin/partials/class-no-unsafe-inline-external-list.php:375
-#: admin/partials/class-no-unsafe-inline-inline-list.php:343
+#: admin/partials/class-no-unsafe-inline-events-list.php:351
+#: admin/partials/class-no-unsafe-inline-external-list.php:377
+#: admin/partials/class-no-unsafe-inline-inline-list.php:344
 msgid "TagName"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:351
+#: admin/partials/class-no-unsafe-inline-events-list.php:352
 msgid "TagId"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:352
+#: admin/partials/class-no-unsafe-inline-events-list.php:353
 msgid "Event"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-events-list.php:354
-#: admin/partials/class-no-unsafe-inline-inline-list.php:345
+#: admin/partials/class-no-unsafe-inline-events-list.php:355
+#: admin/partials/class-no-unsafe-inline-inline-list.php:346
 msgid "Cl.'s Numerosity"
-msgstr ""
-
-#: admin/partials/class-no-unsafe-inline-events-list.php:356
-#: admin/partials/class-no-unsafe-inline-inline-list.php:347
-msgid "Pages"
 msgstr ""
 
 #: admin/partials/class-no-unsafe-inline-events-list.php:357
 #: admin/partials/class-no-unsafe-inline-inline-list.php:348
+msgid "Pages"
+msgstr ""
+
+#: admin/partials/class-no-unsafe-inline-events-list.php:358
+#: admin/partials/class-no-unsafe-inline-inline-list.php:349
 msgid "Last Seen"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-external-list.php:66
-#: admin/partials/class-no-unsafe-inline-external-list.php:229
+#: admin/partials/class-no-unsafe-inline-external-list.php:68
+#: admin/partials/class-no-unsafe-inline-external-list.php:231
 msgid "Hash"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-external-list.php:67
-#: admin/partials/class-no-unsafe-inline-external-list.php:233
+#: admin/partials/class-no-unsafe-inline-external-list.php:69
+#: admin/partials/class-no-unsafe-inline-external-list.php:235
 msgid "Rehash"
 msgstr ""
 
-#: admin/partials/class-no-unsafe-inline-external-list.php:376
+#: admin/partials/class-no-unsafe-inline-external-list.php:378
 msgid "Resource"
 msgstr ""
 
@@ -731,78 +743,78 @@ msgstr ""
 msgid "Search resource"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:16
+#: admin/partials/no-unsafe-inline-tools.php:20
 msgid "Trigger Clustering"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:27
+#: admin/partials/no-unsafe-inline-tools.php:31
 msgid "Clustering scripts is important to machine learning."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:29
+#: admin/partials/no-unsafe-inline-tools.php:33
 msgid "You should cluster your scripts when you stop capturing new ones."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:40
+#: admin/partials/no-unsafe-inline-tools.php:44
 msgid "Prune database"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:51
+#: admin/partials/no-unsafe-inline-tools.php:55
 msgid "Prune scripts from the database."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:53
+#: admin/partials/no-unsafe-inline-tools.php:57
 msgid ""
 "This will delete orphaned entries in occurences and reduce scripts "
 "numerosity in clusters."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:64
+#: admin/partials/no-unsafe-inline-tools.php:68
 msgid "Test Classifier"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:75
+#: admin/partials/no-unsafe-inline-tools.php:79
 msgid "Test the classifier."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:77
+#: admin/partials/no-unsafe-inline-tools.php:81
 msgid "This is just a classifier test to check php-ml settings."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:89
+#: admin/partials/no-unsafe-inline-tools.php:93
 #: src/Nunil_Admin_Help_Tabs.php:101
 msgid "Clean database"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:100
+#: admin/partials/no-unsafe-inline-tools.php:104
 msgid "Clean all scripts from the database."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:102
+#: admin/partials/no-unsafe-inline-tools.php:106
 msgid "This will not clear your settings and base -src csp rules."
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:112
+#: admin/partials/no-unsafe-inline-tools.php:116
 msgid "Total DB Status"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:113
+#: admin/partials/no-unsafe-inline-tools.php:117
 msgid "External scripts"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:114
+#: admin/partials/no-unsafe-inline-tools.php:118
 msgid "Inline scripts"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:115
+#: admin/partials/no-unsafe-inline-tools.php:119
 msgid "Events scripts"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:116
+#: admin/partials/no-unsafe-inline-tools.php:120
 msgid "Operations Report"
 msgstr ""
 
-#: admin/partials/no-unsafe-inline-tools.php:140
+#: admin/partials/no-unsafe-inline-tools.php:144
 msgid "Operations performed in this section"
 msgstr ""
 
@@ -817,8 +829,8 @@ msgid ""
 "%2$s."
 msgstr ""
 
-#: public/class-no-unsafe-inline-public.php:312
-#: public/class-no-unsafe-inline-public.php:326
+#: public/class-no-unsafe-inline-public.php:315
+#: public/class-no-unsafe-inline-public.php:386
 #. translators: %1$s is the filename of the file that sent headers, %2$d is the
 #. line in filename where headers where sent.
 msgid "CSP headers not sent because headers were sent by %1$s at line %2$d"
@@ -877,7 +889,7 @@ msgstr ""
 msgid "SHA algos for hashes."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:293 src/Nunil_Admin_Help_Tabs.php:824
+#: src/Nunil_Admin_Help_Tabs.php:293 src/Nunil_Admin_Help_Tabs.php:835
 msgid "Violations report"
 msgstr ""
 
@@ -1519,8 +1531,8 @@ msgstr ""
 #: src/Nunil_Admin_Help_Tabs.php:758 src/Nunil_Admin_Help_Tabs.php:766
 #: src/Nunil_Admin_Help_Tabs.php:774 src/Nunil_Admin_Help_Tabs.php:782
 #: src/Nunil_Admin_Help_Tabs.php:790 src/Nunil_Admin_Help_Tabs.php:798
-#: src/Nunil_Admin_Help_Tabs.php:827 src/Nunil_Admin_Help_Tabs.php:850
-#: src/Nunil_Admin_Help_Tabs.php:854
+#: src/Nunil_Admin_Help_Tabs.php:838 src/Nunil_Admin_Help_Tabs.php:861
+#: src/Nunil_Admin_Help_Tabs.php:865
 msgid "enabled"
 msgstr ""
 
@@ -1532,8 +1544,8 @@ msgstr ""
 #: src/Nunil_Admin_Help_Tabs.php:758 src/Nunil_Admin_Help_Tabs.php:766
 #: src/Nunil_Admin_Help_Tabs.php:774 src/Nunil_Admin_Help_Tabs.php:782
 #: src/Nunil_Admin_Help_Tabs.php:790 src/Nunil_Admin_Help_Tabs.php:798
-#: src/Nunil_Admin_Help_Tabs.php:827 src/Nunil_Admin_Help_Tabs.php:850
-#: src/Nunil_Admin_Help_Tabs.php:854
+#: src/Nunil_Admin_Help_Tabs.php:838 src/Nunil_Admin_Help_Tabs.php:861
+#: src/Nunil_Admin_Help_Tabs.php:865
 msgid "disabled"
 msgstr ""
 
@@ -1582,9 +1594,10 @@ msgstr ""
 #: src/Nunil_Admin_Help_Tabs.php:741 src/Nunil_Admin_Help_Tabs.php:757
 #: src/Nunil_Admin_Help_Tabs.php:765 src/Nunil_Admin_Help_Tabs.php:773
 #: src/Nunil_Admin_Help_Tabs.php:781 src/Nunil_Admin_Help_Tabs.php:789
-#: src/Nunil_Admin_Help_Tabs.php:797 src/Nunil_Admin_Help_Tabs.php:810
-#: src/Nunil_Admin_Help_Tabs.php:818 src/Nunil_Admin_Help_Tabs.php:826
-#: src/Nunil_Admin_Help_Tabs.php:849 src/Nunil_Admin_Help_Tabs.php:853
+#: src/Nunil_Admin_Help_Tabs.php:797 src/Nunil_Admin_Help_Tabs.php:809
+#: src/Nunil_Admin_Help_Tabs.php:821 src/Nunil_Admin_Help_Tabs.php:829
+#: src/Nunil_Admin_Help_Tabs.php:837 src/Nunil_Admin_Help_Tabs.php:860
+#: src/Nunil_Admin_Help_Tabs.php:864
 msgid "Option name"
 msgstr ""
 
@@ -1596,9 +1609,10 @@ msgstr ""
 #: src/Nunil_Admin_Help_Tabs.php:742 src/Nunil_Admin_Help_Tabs.php:758
 #: src/Nunil_Admin_Help_Tabs.php:766 src/Nunil_Admin_Help_Tabs.php:774
 #: src/Nunil_Admin_Help_Tabs.php:782 src/Nunil_Admin_Help_Tabs.php:790
-#: src/Nunil_Admin_Help_Tabs.php:798 src/Nunil_Admin_Help_Tabs.php:811
-#: src/Nunil_Admin_Help_Tabs.php:819 src/Nunil_Admin_Help_Tabs.php:827
-#: src/Nunil_Admin_Help_Tabs.php:850 src/Nunil_Admin_Help_Tabs.php:854
+#: src/Nunil_Admin_Help_Tabs.php:798 src/Nunil_Admin_Help_Tabs.php:810
+#: src/Nunil_Admin_Help_Tabs.php:822 src/Nunil_Admin_Help_Tabs.php:830
+#: src/Nunil_Admin_Help_Tabs.php:838 src/Nunil_Admin_Help_Tabs.php:861
+#: src/Nunil_Admin_Help_Tabs.php:865
 msgid "Option values"
 msgstr ""
 
@@ -1793,88 +1807,102 @@ msgid ""
 "classification function."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:808
-msgid "Log"
+#: src/Nunil_Admin_Help_Tabs.php:810
+msgid "bytes value"
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:811
-msgid "Log to database"
+#: src/Nunil_Admin_Help_Tabs.php:813
+msgid "The HTTP response header size allowed by your server."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:811
-msgid "PHP error_log()"
-msgstr ""
-
-#: src/Nunil_Admin_Help_Tabs.php:814
-msgid "Choose here if to allow the plugin to write log messages to the database."
+#: src/Nunil_Admin_Help_Tabs.php:816
+msgid ""
+"If your CSP is too large for this limit, a simplified CSP will be sent by a "
+"meta tag instead of using an HTTP header."
 msgstr ""
 
 #: src/Nunil_Admin_Help_Tabs.php:819
-msgid "Log level to record"
+msgid "Log"
 msgstr ""
 
 #: src/Nunil_Admin_Help_Tabs.php:822
+msgid "Log to database"
+msgstr ""
+
+#: src/Nunil_Admin_Help_Tabs.php:822
+msgid "PHP error_log()"
+msgstr ""
+
+#: src/Nunil_Admin_Help_Tabs.php:825
+msgid "Choose here if to allow the plugin to write log messages to the database."
+msgstr ""
+
+#: src/Nunil_Admin_Help_Tabs.php:830
+msgid "Log level to record"
+msgstr ""
+
+#: src/Nunil_Admin_Help_Tabs.php:833
 msgid "Select logs level to record in the database or to report by error_log()."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:829
+#: src/Nunil_Admin_Help_Tabs.php:840
 msgid "In this section you can add endpoints where to report captured violation."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:832
+#: src/Nunil_Admin_Help_Tabs.php:843
 msgid "The plugin will add both a report-uri and a report-to directive."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:835
+#: src/Nunil_Admin_Help_Tabs.php:846
 msgid ""
 "If no group name will be specified, the plugin will use 'csp-endpoint' as a "
 "default one."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:840
+#: src/Nunil_Admin_Help_Tabs.php:851
 #. translators: %s is the link to a paragraph in CSP3 specifications.
 msgid "Read %s for info about reporting directives."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:845
+#: src/Nunil_Admin_Help_Tabs.php:856
 msgid "Remember to save options after you added or removed report urls."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:856
+#: src/Nunil_Admin_Help_Tabs.php:867
 msgid ""
 "If no option is selected, no data will be removed from the database upon "
 "plugin deactivation."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:859
+#: src/Nunil_Admin_Help_Tabs.php:870
 msgid ""
 "Here you can select if you want options or tables to be removed upon "
 "deactivation."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:862
+#: src/Nunil_Admin_Help_Tabs.php:873
 msgid ""
 "These options will be honored only on single site activation. No data will "
 "be removed on network deactivation."
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:880
+#: src/Nunil_Admin_Help_Tabs.php:891
 msgid "For more information:"
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:881
+#: src/Nunil_Admin_Help_Tabs.php:892
 msgid "Plugin page on WordPress.org"
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:882
+#: src/Nunil_Admin_Help_Tabs.php:893
 msgid "Support forum"
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:883
+#: src/Nunil_Admin_Help_Tabs.php:894
 msgid "Code page on GitHub"
 msgstr ""
 
-#: src/Nunil_Admin_Help_Tabs.php:884
+#: src/Nunil_Admin_Help_Tabs.php:895
 msgid "Report issues"
 msgstr ""
 
