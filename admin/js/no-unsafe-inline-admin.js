@@ -554,6 +554,9 @@
 								action: 'nunil_trigger_clustering',
 								nonce: clustering_nonce
 							},
+							beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+								$('#nunil-spinner-blocks').removeClass('hidden');
+							},
 							success: function( res ) {
 								if (res.type === 'success') {
 									$( 'div#nunil_tools_operation_report' ).append( res.report );
@@ -565,6 +568,9 @@
 									);
 									$( '#nunil_trigger_clustering' ).prop( 'disabled', false );
 								}
+							},
+							complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+								$('#nunil-spinner-blocks').addClass('hidden');
 							},
 						}
 					);
@@ -586,6 +592,9 @@
 								action: 'nunil_test_classifier',
 								nonce: clustering_nonce
 							},
+							beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+								$('#nunil-spinner-blocks').removeClass('hidden');
+							},
 							success: function( res ) {
 								if (res.type === 'success') {
 									$( 'div#nunil_tools_operation_report' ).append( res.report );
@@ -596,6 +605,9 @@
 									);
 									$( '#nunil_test_classifier' ).prop( 'disabled', false );
 								}
+							},
+							complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+								$('#nunil-spinner-blocks').addClass('hidden');
 							},
 						}
 					);
@@ -618,6 +630,9 @@
 									action: 'nunil_clean_database',
 									nonce: db_clean_nonce
 								},
+								beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+									$('#nunil-spinner-blocks').removeClass('hidden');
+								},
 								success: function( res ) {
 									if (res.type === 'success') {
 										$( 'div#nunil_tools_operation_report' ).append( res.report );
@@ -629,6 +644,9 @@
 										);
 										$( '#nunil_clean_database' ).prop( 'disabled', false );
 									}
+								},
+								complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+									$('#nunil-spinner-blocks').addClass('hidden');
 								},
 							}
 						);
@@ -654,6 +672,9 @@
 									action: 'nunil_prune_database',
 									nonce: db_prune_nonce
 								},
+								beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+									$('#nunil-spinner-blocks').removeClass('hidden');
+								},
 								success: function( res ) {
 									if (res.type === 'success') {
 										$( 'div#nunil_tools_operation_report' ).append( res.report );
@@ -665,6 +686,9 @@
 										);
 										$( '#nunil_prune_database' ).prop( 'disabled', false );
 									}
+								},
+								complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+									$('#nunil-spinner-blocks').addClass('hidden');
 								},
 							}
 						);

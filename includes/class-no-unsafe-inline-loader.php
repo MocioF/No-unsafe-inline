@@ -137,14 +137,14 @@ class No_Unsafe_Inline_Loader {
 	public function run() {
 		foreach ( $this->filters as $hook ) {
 			$callback = array( $hook['component'], $hook['callback'] );
-			if( is_callable( $callback ) ) {
-				add_filter( $hook['hook'],  $callback, $hook['priority'], $hook['accepted_args'] );
+			if ( is_callable( $callback ) ) {
+				add_filter( $hook['hook'], $callback, $hook['priority'], $hook['accepted_args'] );
 			}
 		}
 
 		foreach ( $this->actions as $hook ) {
 			$callback = array( $hook['component'], $hook['callback'] );
-			if( is_callable( $callback ) ) {
+			if ( is_callable( $callback ) ) {
 				add_action( $hook['hook'], $callback, $hook['priority'], $hook['accepted_args'] );
 			}
 		}

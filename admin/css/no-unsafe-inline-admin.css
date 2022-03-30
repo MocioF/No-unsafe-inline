@@ -1,26 +1,5 @@
 @import url("../../vendor/scrivo/highlight.php/styles/obsidian.css");
-
-/**
- * Stars in the plugin list
- */
-.nunil-stars {
-	display: inline-block;
-	color: #ffb900;
-	position: relative;
-	top: 3px
-}
-
-.nunil-stars svg {
-	fill: #ffb900
-}
-
-.nunil-stars svg:hover {
-	fill: #ffb900
-}
-
-.nunil-stars svg:hover~svg {
-	fill: none
-}
+@import url("./no-unsafe-inline-spinner.css");
 
 /**
  * Ciprian on Monday, April 19, 2021

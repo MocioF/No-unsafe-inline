@@ -144,8 +144,8 @@ module.exports = function( grunt ) {
 		
 		watch: {
 			scripts: {
-				files: ['**/*.js'],
-				tasks: ['jshint'],
+				files: ['admin/js/*.js'],
+				tasks: ['jshint','uglify:dist'],
 				options: {
 					spawn: false,
 				},
@@ -159,7 +159,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.loadNpmTasks( 'grunt-wp-readme-to-markdown' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
 	grunt.registerTask( 'i18n', ['addtextdomain', 'makepot'] );
 	grunt.registerTask( 'readme', ['wp_readme_to_markdown'] );
 	grunt.registerTask( 'jshint', ['jshint'] );
