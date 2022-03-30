@@ -804,6 +804,17 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'However, this option can present a potential security risk if an attacker may be able to obtain the authorization for some scripts by voluntarily forcing the shape of the cluster to which they are brought back by the classification function.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>max_response_header_size</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>int</b>: ' . esc_html__( 'bytes value', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The HTTP response header size allowed by your server.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'If your CSP is too large for this limit, a simplified CSP will be sent by a meta tag instead of using an HTTP header.', 'no-unsafe-inline' )
+			. '</p>'
 			. '<hr>';
 		$content['nunil-logs']              = '<h1>' . esc_html__( 'Log', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'

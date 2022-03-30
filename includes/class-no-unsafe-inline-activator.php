@@ -150,7 +150,7 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['sri_sha512']                        = 0;
 			$plugin_options['sri_script']                        = 1;
 			$plugin_options['sri_link']                          = 1;
-			$plugin_options['inline_scripts_mode']               = 'sha256';
+			$plugin_options['inline_scripts_mode']               = 'nonce';
 			$plugin_options['use_strict-dynamic']                = 0;
 			$plugin_options['no-unsafe-inline_upgrade_insecure'] = 1;
 			$plugin_options['protect_admin']                     = 1;
@@ -164,6 +164,7 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['use_reports']                       = 0;
 			$plugin_options['group_name']                        = 'csp-endpoint';
 			$plugin_options['max_age']                           = 10886400;
+			$plugin_options['max_response_header_size']          = 8192;
 		}
 		add_option( 'no-unsafe-inline', $plugin_options );
 

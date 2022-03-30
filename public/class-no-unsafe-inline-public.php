@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/public
  */
 
+use NUNIL\Nunil_Lib_Log as Log;
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -189,6 +191,8 @@ class No_Unsafe_Inline_Public {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
+		global $nunil_csp_meta;
+
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {
 			if ( false === is_admin() || ( true === is_admin() && 1 === $options['protect_admin'] ) ) {
 				if ( 1 === $tools['test_policy'] ) {
@@ -305,7 +309,7 @@ class No_Unsafe_Inline_Public {
 						if ( ! headers_sent( $filename, $linenum ) ) {
 							header( 'Report-To: ' . $header_report_to );
 						} else {
-							NUNIL\Nunil_Lib_Log::warning(
+							Log::warning(
 								sprintf(
 									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
 									esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
@@ -317,7 +321,64 @@ class No_Unsafe_Inline_Public {
 					}
 
 					if ( ! headers_sent( $filename, $linenum ) ) {
-						header( $header_csp );
+
+						/**
+						 * Apache set a limit to max size of header sent.
+						 * Its default is 8190.
+						 * We need a strategy to send the CSP when hashes are too long.
+						 * In order:
+						 * 1. We remove optional ascii white spaces
+						 * 2. We try to reduce size by allowing all img ( = set "img-src *;")
+						 * 3. We Deploy simplified policy to meta tag
+						 */
+						$max_http_header_size             = $options['max_response_header_size'] ? $options['max_response_header_size'] : 8192;
+						$res_current_response_header_size = self::response_headers_size();
+
+						// Keep a 100 byte as a security buffer.
+						$max_csp_allowed_size = $max_http_header_size - $res_current_response_header_size - 100;
+
+						$csp_size = strlen( $header_csp );
+						if ( $csp_size > $max_csp_allowed_size ) {
+							if ( 'nonce' !== $options['inline_scripts_mode'] ) {
+								Log::warning( 'CSP header is too long: please try to use \'nonce\' for inline_scripts_mode' );
+							}
+
+							// 1. We remove optional-ascii-whitespace
+							$header_csp = str_replace( ' ;', ';', $header_csp );
+							$header_csp = str_replace( '; ', ';', $header_csp );
+							Log::warning( 'CSP header is too long: removed optional-ascii-whitespace' );
+						}
+
+						$csp_size = strlen( $header_csp );
+						if ( $csp_size > $max_csp_allowed_size ) {
+							// 2. We reduce img-src to *;
+							$header_csp = preg_replace( '/img-src(.*?);/m', 'img-src *;', $header_csp );
+							Log::warning( 'CSP header is too long: img-src was reduced to * (every image allowed)' );
+						}
+
+						if ( ! is_null( $header_csp ) ) {
+							$csp_size = strlen( $header_csp );
+							if ( $csp_size > $max_csp_allowed_size ) {
+								// 3. Moving policy to meta
+								$csp_meta_fallback = preg_replace(
+									array(
+										'/report-uri(.*?);/m',
+										'/report-to(.*?);/m',
+										'/frame-ancestors(.*?);/m',
+										'/sandbox(.*?);/m',
+										'/Content-Security-Policy-Report-Only: /',
+										'/Content-Security-Policy: /',
+									),
+									array( '', '', '', '', '', '' ),
+									$header_csp
+								);
+								$nunil_csp_meta    = '<meta http-equiv="Content-Security-Policy" content="' . $csp_meta_fallback . '">';
+								Log::warning( 'CSP header is too long: reduced CSP was deployed via &lt;meta http-equiv&gt;' );
+							}
+						}
+						if ( '' === $nunil_csp_meta && ( ! is_null( $header_csp ) ) ) {
+							header( $header_csp );
+						}
 					} else {
 						NUNIL\Nunil_Lib_Log::warning(
 							sprintf(
@@ -358,5 +419,45 @@ class No_Unsafe_Inline_Public {
 				)
 			);
 		}
+	}
+
+	/**
+	 * If meta http-equiv has been stored in variable.
+	 * filters output adding the <meta> in header with CSP.
+	 *
+	 * @since 1.0.1
+	 * @access public
+	 * @param string $htmlsource The page generated at the end of the wp process, pre filtered.
+	 * @return string The manipulated output with meta injected, if setted.
+	 */
+	public function filter_manipulated( $htmlsource ) {
+		global $nunil_csp_meta;
+		if ( '' === $nunil_csp_meta || $this->is_json( $htmlsource ) ) {
+			return $htmlsource;
+		}
+		$htmlsource_with_meta = str_replace( '</head>', $nunil_csp_meta . '</head>', $htmlsource );
+		return $htmlsource_with_meta;
+	}
+
+	/**
+	 * Returns the number of bytes of HTTP headers
+	 *
+	 * @since 1.0.1
+	 * @access public
+	 * @return int
+	 */
+	private static function response_headers_size() {
+		if ( ! function_exists( 'apache_response_headers' ) ) {
+			$arh     = array();
+			$headers = headers_list();
+			foreach ( $headers as $header ) {
+				$header                        = explode( ':', $header );
+				$arh[ array_shift( $header ) ] = trim( implode( ':', $header ) );
+			}
+			$size = mb_strlen( serialize( $arh ), '8bit' );
+		} else {
+			$size = mb_strlen( serialize( (array) apache_response_headers() ), '8bit' );
+		}
+		return $size;
 	}
 }

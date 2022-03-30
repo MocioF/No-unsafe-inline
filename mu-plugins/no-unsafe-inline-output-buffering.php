@@ -21,6 +21,10 @@ add_action(
 	function () {
 		$final = '';
 
+		/* @var string $nunil_csp_meta The <meta> to inject in page. */
+		global $nunil_csp_meta;
+		$nunil_csp_meta = '';
+
 		/**
 		 * We'll need to get the number of ob levels we're in, so that
 		 * we can iterate over each, collecting that buffer's output
@@ -42,6 +46,11 @@ add_action(
 			$manipulated = apply_filters( 'no_unsafe_inline_final_output', $final );
 
 			do_action( 'nunil_output_csp_headers' );
+
+			/**
+			 * Inject meta http-equiv="Content-Security-Policy" if variable is set
+			 */
+			$manipulated = apply_filters( 'no_unsafe_inline_meta_injector', $manipulated );
 		} else {
 			$manipulated = $final;
 		}

@@ -417,6 +417,18 @@
 			let a;
 			a = $('#nunil-endpoints-list li').length;
 
+			// jquery spinner for max-response-header-size
+			$( 'input[type=\'text\'][name=\'no-unsafe-inline[max_response_header_size]\']' ).spinner({
+				min: 512,
+				max: 24576,
+				numberFormat: 'n',
+				page: 5,
+				step: 512,
+				classes: {
+					'ui-spinner': 'highlight'
+				}
+			});
+
 			// Handle SRI options in settings tab.
 			if ('no-unsafe-inline' === mypage && 'settings' === mytab) {
 				$( 'input[type=\'checkbox\'][name=\'no-unsafe-inline[sri_script]\']' ).change(

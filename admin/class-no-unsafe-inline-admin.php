@@ -218,6 +218,34 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
+	 * Updates the mu-plugin to the last one.
+	 *
+	 * This method is hooked on nunil_upgrade.
+	 *
+	 * @since 1.0.1
+	 * @param string $new_ver New plugin version.
+	 * @param string $old_ver Old plugin version.
+	 * @return void
+	 */
+	public function update_muplugin( $new_ver, $old_ver ): void {
+		if ( $old_ver === $new_ver ) {
+			return;
+		}
+		if ( NUNIL\Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+		}
+
+		if ( '1.0.1' === $new_ver ) {
+			$options = (array) get_option( 'no-unsafe-inline' );
+			if ( ! array_key_exists( 'max_response_header_size', $options ) ) {
+				$options['max_response_header_size'] = 8192;
+				update_option( 'no-unsafe-inline', $options );
+			}
+		}
+	}
+
+	/**
 	 * Creates the admin submenu.
 	 *
 	 * @since 1.0.0
@@ -524,6 +552,14 @@ class No_Unsafe_Inline_Admin {
 			'add_wl_by_cluster_to_db',
 			esc_html__( 'Add to the database the scripts authorized by classification in a whitelisted cluster.', 'no-unsafe-inline' ),
 			array( $this, 'print_add_wl_by_cluster_to_db' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_misc'
+		);
+
+		add_settings_field(
+			'max_response_header_size',
+			esc_html__( 'Define the max response HTTP header size, based on your server / hosting provider.', 'no-unsafe-inline' ),
+			array( $this, 'print_max_response_header_size' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc'
 		);
@@ -900,6 +936,10 @@ class No_Unsafe_Inline_Admin {
 		unset( $options['endpoints'] );
 		if ( isset( $input['endpoints'] ) && is_array( $input['endpoints'] ) ) {
 			$new_input['endpoints'] = array_map( 'esc_url_raw', $input['endpoints'], $protocols = array( array( 'https' ) ) );
+		}
+
+		if ( isset( $input['max_response_header_size'] ) && is_string( $input['max_response_header_size'] ) ) {
+			$new_input['max_response_header_size'] = intval( sanitize_text_field( $input['max_response_header_size'] ) );
 		}
 
 		$new_input = array_merge( $options, $new_input );
@@ -1449,7 +1489,27 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Print the los section
+	 * Print max_response_header_size option
+	 *
+	 * @since 1.0.1
+	 * @return void
+	 */
+	public function print_max_response_header_size(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['max_response_header_size'] ) ? $options['max_response_header_size'] : 8192;
+
+		printf(
+			'<input class="nunil-max-response-header-size" type="text" id="no-unsafe-inline[max_response_header_size]"' .
+			'name="no-unsafe-inline[max_response_header_size]" value="%d" />
+			<label for="no-unsafe-inline[max_response_header_size]">%s %s</label>',
+			intval( $value ),
+			esc_html__( 'Write here the HTTP Response Header Size Limit allowed by your server (in bytes). See: ', 'no-unsafe-inline' ),
+			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
+		);
+	}
+
+	/**
+	 * Print the logs section
 	 *
 	 * @since 1.0.0
 	 * @return void

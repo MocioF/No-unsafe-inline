@@ -245,7 +245,10 @@ class No_Unsafe_Inline {
 		$this->loader->add_action( 'nunil_output_csp_headers', $plugin_public, 'output_csp_headers', 100, 1 );
 
 		// This is the main filter hook applied by the mu-plugin.
-		$this->loader->add_filter( 'no_unsafe_inline_final_output', $plugin_public, 'filter_final_output' );
+		$this->loader->add_filter( 'no_unsafe_inline_final_output', $plugin_public, 'filter_final_output', 10, 1 );
+
+		// This injects meta http-equiv if needed for CSP.
+		$this->loader->add_filter( 'no_unsafe_inline_meta_injector', $plugin_public, 'filter_manipulated', 10, 1 );
 
 		// Register a route to capture CSP violation of some -src directives.
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_capture_routes' );
