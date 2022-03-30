@@ -139,7 +139,7 @@ module.exports = function( grunt ) {
 				'public/**/*.js',
 				'includes/**/*.js'
 				]
-			},
+			}
 		},
 		
 		watch: {
@@ -149,7 +149,7 @@ module.exports = function( grunt ) {
 				options: {
 					spawn: false,
 				},
-			},
+			}
 		}
 	} );
 
