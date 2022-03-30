@@ -59,7 +59,7 @@ class Nunil_Base_Src_Rules {
 	 * Calls the WP-List child class to print the table.
 	 *
 	 * @since    1.0.0
-	 * @throws \Exception
+	 * @throws \Exception The directives var is not an array.
 	 */
 	public function __construct() {
 		$cache_key   = 'external_scripts_directives';

@@ -43,7 +43,8 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 		}
 
 		// Only continue if it's valid JSON that is not just `null`, `0`, `false` or an empty string, i.e. if it could be a CSP violation report.
-		if ( $report = json_decode( $request->get_body(), true ) ) {
+		$report = json_decode( $request->get_body(), true );
+		if ( ! is_null( $report ) ) {
 			if (
 			1 === $options['font-src_enabled'] ||
 			1 === $options['child-src_enabled'] ||

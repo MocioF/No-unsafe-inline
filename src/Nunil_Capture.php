@@ -174,7 +174,7 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement ) {
 					$rows     = $this->get_event_handlers_in_node( $node );
 					$all_rows = array_merge( $all_rows, $rows );
 				}
@@ -198,7 +198,7 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement ) {
 					$row = $this->get_inline_style_in_node( $node );
 					if ( false !== $row ) {
 						$all_rows[] = $row;

@@ -141,7 +141,7 @@ class No_Unsafe_Inline_Admin {
 
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.min.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'wp-i18n' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.min.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'wp-i18n' ), $this->version, false );
 
 			wp_localize_script(
 				$this->plugin_name,
@@ -190,7 +190,7 @@ class No_Unsafe_Inline_Admin {
 	public function plugin_directory_links( $actions ) {
 		$links   = array(
 			'<a href="' . admin_url( 'options-general.php?page=no-unsafe-inline' ) . '">' . esc_html__( 'Settings', 'no-unsafe-inline' ) . '</a>',
-			'<a href="https://CHANGEME/" target="_blank">' . esc_html__( 'Documentation', 'no-unsafe-inline' ) . '</a>',
+			'<a href="https://wordpress.org/plugins/no-unsafe-inline/" target="_blank">' . esc_html__( 'Documentation', 'no-unsafe-inline' ) . '</a>',
 		);
 		$actions = array_merge( $actions, $links );
 		return $actions;

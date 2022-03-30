@@ -23,6 +23,8 @@ use Beager\Nilsimsa;
 class Nunil_Hamming_Distance implements Distance {
 
 	/**
+	 * Calculate distance between 2 Nilsimsa array digests.
+	 *
 	 * @param array<int> $a Nilsimsa array digest.
 	 * @param array<int> $b Nilsimsa array digest.
 	 *

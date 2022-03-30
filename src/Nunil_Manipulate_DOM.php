@@ -306,6 +306,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return string The manipulated HTML.
 	 */
 	public function get_manipulated() {
+		set_time_limit( 300 );
 		if ( ! $this->csp_local_whitelist ) {
 			$this->manipulate_inline_scripts();
 			$this->manipulate_external_scripts();
@@ -324,6 +325,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return array<array{directive: string, source: string}> The csp_local_whitelist [-src directive] [source].
 	 */
 	public function get_local_csp() {
+		set_time_limit( 300 );
 		if ( ! $this->csp_local_whitelist ) {
 			$this->manipulate_inline_scripts();
 			$this->manipulate_external_scripts();
