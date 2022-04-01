@@ -1,15 +1,18 @@
 # No unsafe-inline #
-**Contributors:** [mociofiletto](https://profiles.wordpress.org/mociofiletto/)  
-**Donate link:** https://paypal.me/GiuseppeF77  
-**Tags:** csp, unsafe-inline, security, multisite  
-**Requires at least:** 4.7  
-**Tested up to:** 5.9  
-**Requires PHP:** 7.2  
-**Stable tag:** 1.0.0  
-**License:** GPLv2 or later  
-**License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
-No unsafe-inline helps you to build a Content Security Policy avoiding to use 'unsafe-inline' and 'unsafe-hashes'.
+[![tests](https://github.com/MocioF/No-unsafe-inline/workflows/Tests/badge.svg)](https://github.com/MocioF/No-unsafe-inline/actions?query=workflow%3ATests)
+[![deployment](https://github.com/MocioF/No-unsafe-inline/workflows/Deployment/badge.svg)](https://github.com/MocioF/No-unsafe-inline/actions?query=workflow%3ADeployment)
+[![License](https://img.shields.io/badge/license-GLPv2-blue.svg)](./LICENSE.txt)
+[![PHP compatibility](https://plugintests.com/plugins/wporg/no-unsafe-inline/php-badge.svg)](https://plugintests.com/plugins/wporg/no-unsafe-inline/latest)
+[![WP compatibility](https://plugintests.com/plugins/wporg/no-unsafe-inline/wp-badge.svg)](https://plugintests.com/plugins/wporg/no-unsafe-inline/latest)
+
+**No unsafe-inline** is a security plugin for WordPress that helps you to build a Content Security Policy avoiding to use 'unsafe-inline' and 'unsafe-hashes'.
+
+![No unsafe-inline for Wordpress](assets/banner-1544x500.png)
+
+**Install it now:**
+[https://wordpress.org/plugins/no-unsafe-inline/](https://wordpress.org/plugins/no-unsafe-inline/)
+
 
 ## Description ##
 
@@ -23,14 +26,14 @@ Looking at National Vulnerability Database ran by US NIST, *more than 1,600 vuln
 
 The second thing to do, is to **deploy a strict Content Security Policy**.
 
-## The main problem ##
+### The main problem ###
 The main problem with Content Security Policies implemented in the real world is that [they are too weak to really protect your site](https://research.google/pubs/pub45542/) and that many of them can be trivially bypassed by an attacker.
 
-## The proposed solution ##
+### The proposed solution ###
 Google researchers recommend, instead of whole host whitelisting, to activate individual scripts via a CSP nonces approach.
 In addition, in order to faciliatate the adoption of nonce-based CSP, they proposed the ’strict-dynamic’ keyword.
 
-## The problem(s) with CSP in Wordpress ##
+### The problem(s) with CSP in Wordpress ###
 1. Manual creation of a policy
 	
 	Usually, a WordPress project is a mix of code written by different authors who contributed to the Core and or wrote plugins and themes.
@@ -69,7 +72,7 @@ In addition, in order to faciliatate the adoption of nonce-based CSP, they propo
 
 	To allow inline styles you need to use 'unsafe-hashes' in your style-src directive (that is, in facts, unsafe).
 
-## This plugin approach ##
+### This plugin approach ###
 This plugin affords those problems in this way.
 1. During a capture phase, it detects the scripts, styles and other embedded content present in the pages of your site and stores them in the database.
 2. Then you have to whitelist these contents from plugin admin.
@@ -81,30 +84,7 @@ This plugin affords those problems in this way.
 
 The plugin supports multisite installations and has (too) many options documented in inline help.
 
-## Installation ##
-
-### Automatic installation ###
-
-1. Plugin admin panel and `add new` option.
-2. Search in the text box `No unsafe-inline`.
-3. Position yourself on the description of this plugin and select install.
-4. Activate the plugin from the WordPress admin panel.
-
-### Manual installation of ZIP files ###
-
-1. Download the .ZIP file from this screen.
-2. Select add plugin option from the admin panel.
-3. Select `upload` option at the top and select the file you downloaded.
-4. Confirm installation and activation of plugins from the administration panel.
-
-### Manual FTP installation ###
-
-1. Download the .ZIP file from this screen and unzip it.
-2. FTP access to your folder on the web server.
-3. Copy the whole `no-unsafe-inline` folder to the `/wp-content/plugins/` directory
-4. Activate the plugin from the WordPress admin panel.
-
-## Creating a Content Security Policy ##
+### Creating a Content Security Policy ###
 
 After plugin activation, go to Settings menu and search for CSP Settings submenu.
 The steps you are supposed to do are the following.
@@ -149,20 +129,9 @@ No.
 
 ## Screenshots ##
 
-1. Plugin's tools tab in a multisite enviroment.
-2. External scripts tab.
-3. Inline scripts/styles tab.
-4. List of CSP directives managed in Settings tab.
-5. A database summary table at the bottom of tools tab.
-
-## Changelog ##
-
-### 1.0.0 ###
-* First plugin submission to WordPress.org
-
-## Upgrade Notice ##
-### 1.0.0 ###
-* Give it a try!
+|![Plugin's tools tab in a multisite enviroment](assets/screenshot-1.png)|![External scripts tab](assets/screenshot-2.png)|![Inline scripts/styles tab](assets/screenshot-3.png)|![List of CSP directives managed in Settings tab](assets/screenshot-4.png)|![A database summary table at the bottom of tools tab](assets/screenshot-5.png)|
+| :---: | :---: | :---: | :---: | :---: |
+| Plugin's tools tab in a multisite enviroment | External scripts tab | Inline scripts/styles tab | List of CSP directives managed in Settings tab | A database summary table at the bottom of tools tab |
 
 ## Code and libraries ##
 This version of the plugin uses:
@@ -177,7 +146,17 @@ The log functions have been taken from
 The **complete list of dependencies** used in this plugin can be seen in [dependency graph](https://github.com/MocioF/No-unsafe-inline/network/dependencies) on GitHub.
 
 
+## License ##
+
+No unsafe-inlie is an Open Source project licensed under [GPL v2](./LICENSE.txt).
+
 ## Contributions, Issues, Bugs ##
 
 Plugin code is hosted on a public repository on [GitHub](https://github.com/MocioF/No-unsafe-inline).
 Reach me over there to help and suggest.
+
+## Open Source contributors ##
+
+| [<img src="https://avatars.githubusercontent.com/u/26635356?s=460&v=4" width="117">](https://github.com/MocioF) |
+| :---: |
+| [MocioF](https://github.com/MocioF) |
