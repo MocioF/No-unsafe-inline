@@ -436,6 +436,12 @@ div.nunil_temp_div {
 	}
 }
 
+.nunil-tools-hr {
+	width:100%;
+	text-align:center;
+	margin-left:0;
+}
+
 .nunil-tools-box {
 	flex-basis: 30%;
 	border: 2px solid #3582ca;
