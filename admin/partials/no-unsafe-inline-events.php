@@ -1,7 +1,20 @@
+<?php
+/**
+ * The file is used to render the events whitelist tab.
+ * It is required by class No_Unsafe_Inline_Admin.
+ *
+ * @link       https://profiles.wordpress.org/mociofiletto/
+ * @since      1.0.0
+ * @package    No_unsafe-inline
+ * @subpackage No_unsafe-inline/admin
+ *
+ * @var \No_Unsafe_Inline_Admin $this
+ */
+
+?>
 <div class="wrap" id="nunil-events-list">
 <form id="nunil-inline-events-form" method="post">
 <?php
-	/** @var \No_Unsafe_Inline_Admin $this */
 	$page    = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRIPPED );
 	$paged   = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
 	$orderby = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
