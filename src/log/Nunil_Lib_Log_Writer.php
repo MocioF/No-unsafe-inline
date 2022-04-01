@@ -1,4 +1,11 @@
 <?php
+/**
+ * Log writer interface
+ *
+ * @package No_unsafe-inline
+ * @link    https://wordpress.org/plugins/no-unsafe-inline/
+ * @since   1.0.0
+ */
 
 namespace NUNIL\log;
 

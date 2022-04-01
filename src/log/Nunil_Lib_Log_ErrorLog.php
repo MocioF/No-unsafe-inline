@@ -1,4 +1,13 @@
 <?php
+/**
+ * Log to stdError Class
+ *
+ * Class with methods to write to stdError.
+ *
+ * @package No_unsafe-inline
+ * @link    https://wordpress.org/plugins/no-unsafe-inline/
+ * @since   1.0.0
+ */
 
 namespace NUNIL\log;
 
