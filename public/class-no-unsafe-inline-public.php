@@ -131,6 +131,21 @@ class No_Unsafe_Inline_Public {
 	}
 
 	/**
+	 * Check if string is HTML (or XML)
+	 *
+	 * @since 1.0.2
+	 * @access private
+	 * @param string $string The string to check.
+	 * @return bool
+	 */
+	private function is_html( $string ) {
+		if ( $this->is_json( $string ) ) {
+			return false;
+		}
+		return $string !== strip_tags( $string ) ? true : false;
+	}
+
+	/**
 	 * Filter the final output.
 	 *
 	 * This is the callback of the mu-plugin filter.
@@ -185,9 +200,18 @@ class No_Unsafe_Inline_Public {
 	 *
 	 * @since 1.0.0
 	 * @access public
+	 * @param string $htmlsource The page generated at the end of the wp process.
 	 * @return void
 	 */
-	public function output_csp_headers() {
+	public function output_csp_headers( $htmlsource ) {
+		/**
+		 * Policy has to be delivered only for documents (html or xml) and Workers.
+		 * https://www.w3.org/TR/CSP2/#which-policy-applies
+		 * https://www.w3.org/TR/CSP3/#goals
+		 */
+		if ( false === $this->is_html( $htmlsource ) ) {
+			return;
+		}
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 

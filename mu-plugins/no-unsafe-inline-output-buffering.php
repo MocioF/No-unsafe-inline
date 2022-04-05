@@ -45,7 +45,7 @@ add_action(
 			 */
 			$manipulated = apply_filters( 'no_unsafe_inline_final_output', $final );
 
-			do_action( 'nunil_output_csp_headers' );
+			do_action( 'nunil_output_csp_headers', $manipulated );
 
 			/**
 			 * Inject meta http-equiv="Content-Security-Policy" if variable is set
