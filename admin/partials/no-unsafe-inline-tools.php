@@ -92,7 +92,6 @@
 				echo '<br>';
 				echo ( esc_html__( 'This is just a classifier test to check php-ml settings.', 'no-unsafe-inline' ) );
 				?>
-				
 			</div>
 		</div>
 	</li>

@@ -423,10 +423,10 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					$orderby .= "tagid $order ";
 			}
 		} else {
-			$orderby .= 'ID ASC ';
+			$orderby .= 'whitelist ASC ';
 		}
 
-		$total_items = DB::get_events_total_num();
+		$total_items = DB::get_events_total_num( $search );
 
 		$data = DB::get_events_list( $orderby, $per_page, $paged, $search );
 

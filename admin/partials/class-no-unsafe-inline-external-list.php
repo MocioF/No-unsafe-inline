@@ -440,7 +440,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			$orderby .= 'whitelist ASC ';
 		}
 
-		$total_items = DB::get_external_total_num();
+		$total_items = DB::get_external_total_num( $search );
 
 		$data = DB::get_external_list( $orderby, $per_page, $paged, $search );
 
