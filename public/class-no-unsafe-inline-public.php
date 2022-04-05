@@ -10,6 +10,7 @@
  */
 
 use NUNIL\Nunil_Lib_Log as Log;
+use Spatie\Async\Pool;
 
 /**
  * The public-facing functionality of the plugin.
@@ -158,26 +159,33 @@ class No_Unsafe_Inline_Public {
 	 *                the input htmlsource if it is not enabled or it is a json answer.
 	 */
 	public function filter_final_output( $htmlsource ) {
-		if ( $this->is_json( $htmlsource ) ) {
+		if ( false === $this->is_html( $htmlsource ) ) {
 			return $htmlsource;
 		}
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
 		if ( 1 === $tools['capture_enabled'] ) {
-			$capture = new NUNIL\Nunil_Capture();
-			$capture->load_html( $htmlsource );
+			$pool = Pool::create()
+				->concurrency( 2 )
+				->timeout( 15 )
+				->sleepTime( 50000 );
+			$pool->add(
+				function() use ( $htmlsource, $options ) {
+					$capture = new NUNIL\Nunil_Capture();
+					$capture->load_html( $htmlsource );
 
-			$capture_tags = new \NUNIL\Nunil_Captured_Tags();
-			$tags         = $capture_tags->get_captured_tags();
+					$capture_tags = new \NUNIL\Nunil_Captured_Tags();
+					$tags         = $capture_tags->get_captured_tags();
 
-			$capture->capture_tags( $tags );
+					$capture->capture_tags( $tags );
 
-			if ( 0 === $options['use_unsafe-hashes'] ) {
-				$capture->capture_handlers();
-				$capture->capture_inline_style();
-			}
+					if ( 0 === $options['use_unsafe-hashes'] ) {
+						$capture->capture_handlers();
+						$capture->capture_inline_style();
+					}
+				}
+			);
 		}
 
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {
