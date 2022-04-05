@@ -235,8 +235,20 @@ class No_Unsafe_Inline_Admin {
 			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
 			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
 		}
+	}
 
-		if ( '1.0.1' === $new_ver ) {
+	/**
+	 * Adds new options to the database.
+	 *
+	 * This method is hooked on nunil_upgrade.
+	 *
+	 * @since 1.0.2
+	 * @param string $new_ver New plugin version.
+	 * @param string $old_ver Old plugin version.
+	 * @return void
+	 */
+	public function add_new_options( $new_ver, $old_ver ): void {
+		if ( version_compare( $old_ver, '1.0.1', '<' ) ) {
 			$options = (array) get_option( 'no-unsafe-inline' );
 			if ( ! array_key_exists( 'max_response_header_size', $options ) ) {
 				$options['max_response_header_size'] = 8192;

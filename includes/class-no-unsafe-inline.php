@@ -208,6 +208,8 @@ class No_Unsafe_Inline {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'nunil_upgrade', 10, 0 );
 
 		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'update_muplugin', 10, 2 );
+		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'add_new_options', 10, 2 );
+
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'nunil_admin_options_submenu' );
 
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'show_admin_notice' );
