@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
 Tested up to: 5.9
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -157,6 +157,12 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.0.2 =
+* Fix results count error and default order in list_tables.
+* Avoid sending CSP on not HTML or XML Document responses.
+* Include page capture in asyncronous execution.
+* Removing double conversion of nilsimsa, while clustering.
+
 = 1.0.1 =
 * Lowered priority for action and filter called on shutdown hook.
 * Moved default value for inline_scripts_mode option to 'nonce'.
