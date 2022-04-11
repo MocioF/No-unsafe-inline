@@ -11,8 +11,13 @@
 
 namespace NUNIL;
 
-use Phpml\Math\Distance;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use Rubix\ML\DataType;
 use Beager\Nilsimsa;
+use Rubix\ML\Kernels\Distance\Distance;
 
 /**
  * Hamming Distance for Clustering
@@ -21,6 +26,18 @@ use Beager\Nilsimsa;
  * @since   1.0.0
  */
 class Nunil_Hamming_Distance implements Distance {
+	/**
+	 * Return the data types that this kernel is compatible with.
+	 *
+	 * @internal
+	 *
+	 * @return list<\Rubix\ML\DataType>
+	 */
+	public function compatibility() : array {
+		return array(
+			DataType::categorical(),
+		);
+	}
 
 	/**
 	 * Calculate distance between 2 Nilsimsa array digests.
@@ -30,15 +47,24 @@ class Nunil_Hamming_Distance implements Distance {
 	 *
 	 * @return float
 	 */
-	public function distance( array $a, array $b ) : float {
-		$a_hex = Nunil_Clustering::convertArraytoHexDigest( $a );
-		$b_hex = Nunil_Clustering::convertArraytoHexDigest( $b );
+	public function compute( array $a, array $b ) : float {
 
-		$similarity = Nilsimsa::compareDigests( $a_hex, $b_hex, $is_hex_1 = true, $is_hex_2 = true );
+		$similarity = Nilsimsa::compareDigests( $a[0], $b[0], $is_hex_1 = true, $is_hex_2 = true );
 
 		$distance = floatval( 128 - $similarity );
 
 		return $distance;
+	}
+
+	/**
+	 * Return the string representation of the object.
+	 *
+	 * @internal
+	 *
+	 * @return string
+	 */
+	public function __toString() : string {
+		return 'Nilsimsa Hamming';
 	}
 }
 

@@ -13,7 +13,9 @@ namespace NUNIL;
 
 use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
-use Phpml\Classification\KNearestNeighbors;
+use Rubix\ML\Classifiers\KNearestNeighbors;
+use Rubix\ML\Datasets\Labeled;
+use Rubix\ML\Datasets\Unlabeled;
 use Spatie\Async\Pool;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
@@ -117,7 +119,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var \Phpml\Classification\KNearestNeighbors|null $inline_scripts_classifier The KNearestNeighbors Classifier for <script>
+	 * @var \Rubix\ML\Classifiers\KNearestNeighbors|null $inline_scripts_classifier The KNearestNeighbors Classifier for <script>
 	 */
 	private $inline_scripts_classifier;
 
@@ -126,7 +128,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var \Phpml\Classification\KNearestNeighbors|null $internal_css_classifier The KNearestNeighbors Classifier for <style>
+	 * @var \Rubix\ML\Classifiers\KNearestNeighbors|null $internal_css_classifier The KNearestNeighbors Classifier for <style>
 	 */
 	private $internal_css_classifier;
 
@@ -135,7 +137,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @var \Phpml\Classification\KNearestNeighbors|null $event_handlers_classifier The KNearestNeighbors Classifier for event handlers scripts.
+	 * @var \Rubix\ML\Classifiers\KNearestNeighbors|null $event_handlers_classifier The KNearestNeighbors Classifier for event handlers scripts.
 	 */
 	private $event_handlers_classifier;
 
@@ -244,13 +246,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			if ( is_array( $inline_rows ) ) {
 				foreach ( $inline_rows as $row ) {
 					if ( 'script' === $row->tagname ) {
-						$inline_scripts_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+						$inline_scripts_samples[] = $row->nilsimsa;
 						$inline_scripts_labels[]  = $row->clustername;
 					}
 				}
 				if ( $inline_scripts_samples && $inline_scripts_labels ) {
-					$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
-					$this->inline_scripts_classifier->train( $inline_scripts_samples, $inline_scripts_labels );
+					$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
+					$inl_scr_dataset                 = new Labeled( $inline_scripts_samples, $inline_scripts_labels );
+					$this->inline_scripts_classifier->train( $inl_scr_dataset );
+
 				}
 			}
 		}
@@ -261,13 +265,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			if ( is_array( $inline_rows ) ) {
 				foreach ( $inline_rows as $row ) {
 					if ( 'style' === $row->tagname ) {
-						$internal_css_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+						$internal_css_samples[] = $row->nilsimsa;
 						$internal_css_labels[]  = $row->clustername;
 					}
 				}
 				if ( $internal_css_samples && $internal_css_labels ) {
-					$this->internal_css_classifier = new KNearestNeighbors( $gls->knn_k_inl, new Nunil_Hamming_Distance() );
-					$this->internal_css_classifier->train( $internal_css_samples, $internal_css_labels );
+					$this->internal_css_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
+					$int_css_dataset               = new Labeled( $internal_css_samples, $internal_css_labels );
+					$this->internal_css_classifier->train( $int_css_dataset );
 				}
 			}
 		}
@@ -278,12 +283,13 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$evh_labels  = array();
 			if ( is_array( $events_rows ) ) {
 				foreach ( $events_rows as $row ) {
-					$evh_samples[] = Nunil_Clustering::convertHexDigestToArray( $row->nilsimsa );
+					$evh_samples[] = $row->nilsimsa;
 					$evh_labels[]  = $row->event_attribute . '#' . $row->clustername;
 				}
 				if ( $evh_samples && $evh_labels ) {
-					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_evh, new Nunil_Hamming_Distance() );
-					$this->event_handlers_classifier->train( $evh_samples, $evh_labels );
+					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
+					$evh_dataset                     = new Labeled( $evh_samples, $evh_labels );
+					$this->event_handlers_classifier->train( $evh_dataset );
 				}
 			}
 		}
@@ -428,7 +434,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					foreach ( $node_list as $node ) {
 						if ( $node instanceof \DOMElement ) {
 							$index = $this->check_external_whitelist( $node );
-							$this->manipulate_external_node( $node, $index, $tag->get_directive() );
+							$this->manipulate_external_node( $node, $tag->get_directive(), $index );
 						}
 					}
 				}
@@ -463,18 +469,17 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					$this->allow_whitelisted( $node, $hashes, $directive );
 					// Devi aggiornare un lastseen ?
 				} else {
-					$lsh        = new Nilsimsa( $content );
-					$lsh_digest = $lsh->digest();
-					$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $tagname );
+					$lsh            = new Nilsimsa( $content );
+					$lsh_hex_digest = $lsh->hexDigest();
+					$wl_cluster     = $this->check_cluster_whitelist( $lsh_hex_digest, $tagname );
 
 					if ( $wl_cluster ) {
 						$this->allow_whitelisted( $node, $hashes, $directive );
 
 						$options = (array) get_option( 'no-unsafe-inline' );
 						if ( 1 === $options['add_wl_by_cluster_to_db'] ) {
-							$nilsimsa = $lsh->hexDigest();
 							/* Start async block. */
-							$this->insert_new_inline_in_db( $tagname, $content, $hashes, $nilsimsa, $wl_cluster );
+							$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
 							/* End async block. */
 						}
 					}
@@ -738,7 +743,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				foreach ( $ext_wlist as $index => $obj ) {
 					if ( $src_attrib === $obj->src_attrib ) {
 						if ( '1' === $obj->whitelist ) {
-							return (int) $index; // WL (.
+							return (int) $index; // WL.
 						} else {
 							return false; // BL.
 						}
@@ -761,7 +766,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @param string                     $directive The -src directive.
 	 * @return void
 	 */
-	private function manipulate_external_node( &$node, $input_index = null, $directive ): void {
+	private function manipulate_external_node( &$node, $directive, $input_index = null ): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$use256  = ( 1 === $options['sri_sha256'] ) ? true : false;
 		$use384  = ( 1 === $options['sri_sha384'] ) ? true : false;
@@ -920,26 +925,32 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param array<int> $lsh_digest Nilsimsa digest.
-	 * @param string     $tagname The tagname.
-	 * @param string     $event Event handlers html attribute.
+	 * @param string $lsh_hex_digest Nilsimsa digest.
+	 * @param string $tagname The tagname.
+	 * @param string $event Event handlers html attribute.
 	 * @return string|false The clustername if whitelisted, else false
 	 */
-	private function check_cluster_whitelist( $lsh_digest, $tagname, $event = null ) {
+	private function check_cluster_whitelist( $lsh_hex_digest, $tagname, $event = null ) {
+
+		$samples   = array();
+		$samples[] = $lsh_hex_digest;
+		$dataset   = new Unlabeled( $samples );
+
 		if ( 'style' === $tagname && isset( $this->internal_css_classifier ) ) {
-			$predicted_label = strval( $this->internal_css_classifier->predict( $lsh_digest ) );
-			$list            = $this->inline_rows;
+			$predicted_labels = $this->internal_css_classifier->predict( $dataset );
+			$predicted_label  = $predicted_labels[0];
+			$list             = $this->inline_rows;
 		} elseif ( isset( $this->inline_scripts_classifier ) ) {
-			$predicted_label = strval( $this->inline_scripts_classifier->predict( $lsh_digest ) );
-			$list            = $this->inline_rows;
+			$predicted_labels = $this->inline_scripts_classifier->predict( $dataset );
+			$predicted_label  = $predicted_labels[0];
+			$list             = $this->inline_rows;
 		} elseif ( null !== $event && isset( $this->event_handlers_classifier ) ) {
-			$combined_predicted_label = strval( $this->event_handlers_classifier->predict( $lsh_digest ) );
-
-			$label_parts     = explode( '#', $combined_predicted_label, 2 );
-			$my_evh          = $label_parts[0];
-			$predicted_label = $label_parts[1];
-
-			$list = $this->events_rows;
+			$predicted_labels         = $this->event_handlers_classifier->predict( $dataset );
+			$combined_predicted_label = $predicted_labels[0];
+			$label_parts              = explode( '#', $combined_predicted_label, 2 );
+			$my_evh                   = $label_parts[0];
+			$predicted_label          = $label_parts[1];
+			$list                     = $this->events_rows;
 		} else {
 			return false;
 		}
@@ -1093,10 +1104,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						if ( false !== $index ) {
 							$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
 						} else {
-							$lsh        = new Nilsimsa( $row['script'] );
-							$lsh_digest = $lsh->digest();
+							$lsh            = new Nilsimsa( $row['script'] );
+							$lsh_hex_digest = $lsh->hexDigest();
+							$wl_cluster     = $this->check_cluster_whitelist( $lsh_hex_digest, $row['tagname'], $row['event_attribute'] );
 
-							$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'], $row['event_attribute'] );
 							if ( false !== $wl_cluster ) {
 								$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
 							}
@@ -1133,10 +1144,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							$class = 'nunil-' . $this->generate_nonce();
 							$this->ils_allow_wl_hash( $node, $class );
 						} else {
-							$lsh        = new Nilsimsa( $row['script'] );
-							$lsh_digest = $lsh->digest();
+							$lsh            = new Nilsimsa( $row['script'] );
+							$lsh_hex_digest = $lsh->hexDigest();
+							$wl_cluster     = $this->check_cluster_whitelist( $lsh_hex_digest, $row['tagname'] );
 
-							$wl_cluster = $this->check_cluster_whitelist( $lsh_digest, $row['tagname'] );
 							if ( false !== $wl_cluster ) {
 								$class = 'nunil-' . $this->generate_nonce();
 								$this->ils_allow_wl_hash( $node, $class );

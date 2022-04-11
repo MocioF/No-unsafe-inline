@@ -11,13 +11,19 @@
 
 namespace NUNIL;
 
-use NUNIL\Nunil_Lib_Db as DB;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Phpml\Classification\KNearestNeighbors;
+use NUNIL\Nunil_Lib_Db as DB;
+
+use Rubix\ML\Classifiers\KNearestNeighbors;
+
+use Rubix\ML\Graph\Trees\BallTree;
+use Rubix\ML\Classifiers\KDNeighbors;
+
+use Rubix\ML\Datasets\Labeled;
+use Rubix\ML\Datasets\Unlabeled;
 
 /**
  * Classification class
@@ -32,7 +38,7 @@ class Nunil_Classification {
 	 * @since 1.0.0
 	 * @access public
 	 * @param string $tagname The tagname in inline_scripts rows we want to cluster.
-	 * @return array{samples: array<array<int>>, labels: array<string>}|false
+	 * @return \Rubix\ML\Datasets\Labeled|false
 	 */
 	public function get_samples( $tagname = '' ) {
 		$cache_key   = 'training_inline_classifier';
@@ -50,17 +56,15 @@ class Nunil_Classification {
 		$labels = array();
 		if ( is_array( $rows ) ) {
 			foreach ( $rows as $row ) {
-				$samples[] = Nunil_Clustering::convertHexDigestToArray( $row->hexDigest );
+				$samples[] = $row->hexDigest;
 				$labels[]  = $row->clustername;
 			}
-			$results            = array();
-			$results['samples'] = $samples;
-			$results['labels']  = $labels;
+			$dataset = new Labeled( $samples, $labels );
 		} else {
-			$results = false;
+			$dataset = false;
 		}
 
-		return $results;
+		return $dataset;
 	}
 
 	/**
@@ -72,9 +76,11 @@ class Nunil_Classification {
 	public function test_cases() {
 		$result_string = '';
 
+		$num_tests = 5;
+
 		$cases = array();
 
-		for ( $i = 0; $i < 5; $i++ ) {
+		for ( $i = 0; $i < $num_tests; $i++ ) {
 			$row     = DB::get_random_cluster_data( 'inline_scripts' );
 			$cases[] = $row;
 		}
@@ -89,9 +95,9 @@ class Nunil_Classification {
 		$suitable_tags = array( 'script', 'style' );
 		$rd_key        = array_rand( $suitable_tags, 1 );
 
-		$database = $this->get_samples( $suitable_tags[ $rd_key ] );
-		if ( is_array( $database ) ) {
-			$nums          = count( $database['samples'] );
+		$table_dataset = $this->get_samples( $suitable_tags[ $rd_key ] );
+		if ( false !== $table_dataset ) {
+			$nums          = $table_dataset->numSamples();
 			$end_time      = microtime( true );
 			$result_string = $result_string . esc_html__( 'End time DB GET: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 			$result_string = $result_string . esc_html__( 'Tag: ', 'no-unsafe-inline' ) . "<b>$suitable_tags[$rd_key]</b>" . '<br>';
@@ -103,9 +109,9 @@ class Nunil_Classification {
 			$start_time    = microtime( true );
 			$result_string = $result_string . esc_html__( 'Start time Training: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
-			$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, new Nunil_Hamming_Distance() );
-
-			$classifier->train( $database['samples'], $database['labels'] );
+			$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
+			// ~ $classifier = new KDNeighbors( $k = $gls->knn_k_inl, false, new BallTree(40, new Nunil_Hamming_Distance() ) );
+			$classifier->train( $table_dataset );
 
 			$end_time      = microtime( true );
 			$result_string = $result_string . esc_html__( 'End time Training: ', 'no-unsafe-inline' ) . $end_time . '<br>';
@@ -117,19 +123,23 @@ class Nunil_Classification {
 			$result_string = $result_string . esc_html__( 'Start time Classifying: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 			$result_string = $result_string . '<br>';
 
+			$samples = array();
 			foreach ( $cases as $case ) {
 				if ( is_array( $case ) ) {
-					$test = Nunil_Clustering::convertHexDigestToArray( $case['hexDvalue'] );
+					$samples[] = $case['hexDvalue'];
+				}
+			}
+			$dataset     = new Unlabeled( $samples );
+			$calc_labels = $classifier->predict( $dataset );
 
-					$calc_label = $classifier->predict( $test );
-
-					$result_string = $result_string . $case['hexDvalue'] . '<br>';
-					$result_string = $result_string . esc_html__( 'Expected:', 'no-unsafe-inline' ) . '     ' . $case['exp_label'] . '<br>';
-					$result_string = $result_string . esc_html__( 'Returned:', 'no-unsafe-inline' ) . '     ' . $calc_label . '<br>';
+			for ( $i = 0; $i < $num_tests; $i++ ) {
+				if ( is_array( $cases[ $i ] ) ) {
+					$result_string = $result_string . $cases[ $i ]['hexDvalue'] . '<br>';
+					$result_string = $result_string . esc_html__( 'Expected:', 'no-unsafe-inline' ) . '     ' . $cases[ $i ]['exp_label'] . '<br>';
+					$result_string = $result_string . esc_html__( 'Returned:', 'no-unsafe-inline' ) . '     ' . $calc_labels[ $i ] . '<br>';
 					$result_string = $result_string . '<br>';
 				}
 			}
-
 			$end_time      = microtime( true );
 			$result_string = $result_string . esc_html__( 'End time Classifying: ', 'no-unsafe-inline' ) . $end_time . '<br>';
 		} else {
@@ -139,7 +149,6 @@ class Nunil_Classification {
 		$end_time_global = $end_time;
 		$execution_time  = ( $end_time_global - $start_time_global );
 		$result_string   = $result_string . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
-
 		return $result_string;
 	}
 
