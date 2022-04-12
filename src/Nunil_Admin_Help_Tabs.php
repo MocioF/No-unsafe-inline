@@ -367,8 +367,8 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'For more information on clustering you can visit these pages:', 'no-unsafe-inline' ) . '<br>'
 			. sprintf(
-				'%s DBSCAN - PHP-ML - Machine Learning library for PHP %s',
-				'<a href="https://php-ml.readthedocs.io/en/latest/machine-learning/clustering/dbscan/" target="_blank">',
+				'%s DBSCAN - RubixML - Machine Learning library for PHP %s',
+				'<a href="https://docs.rubixml.com/2.0/clusterers/dbscan.html" target="_blank">',
 				'</a>'
 			) . '<br>'
 			. sprintf(
