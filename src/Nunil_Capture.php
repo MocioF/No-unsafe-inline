@@ -553,7 +553,9 @@ class Nunil_Capture {
 		$node_index = 0;
 
 		foreach ( $nodelist as $node ) {
-			$node_key        = sprintf( '%d', $node_index );
+
+			// Forcing array key as a string.
+			$node_key        = 'key_' . sprintf( '%d', $node_index );
 			$index_processed = array_key_exists( $node_key, $processed );
 
 			if ( ! $index_processed && ( $node instanceof \IvoPetkov\HTML5DOMElement ) ) {
