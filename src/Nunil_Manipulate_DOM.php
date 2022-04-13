@@ -254,7 +254,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
 					$inl_scr_dataset                 = new Labeled( $inline_scripts_samples, $inline_scripts_labels );
 					$this->inline_scripts_classifier->train( $inl_scr_dataset );
-
 				}
 			}
 		}
@@ -762,8 +761,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 * @access private
 	 * @param \DOMElement                $node The DOMNode passed by reference.
-	 * @param int|false|array<int|false> $input_index The index of the whitelisted source in $this->external_rows array.
 	 * @param string                     $directive The -src directive.
+	 * @param int|false|array<int|false> $input_index The index of the whitelisted source in $this->external_rows array.
 	 * @return void
 	 */
 	private function manipulate_external_node( &$node, $directive, $input_index = null ): void {
@@ -931,7 +930,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return string|false The clustername if whitelisted, else false
 	 */
 	private function check_cluster_whitelist( $lsh_hex_digest, $tagname, $event = null ) {
-
 		$samples   = array();
 		$samples[] = $lsh_hex_digest;
 		$dataset   = new Unlabeled( $samples );

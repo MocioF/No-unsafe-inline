@@ -109,8 +109,7 @@ class Nunil_Classification {
 			$start_time    = microtime( true );
 			$result_string = $result_string . esc_html__( 'Start time Training: ', 'no-unsafe-inline' ) . $start_time . '<br>';
 
-			$classifier = new KNearestNeighbors( $k = $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
-			// ~ $classifier = new KDNeighbors( $k = $gls->knn_k_inl, false, new BallTree(40, new Nunil_Hamming_Distance() ) );
+			$classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
 			$classifier->train( $table_dataset );
 
 			$end_time      = microtime( true );

@@ -148,7 +148,6 @@ class Nunil_Clustering {
 	 * @return int The number of clusters built
 	 */
 	private static function cluster_digests( $table, $obj_collection, $dbscan_results ) {
-
 		$clusternames = self::get_clusternames( $dbscan_results );
 
 		$clusters_numbers = count( $clusternames );
@@ -158,7 +157,6 @@ class Nunil_Clustering {
 		$has_noise = false;
 
 		foreach ( $dbscan_results as $hash_index => $cluster ) {
-
 			if ( -1 === $cluster ) {
 				$has_noise = true;
 			}
