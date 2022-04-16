@@ -134,7 +134,7 @@ No.
 | Plugin's tools tab in a multisite enviroment | External scripts tab | Inline scripts/styles tab | List of CSP directives managed in Settings tab | A database summary table at the bottom of tools tab |
 
 ## Code and libraries ##
-This version of the plugin uses:
+Current version uses:
 * [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) to parse HTML;
 * [RubixML](https://rubixml.com/) for machine learning ***from version 1.1.0*** - _[PHP-ML](https://php-ml.readthedocs.io/en/latest/) was used in versions 1.0.x_;
 * [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests;

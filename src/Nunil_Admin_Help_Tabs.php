@@ -249,9 +249,9 @@ class Nunil_Admin_Help_Tabs {
 
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-external-single-hashes',
-						'title'   => mb_chr( 0x21B3 ) . __( 'Single hashes for external resources', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-external-single-hashes' ),
+						'id'      => 'nunil-external-source-mode',
+						'title'   => mb_chr( 0x21B3 ) . __( 'External source csp mode', 'no-unsafe-inline' ),
+						'content' => $this->content( 'nunil-external-source-mode' ),
 					)
 				);
 
@@ -644,7 +644,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'These settings manage how external sources will be included in your CSP.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-sources-base']  = '<h1>' . esc_html__( 'External sources, base identification.', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-external-sources-base'] = '<h1>' . esc_html__( 'External sources, base identification.', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>external_host_mode</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
@@ -659,34 +659,37 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'This option does not prevent you from manually entering sources in, using a scheme other than the one selected.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-single-hashes'] = '<h1>' . esc_html__( 'Use single hashes in directives', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-external-source-mode']  = '<h1>' . esc_html__( 'External source csp mode', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_script-src</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>script-src_mode</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
+			. '<b>\'nonce\'</b>: ' . esc_html__( 'use nonce', 'no-unsafe-inline' ) . ', '
+			. '<b>\'hash\'</b>: ' . esc_html__( 'use sha hashes', 'no-unsafe-inline' ) . ', '
+			. '<b>\'none\'</b>: ' . esc_html__( 'only base rule', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_style-src</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>style-src_mode</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
+			. '<b>\'nonce\'</b>: ' . esc_html__( 'use nonce', 'no-unsafe-inline' ) . ', '
+			. '<b>\'hash\'</b>: ' . esc_html__( 'use sha hashes', 'no-unsafe-inline' ) . ', '
+			. '<b>\'none\'</b>: ' . esc_html__( 'only base rule', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_img-src</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
-			. '</pre>'
-			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>hash_in_all</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>img-src_mode</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
+			. '<b>\'hash\'</b>: ' . esc_html__( 'use sha hashes', 'no-unsafe-inline' ) . ', '
+			. '<b>\'none\'</b>: ' . esc_html__( 'only base rule', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
-			. esc_html__( 'In addition to the traditional mode of identifying external resources allowed, provided by the CSP2 specifications, the CSP3 specifications allow you to indicate the hashes of some external resources to authorize them individually.', 'no-unsafe-inline' )
-			. '</p>'
-			. '<p>'
+			. esc_html__( 'With these settings you can choose how to identify allowed scripts, external css and imgs in your CSP.', 'no-unsafe-inline' ) . '<br>'
+			. '<b>' . esc_html__( ' \'nonce\' can be used only for nonceable elements ( <script> and <link> ).', 'no-unsafe-inline' ) . '</b><br>'
 			. esc_html__( 'Based on the CSP3 specifications, the external resources identified by hash must also have an "integrity" attribute set. The integrity attribute is currently supported only for <script> and <link> tags.', 'no-unsafe-inline' ) . '<br>'
-			. esc_html__( 'With these settings you can choose whether to enter sha hashes in the directives: script-src, style-src and img-src or for all the directives for which hashes have been registered in the database.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'The plugin will dynamically add individual hashes in the CSP directives related to external resources in advance authorized by the "External whitelist" tab only in the individual pages of your site where these resources are used.', 'no-unsafe-inline' )
+			. esc_html__( 'If you are using \'nonce\', the plugin will dynamically add a nonce attribute to script and link tags when those tags are used to include external resources in advance authorized by the "External whitelist" tab.', 'no-unsafe-inline' ) . '<br>'
+			. esc_html__( 'If you are using \'hash\', the plugin will dynamically add individual hashes in the CSP directives related to external resources in advance authorized by the "External whitelist" tab only in the individual pages of your site where these resources are used.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-external-hash-algos']    = '<h1>' . esc_html__( 'Select which hashes to use', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-external-hash-algos']   = '<h1>' . esc_html__( 'Select which hashes to use', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_sha256</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
@@ -710,7 +713,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'Elements would be allowed to execute only if they contain integrity metadata that matches the policy.', 'no-unsafe-inline' )
 			. '</p>';
-		$content['nunil-use-sri']                = '<h1>' . esc_html__( 'Use Subresource Integrity', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-use-sri']               = '<h1>' . esc_html__( 'Use Subresource Integrity', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>sri_script</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )

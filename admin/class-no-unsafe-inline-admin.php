@@ -255,6 +255,65 @@ class No_Unsafe_Inline_Admin {
 				update_option( 'no-unsafe-inline', $options );
 			}
 		}
+		if ( version_compare( $old_ver, '1.1.0', '<' ) ) {
+			$options = (array) get_option( 'no-unsafe-inline' );
+			if ( ! array_key_exists( 'script-src_mode', $options ) ) {
+				if ( ( array_key_exists( 'hash_in_script-src', $options ) && 1 === $options['hash_in_script-src'] ) ||
+				( array_key_exists( 'hash_in_all', $options ) && 1 === $options['hash_in_all'] ) ) {
+					$options['script-src_mode'] = 'hash';
+				} else {
+					$options['script-src_mode'] = 'nonce';
+				}
+				if ( array_key_exists( 'hash_in_script-src', $options ) ) {
+					unset( $options['hash_in_script-src'] );
+				}
+			}
+			if ( ! array_key_exists( 'style-src_mode', $options ) ) {
+				if ( ( array_key_exists( 'hash_in_style-src', $options ) && 1 === $options['hash_in_style-src'] ) ||
+				( array_key_exists( 'hash_in_all', $options ) && 1 === $options['hash_in_all'] ) ) {
+					$options['style-src_mode'] = 'hash';
+				} else {
+					$options['style-src_mode'] = 'nonce';
+				}
+				if ( array_key_exists( 'hash_in_style-src', $options ) ) {
+					unset( $options['hash_in_style-src'] );
+				}
+			}
+			if ( ! array_key_exists( 'img-src_mode', $options ) ) {
+				if ( ( array_key_exists( 'hash_in_img-src', $options ) && 1 === $options['hash_in_img-src'] ) ||
+				( array_key_exists( 'hash_in_all', $options ) && 1 === $options['hash_in_all'] ) ) {
+					$options['img-src_mode'] = 'hash';
+				} else {
+					$options['img-src_mode'] = 'none';
+				}
+				if ( array_key_exists( 'hash_in_img-src', $options ) ) {
+					unset( $options['hash_in_img-src'] );
+				}
+			}
+			unset( $options['hash_in_all'] );
+
+			update_option( 'no-unsafe-inline', $options );
+		}
+	}
+
+	/**
+	 * Update version and rehash plugin's assets after version update
+	 *
+	 * @since 1.0.2
+	 * @param string $new_ver New plugin version.
+	 * @param string $old_ver Old plugin version.
+	 * @return void
+	 */
+	public function renew_plugin_assets( $new_ver, $old_ver ): void {
+		$ids = DB::get_last_nunil_ids( $old_ver );
+		if ( $ids ) {
+			foreach ( $ids as $id ) {
+				DB::update_nunil_version( $id->ID, $new_ver, $old_ver );
+				$sri = new \NUNIL\Nunil_SRI();
+				$sri->put_hashes_in_db( $id->ID, $overwrite = true );
+			}
+			DB::delete_legacy_nunil_assets( $new_ver );
+		}
 	}
 
 	/**
@@ -394,44 +453,36 @@ class No_Unsafe_Inline_Admin {
 			'external_host_mode'
 		);
 
-		/*** Single hash setting. */
+		/*** External source mode. */
 		add_settings_section(
-			'no-unsafe-inline_ext_hashes',
-			esc_html__( 'Use single hashes in directives:', 'no-unsafe-inline' ),
-			array( $this, 'print_ext_hashes' ),
+			'no-unsafe-inline_ext_mode',
+			esc_html__( 'External source csp mode:', 'no-unsafe-inline' ),
+			array( $this, 'print_ext_mode' ),
 			'no-unsafe-inline-options'
 		);
 
 		add_settings_field(
-			'hash_in_script-src',
+			'script-src_mode',
 			'script-src',
-			array( $this, 'print_hash_in_script_src' ),
+			array( $this, 'print_mode_for_script_src' ),
 			'no-unsafe-inline-options',
-			'no-unsafe-inline_ext_hashes'
+			'no-unsafe-inline_ext_mode'
 		);
 
 		add_settings_field(
-			'hash_in_style-src',
+			'style-src_mode',
 			'style-src',
-			array( $this, 'print_hash_in_style_src' ),
+			array( $this, 'print_mode_for_style_src' ),
 			'no-unsafe-inline-options',
-			'no-unsafe-inline_ext_hashes'
+			'no-unsafe-inline_ext_mode'
 		);
 
 		add_settings_field(
-			'hash_in_img-src',
+			'img-src_mode',
 			'img-src',
-			array( $this, 'print_hash_in_img_src' ),
+			array( $this, 'print_mode_for_img_src' ),
 			'no-unsafe-inline-options',
-			'no-unsafe-inline_ext_hashes'
-		);
-
-		add_settings_field(
-			'hash_in_all',
-			esc_html__( 'Whenever is possible', 'no-unsafe-inline' ),
-			array( $this, 'print_hash_in_all' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_ext_hashes'
+			'no-unsafe-inline_ext_mode'
 		);
 
 		/*** Used hashes */
@@ -806,31 +857,6 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['use_strict-dynamic'] = 0;
 		}
-
-		if ( isset( $input['hash_in_script-src'] ) ) {
-			$new_input['hash_in_script-src'] = 1;
-		} else {
-			$new_input['hash_in_script-src'] = 0;
-		}
-
-		if ( isset( $input['hash_in_style-src'] ) ) {
-			$new_input['hash_in_style-src'] = 1;
-		} else {
-			$new_input['hash_in_style-src'] = 0;
-		}
-
-		if ( isset( $input['hash_in_img-src'] ) ) {
-			$new_input['hash_in_img-src'] = 1;
-		} else {
-			$new_input['hash_in_img-src'] = 0;
-		}
-
-		if ( isset( $input['hash_in_all'] ) ) {
-			$new_input['hash_in_all'] = 1;
-		} else {
-			$new_input['hash_in_all'] = 0;
-		}
-
 		if ( isset( $input['sri_sha256'] ) ) {
 			$new_input['sri_sha256'] = 1;
 		} else {
@@ -848,15 +874,14 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['sri_sha512'] = 0;
 		}
-		// One hash has to be selected, if we are using SRI or one of hash_in opts.
+		// One hash has to be selected, if we are using SRI or hashes for CSP.
 		if (
 		(
 		! empty( $input['sri_script'] ) ||
 		! empty( $input['sri_link'] ) ||
-		! empty( $input['hash_in_script-src'] ) ||
-		! empty( $input['hash_in_style-src'] ) ||
-		! empty( $input['hash_in_img-src'] ) ||
-		! empty( $input['hash_in_all'] )
+		'hash' === $input['script-src_mode'] ||
+		'hash' === $input['style-src_mode'] ||
+		'hash' === $input['img-src_mode']
 		) &&
 		(
 		empty( $input['sri_sha256'] ) &&
@@ -927,6 +952,24 @@ class No_Unsafe_Inline_Admin {
 			$new_input['external_host_mode'] = $input['external_host_mode'];
 		} else {
 			$new_input['external_host_mode'] = 'sch-host';
+		}
+		$script_src_mode = array( 'nonce', 'hash', 'none' );
+		if ( in_array( $input['script-src_mode'], $script_src_mode, true ) ) {
+			$new_input['script-src_mode'] = $input['script-src_mode'];
+		} else {
+			$new_input['script-src_mode'] = 'nonce';
+		}
+		$style_src_mode = array( 'nonce', 'hash', 'none' );
+		if ( in_array( $input['style-src_mode'], $style_src_mode, true ) ) {
+			$new_input['style-src_mode'] = $input['style-src_mode'];
+		} else {
+			$new_input['style-src_mode'] = 'nonce';
+		}
+		$img_src_mode = array( 'hash', 'none' );
+		if ( in_array( $input['img-src_mode'], $img_src_mode, true ) ) {
+			$new_input['img-src_mode'] = $input['img-src_mode'];
+		} else {
+			$new_input['img-src_mode'] = 'none';
 		}
 
 		// text.
@@ -1073,27 +1116,28 @@ class No_Unsafe_Inline_Admin {
 		'<div class="nunil-radio-div">' .
 		'<label for="resource" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="resource" value="resource" ' );
-		echo( checked( 'resource', $options['external_host_mode'], false ) );
+		echo( checked( 'resource', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'resource (eg. https://www.example.org/script.js)', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
+
 		'<label for="sch-host" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="sch-host" value="sch-host" ' );
-
-		echo( checked( 'sch-host', $options['external_host_mode'], false ) );
+		echo( checked( 'sch-host', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'scheme-host (eg. https://www.example.org)', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
+
 		'<label for="host" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="host" value="host" ' );
-		echo( checked( 'host', $options['external_host_mode'], false ) );
+		echo( checked( 'host', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'host (eg. www.example.org)', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
 
 		'<label for="domain" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[external_host_mode]" id="domain" value="domain" ' );
-		echo( checked( 'domain', $options['external_host_mode'], false ) );
+		echo( checked( 'domain', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'domain (eg *.example.org)', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
@@ -1107,84 +1151,90 @@ class No_Unsafe_Inline_Admin {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function print_ext_hashes(): void {
-		print esc_html__( 'Select directives in which you want to use hashes in addition to base rules.', 'no-unsafe-inline' );
+	public function print_ext_mode(): void {
+		print esc_html__( 'Select CSP mode for selected directives.', 'no-unsafe-inline' );
 	}
 
 	/**
-	 * Print the hash_in_script-src option
+	 * Print the script-src_mode option
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @return void
 	 */
-	public function print_hash_in_script_src(): void {
+	public function print_mode_for_script_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_script-src'] ) ? $options['hash_in_script-src'] : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_script-src]"' .
-			'name="no-unsafe-inline[hash_in_script-src]" %s />
-			<label for="no-unsafe-inline[hash_in_script-src]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Add hashes in script-src.', 'no-unsafe-inline' )
-		);
+		$value   = isset( $options['script-src_mode'] ) ? $options['script-src_mode'] : 'nonce';
+		echo (
+		'<div class="nunil-radio-div-horiz">' .
+		'<label for="script-src-nonce" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[script-src_mode]" id="script-src-nonce" value="nonce" ' );
+		echo( checked( 'nonce', $value, false ) );
+		echo( '/><span>' . esc_html__( 'nonce', 'no-unsafe-inline' ) . '</span></label>' );
+
+		echo (
+		'<label for="script-src-hash" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[script-src_mode]" id="script-src-hash" value="hash" ' );
+		echo( checked( 'hash', $value, false ) );
+		echo( '/><span>' . esc_html__( 'hash', 'no-unsafe-inline' ) . '</span></label>' );
+
+		echo (
+		'<label for="script-src-none" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[script-src_mode]" id="script-src-none" value="none" ' );
+		echo( checked( 'none', $value, false ) );
+		echo( '/><span>' . esc_html__( 'none', 'no-unsafe-inline' ) . '</span></label></div>' );
 	}
 
 	/**
-	 * Print the hash_in_style-src option
+	 * Print the style-src_mode option
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @return void
 	 */
-	public function print_hash_in_style_src(): void {
+	public function print_mode_for_style_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_style-src'] ) ? $options['hash_in_style-src'] : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_style-src]"' .
-			'name="no-unsafe-inline[hash_in_style-src]" %s />
-			<label for="no-unsafe-inline[hash_in_style-src]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Add hashes in style-src.', 'no-unsafe-inline' )
-		);
+		$value   = isset( $options['style-src_mode'] ) ? $options['style-src_mode'] : 'nonce';
+		echo (
+		'<div class="nunil-radio-div-horiz">' .
+		'<label for="style-src-nonce" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[style-src_mode]" id="style-src-nonce" value="nonce" ' );
+		echo( checked( 'nonce', $value, false ) );
+		echo( '/><span>' . esc_html__( 'nonce', 'no-unsafe-inline' ) . '</span></label>' );
+
+		echo (
+		'<label for="style-src-hash" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[style-src_mode]" id="style-src-hash" value="hash" ' );
+		echo( checked( 'hash', $value, false ) );
+		echo( '/><span>' . esc_html__( 'hash', 'no-unsafe-inline' ) . '</span></label>' );
+
+		echo (
+		'<label for="style-src-none" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[style-src_mode]" id="style-src-none" value="none" ' );
+		echo( checked( 'none', $value, false ) );
+		echo( '/><span>' . esc_html__( 'none', 'no-unsafe-inline' ) . '</span></label></div>' );
 	}
 
 	/**
-	 * Print the hash_in_img-src option
+	 * Print the img-src_mode option
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @return void
 	 */
-	public function print_hash_in_img_src(): void {
+	public function print_mode_for_img_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_img-src'] ) ? $options['hash_in_img-src'] : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_img-src]"' .
-			'name="no-unsafe-inline[hash_in_img-src]" %s />
-			<label for="no-unsafe-inline[hash_in_img-src]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Add hashes in img-src.', 'no-unsafe-inline' )
-		);
-	}
+		$value   = isset( $options['img-src_mode'] ) ? $options['img-src_mode'] : 'none';
 
-	/**
-	 * Print the hash_in_all option
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function print_hash_in_all(): void {
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['hash_in_all'] ) ? $options['hash_in_all'] : 0;
-		$enabled = $value ? 'checked' : '';
-		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[hash_in_all]"' .
-			'name="no-unsafe-inline[hash_in_all]" %s />
-			<label for="no-unsafe-inline[hash_in_all]">%s</label>',
-			esc_html( $enabled ),
-			esc_html__( 'Add hashes in all directives where possible.', 'no-unsafe-inline' )
-		);
+		echo (
+		'<div class="nunil-radio-div-horiz">' .
+		'<label for="img-src-hash" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[img-src_mode]" id="img-src-hash" value="hash" ' );
+		echo( checked( 'hash', $value, false ) );
+		echo( '/><span>' . esc_html__( 'hash', 'no-unsafe-inline' ) . '</span></label>' );
+
+		echo (
+		'<label for="img-src-none" class="nunil-l-radio">' .
+		'<input type="radio" name="no-unsafe-inline[img-src_mode]" id="img-src-none" value="none" ' );
+		echo( checked( 'none', $value, false ) );
+		echo( '/><span>' . esc_html__( 'none', 'no-unsafe-inline' ) . '</span></label></div>' );
 	}
 
 	/**
@@ -1212,7 +1262,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[sri_sha256]" %s />
 			<label for="no-unsafe-inline[sri_sha256]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Add sha256 in csp and integrity attribute.', 'no-unsafe-inline' )
+			esc_html__( 'Use sha256 hashes in csp and integrity attribute.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1231,7 +1281,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[sri_sha384]" %s />
 			<label for="no-unsafe-inline[sri_sha384]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Add sha384 in csp and integrity attribute.', 'no-unsafe-inline' )
+			esc_html__( 'Use sha384 hashes in csp and integrity attribute.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1250,7 +1300,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[sri_sha512]" %s />
 			<label for="no-unsafe-inline[sri_sha512]">%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Add sha512 in csp and integrity attribute.', 'no-unsafe-inline' )
+			esc_html__( 'Use sha512 hashes in csp and integrity attribute.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1330,28 +1380,28 @@ class No_Unsafe_Inline_Admin {
 		'<div class="nunil-radio-div">' .
 		'<label for="nonce" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="nonce" value="nonce" ' );
-		echo( checked( 'nonce', $options['inline_scripts_mode'], false ) );
+		echo( checked( 'nonce', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'nonce', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
 
 		'<label for="sha256" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha256" value="sha256" ' );
-		echo( checked( 'sha256', $options['inline_scripts_mode'], false ) );
+		echo( checked( 'sha256', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'sha256', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
 
 		'<label for="sha384" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha384" value="sha384" ' );
-		echo( checked( 'sha384', $options['inline_scripts_mode'], false ) );
+		echo( checked( 'sha384', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'sha384', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .
 
 		'<label for="sha512" class="nunil-l-radio">' .
 		'<input type="radio" name="no-unsafe-inline[inline_scripts_mode]" id="sha512" value="sha512" ' );
-		echo( checked( 'sha512', $options['inline_scripts_mode'], false ) );
+		echo( checked( 'sha512', $value, false ) );
 		echo( '/>' .
 		'<span>' . esc_html__( 'sha512', 'no-unsafe-inline' ) . '</span>' .
 		'</label>' .

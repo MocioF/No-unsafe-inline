@@ -141,10 +141,9 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['prefetch-src_enabled'] = 0;
 
 			$plugin_options['external_host_mode']                = 'sch-host';
-			$plugin_options['hash_in_script-src']                = 1;
-			$plugin_options['hash_in_style-src']                 = 1;
-			$plugin_options['hash_in_img-src']                   = 0;
-			$plugin_options['hash_in_all']                       = 0;
+			$plugin_options['script-src_mode']                   = 'nonce';
+			$plugin_options['style-src_mode']                    = 'nonce';
+			$plugin_options['img-src_mode']                      = 'none';
 			$plugin_options['sri_sha256']                        = 1;
 			$plugin_options['sri_sha384']                        = 0;
 			$plugin_options['sri_sha512']                        = 0;

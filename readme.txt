@@ -159,6 +159,7 @@ No.
 == Changelog ==
 = 1.1.0 =
 * Moving to RubixML for machine-learning
+* Fixed bug in capturing tags
 
 = 1.0.2 =
 * Fix results count error and default order in list_tables.
@@ -177,8 +178,14 @@ No.
 * First plugin submission to WordPress.org
 
 == Upgrade Notice ==
+= 1.1.0 =
+* Compatible with PHP 8.0
+* Added option to use nonces for external scripts and styles.
+	This is the default setting on new install.
+	If you are upgrading from previous versions and you were using hashes, you need to set the new options to 'nonce' in settings tab.
+
 = 1.0.0 =
-* Give it a try!
+Give it a try!
 
 == Code and libraries ==
 This version of the plugin uses:

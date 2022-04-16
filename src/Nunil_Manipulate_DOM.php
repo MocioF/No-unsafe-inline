@@ -420,10 +420,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		}
 		$options = (array) get_option( 'no-unsafe-inline' );
 		if (
-			1 === $options['hash_in_all'] ||
-			1 === $options['hash_in_script-src'] ||
-			1 === $options['hash_in_style-src'] ||
-			1 === $options['hash_in_img-src'] ||
+			'none' !== $options['script-src_mode'] ||
+			'none' !== $options['style-src_mode'] ||
+			'none' !== $options['img-src_mode'] ||
 			1 === $options['sri_script'] ||
 			1 === $options['sri_link']
 			) {
@@ -772,14 +771,22 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$use512  = ( 1 === $options['sri_sha512'] ) ? true : false;
 
 		if (
-			1 === $options['hash_in_all'] ||
-			( 1 === $options['hash_in_script-src'] && 'script-src' === $directive ) ||
-			( 1 === $options['hash_in_style-src'] && 'style-src' === $directive ) ||
-			( 1 === $options['hash_in_img-src'] && 'img-src' === $directive )
+			( 'hash' === $options['script-src_mode'] && 'script-src' === $directive ) ||
+			( 'hash' === $options['style-src_mode'] && 'style-src' === $directive ) ||
+			( 'hash' === $options['img-src_mode'] && 'img-src' === $directive )
 		) {
 			$add_hashes = true;
 		} else {
 			$add_hashes = false;
+		}
+
+		if (
+			( 'nonce' === $options['script-src_mode'] && 'script-src' === $directive && 'script' === $node->nodeName ) ||
+			( 'nonce' === $options['style-src_mode'] && 'style-src' === $directive && 'link' === $node->nodeName )
+		) {
+			$add_nonce = true;
+		} else {
+			$add_nonce = false;
 		}
 
 		if ( ! is_null( $input_index ) ) { // If index has not been passed, don't do anything.
@@ -855,6 +862,18 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								);
 							}
 						}
+					}
+					if ( $add_nonce ) {
+						// Adding nonce to CSP.
+						$local_wl = array(
+							'directive' => $directive,
+							'source'    => 'nonce-' . $this->page_nonce,
+						);
+						if ( ! in_array( $local_wl, $this->csp_local_whitelist, true ) ) {
+							$this->csp_local_whitelist[] = $local_wl;
+						}
+						// Adding nonce to node.
+						$node->setAttribute( 'nonce', $this->page_nonce );
 					}
 				} else { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
 					if ( (

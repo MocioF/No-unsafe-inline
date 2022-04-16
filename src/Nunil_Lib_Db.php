@@ -1654,4 +1654,81 @@ class Nunil_Lib_Db {
 		return $wpdb->get_results( $sql );
 	}
 
+	/**
+	 * Returns a list of IDs of assets of plugin's last old version
+	 *
+	 * @since 1.1.0
+	 * @access public
+	 * @param string $ver The old version of the plugin.
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_last_nunil_ids( $ver ) {
+		global $wpdb;
+		$wild = '%';
+		$sql  = $wpdb->prepare(
+			'SELECT `ID` FROM ' . self::external_scripts_table() . ' WHERE '
+			. '`src_attrib` LIKE %s OR '
+			. '`src_attrib` LIKE %s OR '
+			. '`src_attrib` LIKE %s OR '
+			. '`src_attrib` LIKE %s;',
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js?ver=' . $ver ),
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js?ver=' . $ver ),
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css?ver=' . $ver ),
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver ),
+		);
+		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Set current plugin version in plugin's asset strings in external_scripts
+	 *
+	 * @since 1.1.0
+	 * @access public
+	 * @param int    $id The ID of the script in external_scripts.
+	 * @param string $old_ver The old version of the plugin.
+	 * @param string $new_ver The current version of the plugin.
+	 * @return void
+	 */
+	public static function update_nunil_version( $id, $old_ver, $new_ver ): void {
+		global $wpdb;
+		$wpdb->query(
+			$wpdb->prepare(
+				'UPDATE ' . self::external_scripts_table() . ' '
+				. 'SET '
+				. '`src_attrib` = REPLACE(`src_attrib`, %s, %s ) '
+				. 'WHERE (`ID` = %d );',
+				$old_ver,
+				$new_ver,
+				$id
+			)
+		);
+	}
+
+	/**
+	 * Deletes old versions nunil assets
+	 *
+	 * @since 1.1.0
+	 * @access public
+	 * @param string $ver The old version of the plugin.
+	 * @return void
+	 */
+	public static function delete_legacy_nunil_assets( $ver ): void {
+		global $wpdb;
+		$wild = '%';
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM ' . self::external_scripts_table() . ' WHERE ('
+				. '`src_attrib` LIKE %s OR '
+				. '`src_attrib` LIKE %s OR '
+				. '`src_attrib` LIKE %s OR '
+				. '`src_attrib` LIKE %s ) AND '
+				. '`src_attrib` NOT LIKE %s;',
+				$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js' ) . $wild,
+				$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js' ) . $wild,
+				$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css' ) . $wild,
+				$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js' ) . $wild,
+				$wild . $wpdb->esc_like( 'ver=' . $ver )
+			)
+		);
+	}
 }
