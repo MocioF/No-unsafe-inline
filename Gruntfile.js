@@ -149,6 +149,10 @@ module.exports = function( grunt ) {
 				options: {
 					spawn: false,
 				},
+			},
+			scripts: {
+				files: ['admin/css/*.css'],
+				tasks: ['cssmin']
 			}
 		}
 	} );
