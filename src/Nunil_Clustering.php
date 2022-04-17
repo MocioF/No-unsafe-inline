@@ -85,22 +85,6 @@ class Nunil_Clustering {
 	}
 
 	/**
-	 * Convert array to HexDigest, inverting convertHexDigestToArray
-	 *
-	 * @since 1.0.0
-	 * @param array<int> $array The digest as an array of int.
-	 * @return string The digest as an hexString
-	 */
-	public static function convertArraytoHexDigest( $array ) {
-		$hexDigest = '';
-		$l         = count( $array );
-		for ( $i = 0; $i < $l; ++$i ) {
-			$hexDigest = $hexDigest . str_pad( dechex( $array[ $i ] ), 2, '0', STR_PAD_LEFT );
-		}
-		return $hexDigest;
-	}
-
-	/**
 	 * Create a random clustername
 	 *
 	 * @since 1.1.0
