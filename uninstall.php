@@ -77,6 +77,7 @@ function no_unsafe_inline_uninstall_plugin() {
 	);
 
 	foreach ( $tables_name as $table ) {
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nunil_$table" );
 	}
 }

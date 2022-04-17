@@ -322,7 +322,7 @@ class Nunil_Lib_Db {
 			);
 		} else {
 			$data = array(
-				'lastseen' => date( 'Y-m-d H:i:s' ),
+				'lastseen' => gmdate( 'Y-m-d H:i:s' ),
 			);
 		}
 		$where  = array(
@@ -505,7 +505,7 @@ class Nunil_Lib_Db {
 		if ( function_exists( 'wp_date' ) ) {
 			$data['lastseen'] = wp_date( 'Y-m-d H:i:s' );
 		} else {
-			$data['lastseen'] = date( 'Y-m-d H:i:s' );
+			$data['lastseen'] = gmdate( 'Y-m-d H:i:s' );
 		}
 
 		$format = array( '%s', '%d', '%s', '%s' );
@@ -1042,7 +1042,7 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_database_summary_data( $table ) {
 		global $wpdb;
-		$result = json_encode( array() );
+		$result = wp_json_encode( array() );
 		switch ( $table ) {
 			case 'global':
 			case 'nunil_global':
@@ -1139,8 +1139,9 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_external_rows() {
 		global $wpdb;
-		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM `' . self::external_scripts_table() . '`'
-			 . ' WHERE `whitelist`= 1 ';
+		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM `'
+			. self::external_scripts_table() . '`'
+			. ' WHERE `whitelist`= 1 ';
 		return $wpdb->get_results( $sql, OBJECT );
 	}
 
@@ -1267,10 +1268,13 @@ class Nunil_Lib_Db {
 	 * @param string $search String to be searched.
 	 * @return string $sql The unprepared sql for get_inline_list and get_inline_total_num
 	 */
-
 	private static function get_inline_sql( $search = '' ) {
 		global $wpdb;
-		$do_search = ( '' !== $search ) ? $wpdb->prepare( ' WHERE inl.`script` LIKE \'%%%s%%\' ', $search ) : '';
+		$wild      = '%';
+		$do_search = ( $search ) ? $wpdb->prepare(
+			' WHERE inl.`script` LIKE %s ',
+			$wild . $wpdb->esc_like( $search ) . $wild
+		) : '';
 
 		return 'SELECT inl.`ID`, inl.`directive`, inl.`tagname`, inl.`script`, inl.`clustername`, inl.`whitelist`, '
 			. '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
@@ -1340,13 +1344,18 @@ class Nunil_Lib_Db {
 	 * @param string $search String to be searched.
 	 * @return string $sql The unprepared sql for get_external_list and get_external_total_num
 	 */
-
 	private static function get_external_sql( $search = '' ) {
 		global $wpdb;
-		$do_search = ( $search ) ? $wpdb->prepare( ' AND `src_attrib` LIKE \'%%%s%%\' ', $search ) : '';
+		$wild      = '%';
+		$do_search = ( $search ) ? $wpdb->prepare(
+			' AND `src_attrib` LIKE %s ',
+			$wild . $wpdb->esc_like( $search ) . $wild
+		) : '';
 
-		return 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM ' . self::external_scripts_table()
-			 . ' WHERE 1 ' . $do_search;
+		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM '
+			. self::external_scripts_table()
+			. ' WHERE 1 ' . $do_search;
+		return $sql;
 	}
 
 	/**
@@ -1401,10 +1410,13 @@ class Nunil_Lib_Db {
 	 * @param string $search String to be searched.
 	 * @return string $sql The unprepared sql for get_events_list and get_events_total_num
 	 */
-
 	private static function get_events_sql( $search = '' ) {
 		global $wpdb;
-		$do_search = ( $search ) ? $wpdb->prepare( ' WHERE evh.`script` LIKE \'%%%s%%\' ', $search ) : '';
+		$wild      = '%';
+		$do_search = ( $search ) ? $wpdb->prepare(
+			' WHERE evh.`script` LIKE %s ',
+			$wild . $wpdb->esc_like( $search ) . $wild
+		) : '';
 
 		return 'SELECT evh.`ID`, evh.`tagname`, evh.`tagid`, evh.`event_attribute`, evh.`script`, evh.`clustername`, evh.`whitelist`, '
 			 . '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
@@ -1470,8 +1482,7 @@ class Nunil_Lib_Db {
 	 * Delete the entries older than the given number of days.
 	 * It has a LIMIT of 1000 to avoid impacting the DB
 	 *
-	 * @param int $days Number of days
-	 *
+	 * @param int $days Number of days.
 	 * @return int|bool Number of rows updated or false
 	 */
 	public static function delete_old_logs( $days ) {
@@ -1671,7 +1682,7 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_big_clusters( $table, $limit = 150 ) {
 		$tables = array( 'inline_scripts', 'event_handlers' );
-		if ( ! in_array( $table, $tables ) ) {
+		if ( ! in_array( $table, $tables, true ) ) {
 			return null;
 		}
 		global $wpdb;
@@ -1751,7 +1762,7 @@ class Nunil_Lib_Db {
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js?ver=' . $ver ),
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js?ver=' . $ver ),
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver ),
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver )
 		);
 		return $wpdb->get_results( $sql );
 	}
