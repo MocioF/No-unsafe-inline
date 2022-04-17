@@ -81,7 +81,7 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 
 					// to be checked if needed.
 					// https://csplite.com/csp66/#sample-violation-report .
-					$source_file = $csp_violation['source-file'] ? $csp_violation['source-file'] : $csp_violation['sourceFile'];
+					$source_file = array_key_exists( 'source-file', $csp_violation ) ? $csp_violation['source-file'] : ( array_key_exists( 'sourceFile', $csp_violation ) ? $csp_violation['sourceFile'] : '' );
 
 					if ( in_array(
 						$violated_directive,
@@ -112,7 +112,7 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 						),
 						true
 					) ) {
-						if ( 'inline' === $blocked_url && isset( $source_file ) ) {
+						if ( 'inline' === $blocked_url && isset( $source_file ) && '' !== $source_file ) {
 							if ( isset( $csp_violation['column-number'] ) ) {
 								$column_number = $csp_violation['column-number'];
 							} elseif ( isset( $csp_violation['columnNumber'] ) ) {

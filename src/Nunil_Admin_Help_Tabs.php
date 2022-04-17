@@ -682,7 +682,7 @@ class Nunil_Admin_Help_Tabs {
 			. '</pre>'
 			. '<p>'
 			. esc_html__( 'With these settings you can choose how to identify allowed scripts, external css and imgs in your CSP.', 'no-unsafe-inline' ) . '<br>'
-			. '<b>' . esc_html__( ' \'nonce\' can be used only for nonceable elements ( <script> and <link> ).', 'no-unsafe-inline' ) . '</b><br>'
+			. '<b>' . esc_html__( '\'nonce\' can be used only for nonceable elements ( <script> and <link> ).', 'no-unsafe-inline' ) . '</b><br>'
 			. esc_html__( 'Based on the CSP3 specifications, the external resources identified by hash must also have an "integrity" attribute set. The integrity attribute is currently supported only for <script> and <link> tags.', 'no-unsafe-inline' ) . '<br>'
 			. '</p>'
 			. '<p>'

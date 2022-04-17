@@ -1591,12 +1591,12 @@ class No_Unsafe_Inline_Admin {
 		$value   = ( isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) ) ? esc_attr( $options['log_driver'] ) : 'errorlog';
 
 		$print_selected = function( $val ) use ( $value ) {
-			return $val == $value ? 'selected' : '';
+			return $val === $value ? 'selected' : '';
 		};
 		printf(
 			'<select name="no-unsafe-inline[log_driver]" id="no-unsafe-inline[log_driver]">' .
-			'<option value="errorlog" ' . $print_selected( 'errorlog' ) . '>PHP - error_log()</option>' .
-			'<option value="db"' . $print_selected( 'db' ) . '>Database</option>' .
+			'<option value="errorlog" ' . esc_html( $print_selected( 'errorlog' ) ) . '>PHP - error_log()</option>' .
+			'<option value="db"' . esc_html( $print_selected( 'db' ) ) . '>Database</option>' .
 			'</select>'
 		);
 	}
@@ -1612,14 +1612,14 @@ class No_Unsafe_Inline_Admin {
 		$value   = ( isset( $options['log_level'] ) && is_string( $options['log_level'] ) ) ? esc_attr( $options['log_level'] ) : 'error';
 
 		$print_selected = function( $val ) use ( $value ) {
-			return $val == $value ? 'selected' : '';
+			return $val === $value ? 'selected' : '';
 		};
 		printf(
 			'<select name="no-unsafe-inline[log_level]" id="no-unsafe-inline[log_level]">' .
-			'<option value="error" ' . $print_selected( 'error' ) . '>Error</option>' .
-			'<option value="warning"' . $print_selected( 'warning' ) . '>Warning</option>' .
-			'<option value="info"' . $print_selected( 'info' ) . '>Info</option>' .
-			'<option value="debug"' . $print_selected( 'debug' ) . '>Debug</option>' .
+			'<option value="error" ' . esc_html( $print_selected( 'error' ) ) . '>Error</option>' .
+			'<option value="warning"' . esc_html( $print_selected( 'warning' ) ) . '>Warning</option>' .
+			'<option value="info"' . esc_html( $print_selected( 'info' ) ) . '>Info</option>' .
+			'<option value="debug"' . esc_html( $print_selected( 'debug' ) ) . '>Debug</option>' .
 			'</select>'
 		);
 	}

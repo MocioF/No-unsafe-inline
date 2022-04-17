@@ -972,7 +972,7 @@ class Nunil_Lib_Db {
 	 * @return int The number of affected rows
 	 */
 	public static function ext_single_delete( $id, $delete_occurences = false ) {
-		$affected = self::delete( self::external_scripts_table(), $id, $delete_occurences );
+		$affected = self::single_delete( self::external_scripts_table(), $id, $delete_occurences );
 		return $affected;
 	}
 

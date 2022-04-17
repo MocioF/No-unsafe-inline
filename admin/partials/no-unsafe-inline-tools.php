@@ -132,22 +132,37 @@
 	</ul>
 	<div id="nunil-db-sum-tabs-1">
 		<div id="nunil_nunil_db_summary_container" class="nunil_nunil_db_summary_container">
-		<?php echo No_Unsafe_Inline_Admin::output_summary_tables(); ?>
+		<?php
+		$nunil_allowed_html = array(
+			'table' => array(
+				'class' => true,
+			),
+			'tr'    => array(),
+			'td'    => array(
+				'data-th' => true,
+			),
+			'th'    => array(),
+			'tbody' => array(
+				'id' => true,
+			),
+		);
+		echo wp_kses( No_Unsafe_Inline_Admin::output_summary_tables(), $nunil_allowed_html );
+		?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-2">
 		<div id="nunil_summary_external_table_container" class="nunil_summary_external_table_container">
-		<?php echo No_Unsafe_Inline_Admin::output_summary_external_table(); ?>
+		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_external_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-3">
 		<div id="nunil_summary_inline_table_container" class="nunil_summary_inline_table_container">
-		<?php echo No_Unsafe_Inline_Admin::output_summary_inline_table(); ?>
+		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_inline_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-4">
 		<div id="nunil_summary_eventhandlers_table_container" class="nunil_summary_eventhandlers_table_container">
-		<?php echo No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(); ?>
+		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-5">

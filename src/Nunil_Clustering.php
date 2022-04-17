@@ -29,24 +29,6 @@ use NUNIL\Nunil_Lib_Log as Log;
 class Nunil_Clustering {
 
 	/**
-	 * Convenience function to convert a hex digest into an array. Used by
-	 * {compare_digests}
-	 *
-	 * @since 1.0.0
-	 * @param string $digest The digest.
-	 * @return array<int> The digest as an array of ints
-	 */
-	public static function convertHexDigestToArray( $digest ) {
-		$result = array();
-
-		for ( $i = 0; $i < 63; $i += 2 ) {
-			$result[] = intval( hexdec( substr( $digest, $i, 2 ) ), $base = 10 );
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Performs DBSCAN and return an array of clustered arrays
 	 *
 	 * @since 1.0.0
@@ -160,6 +142,8 @@ class Nunil_Clustering {
 			$clusters_numbers--;
 		}
 
+		self::whitelist_cluster( $table );
+
 		return $clusters_numbers;
 	}
 
@@ -170,7 +154,7 @@ class Nunil_Clustering {
 	 * @param string $table The scripts table to be clustered: one of inline_scripts or event_handlers.
 	 * @return void
 	 */
-	private function whitelist_cluster( $table ): void {
+	private static function whitelist_cluster( $table ): void {
 		// If one of the elements is whitelisted, we whitelist all the cluster.
 		$clusters = DB::get_clusters_in_table( $table );
 		foreach ( $clusters as $cluster ) {

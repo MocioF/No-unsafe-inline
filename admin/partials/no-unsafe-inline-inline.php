@@ -15,17 +15,17 @@
 <div class="wrap" id="nunil-inline-list">
 <form id="nunil-inline-list-form" method="post">
 <?php
-	$page    = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRIPPED );
-	$paged   = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
-	$orderby = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
-	$order   = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
-	$search  = filter_input( INPUT_GET, 's', FILTER_SANITIZE_STRING );
+	$nunil_page    = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRIPPED );
+	$nunil_paged   = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
+	$nunil_orderby = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
+	$nunil_order   = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
+	$nunil_search  = filter_input( INPUT_GET, 's', FILTER_SANITIZE_STRING );
 
-	printf( '<input type="hidden" name="page" value="%s" />', esc_html( strval( $page ) ) );
-	printf( '<input type="hidden" name="paged" value="%d" />', intval( esc_html( strval( $paged ) ) ) );
-	printf( '<input type="hidden" name="orderby" value="%s" />', esc_html( strval( $orderby ) ) );
-	printf( '<input type="hidden" name="order" value="%s" />', esc_html( strval( $order ) ) );
-	printf( '<input type="hidden" name="s" value="%s" />', esc_html( strval( $search ) ) );
+	printf( '<input type="hidden" name="page" value="%s" />', esc_html( strval( $nunil_page ) ) );
+	printf( '<input type="hidden" name="paged" value="%d" />', intval( esc_html( strval( $nunil_paged ) ) ) );
+	printf( '<input type="hidden" name="orderby" value="%s" />', esc_html( strval( $nunil_orderby ) ) );
+	printf( '<input type="hidden" name="order" value="%s" />', esc_html( strval( $nunil_order ) ) );
+	printf( '<input type="hidden" name="s" value="%s" />', esc_html( strval( $nunil_search ) ) );
 
 	$no_unsafe_inline_sources_obj = $this->show_table;
 	$no_unsafe_inline_sources_obj->prepare_items();

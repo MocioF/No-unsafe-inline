@@ -143,7 +143,7 @@ class No_Unsafe_Inline_Public {
 		if ( $this->is_json( $string ) ) {
 			return false;
 		}
-		return $string !== strip_tags( $string ) ? true : false;
+		return strip_tags( $string ) !== $string ? true : false;
 	}
 
 	/**
