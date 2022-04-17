@@ -845,9 +845,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						if ( ( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
 							( 'link' === $node->nodeName && 1 === $options['sri_link'] )
 						) {
-							$node->setAttribute( 'integrity', trim( $integrity_string ) );
-							if ( ! $node->hasAttribute( 'crossorigin' ) ) {
-								$node->setAttribute( 'crossorigin', 'anonymous' );
+							// In some cases external API cannot support integrity in a consistent way.
+							// i.e. the CSS returned by the googlefonts API is different for different browsers.
+							// In this cases we don't add integrity to the resources.
+							$sourcestr = $node->getAttribute( 'src' );
+							if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
+								$node->setAttribute( 'integrity', trim( $integrity_string ) );
+								if ( ! $node->hasAttribute( 'crossorigin' ) ) {
+									$node->setAttribute( 'crossorigin', 'anonymous' );
+								}
 							}
 						}
 					} else { // The node has got integrity by other way. Just whitelist it.
@@ -877,11 +883,11 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					}
 				} else { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
 					if ( (
-							( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
-							( 'link' === $node->nodeName && 1 === $options['sri_link'] )
-						  ) && ( ! $node->hasAttribute( 'integrity' ) )
-							&& ( ! is_null( $this->external_rows ) )
-						) {
+					( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
+					( 'link' === $node->nodeName && 1 === $options['sri_link'] ) )
+					&& ( ! $node->hasAttribute( 'integrity' ) )
+					&& ( ! is_null( $this->external_rows ) )
+					) {
 						$integrity_string = '';
 						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
 							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
@@ -895,14 +901,42 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 						}
-						$node->setAttribute( 'integrity', trim( $integrity_string ) );
-					}
-					if ( ! $node->hasAttribute( 'crossorigin' ) ) {
-						$node->setAttribute( 'crossorigin', 'anonymous' );
+
+						$sourcestr = $node->getAttribute( 'src' );
+						if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
+							$node->setAttribute( 'integrity', trim( $integrity_string ) );
+							if ( ! $node->hasAttribute( 'crossorigin' ) ) {
+								$node->setAttribute( 'crossorigin', 'anonymous' );
+							}
+						}
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Check if a src origin can support integrity
+	 *
+	 * @since 1.1.0
+	 * @param string $sourcestr The url of the external resource.
+	 * @return bool TRUE if detected api supports integrity
+	 */
+	private function api_support_integrity( $sourcestr ) {
+		if ( '' === $sourcestr ) {
+			return false;
+		}
+		$not_sri_sources = array(
+			'fonts.googleapis', // https://github.com/google/fonts/issues/473 .
+		);
+
+		foreach ( $not_sri_sources as $source ) {
+			if ( false !== strpos( $sourcestr, $source ) ) {
+				// We found the not_sri_string in $sourcestr.
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
