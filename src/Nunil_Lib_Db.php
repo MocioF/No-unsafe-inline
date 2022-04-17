@@ -924,16 +924,94 @@ class Nunil_Lib_Db {
 						$in_str = substr( $in_str, 0, strlen( $in_str ) - 2 );
 						$in_str = $in_str . ')';
 
-						$del_cl_occur = 'DELETE FROM ' . $table . ' WHERE (`dbtable`,`itemid`) IN ' . $in_str;
+						$del_cl_occur = 'DELETE FROM ' . self::occurences_table() . ' WHERE (`dbtable`,`itemid`) IN ' . $in_str;
 						$del_occur    = $wpdb->query( $del_cl_occur );
 					}
 				}
 			} else {
-				$del_sc   = 'DELETE FROM ' . $table . ' WHERE `ID` = %d';
-				$affected = $affected + $wpdb->query(
+				$affected = self::ext_single_delete( $id, $delete_occurences );
+			}
+		}
+		return $affected;
+	}
+
+	/**
+	 * Removes a script from inline_scripts table
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function inl_single_delete( $id, $delete_occurences = true ) {
+		$affected = self::single_delete( self::inline_scripts_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script from event_handlers table
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function evh_single_delete( $id, $delete_occurences = true ) {
+		$affected = self::single_delete( self::event_handlers_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script from external_scripts table
+	 *
+	 * @since 1.1.0
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to delete occurences records of the script.
+	 * @return int The number of affected rows
+	 */
+	public static function ext_single_delete( $id, $delete_occurences = false ) {
+		$affected = self::delete( self::external_scripts_table(), $id, $delete_occurences );
+		return $affected;
+	}
+
+	/**
+	 * Removes a script or a cluster of scripts
+	 * from the database
+	 *
+	 * @param string               $table The script full table name.
+	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param bool                 $delete_occurences True to remove entryes from occurences table.
+	 * @since 1.1.0
+	 *
+	 * @return int The number of affected rows
+	 */
+	public static function single_delete( $table, $id, $delete_occurences ) {
+		global $wpdb;
+		if ( ! is_array( $id ) ) {
+			$my_ids   = array();
+			$my_ids[] = $id;
+		} else {
+			$my_ids = $id;
+		}
+		$affected = 0;
+		foreach ( $my_ids as $id ) {
+			$del_sc   = 'DELETE FROM ' . $table . ' WHERE `ID` = %d';
+			$affected = $affected + $wpdb->query(
+				$wpdb->prepare(
+					$del_sc,
+					$id
+				)
+			);
+
+			if ( true === $delete_occurences ) {
+				$del_sc_occ = 'DELETE FROM ' . self::occurences_table() . ' WHERE `itemid` = %d AND dbtable = %s';
+				$del_occur  = $wpdb->query(
 					$wpdb->prepare(
-						$del_sc,
-						$id
+						$del_sc_occ,
+						$id,
+						substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
 					)
 				);
 			}
@@ -953,7 +1031,6 @@ class Nunil_Lib_Db {
 		$truncate = $wpdb->query( 'TRUNCATE TABLE ' . self::with_prefix( $table ) );
 		return (bool) $truncate;
 	}
-
 
 	/**
 	 * Performs query for database summary tables, showed in tools tab

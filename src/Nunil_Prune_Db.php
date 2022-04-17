@@ -84,7 +84,7 @@ class Nunil_Prune_Db {
 			// translators: %s is the internal tablename.
 			$end_message  = $end_message . sprintf( esc_html__( 'Pruning big clusters in %s', 'no-unsafe-inline' ), $table_name ) . '<br>';
 			$big_clusters = DB::get_big_clusters( $table_name, self::$cluster_limit );
-			if ( ! is_null( $big_clusters ) ) {
+			if ( ! is_null( $big_clusters ) && 0 < count( $big_clusters ) ) {
 				foreach ( $big_clusters as $cluster ) {
 					$n_del = 0;
 					$ids   = DB::get_oldest_scripts_id( $table_name, $cluster->clustername, self::$cluster_limit );
@@ -92,7 +92,7 @@ class Nunil_Prune_Db {
 						switch ( $table_name ) {
 							case 'inline_scripts':
 								foreach ( $ids as $id ) {
-									$n_del = $n_del + DB::inl_delete( $id->ID );
+									$n_del = $n_del + DB::inl_single_delete( $id->ID );
 								}
 								$message = sprintf(
 									// translators: %1$d is the number of scripts deleted; %2$s is the clustername; %3$s is the internal table name.
@@ -106,7 +106,7 @@ class Nunil_Prune_Db {
 								break;
 							case 'event_handlers':
 								foreach ( $ids as $id ) {
-									$n_del = $n_del + DB::evh_delete( $id->ID );
+									$n_del = $n_del + DB::evh_single_delete( $id->ID );
 								}
 								$message = sprintf(
 									// translators: %1$d is the number of scripts deleted; %2$s is the clustername; %3$s is the internal table name.
@@ -144,6 +144,4 @@ class Nunil_Prune_Db {
 		$this->delete_orphan_occurences();
 		$this->prune_big_clusters();
 	}
-
-
 }

@@ -158,8 +158,9 @@ No.
 
 == Changelog ==
 = 1.1.0 =
-* Moving to RubixML for machine-learning
-* Fixed bug in capturing tags
+* Moving to RubixML lib for machine-learning.
+* Fixed bug in capturing tags.
+* Fixed bug in pruning clusters.
 
 = 1.0.2 =
 * Fix results count error and default order in list_tables.
