@@ -47,45 +47,41 @@ module.exports = function( grunt ) {
 		uglify: {
 			dist: {
 				options: {
-					banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.js <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+					banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n',
 					report: 'gzip'
 				},
-				files: {
-					'admin/js/no-unsafe-inline-admin.min.js' : [
-						'admin/js/no-unsafe-inline-admin.js'
-					],
-					'public/js/no-unsafe-inline-admin.min.js' : [
-						'public/js/no-unsafe-inline-admin.js'
-					],
-					'includes/js/no-unsafe-inline-fix-style.min.js' : [
-						'includes/js/no-unsafe-inline-fix-style.js'
-					],
-					'includes/js/no-unsafe-inline-prefilter-override.min.js' : [
-						'includes/js/no-unsafe-inline-prefilter-override.js'
-					]
-				}
+				files: [{
+					expand: true,
+					src: ['includes/js/*.js', '!includes/js/*.min.js', 'admin/js/*.js', '!admin/js/*.min.js'],
+					dest: '.',
+					cwd: '.',
+					rename: function (dst, src) {
+						// To keep the source js files and make new files as `*.min.js`:
+						return dst + '/' + src.replace('.js', '.min.js');
+						// Or to override to src:
+						// return src;
+					}
+				}]
 			},
 			dev: {
 				options: {
-					banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.js <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+					banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n',
 					beautify: true,
 					compress: false,
 					mangle: false
 				},
-				files: {
-					'admin/js/no-unsafe-inline-admin.min.js' : [
-						'admin/js/no-unsafe-inline-admin.js'
-					],
-					'public/js/no-unsafe-inline-admin.min.js' : [
-						'public/js/no-unsafe-inline-admin.js'
-					],
-					'includes/js/no-unsafe-inline-fix-style.min.js' : [
-						'includes/js/no-unsafe-inline-fix-style.js'
-					],
-					'includes/js/no-unsafe-inline-prefilter-override.min.js' : [
-						'includes/js/no-unsafe-inline-prefilter-override.js'
-					]
-				}
+				files: [{
+					expand: true,
+					src: ['includes/js/*.js', '!includes/js/*.min.js', 'admin/js/*.js', '!admin/js/*.min.js'],
+					dest: '.',
+					cwd: '.',
+					rename: function (dst, src) {
+						// To keep the source js files and make new files as `*.min.js`:
+						return dst + '/' + src.replace('.js', '.min.js');
+						// Or to override to src:
+						// return src;
+					}
+				}]
 			}
 		},
 
@@ -101,7 +97,7 @@ module.exports = function( grunt ) {
 		sass: {
 			dist: {
 				options: {
-					banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.min.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
+					banner: '/*! <%= pkg.name %> <%= pkg.version %> filename.css <%= grunt.template.today("yyyy-mm-dd h:MM:ss TT") %> */\n',
 					style: 'compressed'
 				},
 				files: [{
@@ -144,13 +140,13 @@ module.exports = function( grunt ) {
 		
 		watch: {
 			scripts: {
-				files: ['admin/js/*.js'],
-				tasks: ['jshint','uglify:dist'],
+				files: ['admin/js/*.js', 'includes/js/*.js'],
+				tasks: ['uglify:dist'],
 				options: {
 					spawn: false,
 				},
 			},
-			scripts: {
+			stylesheets: {
 				files: ['admin/css/*.css'],
 				tasks: ['cssmin']
 			}

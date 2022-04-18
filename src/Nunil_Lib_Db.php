@@ -1758,11 +1758,13 @@ class Nunil_Lib_Db {
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s OR '
+			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s;',
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js?ver=' . $ver ),
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js?ver=' . $ver ),
 			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver )
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver ),
+			$wild . $wpdb->esc_like( 'no-unsafe-inline-mutation-observer.min.js?ver=' . $ver )
 		);
 		return $wpdb->get_results( $sql );
 	}

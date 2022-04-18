@@ -161,6 +161,7 @@ No.
 * Moving to RubixML lib for machine-learning.
 * Fixed bug in capturing tags.
 * Fixed bug in pruning clusters.
+* Added a mutation observer for inline styles transfered to the internal css.
 
 = 1.0.2 =
 * Fix results count error and default order in list_tables.
@@ -184,6 +185,7 @@ No.
 * Added option to use nonces for external scripts and styles.
 	This is the default setting on new install.
 	If you are upgrading from previous versions and you were using hashes, you need to set the new options to 'nonce' in settings tab.
+* Improved compatibility for third-party plugin javascript
 
 = 1.0.0 =
 Give it a try!

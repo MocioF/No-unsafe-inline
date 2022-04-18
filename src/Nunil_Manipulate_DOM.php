@@ -1200,7 +1200,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$index = $this->check_single_whitelist( $hashes, $row['tagname'] );
 
 						if ( false !== $index ) {
-							$class = 'nunil-' . $this->generate_nonce();
+							$class = 'nunil-fly-' . $this->generate_nonce();
 							$this->ils_allow_wl_hash( $node, $class );
 						} else {
 							$lsh            = new Nilsimsa( $row['script'] );
@@ -1208,7 +1208,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							$wl_cluster     = $this->check_cluster_whitelist( $lsh_hex_digest, $row['tagname'] );
 
 							if ( false !== $wl_cluster ) {
-								$class = 'nunil-' . $this->generate_nonce();
+								$class = 'nunil-fly-' . $this->generate_nonce();
 								$this->ils_allow_wl_hash( $node, $class );
 							}
 						}
@@ -1338,6 +1338,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 			$style_node = $this->domdocument->createElement( 'style' );
 			$style_node->setAttribute( 'type', 'text/css' );
+			$style_node->setAttribute( 'id', 'nunil-internal-stylesheet' );
+			$style_node->setAttribute( 'title', 'nunil-internal-stylesheet' );
 			if ( 'nonce' === $this->inline_scripts_mode ) {
 				$style_node->setAttribute( 'nonce', $this->page_nonce );
 			}
