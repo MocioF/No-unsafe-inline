@@ -848,7 +848,11 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							// In some cases external API cannot support integrity in a consistent way.
 							// i.e. the CSS returned by the googlefonts API is different for different browsers.
 							// In this cases we don't add integrity to the resources.
-							$sourcestr = $node->getAttribute( 'src' );
+							if ( 'script' === $node->nodeName ) {
+								$sourcestr = $node->getAttribute( 'src' );
+							} else {
+								$sourcestr = $node->getAttribute( 'href' );
+							}
 							if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
 								$node->setAttribute( 'integrity', trim( $integrity_string ) );
 								if ( ! $node->hasAttribute( 'crossorigin' ) ) {
@@ -902,7 +906,11 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 						}
 
-						$sourcestr = $node->getAttribute( 'src' );
+						if ( 'script' === $node->nodeName ) {
+							$sourcestr = $node->getAttribute( 'src' );
+						} else {
+							$sourcestr = $node->getAttribute( 'href' );
+						}
 						if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
 							$node->setAttribute( 'integrity', trim( $integrity_string ) );
 							if ( ! $node->hasAttribute( 'crossorigin' ) ) {
