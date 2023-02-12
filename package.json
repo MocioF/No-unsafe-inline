@@ -28,6 +28,6 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-wp-i18n": "^1.0.3",
     "grunt-wp-readme-to-markdown": "^2.1.0",
-    "npm-check-updates": "^13.0.4"
+    "npm-check-updates": "^16.7.4"
   }
 }
