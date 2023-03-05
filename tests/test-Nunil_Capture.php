@@ -110,7 +110,7 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 		$tags_style[] = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attrs = null, $needed_attrs = null, $childs = null, $inline );
 
 		return array(
-			/* string $tagname, array $taglist, int $num_ext, int $num_inl, string $source ) */
+			// string $tagname, array $taglist, int $num_ext, int $num_inl, string $source ) .
 			'script_1' => array( 'script', $tags_script, 1, 2, 'index_1.html' ),
 			'style_1'  => array( 'style', $tags_style, 0, 32, 'index_1.html' ),
 			'script_2' => array( 'script', $tags_script, 6, 6, 'index_2.html' ),
@@ -118,6 +118,39 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 			'link_2'   => array( 'link', $tags_style, 9, 0, 'index_2.html' ),
 			'script_3' => array( 'script', $tags_script, 3, 6, 'index_3.html' ),
 			'link_3'   => array( 'link', $tags_style, 1, 0, 'index_3.html' ),
+		);
+	}
+
+
+	/**
+	 * @dataProvider srcListProvider
+	 */
+	public function testconv_to_absolute_url ( string $base_url, string $src_input, string $exp_output ) {
+		$capture = new \ReflectionClass( 'NUNIL\Nunil_Capture' );
+		$my_conv_to_absolute_url = $capture->getMethod('conv_to_absolute_url');
+		$my_conv_to_absolute_url->setAccessible( true );
+		$myInstance = new  NUNIL\Nunil_Capture();
+		
+		$src_output = $my_conv_to_absolute_url->invokeArgs($myInstance, [$src_input, $base_url]);
+		
+		$this->assertEquals(
+			$exp_output,
+			$src_output
+		);
+		
+	}
+
+	public function srcListProvider(): array {
+		return array (
+			'absolute_1' => array( 'https://wp.org', 'https://wp.org/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'absolute_2' => array( 'https://wp.org', '//wp.org/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'relative_1' => array( 'https://wp.org/page1/', 'images/image1.png', 'https://wp.org/page1/images/image1.png' ),
+			'relative_2' => array( 'https://wp.org/page1', '/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'relative_3' => array( 'https://wp.org/page1.php', '/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'relative_4' => array( 'https://wp.org/section/page1.php', 'images/image1.png', 'https://wp.org/section/images/image1.png' ),
+			'relative_5' => array( 'https://wp.org/section/page1.php', '/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'relative_6' => array( 'https://wp.org/page1.php', 'images/image1.png', 'https://wp.org/images/image1.png' ),
+			'relative_7' => array( 'https://wp.org/page1', 'images/image1.png', 'https://wp.org/images/image1.png' ),
 		);
 	}
 }

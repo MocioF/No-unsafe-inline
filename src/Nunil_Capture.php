@@ -16,8 +16,10 @@ use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use NUNIL\Nunil_Lib_Log as Log;
 
+use League\Uri\Http;
 use League\Uri\Uri;
 use League\Uri\UriModifier;
+use League\Uri\UriInfo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -792,6 +794,8 @@ class Nunil_Capture {
 		if ( '' !== $src_attrib ) {
 			$src_attrib = $this->clean_random_params( $src_attrib );
 
+			$src_attrib = $this->conv_to_absolute_url( $src_attrib );
+
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
 
 			if ( is_null( $external_script_id ) ) { // The script is not in the db.
@@ -866,5 +870,46 @@ class Nunil_Capture {
 			$new_uri = UriModifier::removeParams( $uri, $param );
 		}
 		return $new_uri->__toString();
+	}
+
+	/**
+	 * Returns resource url
+	 *
+	 * Returns the absolute url of the resource
+	 *
+	 * @since 1.1.1
+	 * @access private
+	 *
+	 * @param string $src_string The search string.
+	 * @param string $base_url The url of the page where links are found.
+	 * @return string
+	 */
+	private function conv_to_absolute_url( $src_string, $base_url = '' ) {
+		global $wp;
+		if ( '' === $base_url ) {
+			$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		} else {
+			$current_url = $base_url;
+		}
+
+		$home_url   = Uri::createFromString( $current_url );
+		$uri_object = Uri::createFromString( $src_string );
+
+		if ( is_null( $uri_object->getScheme() ) ) {
+			$scheme = $home_url->getScheme();
+		} else {
+			$scheme = $uri_object->getScheme();
+		}
+
+		if ( is_null( $uri_object->getHost() ) ) {
+			$host           = $home_url->getHost();
+			$new_uri_object = Http::createFromBaseUri( $src_string, $current_url );
+		}
+
+		if ( ! isset( $new_uri_object ) ) {
+			$new_uri_object = Uri::createFromString( $src_string )
+			->withScheme( $scheme );
+		}
+		return '' . $new_uri_object;
 	}
 }
