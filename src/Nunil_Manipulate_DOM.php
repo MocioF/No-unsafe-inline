@@ -1297,29 +1297,31 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$content = $this->injected_inline_script;
 
 			$script_node = $this->domdocument->createElement( 'script' );
-			$script_node->setAttribute( 'type', 'text/javascript' );
-			if ( 'nonce' === $this->inline_scripts_mode ) {
-				$script_node->setAttribute( 'nonce', $this->page_nonce );
-			}
+			if ( false !== $script_node ) {
+				$script_node->setAttribute( 'type', 'text/javascript' );
+				if ( 'nonce' === $this->inline_scripts_mode ) {
+					$script_node->setAttribute( 'nonce', $this->page_nonce );
+				}
 
-			$script_node->appendChild( $this->domdocument->createTextNode( $content ) );
+				$script_node->appendChild( $this->domdocument->createTextNode( $content ) );
 
-			if ( 'nonce' !== $this->inline_scripts_mode ) {
-				$hashes = $this->get_hashes( $content, $utf8 = true );
-				$in_use = $hashes['in_use'];
+				if ( 'nonce' !== $this->inline_scripts_mode ) {
+					$hashes = $this->get_hashes( $content, $utf8 = true );
+					$in_use = $hashes['in_use'];
 
-				$this->csp_local_whitelist[] = array(
-					'directive' => 'script-src',
-					'source'    => $in_use . '-' . $hashes[ $in_use ],
-				);
-			}
-			$body_node = $this->domdocument->getElementsByTagName( 'body' );
-			if ( 0 < $body_node->length ) {
-				$body_node = $body_node->item( 0 );
-			}
-			if ( ! is_null( $body_node ) ) {
-				if ( is_a( $body_node, '\DOMElement' ) ) {
-					$body_node->appendChild( $script_node );
+					$this->csp_local_whitelist[] = array(
+						'directive' => 'script-src',
+						'source'    => $in_use . '-' . $hashes[ $in_use ],
+					);
+				}
+				$body_node = $this->domdocument->getElementsByTagName( 'body' );
+				if ( 0 < $body_node->length ) {
+					$body_node = $body_node->item( 0 );
+				}
+				if ( ! is_null( $body_node ) ) {
+					if ( is_a( $body_node, '\DOMElement' ) ) {
+						$body_node->appendChild( $script_node );
+					}
 				}
 			}
 		}
@@ -1337,30 +1339,32 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$content = $this->injected_inline_style;
 
 			$style_node = $this->domdocument->createElement( 'style' );
-			$style_node->setAttribute( 'type', 'text/css' );
-			$style_node->setAttribute( 'id', 'nunil-internal-stylesheet' );
-			$style_node->setAttribute( 'title', 'nunil-internal-stylesheet' );
-			if ( 'nonce' === $this->inline_scripts_mode ) {
-				$style_node->setAttribute( 'nonce', $this->page_nonce );
-			}
+			if ( false !== $style_node ) {
+				$style_node->setAttribute( 'type', 'text/css' );
+				$style_node->setAttribute( 'id', 'nunil-internal-stylesheet' );
+				$style_node->setAttribute( 'title', 'nunil-internal-stylesheet' );
+				if ( 'nonce' === $this->inline_scripts_mode ) {
+					$style_node->setAttribute( 'nonce', $this->page_nonce );
+				}
 
-			$style_node->appendChild( $this->domdocument->createTextNode( $content ) );
+				$style_node->appendChild( $this->domdocument->createTextNode( $content ) );
 
-			if ( 'nonce' !== $this->inline_scripts_mode ) {
-				$hashes = $this->get_hashes( $content, $utf8 = false );
-				$in_use = $hashes['in_use'];
+				if ( 'nonce' !== $this->inline_scripts_mode ) {
+					$hashes = $this->get_hashes( $content, $utf8 = false );
+					$in_use = $hashes['in_use'];
 
-				$this->csp_local_whitelist[] = array(
-					'directive' => 'style-src',
-					'source'    => $in_use . '-' . $hashes[ $in_use ],
-				);
-			}
-			$head_node = $this->domdocument->getElementsByTagName( 'head' );
-			if ( 0 < $head_node->length ) {
-				$head_node = $head_node->item( 0 );
-				if ( ! is_null( $head_node ) ) {
-					if ( is_a( $head_node, '\DOMElement' ) ) {
-						$head_node->appendChild( $style_node );
+					$this->csp_local_whitelist[] = array(
+						'directive' => 'style-src',
+						'source'    => $in_use . '-' . $hashes[ $in_use ],
+					);
+				}
+				$head_node = $this->domdocument->getElementsByTagName( 'head' );
+				if ( 0 < $head_node->length ) {
+					$head_node = $head_node->item( 0 );
+					if ( ! is_null( $head_node ) ) {
+						if ( is_a( $head_node, '\DOMElement' ) ) {
+							$head_node->appendChild( $style_node );
+						}
 					}
 				}
 			}
