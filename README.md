@@ -148,7 +148,7 @@ The **complete list of dependencies** used in this plugin can be seen in [depend
 
 ## License ##
 
-No unsafe-inlie is an Open Source project licensed under [GPL v2](./LICENSE.txt).
+No unsafe-inline is an Open Source project licensed under [GPL v2](./LICENSE.txt).
 
 ## Contributions, Issues, Bugs ##
 

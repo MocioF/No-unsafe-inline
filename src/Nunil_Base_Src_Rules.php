@@ -171,7 +171,7 @@ class Nunil_Base_Src_Rules {
 		$parsed_urls = array();
 		if ( ! is_null( $ext_scripts ) ) {
 			foreach ( $ext_scripts as $script ) {
-				$parsed_urls[] = UriString::parse( $script->src_attrib );
+				$parsed_urls[] = UriString::parse( stripslashes( $script->src_attrib ) );
 			}
 		}
 		return $parsed_urls;
