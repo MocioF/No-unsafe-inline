@@ -82,7 +82,7 @@ jobs:
 
     - name: Only for WP <= 5.8 Install Composer dependencies
       if: ${{ matrix.wordpress-version == '5.2' || matrix.wordpress-version == '5.3' || matrix.wordpress-version == '5.4' || matrix.wordpress-version == '5.5' || matrix.wordpress-version == '5.6' || matrix.wordpress-version == '5.7' || matrix.wordpress-version == '5.8' }} 
-      run: (composer update --with phpunit/phpunit "^7.5" --with-dependencies || true ) && composer install --no-progress --prefer-dist --optimize-autoloader --ignore-platform-reqs
+      run: (composer update --with phpunit/phpunit:^7.5 --with-dependencies || true ) && composer install --no-progress --prefer-dist --optimize-autoloader --ignore-platform-reqs
       
     #- name: Only for WP >= 5.9 and PHP 8 and PHP 8.1 Install Composer dependencies
       # See: https://make.wordpress.org/core/2021/09/27/changes-to-the-wordpress-core-php-test-suite/
