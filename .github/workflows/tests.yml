@@ -15,6 +15,8 @@ jobs:
         wordpress-version: ['5.2', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6.0', '6.1']
         php-versions: ['7.4', '8.0', '8.1']
         exclude:
+          - php-versions: '7.4'
+            wordpress-version: '5.2'
           - php-versions: '8.0'
             wordpress-version: '5.2'
           - php-versions: '8.0'
@@ -37,7 +39,13 @@ jobs:
             wordpress-version: '5.7'
           - php-versions: '8.1'
             wordpress-version: '5.8'
-
+        include:
+          - php-versions: '7.2'
+            wordpress-version: '5.2'
+          - php-versions: '7.3'
+            wordpress-version: '5.2'
+          - php-versions: '8.2'
+            wordpress-version: '6.1'
     name: PHP:${{ matrix.php-versions }} / WP:${{ matrix.wordpress-version }}
     services:
       mysql:
