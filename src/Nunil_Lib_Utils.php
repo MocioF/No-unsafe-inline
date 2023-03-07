@@ -78,10 +78,12 @@ class Nunil_Lib_Utils {
 		foreach ( $array as $value ) {
 			if ( ! is_numeric( $value ) ) {
 				return false;
-			} else {
-				if ( ! ctype_digit( $value ) ) {
-					return false;
-				}
+			}
+			if ( ! is_string( $value ) ) {
+				return false;
+			}
+			if ( ! ctype_digit( $value ) ) {
+				return false;
 			}
 		}
 		return true;

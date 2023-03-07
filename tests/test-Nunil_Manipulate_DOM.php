@@ -23,7 +23,7 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 			array( 'type' => '! text/template' ),
 		);
 		$inline = true;
-		$this->nunil_tag_1 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
+		$this->nunil_tag1 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
 		
 		$directive    = 'style-src';
 		$tag          = 'link';
@@ -33,7 +33,7 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
 			array( 'as' => 'script' ),
 		);
 		$inline       = false;
-		$this->nunil_tag_2 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
+		$this->nunil_tag2 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
     }
 
 	
@@ -44,7 +44,7 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
     {
 		$Nunil_Manipulate_DOM = new NUNIL\Nunil_Manipulate_DOM();
         $this->assertEquals(
-			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag_1 )
+			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag1 )
         );
     }
 	
@@ -63,7 +63,7 @@ final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
     {
 		$Nunil_Manipulate_DOM = new NUNIL\Nunil_Manipulate_DOM();
         $this->assertEquals(
-			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag_2 )
+			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag2 )
         );
     }
 	
