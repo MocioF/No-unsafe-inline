@@ -1065,7 +1065,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$cache_group = 'no-unsafe-inline';
 		$inline_rows = wp_cache_delete( $cache_key, $cache_group );
 
-		$this->insert_pool->add(
+		$this->insert_pool[] = async(
+		// $this->insert_pool->add( // https://github.com/spatie/async/issues/167 .
 			function () use ( $tagname, $content, $hashes, $predicted_label ) {
 				$in_use    = $hashes['in_use'];
 				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
@@ -1097,6 +1098,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				}
 			}
 		);
+		await( $this->insert_pool );
 	}
 
 	/**

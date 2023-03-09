@@ -174,7 +174,8 @@ class No_Unsafe_Inline_Public {
 				->concurrency( 2 )
 				->timeout( 15 )
 				->sleepTime( 50000 );
-			$pool->add(
+			// $pool->add( // https://github.com/spatie/async/issues/167 .
+			$pool[] = async(
 				function() use ( $htmlsource, $options ) {
 					$capture = new NUNIL\Nunil_Capture();
 					$capture->load_html( $htmlsource );
@@ -194,6 +195,7 @@ class No_Unsafe_Inline_Public {
 					error_log( print_r( $exception, true ) );
 				}
 			);
+			await( $pool );
 		}
 
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {

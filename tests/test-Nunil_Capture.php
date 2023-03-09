@@ -144,6 +144,7 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 		return array (
 			'absolute_1' => array( 'https://wp.org', 'https://wp.org/images/image1.png', 'https://wp.org/images/image1.png' ),
 			'absolute_2' => array( 'https://wp.org', '//wp.org/images/image1.png', 'https://wp.org/images/image1.png' ),
+			'absolute_3' => array( '', 'https://wp.org/wp-content/themes/twenty-twentytwo/screenshot.png?ver=4.4.8', 'https://wp.org/wp-content/themes/twenty-twentytwo/screenshot.png?ver=4.4.8' ),
 			'relative_1' => array( 'https://wp.org/page1/', 'images/image1.png', 'https://wp.org/page1/images/image1.png' ),
 			'relative_2' => array( 'https://wp.org/page1', '/images/image1.png', 'https://wp.org/images/image1.png' ),
 			'relative_3' => array( 'https://wp.org/page1.php', '/images/image1.png', 'https://wp.org/images/image1.png' ),
