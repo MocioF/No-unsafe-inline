@@ -3,7 +3,7 @@ Contributors: mociofiletto
 Donate link: https://paypal.me/GiuseppeF77
 Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
-Tested up to: 5.9
+Tested up to: 6.1
 Requires PHP: 7.4
 Stable tag: 1.1.0
 License: GPLv2 or later

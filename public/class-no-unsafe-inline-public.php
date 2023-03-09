@@ -262,8 +262,8 @@ class No_Unsafe_Inline_Public {
 					$base_src = (array) get_option( 'no-unsafe-inline-base-rule' );
 
 					foreach ( $base_src as $directive => $base_sources ) {
-						$dir = str_replace( '_base_rule', '', $directive );
-						$csp = trim( strval( $base_sources ) );
+						$dir     = str_replace( '_base_rule', '', $directive );
+						$csp     = trim( strval( $base_sources ) );
 						$enabled = $dir . '_enabled';
 						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
 							$csp = $csp . ' \'strict-dynamic\'';

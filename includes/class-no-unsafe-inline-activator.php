@@ -50,10 +50,10 @@ class No_Unsafe_Inline_Activator {
 				}
 				if ( is_iterable( $sites ) && ! empty( $sites ) ) {
 					foreach ( $sites as $site ) {
-						if ( is_object( $site ) && ( isset( $site->blog_id ) ) ) {
-							switch_to_blog( $site->blog_id );
+						if ( is_object( $site ) ) {
+							switch_to_blog( intval( $site->blog_id ) );
 						} else {
-							switch_to_blog( $site['blog_id'] );
+							switch_to_blog( intval( $site['blog_id'] ) );
 						}
 						if ( ! is_plugin_active( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
 							self::single_activate();

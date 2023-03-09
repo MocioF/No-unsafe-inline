@@ -49,10 +49,10 @@ class No_Unsafe_Inline_Deactivator {
 			if ( is_iterable( $sites ) && ! empty( $sites ) ) {
 				$remove_mu_plugin = true;
 				foreach ( $sites as $site ) {
-					if ( is_object( $site ) && ( isset( $site->blog_id ) ) ) {
-						switch_to_blog( $site->blog_id );
+					if ( is_object( $site ) ) {
+						switch_to_blog( intval( $site->blog_id ) );
 					} else {
-						switch_to_blog( $site['blog_id'] );
+						switch_to_blog( intval( $site['blog_id'] ) );
 					}
 					// We don't remove mu-plugin if plugin is local activated.
 					if ( in_array( NO_UNSAFE_INLINE_PLUGIN_BASENAME, (array) get_option( 'active_plugins', array() ), true ) ) {
