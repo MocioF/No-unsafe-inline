@@ -264,6 +264,7 @@ class No_Unsafe_Inline_Public {
 					foreach ( $base_src as $directive => $base_sources ) {
 						$dir = str_replace( '_base_rule', '', $directive );
 						$csp = trim( strval( $base_sources ) );
+						$enabled = $dir . '_enabled';
 						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
 							$csp = $csp . ' \'strict-dynamic\'';
 						}
@@ -279,7 +280,9 @@ class No_Unsafe_Inline_Public {
 								$csp = $csp . ' \'report-sample\'';
 							}
 						}
-						$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
+						if ( 1 === $options[ $enabled ] ) { // add only rule for enabled directives.
+							$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
+						}
 					}
 
 					$report_uri       = '';
