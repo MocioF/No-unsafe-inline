@@ -101,7 +101,7 @@ class No_Unsafe_Inline_Admin {
 				'jquery-ui-theme-smoothness',
 				plugin_dir_url( __FILE__ ) .
 				sprintf(
-					'css/jqueryui/%s/themes/smoothness/jquery-ui.css',
+					'css/jqueryui/%s/themes/smoothness/jquery-ui.min.css',
 					$wp_scripts->registered['jquery-ui-core']->ver
 				),
 				array(),
