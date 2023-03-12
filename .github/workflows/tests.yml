@@ -76,15 +76,17 @@ jobs:
 
     - name: Get composer cache directory
       id: composer-cache
-      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
+      run: echo "composer_dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      # run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
     - name: Cache composer dependencies
       uses: actions/cache@v3
       with:
-        path: ${{ steps.composer-cache.outputs.dir }}
+        # path: ${{ steps.composer-cache.outputs.dir }}
+        path: ${{ steps.composer-cache.outputs.composer_dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
