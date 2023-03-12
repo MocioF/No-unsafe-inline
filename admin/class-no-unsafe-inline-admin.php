@@ -2088,7 +2088,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_external_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-external.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-whitelist-tables.php';
 	}
 
 	/**
@@ -2098,7 +2098,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_inline_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-inline.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-whitelist-tables.php';
 	}
 
 	/**
@@ -2108,7 +2108,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function print_events_page(): void {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-events.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/no-unsafe-inline-whitelist-tables.php';
 	}
 
 	/**

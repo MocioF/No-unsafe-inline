@@ -80,7 +80,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	public function process_bulk_action() {
 		/**
 		 * Security check for bulk actions.
-		 * For single actions, I will check nonce insede switch because
+		 * For single actions, I will check nonce inside switch because
 		 * it isn't in the post array.
 		 */
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -402,10 +402,10 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 					$orderby .= "tagid $order ";
 					break;
 				case 'tagname':
-					$orderby .= "tagname $order, ";
+					$orderby .= "tagname $order ";
 					break;
 				case 'event_attribute':
-					$orderby .= "event_attribute $order, ";
+					$orderby .= "event_attribute $order ";
 					break;
 				case 'clustername':
 					$orderby .= "clustername $order ";
