@@ -3,9 +3,9 @@ Contributors: mociofiletto
 Donate link: https://paypal.me/GiuseppeF77
 Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -157,6 +157,10 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.1.1 =
+* Bug fixes
+* Improved compatibility with PHP 8.2
+
 = 1.1.0 =
 * Moving to RubixML lib for machine-learning.
 * Fixed bug in capturing tags.
