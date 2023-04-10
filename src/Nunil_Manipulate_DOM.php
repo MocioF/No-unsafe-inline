@@ -772,7 +772,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		if (
 			( 'hash' === $options['script-src_mode'] && 'script-src' === $directive ) ||
-			( 'hash' === $options['style-src_mode'] && 'style-src' === $directive ) ||
 			( 'hash' === $options['img-src_mode'] && 'img-src' === $directive )
 		) {
 			$add_hashes = true;

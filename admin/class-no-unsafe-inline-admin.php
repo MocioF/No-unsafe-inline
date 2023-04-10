@@ -298,6 +298,14 @@ class No_Unsafe_Inline_Admin {
 
 			update_option( 'no-unsafe-inline', $options );
 		}
+
+		if ( version_compare( $old_ver, '1.1.2a', '<' ) ) {
+			$options = (array) get_option( 'no-unsafe-inline' );
+			if ( 'hash' === $options['style-src_mode'] ) {
+				$options['style-src_mode'] = 'none';
+			}
+			update_option( 'no-unsafe-inline', $options );
+		}
 	}
 
 	/**
@@ -884,7 +892,6 @@ class No_Unsafe_Inline_Admin {
 		! empty( $input['sri_script'] ) ||
 		! empty( $input['sri_link'] ) ||
 		'hash' === $input['script-src_mode'] ||
-		'hash' === $input['style-src_mode'] ||
 		'hash' === $input['img-src_mode']
 		) &&
 		(
@@ -963,7 +970,7 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['script-src_mode'] = 'nonce';
 		}
-		$style_src_mode = array( 'nonce', 'hash', 'none' );
+		$style_src_mode = array( 'nonce', 'none' );
 		if ( in_array( $input['style-src_mode'], $style_src_mode, true ) ) {
 			$new_input['style-src_mode'] = $input['style-src_mode'];
 		} else {
@@ -1203,12 +1210,6 @@ class No_Unsafe_Inline_Admin {
 		'<input type="radio" name="no-unsafe-inline[style-src_mode]" id="style-src-nonce" value="nonce" ' );
 		echo( checked( 'nonce', $value, false ) );
 		echo( '/><span>' . esc_html__( 'nonce', 'no-unsafe-inline' ) . '</span></label>' );
-
-		echo (
-		'<label for="style-src-hash" class="nunil-l-radio">' .
-		'<input type="radio" name="no-unsafe-inline[style-src_mode]" id="style-src-hash" value="hash" ' );
-		echo( checked( 'hash', $value, false ) );
-		echo( '/><span>' . esc_html__( 'hash', 'no-unsafe-inline' ) . '</span></label>' );
 
 		echo (
 		'<label for="style-src-none" class="nunil-l-radio">' .

@@ -671,7 +671,6 @@ class Nunil_Admin_Help_Tabs {
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>style-src_mode</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: '
 			. '<b>\'nonce\'</b>: ' . esc_html__( 'use nonce', 'no-unsafe-inline' ) . ', '
-			. '<b>\'hash\'</b>: ' . esc_html__( 'use sha hashes', 'no-unsafe-inline' ) . ', '
 			. '<b>\'none\'</b>: ' . esc_html__( 'only base rule', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<pre>'

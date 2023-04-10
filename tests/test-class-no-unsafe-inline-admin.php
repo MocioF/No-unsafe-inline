@@ -151,7 +151,7 @@ final class No_Unsafe_Inline_AdminTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			$options['style-src_mode'],
-			'hash'
+			'none'
 		);
 
 		$this->assertSame(
