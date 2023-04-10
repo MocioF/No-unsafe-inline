@@ -90,7 +90,7 @@
 				<?php
 				echo ( esc_html__( 'Test the classifier.', 'no-unsafe-inline' ) );
 				echo '<br>';
-				echo ( esc_html__( 'This is just a classifier test to check php-ml settings.', 'no-unsafe-inline' ) );
+				echo ( esc_html__( 'This is just a classifier test to check machine learning classifier settings.', 'no-unsafe-inline' ) );
 				?>
 			</div>
 		</div>

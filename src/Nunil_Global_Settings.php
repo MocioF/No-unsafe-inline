@@ -110,7 +110,7 @@ class Nunil_Global_Settings {
 	public function __construct() {
 		$def_opts = array(
 
-			/* php-ml settings */
+			/* Rubix ML settings */
 			'dbscan_epsilon_inl'    => 40,
 			'dbscan_minsamples_inl' => 3,
 			'dbscan_epsilon_evh'    => 60,
