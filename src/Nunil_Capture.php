@@ -774,9 +774,9 @@ class Nunil_Capture {
 
 				// Insert row in external_scripts.
 				$external_script_id = Nunil_Lib_Db::insert_ext_in_db( $directive, $tagname, $src_attrib );
-				/*if ( Nunil_Lib_Utils::is_resource_hash_needed( $directive, $tagname ) ) { */
-				$this->insert_hashes_in_db( $external_script_id );
-				/* } */
+				if ( Nunil_Lib_Utils::is_resource_hash_needed( $directive, $tagname ) ) {
+					$this->insert_hashes_in_db( $external_script_id );
+				}
 
 				$returned_id = $external_script_id;
 

@@ -89,4 +89,26 @@ class Nunil_Lib_Utils {
 		return true;
 	}
 
+	/**
+	 * Returns true if sha hashes are needed for a resource
+	 *
+	 * We need to hash only
+	 * <script> to use it both for CSP source values and in SRI
+	 * <link> to use it in SRI
+	 *
+	 * @since 1.1.2
+	 * @param string $directive The CSP src- directive.
+	 * @param string $tagname The HTML tag name.
+	 * @return bool
+	 */
+	public static function is_resource_hash_needed( $directive, $tagname ):bool {
+		if (
+				( 'script' === $tagname && ( 'script-src' === $directive || 'script-src-elem' === $directive ) ) ||
+				( 'link' === $tagname && ( 'style-src' === $directive || 'style-src-elem' === $directive ) )
+			) {
+			return true;
+		}
+		return false;
+	}
+
 }
