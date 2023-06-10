@@ -574,31 +574,12 @@ class Nunil_Capture {
 									$srcset = $node->getAttribute( $stored_attr );
 									$srcs   = $this->get_srcs_from_srcset( $srcset );
 									foreach ( $srcs as $src_attrib ) {
-										$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-
-										if ( $external_script_id ) {
-											try {
-												$sri = new Nunil_SRI();
-												$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-											} catch ( \Exception $ex ) {
-												Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
-											}
-										}
-
+										$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 										$processed[ $node_key ] = true;
 									}
 								} else { // $stored_attr is not 'srcset'.
-									$src_attrib         = $node->getAttribute( $stored_attr );
-									$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-									if ( $external_script_id ) {
-										try {
-											$sri = new Nunil_SRI();
-											$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-										} catch ( \Exception $ex ) {
-											Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
-										}
-									}
-
+									$src_attrib             = $node->getAttribute( $stored_attr );
+									$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 									$processed[ $node_key ] = true;
 								}
 							} else {
@@ -619,21 +600,12 @@ class Nunil_Capture {
 												$srcset = $child_node->getAttribute( $stored_attr );
 												$srcs   = $this->get_srcs_from_srcset( $srcset );
 												foreach ( $srcs as $src_attrib ) {
-													$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-													if ( $external_script_id ) {
-														$sri = new Nunil_SRI();
-														$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-													}
+													$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 													$processed[ $node_key ] = true;
 												}
 											} else {
-												$src_attrib         = $child_node->getAttribute( $stored_attr );
-												$external_script_id = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
-
-												if ( $external_script_id ) {
-													$sri = new Nunil_SRI();
-													$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-												}
+												$src_attrib             = $child_node->getAttribute( $stored_attr );
+												$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 												$processed[ $node_key ] = true;
 											}
 										}
@@ -802,7 +774,11 @@ class Nunil_Capture {
 
 				// Insert row in external_scripts.
 				$external_script_id = Nunil_Lib_Db::insert_ext_in_db( $directive, $tagname, $src_attrib );
-				$returned_id        = $external_script_id;
+				/*if ( Nunil_Lib_Utils::is_resource_hash_needed( $directive, $tagname ) ) { */
+				$this->insert_hashes_in_db( $external_script_id );
+				/* } */
+
+				$returned_id = $external_script_id;
 
 				// Insert row in occurences.
 				$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
@@ -823,6 +799,22 @@ class Nunil_Capture {
 		}
 
 		return $returned_id;
+	}
+
+	/**
+	 * Insert hashes in DB for external resources
+	 *
+	 * @since 1.1.2
+	 * @param int $external_script_id The id of the external resource in db.
+	 * @return void
+	 */
+	protected function insert_hashes_in_db( $external_script_id ): void {
+		try {
+			$sri = new Nunil_SRI();
+			$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
+		} catch ( \Exception $ex ) {
+			Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
+		}
 	}
 
 	/**
