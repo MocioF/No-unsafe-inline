@@ -4,11 +4,11 @@ final class No_Unsafe_Inline_ActivatorTest extends WP_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		no_unsafe_inline_activate( true );
 	}
 
 	public function tear_down() {
-		no_unsafe_inline_deactivate( false );
+		no_unsafe_inline_deactivate( true );
 		parent::tear_down();
 	}
 

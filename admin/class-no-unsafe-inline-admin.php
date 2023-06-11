@@ -304,6 +304,13 @@ class No_Unsafe_Inline_Admin {
 			if ( 'hash' === $options['style-src_mode'] ) {
 				$options['style-src_mode'] = 'none';
 			}
+			/**
+			 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+			 * but support for external styles or imgs in the specification has not been announced
+			 * https://www.w3.org/TR/CSP3/#external-hash
+			 */
+			unset( $options['img-src_mode'] );
+
 			update_option( 'no-unsafe-inline', $options );
 		}
 	}
@@ -489,13 +496,18 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_ext_mode'
 		);
 
-		add_settings_field(
-			'img-src_mode',
-			'img-src',
-			array( $this, 'print_mode_for_img_src' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_ext_mode'
-		);
+		/**
+		 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+		 * but support for external styles or imgs in the specification has not been announced
+		 * https://www.w3.org/TR/CSP3/#external-hash
+		 * add_settings_field(
+		 *  'img-src_mode',
+		 *  'img-src',
+		 *  array( $this, 'print_mode_for_img_src' ),
+		 *  'no-unsafe-inline-options',
+		 *  'no-unsafe-inline_ext_mode'
+		 * );
+		 */
 
 		/*** Used hashes */
 		add_settings_section(
@@ -891,8 +903,16 @@ class No_Unsafe_Inline_Admin {
 		(
 		! empty( $input['sri_script'] ) ||
 		! empty( $input['sri_link'] ) ||
-		'hash' === $input['script-src_mode'] ||
-		'hash' === $input['img-src_mode']
+
+		/**
+		 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+		 * but support for external styles or imgs in the specification has not been announced
+		 * https://www.w3.org/TR/CSP3/#external-hash
+		 * 'hash' === $input['script-src_mode'] ||
+		 * 'hash' === $input['img-src_mode']
+		 */
+		'hash' === $input['script-src_mode']
+
 		) &&
 		(
 		empty( $input['sri_sha256'] ) &&
@@ -976,12 +996,18 @@ class No_Unsafe_Inline_Admin {
 		} else {
 			$new_input['style-src_mode'] = 'nonce';
 		}
-		$img_src_mode = array( 'hash', 'none' );
-		if ( in_array( $input['img-src_mode'], $img_src_mode, true ) ) {
-			$new_input['img-src_mode'] = $input['img-src_mode'];
-		} else {
-			$new_input['img-src_mode'] = 'none';
-		}
+		/**
+		 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+		 * but support for external styles or imgs in the specification has not been announced
+		 * https://www.w3.org/TR/CSP3/#external-hash
+		 *
+		 * $img_src_mode = array( 'hash', 'none' );
+		 * if ( in_array( $input['img-src_mode'], $img_src_mode, true ) ) {
+		 *  $new_input['img-src_mode'] = $input['img-src_mode'];
+		 * } else {
+		 *  $new_input['img-src_mode'] = 'none';
+		 * }
+		 */
 
 		// text.
 		if ( isset( $input['group_name'] ) && is_string( $input['group_name'] ) ) {
@@ -1223,6 +1249,7 @@ class No_Unsafe_Inline_Admin {
 	 *
 	 * @since 1.1.0
 	 * @return void
+	 * @deprecated since versione 1.1.2a
 	 */
 	public function print_mode_for_img_src(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );

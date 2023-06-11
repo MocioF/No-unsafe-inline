@@ -422,7 +422,13 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if (
 			'none' !== $options['script-src_mode'] ||
 			'none' !== $options['style-src_mode'] ||
-			'none' !== $options['img-src_mode'] ||
+			/**
+			 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+			 * but support for external styles or imgs in the specification has not been announced
+			 * https://www.w3.org/TR/CSP3/#external-hash
+			 *
+			 * 'none' !== $options['img-src_mode'] ||
+			 */
 			1 === $options['sri_script'] ||
 			1 === $options['sri_link']
 			) {
@@ -771,8 +777,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$use512  = ( 1 === $options['sri_sha512'] ) ? true : false;
 
 		if (
+			/**
+			 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+			 * but support for external styles or imgs in the specification has not been announced
+			 * https://www.w3.org/TR/CSP3/#external-hash
+			 * ( 'hash' === $options['script-src_mode'] && 'script-src' === $directive ) ||
+			 * ( 'hash' === $options['img-src_mode'] && 'img-src' === $directive )
+			 */
 			( 'hash' === $options['script-src_mode'] && 'script-src' === $directive ) ||
-			( 'hash' === $options['img-src_mode'] && 'img-src' === $directive )
+			( 'hash' === $options['script-src_mode'] && 'script-src-elem' === $directive )
 		) {
 			$add_hashes = true;
 		} else {
@@ -781,7 +794,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		if (
 			( 'nonce' === $options['script-src_mode'] && 'script-src' === $directive && 'script' === $node->nodeName ) ||
-			( 'nonce' === $options['style-src_mode'] && 'style-src' === $directive && 'link' === $node->nodeName )
+			( 'nonce' === $options['script-src_mode'] && 'script-src-elem' === $directive && 'script' === $node->nodeName ) ||
+			( 'nonce' === $options['style-src_mode'] && 'style-src' === $directive && 'link' === $node->nodeName ) ||
+			( 'nonce' === $options['style-src_mode'] && 'style-src-elem' === $directive && 'link' === $node->nodeName )
 		) {
 			$add_nonce = true;
 		} else {

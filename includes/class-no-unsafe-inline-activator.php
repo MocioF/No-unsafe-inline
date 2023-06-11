@@ -140,10 +140,18 @@ class No_Unsafe_Inline_Activator {
 			}
 			$plugin_options['prefetch-src_enabled'] = 0;
 
-			$plugin_options['external_host_mode']                = 'sch-host';
-			$plugin_options['script-src_mode']                   = 'nonce';
-			$plugin_options['style-src_mode']                    = 'nonce';
-			$plugin_options['img-src_mode']                      = 'none';
+			$plugin_options['external_host_mode'] = 'sch-host';
+			$plugin_options['script-src_mode']    = 'nonce';
+			$plugin_options['style-src_mode']     = 'nonce';
+
+			/**
+			 * In CSP3 hashes are only allowed for inline script, inline styles and external script
+			 * but support for external styles or imgs in the specification has not been announced
+			 * https://www.w3.org/TR/CSP3/#external-hash
+			 *
+			 * $plugin_options['img-src_mode']                      = 'none';
+			 */
+
 			$plugin_options['sri_sha256']                        = 1;
 			$plugin_options['sri_sha384']                        = 0;
 			$plugin_options['sri_sha512']                        = 0;
