@@ -170,10 +170,22 @@ class No_Unsafe_Inline_Public {
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
 		if ( 1 === $tools['capture_enabled'] ) {
-			$pool = Pool::create()
-				->concurrency( 2 )
-				->timeout( 15 )
-				->sleepTime( 50000 );
+			/**
+			 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
+			 */
+			$supported = Pool::isSupported();
+			if ( ! $supported ) {
+				$pool = Pool::create()
+					->concurrency( 2 )
+					->timeout( 15 )
+					->sleepTime( 50000 )
+					->forceSynchronous();
+			} else {
+				$pool = Pool::create()
+					->concurrency( 2 )
+					->timeout( 15 )
+					->sleepTime( 50000 );
+			}
 			// $pool->add( // https://github.com/spatie/async/issues/167 .
 			$pool[] = async(
 				function() use ( $htmlsource, $options ) {
