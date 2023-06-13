@@ -382,8 +382,8 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) ) {
 			$screen_option = $screen->get_option( 'per_page', 'option' );
-			$per_page      = intval( get_user_meta( $user, $screen_option, true ) );
-			if ( empty( $per_page ) || $per_page < 1 ) {
+			$per_page      = intval( Utils::cast_intval( get_user_meta( $user, $screen_option, true ) ) );
+			if ( $per_page < 1 ) {
 				$per_page = intval( $screen->get_option( 'per_page', 'default' ) );
 			}
 		} else {

@@ -111,4 +111,50 @@ class Nunil_Lib_Utils {
 		return false;
 	}
 
+	/**
+	 * Casts $var to admitted type for strval or returns null
+	 *
+	 * @since 1.1.2
+	 * @param mixed $var The var to get string value from.
+	 * @return bool|float|int|resource|string|null
+	 */
+	public static function cast_strval( $var ) {
+		$new_var = $var;
+		if (
+				is_bool( $new_var ) ||
+				is_float( $new_var ) ||
+				is_int( $new_var ) ||
+				is_resource( $new_var ) ||
+				is_string( $new_var ) ||
+				null === $new_var
+			) {
+			return( $new_var );
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Casts $var to admitted type for intval or returns null
+	 *
+	 * @since 1.1.2
+	 * @param mixed $var The var to get int value from.
+	 * @return array<mixed>|bool|float|int|resource|string|null
+	 */
+	public static function cast_intval( $var ) {
+		$new_var = $var;
+		if (
+				is_array( $new_var ) ||
+				is_bool( $new_var ) ||
+				is_float( $new_var ) ||
+				is_int( $new_var ) ||
+				is_resource( $new_var ) ||
+				is_string( $new_var ) ||
+				null === $new_var
+			) {
+			return( $new_var );
+		} else {
+			return null;
+		}
+	}
 }

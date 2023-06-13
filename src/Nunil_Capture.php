@@ -15,6 +15,7 @@ namespace NUNIL;
 use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 use League\Uri\Http;
 use League\Uri\Uri;
@@ -97,7 +98,7 @@ class Nunil_Capture {
 
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 		if ( ! empty( $plugin_options ) ) {
-			$inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
+			$inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
 			if ( 'nonce' === $inline_scripts_mode ) {
 				$this->hash_in_use = 'sha256';
 			} else {

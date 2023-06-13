@@ -10,6 +10,7 @@
  */
 
 use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -1113,7 +1114,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : 0;
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( Utils::cast_strval( $options[ $option_name ] ) ) ) : 0;
 		$enabled     = $value ? 'checked="checked"' : '';
 
 		printf(
@@ -1147,7 +1148,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_external_host_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['external_host_mode'] ) ? strval( $options['external_host_mode'] ) : 'host';
+		$value   = isset( $options['external_host_mode'] ) ? strval( Utils::cast_strval( $options['external_host_mode'] ) ) : 'host';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -1406,7 +1407,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_inline_script_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['inline_scripts_mode'] ) ? strval( $options['inline_scripts_mode'] ) : 'nonce';
+		$value   = isset( $options['inline_scripts_mode'] ) ? strval( Utils::cast_strval( $options['inline_scripts_mode'] ) ) : 'nonce';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -1596,7 +1597,7 @@ class No_Unsafe_Inline_Admin {
 			'<input class="nunil-max-response-header-size" type="text" id="no-unsafe-inline[max_response_header_size]"' .
 			'name="no-unsafe-inline[max_response_header_size]" value="%d" />
 			<label for="no-unsafe-inline[max_response_header_size]">%s %s</label>',
-			intval( $value ),
+			intval( Utils::cast_intval( $value ) ),
 			esc_html__( 'Write here the HTTP Response Header Size Limit allowed by your server (in bytes). See: ', 'no-unsafe-inline' ),
 			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
 		);
@@ -1729,7 +1730,7 @@ class No_Unsafe_Inline_Admin {
 			'<input class="nunil-text-maxage" type="text" id="no-unsafe-inline[max_age]"' .
 			'name="no-unsafe-inline[max_age]" value="%d" %s />
 			<label for="no-unsafe-inline[max_age]">%s</label>',
-			intval( $value ),
+			intval( Utils::cast_intval( $value ) ),
 			esc_html( $disabled ),
 			esc_html__( 'Required. A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' )
 		);
@@ -1941,7 +1942,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline-base-rule' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( $options[ $option_name ] ) ) : '';
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( Utils::cast_strval( $options[ $option_name ] ) ) ) : '';
 
 		printf(
 			'<div class="nunil-base-rule-container">' .

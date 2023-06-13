@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use League\Uri\UriString;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 /**
  * Class with methods used to create base -src rules for external content
@@ -290,7 +291,7 @@ class Nunil_Base_Src_Rules {
 	private function get_nunil_external_host_mode_option() {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		if ( isset( $options['external_host_mode'] ) ) {
-			return strval( $options['external_host_mode'] );
+			return strval( Utils::cast_strval( $options['external_host_mode'] ) );
 		} else {
 			return 'sch-host';
 		}

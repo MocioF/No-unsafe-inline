@@ -11,6 +11,7 @@
 
 use NUNIL\Nunil_Lib_Log as Log;
 use Spatie\Async\Pool;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 /**
  * The public-facing functionality of the plugin.
@@ -93,21 +94,6 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Plugin_Name_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Plugin_Name_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		// ~ wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-public.min.js', array( 'jquery' ), $this->version, false );
-
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
@@ -171,6 +157,7 @@ class No_Unsafe_Inline_Public {
 
 		if ( 1 === $tools['capture_enabled'] ) {
 			/**
+			 * See:
 			 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
 			 */
 			$supported = Pool::isSupported();
@@ -275,7 +262,7 @@ class No_Unsafe_Inline_Public {
 
 					foreach ( $base_src as $directive => $base_sources ) {
 						$dir     = str_replace( '_base_rule', '', $directive );
-						$csp     = trim( strval( $base_sources ) );
+						$csp     = trim( strval( Utils::cast_strval( $base_sources ) ) );
 						$enabled = $dir . '_enabled';
 						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
 							$csp = $csp . ' \'strict-dynamic\'';

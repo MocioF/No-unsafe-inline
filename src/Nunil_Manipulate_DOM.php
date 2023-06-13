@@ -19,6 +19,7 @@ use Rubix\ML\Datasets\Unlabeled;
 use Spatie\Async\Pool;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -236,7 +237,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$this->external_rows = $external_rows;
 		}
 
-		$this->inline_scripts_mode = strval( $plugin_options['inline_scripts_mode'] );
+		$this->inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
 
 		$this->page_nonce = $this->generate_nonce();
 
