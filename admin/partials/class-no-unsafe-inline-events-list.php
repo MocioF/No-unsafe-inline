@@ -440,7 +440,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			array(
 				'total_items' => $total_items,
 				'per_page'    => $per_page,
-				'total_pages' => ceil( $total_items / $per_page ),
+				'total_pages' => intval( ceil( $total_items / $per_page ) ),
 			)
 		);
 	}
