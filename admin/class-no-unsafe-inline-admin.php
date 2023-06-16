@@ -2172,12 +2172,20 @@ class No_Unsafe_Inline_Admin {
 			$type    = $notice['type'];
 			$message = $notice['message'];
 
+			$allowed_html_in_notice = array(
+				'br'     => array(),
+				'i'      => array(),
+				'b'      => array(),
+				'strong' => array(),
+				'em'     => array(),
+			);
+
 			if ( 'warning' === $type ) {
-				printf( '<div class="notice notice-warning is-dismissible"><p>%s</p></div>', esc_html( $message ) );
+				printf( '<div class="notice notice-warning is-dismissible"><p>%s</p></div>', wp_kses( $message, $allowed_html_in_notice ) );
 			} elseif ( 'error' === $type ) {
-				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( $message ) );
+				printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', wp_kses( $message, $allowed_html_in_notice ) );
 			} else {
-				printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html( $message ) );
+				printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', wp_kses( $message, $allowed_html_in_notice ) );
 			}
 
 			delete_transient( 'no_unsafe_inline_admin_notice' );
