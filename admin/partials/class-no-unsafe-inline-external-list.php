@@ -226,13 +226,15 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			'_wpnonce'  => wp_create_nonce( 'hash_ext_script_nonce' ),
 		);
 
-		$query_args_hash_ext_script['action'] = 'hash';
-		$hash_ext_script_link                 = esc_url( add_query_arg( $query_args_hash_ext_script, $admin_page_url ) );
-		$actions['hash']                      = '<a href="' . $hash_ext_script_link . '">' . __( 'Hash', 'no-unsafe-inline' ) . '</a>';
+		if ( Utils::is_resource_hash_needed( $item['directive'], $item['tagname'] ) ) {
+			$query_args_hash_ext_script['action'] = 'hash';
+			$hash_ext_script_link                 = esc_url( add_query_arg( $query_args_hash_ext_script, $admin_page_url ) );
+			$actions['hash']                      = '<a href="' . $hash_ext_script_link . '">' . __( 'Hash', 'no-unsafe-inline' ) . '</a>';
 
-		$query_args_hash_ext_script['action'] = 'rehash';
-		$hash_ext_script_link                 = esc_url( add_query_arg( $query_args_hash_ext_script, $admin_page_url ) );
-		$actions['rehash']                    = '<a href="' . $hash_ext_script_link . '">' . __( 'Rehash', 'no-unsafe-inline' ) . '</a>';
+			$query_args_hash_ext_script['action'] = 'rehash';
+			$hash_ext_script_link                 = esc_url( add_query_arg( $query_args_hash_ext_script, $admin_page_url ) );
+			$actions['rehash']                    = '<a href="' . $hash_ext_script_link . '">' . __( 'Rehash', 'no-unsafe-inline' ) . '</a>';
+		}
 
 		$query_args_delete_ext_script = array(
 			'page'      => 'no-unsafe-inline',
@@ -256,10 +258,17 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_sha256( $item ) {
-		if ( 44 === strlen( $item['sha256'] ) && base64_decode( $item['sha256'] ) ) {
-			return '<span class="dashicons dashicons-yes" title="$item[\'sha256\']"></span>';
+		if ( Utils::is_resource_hash_needed( $item['directive'], $item['tagname'] ) ) {
+			if ( is_null( $item['sha256'] ) ) {
+				return '<span class="dashicons dashicons-minus"></span>';
+			}
+			if ( 44 === strlen( $item['sha256'] ) && base64_decode( $item['sha256'] ) ) {
+				return '<span class="dashicons dashicons-yes" title="$item[\'sha256\']"></span>';
+			} else {
+				return '<span class="dashicons dashicons-no-alt"></span>';
+			}
 		} else {
-			return '<span class="dashicons dashicons-no-alt"></span>';
+			return '<span class="dashicons dashicons-minus"></span>';
 		}
 	}
 
@@ -271,10 +280,17 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_sha384( $item ) {
-		if ( 64 === strlen( $item['sha384'] ) && base64_decode( $item['sha384'] ) ) {
-			return '<span class="dashicons dashicons-yes" title="$item[\'sha384\']"></span>';
+		if ( Utils::is_resource_hash_needed( $item['directive'], $item['tagname'] ) ) {
+			if ( is_null( $item['sha384'] ) ) {
+				return '<span class="dashicons dashicons-minus"></span>';
+			}
+			if ( 64 === strlen( $item['sha384'] ) && base64_decode( $item['sha384'] ) ) {
+				return '<span class="dashicons dashicons-yes" title="$item[\'sha384\']"></span>';
+			} else {
+				return '<span class="dashicons dashicons-no-alt"></span>';
+			}
 		} else {
-			return '<span class="dashicons dashicons-no-alt"></span>';
+			return '<span class="dashicons dashicons-minus"></span>';
 		}
 	}
 
@@ -286,10 +302,17 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_sha512( $item ) {
-		if ( 88 === strlen( $item['sha512'] ) && base64_decode( $item['sha512'] ) ) {
-			return '<span class="dashicons dashicons-yes" title="$item[\'sha512\']"></span>';
+		if ( Utils::is_resource_hash_needed( $item['directive'], $item['tagname'] ) ) {
+			if ( is_null( $item['sha512'] ) ) {
+				return '<span class="dashicons dashicons-minus"></span>';
+			}
+			if ( 88 === strlen( $item['sha512'] ) && base64_decode( $item['sha512'] ) ) {
+				return '<span class="dashicons dashicons-yes" title="$item[\'sha512\']"></span>';
+			} else {
+				return '<span class="dashicons dashicons-no-alt"></span>';
+			}
 		} else {
-			return '<span class="dashicons dashicons-no-alt"></span>';
+			return '<span class="dashicons dashicons-minus"></span>';
 		}
 	}
 

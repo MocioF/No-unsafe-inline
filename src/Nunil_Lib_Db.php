@@ -1354,7 +1354,7 @@ class Nunil_Lib_Db {
 
 		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM '
 			. self::external_scripts_table()
-			. ' WHERE 1 ' . $do_search;
+			. ' WHERE directive="script-src" or directive="style-src" ' . $do_search;
 		return $sql;
 	}
 
