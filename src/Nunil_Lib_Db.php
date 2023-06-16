@@ -838,7 +838,7 @@ class Nunil_Lib_Db {
 	 * Removes a script from external_scripts table
 	 *
 	 * @since 1.0.0
-	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
+	 * @param string|array<string> $id The external script id or an ARRAY_N of script_id.
 	 * @param bool                 $delete_occurences True to delete occurences records of the script.
 	 * @return int The number of affected rows
 	 */
@@ -1820,5 +1820,24 @@ class Nunil_Lib_Db {
 				$wild . $wpdb->esc_like( 'ver=' . $ver )
 			)
 		);
+	}
+
+	/**
+	 * Retuns the list of asset id from external table(s)
+	 *
+	 * @since 1.1.2
+	 * @access public
+	 * @param string $table The external table name.
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_external_assets_id( $table ) {
+		global $wpdb;
+
+		$sql = 'SELECT ' . self::with_prefix( $table ) . '.`ID`, ' . self::with_prefix( $table ) . '.`src_attrib` FROM '
+			. self::with_prefix( $table )
+			. ' WHERE 1'
+			. ' ORDER BY `src_attrib` ASC;';
+
+		return $wpdb->get_results( $sql );
 	}
 }

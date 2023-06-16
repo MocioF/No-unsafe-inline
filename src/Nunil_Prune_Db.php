@@ -13,6 +13,8 @@ namespace NUNIL;
 
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use League\Uri\Components\Query;
+use League\Uri\Uri;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -78,9 +80,9 @@ class Nunil_Prune_Db {
 	 * @return string
 	 */
 	public function prune_big_clusters() {
-		$end_message            = '<b>' . esc_html__( 'Starting pruning big clusters', 'no-unsafe-inline' ) . '</b><br>';
-		$internale_tables_names = array( 'inline_scripts', 'event_handlers' );
-		foreach ( $internale_tables_names as $table_name ) {
+		$end_message           = '<b>' . esc_html__( 'Starting pruning big clusters', 'no-unsafe-inline' ) . '</b><br>';
+		$internal_tables_names = array( 'inline_scripts', 'event_handlers' );
+		foreach ( $internal_tables_names as $table_name ) {
 			// translators: %s is the internal tablename.
 			$end_message  = $end_message . sprintf( esc_html__( 'Pruning big clusters in %s', 'no-unsafe-inline' ), $table_name ) . '<br>';
 			$big_clusters = DB::get_big_clusters( $table_name, self::$cluster_limit );
@@ -132,16 +134,114 @@ class Nunil_Prune_Db {
 	}
 
 	/**
-	 * Prune the database.
+	 * Removes legacy external resources.
 	 *
-	 * This function is triggered by a button in admin area
+	 * This function will delete old external resources from database
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.2
 	 * @access public
-	 * @return void
+	 * @return string
 	 */
-	public function prune_database(): void {
-		$this->delete_orphan_occurences();
-		$this->prune_big_clusters();
+	public function prune_external_assets() {
+		$end_message           = '<b>' . esc_html__( 'Starting pruning old core resources', 'no-unsafe-inline' ) . '</b><br>';
+		$external_tables_names = array( 'external_scripts' );
+
+		foreach ( $external_tables_names as $table_name ) {
+			$assets_to_check = DB::get_external_assets_id( $table_name );
+
+			if ( ! is_null( $assets_to_check ) && 0 < count( $assets_to_check ) ) {
+				$assets_to_prune = array();
+
+				foreach ( $assets_to_check as $asset ) {
+					try {
+						$uri       = Uri::createFromString( $asset->src_attrib );
+						$host      = $uri->getHost();
+						$path      = $uri->getPath();
+						$query     = Query::createFromUri( $uri );
+						$asset_ver = $query->get( 'ver' );
+					} catch ( \League\Uri\Exceptions\SyntaxError $e ) {
+						$asset_ver = null;
+					}
+					if ( ! is_null( $asset_ver ) ) {
+						if ( isset( $host ) && isset( $path ) ) {
+							$index                       = $host . '-' . $path;
+							$assets_to_prune[ $index ][] = array(
+								'ID'         => $asset->ID,
+								'ver'        => $asset_ver,
+								'src_attrib' => $asset->src_attrib,
+							);
+						}
+					}
+				}
+
+				foreach ( $assets_to_prune as $atp ) {
+					$num = count( $atp );
+					if ( 1 !== $num ) {
+
+						// Put the newest version in the first element of array [0].
+						usort( $atp, array( $this, 'ver_compare' ) );
+
+						foreach ( $atp as $k => $value ) {
+							if ( $k > 0 ) {
+								$message = sprintf(
+									// translators: %1$s is the asset url; %2$s is the internal table name.
+									esc_html__( 'Deleted asset: %1$s from table %2$s', 'no-unsafe-inline' ),
+									$value['src_attrib'],
+									$table_name
+								);
+
+								$deleted = DB::ext_delete( $value['ID'], true );
+								if ( $deleted > 0 ) {
+									$end_message = $end_message . $message . '<br>';
+									Log::info( $message );
+								}
+							} else {
+								$message = sprintf(
+									// translators: %1$s is the asset url..
+									esc_html__( '<br><b>Found newer asset: %1$s</b>', 'no-unsafe-inline' ),
+									$value['src_attrib']
+								);
+								$end_message = $end_message . $message . '<br>';
+							}
+						}
+					}
+				}
+			}
+		}
+		$end_message = $end_message . '<br>';
+		return $end_message;
+	}
+
+	/**
+	 * Sorting function for array of (ID, ver, src_attrib)
+	 *
+	 * @since 1.1.2
+	 * @access private
+	 * @param array{ID?: int, ver: string, src_attrib?: string} $a an array with a 'ver' key.
+	 * @param array{ID?: int, ver: string, src_attrib?: string} $b an array with a 'ver' key.
+	 * @return int
+	 */
+	private function ver_compare( $a, $b ) {
+		// jetpack uses filemtime( "$dir/$path" ) when no version is specified and adds it as ver in URI query.
+		if ( ( version_compare( $a['ver'], '0.0.1', '>=' ) || version_compare( $b['ver'], '0.0.1', '>=' ) ) &&
+				ctype_xdigit( $a['ver'] ) &&
+				ctype_xdigit( $b['ver'] )
+			) {
+				$a_ver = hexdec( $a['ver'] );
+				$b_ver = hexdec( $b['ver'] );
+
+				$diff = $b_ver - $a_ver;
+
+			if ( 0 === $diff ) {
+				return 0;
+			}
+			if ( $diff < 0 ) {
+				return -1;
+			}
+			if ( $diff > 0 ) {
+				return 1;
+			}
+		}
+		return ( version_compare( $b['ver'], $a['ver'] ) );
 	}
 }
