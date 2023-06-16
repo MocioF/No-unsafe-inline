@@ -157,23 +157,17 @@ class No_Unsafe_Inline_Public {
 
 		if ( 1 === $tools['capture_enabled'] ) {
 			/**
-			 * See:
+			 * Async newer worked in apache because even if php is built with pcntl it just works in CLI.
+			 * More it creates error when the platform returns true to Pool::isSupported() even if it's not.
+			 * Now we are forceing synchronous execution, before removing spatie/async from codebase.
 			 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
 			 */
-			$supported = Pool::isSupported();
-			if ( ! $supported ) {
-				$pool = Pool::create()
-					->concurrency( 2 )
-					->timeout( 15 )
-					->sleepTime( 50000 )
-					->forceSynchronous();
-			} else {
-				$pool = Pool::create()
-					->concurrency( 2 )
-					->timeout( 15 )
-					->sleepTime( 50000 );
-			}
-			// $pool->add( // https://github.com/spatie/async/issues/167 .
+			$pool = Pool::create()
+				->concurrency( 2 )
+				->timeout( 15 )
+				->sleepTime( 50000 )
+				->forceSynchronous();
+
 			$pool[] = async(
 				function() use ( $htmlsource, $options ) {
 					$capture = new NUNIL\Nunil_Capture();

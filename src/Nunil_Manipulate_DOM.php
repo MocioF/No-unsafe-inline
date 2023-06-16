@@ -294,23 +294,18 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			}
 		}
 
-		// Used to make asyncronous insert in DB.
 		/**
+		 * It was used to make asyncronous insert in DB.
+		 * Async newer worked in apache because even if php is built with pcntl it just works in CLI.
+		 * More it creates error when the platform returns true to Pool::isSupported() even if it's not.
+		 * Now we are forceing synchronous execution, before removing spatie/async from codebase.
 		 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
 		 */
-		$supported = Pool::isSupported();
-		if ( ! $supported ) {
-			$this->insert_pool = Pool::create()
-				->concurrency( 20 )
-				->timeout( 15 )
-				->sleepTime( 50000 )
-				->forceSynchronous();
-		} else {
-			$this->insert_pool = Pool::create()
-				->concurrency( 20 )
-				->timeout( 15 )
-				->sleepTime( 50000 );
-		}
+		$this->insert_pool = Pool::create()
+			->concurrency( 20 )
+			->timeout( 15 )
+			->sleepTime( 50000 )
+			->forceSynchronous();
 	}
 
 	/**
