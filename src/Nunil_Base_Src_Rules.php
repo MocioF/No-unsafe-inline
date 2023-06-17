@@ -191,11 +191,15 @@ class Nunil_Base_Src_Rules {
 		$mode         = $this->get_nunil_external_host_mode_option();
 		$host_sources = array();
 
-		$local_site_url = get_site_url();
+		if ( true === is_multisite() ) {
+			$local_home_url = get_bloginfo( 'url' );
+		} else {
+			$local_home_url = get_home_url();
+		}
 		foreach ( $parsed_urls as $parsed_url ) {
 			$site_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
 
-			if ( $local_site_url === $site_url ) {
+			if ( $local_home_url === $site_url ) {
 				$host = '\'self\'';
 			} elseif ( ! isset( $parsed_url['host'] ) ) {
 				switch ( $parsed_url['path'] ) {
