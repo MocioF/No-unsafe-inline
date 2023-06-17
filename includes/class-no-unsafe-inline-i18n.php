@@ -23,7 +23,7 @@
  * @subpackage No_unsafe-inline/includes
  * @author     Giuseppe Foti <foti.giuseppe@gmail.com>
  */
-class No_Unsafe_Inline_i18n {
+class No_Unsafe_Inline_I18n {
 
 
 	/**

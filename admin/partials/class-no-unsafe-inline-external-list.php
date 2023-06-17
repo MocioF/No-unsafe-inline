@@ -86,16 +86,18 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'User is not allowed to perform this action', 'no-unsafe-inline' ) );
 		}
-		if ( isset( $_POST['_wpnonce'] ) && ! empty( $_POST['_wpnonce'] ) ) {
-			$nonce  = strval( filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_STRING ) );
+		if ( isset( $_POST['_wpnonce'] ) && is_string( $_POST['_wpnonce'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are not processing form information; $nonce is used only for wp_verify_nonce
+			$nonce  = wp_unslash( $_POST['_wpnonce'] );
 			$action = 'bulk-' . $this->_args['plural'];
 
 			if ( ! wp_verify_nonce( $nonce, $action ) ) {
 				wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 			}
 			$action = $this->current_action();
-		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && ! empty( $_GET['_wpnonce'] ) ) {
-				$nonce  = strval( filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING ) );
+		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && is_string( $_GET['_wpnonce'] ) ) {
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are not processing form information; $nonce is used only for wp_verify_nonce
+				$nonce  = wp_unslash( $_GET['_wpnonce'] );
 				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
 		} else {
 				$action = '';
@@ -253,7 +255,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha256 column
 	 *
-	 * @param array<string> $item Item with row's data.
+	 * @param array{ID: int, directive:string, tagname:string, src_attrib:string, sha256:string|null, sha384:string|null, sha512:string|null, whitelist:int} $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -275,7 +277,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha384 column
 	 *
-	 * @param array<string> $item Item with row's data.
+	 * @param array{ID: int, directive:string, tagname:string, src_attrib:string, sha256:string|null, sha384:string|null, sha512:string|null, whitelist:int} $item Item with row's data.
 	 *
 	 * @return string
 	 */
@@ -297,7 +299,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 	/**
 	 * Render the sha512 column
 	 *
-	 * @param array<string> $item Item with row's data.
+	 * @param array{ID: int, directive:string, tagname:string, src_attrib:string, sha256:string|null, sha384:string|null, sha512:string|null, whitelist:int} $item Item with row's data.
 	 *
 	 * @return string
 	 */

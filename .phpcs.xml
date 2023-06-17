@@ -64,4 +64,10 @@
 	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
 		<exclude-pattern>/src/Nunil_Lib_Db\.php</exclude-pattern>
 	</rule>
+        <rule ref="WordPress.DB.DirectDatabaseQuery.DirectQuery">
+		<exclude-pattern>/src/Nunil_Lib_Db\.php</exclude-pattern>
+	</rule>
+        <rule ref="WordPress.DB.DirectDatabaseQuery.NoCaching">
+		<exclude-pattern>/src/Nunil_Lib_Db\.php</exclude-pattern>
+	</rule>
 </ruleset>

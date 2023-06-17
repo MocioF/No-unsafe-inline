@@ -116,7 +116,7 @@ class No_Unsafe_Inline {
 	 * Include the following files that make up the plugin:
 	 *
 	 * - No_Unsafe_Inline_Loader. Orchestrates the hooks of the plugin.
-	 * - No_Unsafe_Inline_i18n. Defines internationalization functionality.
+	 * - No_Unsafe_Inline_I18n. Defines internationalization functionality.
 	 * - No_Unsafe_Inline_Admin. Defines all hooks for the admin area.
 	 * - No_Unsafe_Inline_Public. Defines all hooks for the public side of the site.
 	 *
@@ -179,7 +179,7 @@ class No_Unsafe_Inline {
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the No_Unsafe_Inline_i18n class in order to set the domain and to register the hook
+	 * Uses the No_Unsafe_Inline_I18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -187,7 +187,7 @@ class No_Unsafe_Inline {
 	 * @return void
 	 */
 	private function set_locale() {
-		$plugin_i18n = new No_Unsafe_Inline_i18n();
+		$plugin_i18n = new No_Unsafe_Inline_I18n();
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
