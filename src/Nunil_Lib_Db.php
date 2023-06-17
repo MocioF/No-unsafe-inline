@@ -1068,7 +1068,7 @@ class Nunil_Lib_Db {
 					'SELECT `directive`, `tagname`, '
 					. 'CASE '
 					. 'WHEN `tagname` =\'script\' THEN \'Yes\' '
-					. 'WHEN `tagname` =\'link\' THEN \'Yes\' '
+					. 'WHEN `tagname` =\'styles\' THEN \'Yes\' '
 					. 'ELSE \'No\' '
 					. 'END AS \'nonceable\', '
 					. 'CASE '
