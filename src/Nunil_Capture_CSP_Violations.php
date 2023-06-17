@@ -31,7 +31,8 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param \WP_REST_Request $request The rest api request.
+	 * @template T of array
+	 * @param \WP_REST_Request<T> $request The rest api request.
 	 * @return \WP_REST_Response|void
 	 */
 	public function capture_violations( \WP_REST_Request $request ) {
