@@ -181,8 +181,10 @@ class Nunil_Prune_Db {
 						// Put the newest version in the first element of array [0].
 						usort( $atp, array( $this, 'ver_compare' ) );
 
+						$latest_version = $atp[0]['ver'];
+
 						foreach ( $atp as $k => $value ) {
-							if ( $k > 0 ) {
+							if ( $k > 0 && $atp[ $k ]['ver'] !== $latest_version ) {
 								$message = sprintf(
 									// translators: %1$s is the asset url; %2$s is the internal table name.
 									esc_html__( 'Deleted asset: %1$s from table %2$s', 'no-unsafe-inline' ),
@@ -195,15 +197,23 @@ class Nunil_Prune_Db {
 									$end_message = $end_message . $message . '<br>';
 									Log::info( $message );
 								}
+							} elseif ( 0 === $k ) {
+								$message = sprintf(
+									// translators: %1$s is the asset url..
+									esc_html__( 'Found multiple asset: %1$s', 'no-unsafe-inline' ),
+									$value['src_attrib']
+								);
+								$end_message = $end_message . '<i>' . $message . '</i><br>';
 							} else {
 								$message = sprintf(
 									// translators: %1$s is the asset url..
-									esc_html__( '<br><b>Found newer asset: %1$s</b>', 'no-unsafe-inline' ),
+									esc_html__( ' asset with different query not removed: %1$s', 'no-unsafe-inline' ),
 									$value['src_attrib']
 								);
 								$end_message = $end_message . $message . '<br>';
 							}
 						}
+						$end_message = $end_message . '<br>';
 					}
 				}
 			}
