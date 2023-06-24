@@ -160,6 +160,8 @@ No.
 = 1.1.2 =
 * Removed the use of 'hash-value' to allow external styles - not supported by CSP
 * Removed the use of 'hash-value' to allow external images - not supported by CSP
+* Added code to prune legacy external assets when pruning db
+* Forced synchronous code execution
 
 = 1.1.1 =
 * Bug fixes
