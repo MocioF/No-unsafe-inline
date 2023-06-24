@@ -855,50 +855,41 @@ class No_Unsafe_Inline_Admin {
 		}
 
 		// Checkboxes.
+		$admitted_values   = array( 0, 1, 'on' );
+		$check_box_options = array();
 		foreach ( $this->managed_directives as $directive ) {
-			$setting_name = $directive . '_enabled';
+			array_push( $check_box_options, $directive . '_enabled' );
+		}
+		array_push(
+			$check_box_options,
+			'sri_sha256',
+			'sri_sha384',
+			'sri_sha512',
+			'sri_script',
+			'sri_link',
+			'use_strict-dynamic',
+			'no-unsafe-inline_upgrade_insecure',
+			'protect_admin',
+			'use_unsafe-hashes',
+			'fix_setattribute_style',
+			'add_wl_by_cluster_to_db',
+			'use_reports',
+			'remove_tables',
+			'remove_options'
+		);
 
-			if ( isset( $input[ $setting_name ] ) ) {
-				$new_input[ $setting_name ] = 1;
+		foreach ( $check_box_options as $option_name ) {
+			if ( ! isset( $input[ $option_name ] ) ) {
+				$new_input[ $option_name ] = 0;
+			} elseif ( ! in_array( $input[ $option_name ], $admitted_values ) ) {
+				$new_input[ $option_name ] = 0;
+			} elseif ( 'on' === $input[ $option_name ] ) {
+				$new_input[ $option_name ] = 1;
 			} else {
-				$new_input[ $setting_name ] = 0;
+				$new_input[ $option_name ] = $input[ $option_name ];
 			}
 		}
 
-		if ( isset( $input['sri_script'] ) ) {
-			$new_input['sri_script'] = 1;
-		} else {
-			$new_input['sri_script'] = 0;
-		}
-
-		if ( isset( $input['sri_link'] ) ) {
-			$new_input['sri_link'] = 1;
-		} else {
-			$new_input['sri_link'] = 0;
-		}
-
-		if ( isset( $input['use_strict-dynamic'] ) ) {
-			$new_input['use_strict-dynamic'] = 1;
-		} else {
-			$new_input['use_strict-dynamic'] = 0;
-		}
-		if ( isset( $input['sri_sha256'] ) ) {
-			$new_input['sri_sha256'] = 1;
-		} else {
-			$new_input['sri_sha256'] = 0;
-		}
-
-		if ( isset( $input['sri_sha384'] ) ) {
-			$new_input['sri_sha384'] = 1;
-		} else {
-			$new_input['sri_sha384'] = 0;
-		}
-
-		if ( isset( $input['sri_sha512'] ) ) {
-			$new_input['sri_sha512'] = 1;
-		} else {
-			$new_input['sri_sha512'] = 0;
-		}
 		// One hash has to be selected, if we are using SRI or hashes for CSP.
 		if (
 		(
@@ -922,54 +913,6 @@ class No_Unsafe_Inline_Admin {
 		)
 		) {
 			$new_input['sri_sha256'] = 1;
-		}
-
-		if ( isset( $input['no-unsafe-inline_upgrade_insecure'] ) ) {
-			$new_input['no-unsafe-inline_upgrade_insecure'] = 1;
-		} else {
-			$new_input['no-unsafe-inline_upgrade_insecure'] = 0;
-		}
-
-		if ( isset( $input['protect_admin'] ) ) {
-			$new_input['protect_admin'] = 1;
-		} else {
-			$new_input['protect_admin'] = 0;
-		}
-
-		if ( isset( $input['use_unsafe-hashes'] ) ) {
-			$new_input['use_unsafe-hashes'] = 1;
-		} else {
-			$new_input['use_unsafe-hashes'] = 0;
-		}
-
-		if ( isset( $input['fix_setattribute_style'] ) ) {
-			$new_input['fix_setattribute_style'] = 1;
-		} else {
-			$new_input['fix_setattribute_style'] = 0;
-		}
-
-		if ( isset( $input['add_wl_by_cluster_to_db'] ) ) {
-			$new_input['add_wl_by_cluster_to_db'] = 1;
-		} else {
-			$new_input['add_wl_by_cluster_to_db'] = 0;
-		}
-
-		if ( isset( $input['remove_tables'] ) ) {
-			$new_input['remove_tables'] = 1;
-		} else {
-			$new_input['remove_tables'] = 0;
-		}
-
-		if ( isset( $input['remove_options'] ) ) {
-			$new_input['remove_options'] = 1;
-		} else {
-			$new_input['remove_options'] = 0;
-		}
-
-		if ( isset( $input['use_reports'] ) ) {
-			$new_input['use_reports'] = 1;
-		} else {
-			$new_input['use_reports'] = 0;
 		}
 
 		// Radio.
@@ -1015,15 +958,37 @@ class No_Unsafe_Inline_Admin {
 			$new_input['group_name'] = sanitize_text_field( $input['group_name'] );
 		}
 
-		if ( isset( $input['max_age'] ) && is_string( $input['max_age'] ) ) {
-			$new_input['max_age'] = intval( sanitize_text_field( $input['max_age'] ) );
+		if ( isset( $input['max_age'] ) ) {
+			$filtered_value = filter_var(
+				$input['max_age'],
+				FILTER_VALIDATE_INT,
+				array( 'options' => array( 'min_range' => 0 ) )
+			);
+			if ( false !== $filtered_value ) {
+				$new_input['max_age'] = $filtered_value;
+			}
 		}
 
+		$admitted_log_drivers = array(
+			'db',
+			'errorlog',
+		);
 		if ( isset( $input['log_driver'] ) && is_string( $input['log_driver'] ) ) {
-			$new_input['log_driver'] = sanitize_text_field( $input['log_driver'] );
+			if ( in_array( $input['log_driver'], $admitted_log_drivers ) ) {
+				$new_input['log_driver'] = sanitize_text_field( $input['log_driver'] );
+			}
 		}
+
+		$admitted_log_levels = array(
+			'error',
+			'warning',
+			'info',
+			'debug',
+		);
 		if ( isset( $input['log_level'] ) && is_string( $input['log_level'] ) ) {
-			$new_input['log_level'] = sanitize_text_field( $input['log_level'] );
+			if ( in_array( $input['log_level'], $admitted_log_levels ) ) {
+				$new_input['log_level'] = sanitize_text_field( $input['log_level'] );
+			}
 		}
 
 		unset( $options['endpoints'] );
@@ -1031,42 +996,58 @@ class No_Unsafe_Inline_Admin {
 			$new_input['endpoints'] = array_map( 'esc_url_raw', $input['endpoints'], $protocols = array( array( 'https' ) ) );
 		}
 
-		if ( isset( $input['max_response_header_size'] ) && is_string( $input['max_response_header_size'] ) ) {
-			$new_input['max_response_header_size'] = intval( sanitize_text_field( $input['max_response_header_size'] ) );
+		if ( isset( $input['max_response_header_size'] ) ) {
+			$filtered_value = filter_var(
+				$input['max_response_header_size'],
+				FILTER_VALIDATE_INT,
+				array( 'options' => array( 'min_range' => 0 ) )
+			);
+			if ( false !== $filtered_value ) {
+				$new_input['max_response_header_size'] = $filtered_value;
+			}
 		}
 
-		$new_input = array_merge( $options, $new_input );
-		return $new_input;
+		$new_options = array_merge( $options, $new_input );
+
+		return $new_options;
 	}
 
 	/**
 	 * Sanitize the tools status
 	 *
-	 * @param array<int> $input Contains the settings.
+	 * @param array<int|string> $input Contains the settings.
 	 * @return array<mixed>
 	 */
 	public function sanitize_tools( $input ) {
-		$new_input = array();
-		$options   = (array) get_option( 'no-unsafe-inline-tools' );
+		$options = (array) get_option( 'no-unsafe-inline-tools' );
 
-		if ( isset( $input['capture_enabled'] ) ) {
-			$new_input['capture_enabled'] = 1;
-		} else {
-			$new_input['capture_enabled'] = 0;
+		$admitted_values = array( 0, 1, 'on' );
+		$options_checked = array(
+			'capture_enabled',
+			'test_policy',
+			'enable_protection',
+		);
+
+		foreach ( $input as $key => $value ) {
+			if ( ! in_array( $key, $options_checked ) ) {
+				unset( $input[ $key ] );
+			}
 		}
-		if ( isset( $input['test_policy'] ) ) {
-			$new_input['test_policy'] = 1;
-		} else {
-			$new_input['test_policy'] = 0;
-		}
-		if ( isset( $input['enable_protection'] ) ) {
-			$new_input['enable_protection'] = 1;
-		} else {
-			$new_input['enable_protection'] = 0;
+		foreach ( $options_checked as $option_name ) {
+			if ( ! isset( $input[ $option_name ] ) ) {
+				$input[ $option_name ] = 0;
+			}
+			if ( ! in_array( $input[ $option_name ], $admitted_values ) ) {
+				$input[ $option_name ] = 0;
+			}
+			if ( 'on' === $input[ $option_name ] ) {
+				$input[ $option_name ] = 1;
+			}
 		}
 
-		$new_input = array_merge( $options, $new_input );
-		return $new_input;
+		$new_options = array_merge( $options, $input );
+
+		return $new_options;
 	}
 
 	/**
