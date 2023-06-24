@@ -54,7 +54,7 @@ class Nunil_Classification {
 		$samples = array();
 
 		$labels = array();
-		if ( is_array( $rows ) ) {
+		if ( is_array( $rows ) && count( $rows ) > 0 ) {
 			foreach ( $rows as $row ) {
 				$samples[] = $row->hexDigest;
 				$labels[]  = $row->clustername;

@@ -621,7 +621,7 @@ class Nunil_Lib_Db {
 			ORDER BY r1.id ASC
 			LIMIT 1';
 		$row = $wpdb->get_results( $sql, ARRAY_A );
-		if ( ! is_null( $row ) ) {
+		if ( ! is_null( $row ) && count( $row ) > 0 ) {
 			return $row[0];
 		} else {
 			return null;
@@ -1218,7 +1218,6 @@ class Nunil_Lib_Db {
 			$sql = $sql . ' AND `tagname` = %s';
 			$sql = $wpdb->prepare( $sql, $tagname );
 		}
-
 		return $wpdb->get_results( $sql );
 	}
 
