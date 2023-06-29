@@ -858,7 +858,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @return int The number of affected rows
 	 */
-	public static function delete( $table, $id, $delete_occurences ) {
+	private static function delete( $table, $id, $delete_occurences ) {
 		global $wpdb;
 		if ( ! is_array( $id ) ) {
 			$my_ids   = array();
@@ -987,7 +987,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @return int The number of affected rows
 	 */
-	public static function single_delete( $table, $id, $delete_occurences ) {
+	private static function single_delete( $table, $id, $delete_occurences ) {
 		global $wpdb;
 		if ( ! is_array( $id ) ) {
 			$my_ids   = array();
@@ -1006,6 +1006,8 @@ class Nunil_Lib_Db {
 			);
 
 			if ( true === $delete_occurences ) {
+				self::delete_asset_occurences( $table, $id );
+				/*
 				$del_sc_occ = 'DELETE FROM ' . self::occurences_table() . ' WHERE `itemid` = %d AND dbtable = %s';
 				$del_occur  = $wpdb->query(
 					$wpdb->prepare(
@@ -1014,6 +1016,8 @@ class Nunil_Lib_Db {
 						substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
 					)
 				);
+				 *
+				 */
 			}
 		}
 		return $affected;
@@ -1668,6 +1672,63 @@ class Nunil_Lib_Db {
 			$id
 		);
 		return $wpdb->query( $sql );
+	}
+
+	/**
+	 * Delete occurence of a single asset
+	 *
+	 * @param string $table The script full table name.
+	 * @param string $asset_id The asset ID.
+	 * @since 1.1.3
+	 * @return int|false
+	 */
+	private static function delete_asset_occurences( $table, $asset_id ) {
+		global $wpdb;
+		$del_sc_occ = 'DELETE FROM ' . self::occurences_table() . ' WHERE `itemid` = %d AND dbtable = %s';
+		$del_occur  = $wpdb->query(
+			$wpdb->prepare(
+				$del_sc_occ,
+				$asset_id,
+				substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
+			)
+		);
+		return $del_occur;
+	}
+
+	/**
+	 * Delete occurence of a single external asset
+	 *
+	 * @param string $asset_id The asset ID.
+	 * @since 1.1.3
+	 * @return int|false
+	 */
+	public static function ext_occurences_delete( $asset_id ) {
+		$affected = self::delete_asset_occurences( self::external_scripts_table(), $asset_id );
+		return $affected;
+	}
+
+	/**
+	 * Delete occurence of a single inline asset
+	 *
+	 * @param string $asset_id The asset ID.
+	 * @since 1.1.3
+	 * @return int|false
+	 */
+	public static function inl_occurences_delete( $asset_id ) {
+		$affected = self::delete_asset_occurences( self::inline_scripts_table(), $asset_id );
+		return $affected;
+	}
+
+	/**
+	 * Delete occurence of a single event handler
+	 *
+	 * @param string $asset_id The asset ID.
+	 * @since 1.1.3
+	 * @return int|false
+	 */
+	public static function evh_occurences_delete( $asset_id ) {
+		$affected = self::delete_asset_occurences( self::event_handlers_table(), $asset_id );
+		return $affected;
 	}
 
 	/**

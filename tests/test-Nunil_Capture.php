@@ -108,6 +108,14 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 		$tag          = 'style';
 		$inline       = true;
 		$tags_style[] = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attrs = null, $needed_attrs = null, $childs = null, $inline );
+		
+		$directive     = 'img-src';
+		$tag           = 'img';
+		$stored_attrs = array( 'src', 'srcset' );
+		$needed_attrs  = array();
+
+		$inline        = false;
+		$tags_img[] = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attrs, $needed_attrs, $childs = null, $inline );
 
 		return array(
 			// string $tagname, array $taglist, int $num_ext, int $num_inl, string $source ) .
@@ -118,9 +126,11 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 			'link_2'   => array( 'link', $tags_style, 9, 0, 'index_2.html' ),
 			'script_3' => array( 'script', $tags_script, 3, 6, 'index_3.html' ),
 			'link_3'   => array( 'link', $tags_style, 1, 0, 'index_3.html' ),
+			'img_1'    => array( 'img', $tags_img, 1, 0, 'index_1.html' ),
+			'img_2'    => array( 'img', $tags_img, 8, 0, 'index_2.html' ),
+			'img_3'    => array( 'img', $tags_img, 65, 0, 'index_3.html' ),
 		);
 	}
-
 
 	/**
 	 * @dataProvider srcListProvider

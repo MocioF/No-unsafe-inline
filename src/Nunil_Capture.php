@@ -771,30 +771,38 @@ class Nunil_Capture {
 
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
 
+			$add_hashes_and_occurences = Nunil_Lib_Utils::is_resource_hash_needed( $directive, $tagname );
+
 			if ( is_null( $external_script_id ) ) { // The script is not in the db.
 
 				// Insert row in external_scripts.
 				$external_script_id = Nunil_Lib_Db::insert_ext_in_db( $directive, $tagname, $src_attrib );
-				if ( Nunil_Lib_Utils::is_resource_hash_needed( $directive, $tagname ) ) {
+
+				if ( true === $add_hashes_and_occurences ) {
 					$this->insert_hashes_in_db( $external_script_id );
 				}
 
 				$returned_id = $external_script_id;
 
 				// Insert row in occurences.
-				$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
+				// since 1.1.3: we need occurences only for hashed content.
+				if ( true === $add_hashes_and_occurences ) {
+					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
+				}
 			} else {
 				// The script is in already in the db.
 				// Now check if there is an occurence for the script in the page.
-				$occurrence_id = Nunil_Lib_Db::get_occ_id( $external_script_id, 'external_scripts', $this_page_url );
+				// since 1.1.3: we need occurences only for hashed content.
+				if ( true === $add_hashes_and_occurences ) {
+					$occurrence_id = Nunil_Lib_Db::get_occ_id( $external_script_id, 'external_scripts', $this_page_url );
 
-				if ( is_null( $occurrence_id ) ) {
-					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
-				} else {
-					// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
-					Nunil_Lib_Db::update_lastseen( $occurrence_id );
+					if ( is_null( $occurrence_id ) ) {
+						$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
+					} else {
+						// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
+						Nunil_Lib_Db::update_lastseen( $occurrence_id );
+					}
 				}
-
 				$returned_id = false;
 			}
 		}

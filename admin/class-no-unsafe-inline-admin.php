@@ -317,6 +317,29 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
+	 * Cleanup occurences for unhashed external assets.
+	 *
+	 * This method is hooked on nunil_upgrade.
+	 *
+	 * @since 1.1.3
+	 * @param string $new_ver New plugin version.
+	 * @param string $old_ver Old plugin version.
+	 * @return void
+	 */
+	public function delete_old_occurences( $new_ver, $old_ver ): void {
+		if ( version_compare( $old_ver, '1.1.3', '<' ) ) {
+			$externals = DB::get_external_rows();
+			if ( ! is_null( $externals ) && count( $externals ) > 1 ) {
+				foreach ( $externals as $ext_asset ) {
+					if ( false === Utils::is_resource_hash_needed( $ext_asset->directive, $ext_asset->tagname ) ) {
+						DB::ext_occurences_delete( $ext_asset->ID );
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Update version and rehash plugin's assets after version update
 	 *
 	 * @since 1.0.2

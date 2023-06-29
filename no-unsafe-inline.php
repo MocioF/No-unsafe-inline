@@ -15,7 +15,7 @@
  * Plugin Name:       No unsafe-inline
  * Plugin URI:        https://github.com/MocioF/No-unsafe-inline
  * Description:       This plugin helps you to build a CSP to avoid using 'unsafe-inline' in your .htaccess
- * Version:           1.1.2
+ * Version:           1.1.3a
  * Author:            Giuseppe Foti
  * Author URI:        https://profiles.wordpress.org/mociofiletto/
  * License:           GPL-2.0-or-later
@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'NO_UNSAFE_INLINE_VERSION', '1.1.2' );
+define( 'NO_UNSAFE_INLINE_VERSION', '1.1.3a' );
 define( 'NO_UNSAFE_INLINE_DB_VERSION', '1.0' );
 define( 'NO_UNSAFE_INLINE_MINIMUM_WP_VERSION', '5.2' );
 define( 'NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION', '7.4' );
