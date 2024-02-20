@@ -101,7 +101,7 @@ class Nunil_Lib_Utils {
 	 * @param string $tagname The HTML tag name.
 	 * @return bool
 	 */
-	public static function is_resource_hash_needed( $directive, $tagname ):bool {
+	public static function is_resource_hash_needed( $directive, $tagname ): bool {
 		if (
 				( 'script' === $tagname && ( 'script-src' === $directive || 'script-src-elem' === $directive ) ) ||
 				( 'link' === $tagname && ( 'style-src' === $directive || 'style-src-elem' === $directive ) )

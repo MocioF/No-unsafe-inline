@@ -111,13 +111,11 @@ class Nunil_HTML_Tag {
 
 		if ( is_null( $needed_attrs ) ) {
 			$this->needed_attrs = null;
-		} else {
-			if ( is_array( $needed_attrs ) ) {
-				if ( empty( $needed_attrs ) ) {
-					$this->needed_attrs = null;
-				} else {
-					$this->needed_attrs = $needed_attrs;
-				}
+		} elseif ( is_array( $needed_attrs ) ) {
+			if ( empty( $needed_attrs ) ) {
+				$this->needed_attrs = null;
+			} else {
+				$this->needed_attrs = $needed_attrs;
 			}
 		}
 
@@ -240,6 +238,4 @@ class Nunil_HTML_Tag {
 			return false;
 		}
 	}
-
-
 }

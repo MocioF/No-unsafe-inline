@@ -748,17 +748,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$ext_wlist = $this->external_rows;
 		if ( ! is_array( $ext_wlist ) ) {
 			return false; // BL: no external whitelist present.
-		} else {
-			if ( 0 < count( $ext_wlist ) ) {
+		} elseif ( 0 < count( $ext_wlist ) ) {
 				$src_attrib = $this->clean_random_params( $src_attrib );
 
-				foreach ( $ext_wlist as $index => $obj ) {
-					if ( $src_attrib === $obj->src_attrib ) {
-						if ( '1' === $obj->whitelist ) {
-							return (int) $index; // WL.
-						} else {
-							return false; // BL.
-						}
+			foreach ( $ext_wlist as $index => $obj ) {
+				if ( $src_attrib === $obj->src_attrib ) {
+					if ( '1' === $obj->whitelist ) {
+						return (int) $index; // WL.
+					} else {
+						return false; // BL.
 					}
 				}
 			}
@@ -907,37 +905,36 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						// Adding nonce to node.
 						$node->setAttribute( 'nonce', $this->page_nonce );
 					}
-				} else { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
-					if ( (
+				} elseif ( (
 					( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
 					( 'link' === $node->nodeName && 1 === $options['sri_link'] ) )
 					&& ( ! $node->hasAttribute( 'integrity' ) )
 					&& ( ! is_null( $this->external_rows ) )
-					) {
-						$integrity_string = '';
-						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
-							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
-							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-						}
-						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
-							$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
-							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-						}
-						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
-							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
-							$integrity_string  = $integrity_string . $hash_with_options . ' ';
-						}
+					) { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
 
-						if ( 'script' === $node->nodeName ) {
-							$sourcestr = $node->getAttribute( 'src' );
-						} else {
-							$sourcestr = $node->getAttribute( 'href' );
-						}
-						if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
-							$node->setAttribute( 'integrity', trim( $integrity_string ) );
-							if ( ! $node->hasAttribute( 'crossorigin' ) ) {
-								$node->setAttribute( 'crossorigin', 'anonymous' );
-							}
+						$integrity_string = '';
+					if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
+						$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
+						$integrity_string  = $integrity_string . $hash_with_options . ' ';
+					}
+					if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
+						$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
+						$integrity_string  = $integrity_string . $hash_with_options . ' ';
+					}
+					if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
+						$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
+						$integrity_string  = $integrity_string . $hash_with_options . ' ';
+					}
+
+					if ( 'script' === $node->nodeName ) {
+						$sourcestr = $node->getAttribute( 'src' );
+					} else {
+						$sourcestr = $node->getAttribute( 'href' );
+					}
+					if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
+						$node->setAttribute( 'integrity', trim( $integrity_string ) );
+						if ( ! $node->hasAttribute( 'crossorigin' ) ) {
+							$node->setAttribute( 'crossorigin', 'anonymous' );
 						}
 					}
 				}

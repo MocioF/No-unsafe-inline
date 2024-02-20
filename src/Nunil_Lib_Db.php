@@ -1422,19 +1422,19 @@ class Nunil_Lib_Db {
 		) : '';
 
 		return 'SELECT evh.`ID`, evh.`tagname`, evh.`tagid`, evh.`event_attribute`, evh.`script`, evh.`clustername`, evh.`whitelist`, '
-			 . '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
-			 . ' GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR \'\\n\') END) AS \'pages\', '
-			 . ' occ.lastseen AS \'lastseen\', COUNT(evh.`ID`) AS \'occurences\' '
-			 . 'FROM `' . self::event_handlers_table() . '` AS evh LEFT JOIN '
-			 . '    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `' . self::occurences_table() . '`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR \'\\n\') AS \'pageurls\', '
-			 . '    MAX(`lastseen`) as lastseen'
-			 . '    FROM `' . self::occurences_table() . '` '
-			 . '    WHERE '
-			 . '    `' . self::occurences_table() . '`.`dbtable` = \'event_handlers\' '
-			 . '    GROUP BY itemid) AS occ '
-			 . 'ON evh.ID = occ.itemid '
-			 . $do_search
-			 . 'GROUP BY (CASE WHEN `clustername` <> \'Unclustered\' THEN `clustername` ELSE `ID` END) ';
+			. '(CASE WHEN `clustername` = \'Unclustered\' THEN occ.pageurls ELSE '
+			. ' GROUP_CONCAT(DISTINCT occ.pageurls ORDER BY occ.pageurls ASC SEPARATOR \'\\n\') END) AS \'pages\', '
+			. ' occ.lastseen AS \'lastseen\', COUNT(evh.`ID`) AS \'occurences\' '
+			. 'FROM `' . self::event_handlers_table() . '` AS evh LEFT JOIN '
+			. '    (SELECT `itemid`, GROUP_CONCAT(DISTINCT `' . self::occurences_table() . '`.`pageurl` ORDER BY `pageurl` ASC SEPARATOR \'\\n\') AS \'pageurls\', '
+			. '    MAX(`lastseen`) as lastseen'
+			. '    FROM `' . self::occurences_table() . '` '
+			. '    WHERE '
+			. '    `' . self::occurences_table() . '`.`dbtable` = \'event_handlers\' '
+			. '    GROUP BY itemid) AS occ '
+			. 'ON evh.ID = occ.itemid '
+			. $do_search
+			. 'GROUP BY (CASE WHEN `clustername` <> \'Unclustered\' THEN `clustername` ELSE `ID` END) ';
 	}
 
 	/**

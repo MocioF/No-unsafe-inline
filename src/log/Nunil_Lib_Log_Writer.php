@@ -21,5 +21,5 @@ interface Nunil_Lib_Log_Writer {
 	 *
 	 * @return mixed
 	 */
-	public function write ( $level, $message );
+	public function write( $level, $message );
 }

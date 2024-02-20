@@ -107,7 +107,7 @@ class Nunil_Base_Src_Rules {
 					'directive' => strval( $directive[0] ),
 					'source'    => $scheme,
 				) );
-				$id++;
+				++$id;
 			}
 
 			foreach ( $host_sources as $source ) {
@@ -116,7 +116,7 @@ class Nunil_Base_Src_Rules {
 					'directive' => strval( $directive[0] ),
 					'source'    => $source,
 				) );
-				$id++;
+				++$id;
 			}
 		}
 		return $results;

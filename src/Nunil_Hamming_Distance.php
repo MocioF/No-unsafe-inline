@@ -33,7 +33,7 @@ class Nunil_Hamming_Distance implements Distance {
 	 *
 	 * @return list<\Rubix\ML\DataType>
 	 */
-	public function compatibility() : array {
+	public function compatibility(): array {
 		return array(
 			DataType::categorical(),
 		);
@@ -47,7 +47,7 @@ class Nunil_Hamming_Distance implements Distance {
 	 *
 	 * @return float
 	 */
-	public function compute( array $a, array $b ) : float {
+	public function compute( array $a, array $b ): float {
 		$similarity = Nilsimsa::compareDigests( $a[0], $b[0], $is_hex_1 = true, $is_hex_2 = true );
 
 		$distance = floatval( 128 - $similarity );
@@ -62,8 +62,7 @@ class Nunil_Hamming_Distance implements Distance {
 	 *
 	 * @return string
 	 */
-	public function __toString() : string {
+	public function __toString(): string {
 		return 'Nilsimsa Hamming';
 	}
 }
-

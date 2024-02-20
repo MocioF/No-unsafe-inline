@@ -139,7 +139,7 @@ class Nunil_Clustering {
 		}
 
 		if ( true === $has_noise ) {
-			$clusters_numbers--;
+			--$clusters_numbers;
 		}
 
 		self::whitelist_cluster( $table );

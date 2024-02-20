@@ -97,7 +97,7 @@ class No_Unsafe_Inline_Activator {
 		} catch ( Exception $ex ) {
 			Log::error( 'Impossible to install mu-plugin: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
 			Log::error( 'no-unsafe-inline cannot work without mu-plugin. Deactivate.' );
-			require_once dirname( __FILE__ ) . '/class-no-unsafe-inline-deactivator.php';
+			require_once __DIR__ . '/class-no-unsafe-inline-deactivator.php';
 			\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 		}
 		Log::info( 'Activated plugin.' );
@@ -242,5 +242,4 @@ class No_Unsafe_Inline_Activator {
 			return true;
 		}
 	}
-
 }

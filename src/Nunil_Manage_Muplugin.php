@@ -75,8 +75,7 @@ class Nunil_Manage_Muplugin {
 				// translators: %1$s is the source directory;  %2$s is the dest directory.
 				throw new \Exception( sprintf( __( 'Error! Could not copy the No unsafe-inline\'s mu-plugin from %1$s to %2$s.', 'no-unsafe-inline' ), $source, $dest ) );
 			}
-		} else {
-			if ( file_exists( $dest ) && ! unlink( $dest ) ) {
+		} elseif ( file_exists( $dest ) && ! unlink( $dest ) ) {
 				// translators: %s is the path to mu-plugin dir.
 				$result['error']  = sprintf( __( 'Error! Could not remove the No unsafe-inline\'s mu-plugin from %s.', 'no-unsafe-inline' ), $dest );
 				$result['status'] = 'ERROR';
@@ -84,7 +83,6 @@ class Nunil_Manage_Muplugin {
 				Nunil_Lib_Log::error( sprintf( __( 'Error ! Could not remove the No unsafe-inline\'s mu-plugin from %s.', 'no-unsafe-inline' ), $dest ) );
 				// translators: %s is the path to mu-plugin dir.
 				throw new \Exception( sprintf( __( 'Error ! Could not remove the No unsafe-inline\'s mu-plugin from %s.', 'no-unsafe-inline' ), $dest ) );
-			}
 		}
 	}
 }

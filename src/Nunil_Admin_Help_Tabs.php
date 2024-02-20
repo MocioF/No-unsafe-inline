@@ -903,5 +903,4 @@ class Nunil_Admin_Help_Tabs {
 		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://github.com/MocioF/No-unsafe-inline/issues' ) . __( 'Report issues', 'no-unsafe-inline' ) . '</a></p>';
 		$this->screen->set_help_sidebar( $content );
 	}
-
 }

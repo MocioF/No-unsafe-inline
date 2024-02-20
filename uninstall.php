@@ -65,7 +65,7 @@ function no_unsafe_inline_uninstall_plugin() {
 			// for site options in Multisite.
 			delete_option( $option );
 		}
-	};
+	}
 
 	// let's drop the tables.
 	$tables_name = array(

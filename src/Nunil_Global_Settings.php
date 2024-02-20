@@ -98,12 +98,7 @@ class Nunil_Global_Settings {
 	public $clustering_time_limit;
 
 	/**
-	 * Define the core functionality of the plugin.
-	 *
-	 * Set the plugin name and the plugin version that can be used throughout the plugin.
-	 * Set the array of managed CSP -src directives
-	 * Load the dependencies, define the locale, and set the hooks for the admin area and
-	 * the public-facing side of the site.
+	 * Class constructor
 	 *
 	 * @since    1.0.0
 	 */

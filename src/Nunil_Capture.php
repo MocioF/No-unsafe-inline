@@ -221,7 +221,7 @@ class Nunil_Capture {
 	 * @param array<array<string>> $rows An array of row array.
 	 * @return void
 	 */
-	private function put_handlers_in_db( $rows ):void {
+	private function put_handlers_in_db( $rows ): void {
 		foreach ( $rows as $row ) {
 			$this->insert_handler_in_db( $row );
 		}
@@ -526,14 +526,10 @@ class Nunil_Capture {
 							$check_attrs = false;
 						}
 					}
-				} else {
-					if ( ! $node->hasAttribute( $key ) ) {
+				} elseif ( ! $node->hasAttribute( $key ) ) {
 						$check_attrs = false;
-					} else {
-						if ( $node->getAttribute( $key ) !== $value && '*' !== $value ) {
-							$check_attrs = false;
-						}
-					}
+				} elseif ( $node->getAttribute( $key ) !== $value && '*' !== $value ) {
+						$check_attrs = false;
 				}
 			}
 		}
@@ -583,10 +579,8 @@ class Nunil_Capture {
 									$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 									$processed[ $node_key ] = true;
 								}
-							} else {
-								if ( $tag->capture_inline() ) {
+							} elseif ( $tag->capture_inline() ) {
 									$inline = true;
-								}
 							}
 						}
 					} else { // Tag HAS childs.

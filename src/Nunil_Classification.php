@@ -150,10 +150,4 @@ class Nunil_Classification {
 		$result_string   = $result_string . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
 		return $result_string;
 	}
-
 }
-
-
-
-
-

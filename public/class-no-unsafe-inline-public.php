@@ -169,7 +169,7 @@ class No_Unsafe_Inline_Public {
 				->forceSynchronous();
 
 			$pool[] = async(
-				function() use ( $htmlsource, $options ) {
+				function () use ( $htmlsource, $options ) {
 					$capture = new NUNIL\Nunil_Capture();
 					$capture->load_html( $htmlsource );
 

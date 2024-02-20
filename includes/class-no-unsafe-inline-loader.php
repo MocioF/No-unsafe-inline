@@ -151,5 +151,4 @@ class No_Unsafe_Inline_Loader {
 			}
 		}
 	}
-
 }
