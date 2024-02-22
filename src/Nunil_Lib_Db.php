@@ -400,12 +400,16 @@ class Nunil_Lib_Db {
 	 *                        Sticky (whitelisted) scripts will always be
 	 *                        inserted in CSP for the page.
 	 * @param bool   $utf8 Set to true only for inline js scripts.
+	 * @param string $nilsimsa The Nilsimsa hexDigest.
 	 * @return int The ID of inserted row
 	 */
-	public static function insert_inl_in_db( $directive, $tagname, $content, $sticky, $utf8 ) {
+	public static function insert_inl_in_db( $directive, $tagname, $content, $sticky, $utf8, $nilsimsa = '' ) {
 		global $wpdb;
 
-		$lsh = new \Beager\Nilsimsa( $content );
+		if ( '' === $nilsimsa ) {
+			$lsh      = new \Beager\Nilsimsa( $content );
+			$nilsimsa = $lsh->hexDigest();
+		}
 
 		$data   = array(
 			'directive' => $directive,
@@ -414,7 +418,7 @@ class Nunil_Lib_Db {
 			'sha256'    => Nunil_Capture::calculate_hash( 'sha256', $content, $utf8 ),
 			'sha384'    => Nunil_Capture::calculate_hash( 'sha384', $content, $utf8 ),
 			'sha512'    => Nunil_Capture::calculate_hash( 'sha512', $content, $utf8 ),
-			'nilsimsa'  => $lsh->hexDigest(),
+			'nilsimsa'  => $nilsimsa,
 			'sticky'    => $sticky,
 		);
 		$format = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d' );

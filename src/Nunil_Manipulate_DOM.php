@@ -1086,7 +1086,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$this->insert_pool[] = async(
 		// $this->insert_pool->add( // https://github.com/spatie/async/issues/167 .
-			function () use ( $tagname, $content, $hashes, $predicted_label ) {
+			function () use ( $tagname, $content, $hashes, $nilsimsa, $predicted_label ) {
 				$in_use    = $hashes['in_use'];
 				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 
@@ -1110,7 +1110,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					} else {
 						$utf8 = false;
 					}
-					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false, $utf8 );
+					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false, $utf8, $nilsimsa );
 					$affected  = DB::upd_inl_cl_wl( $script_id, $predicted_label );
 
 					$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
