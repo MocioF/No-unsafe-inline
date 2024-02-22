@@ -44,6 +44,14 @@ class Nunil_Global_Settings {
 	public $dbscan_minsamples_inl;
 
 	/**
+	 * The maximum number of samples that each leaf node can contain (inl BallTree).
+	 *
+	 * @access public
+	 * @var int $balltree_maxleafsize_inl
+	 */
+	public $balltree_maxleafsize_inl;
+
+	/**
 	 * The espilon parameter used in clustering event handlers scripts
 	 *
 	 * @since    1.0.0
@@ -60,6 +68,14 @@ class Nunil_Global_Settings {
 	 * @var      int    $dbscan_minsamples_evh
 	 */
 	public $dbscan_minsamples_evh;
+
+	/**
+	 * The maximum number of samples that each leaf node can contain (evh BallTree).
+	 *
+	 * @access public
+	 * @var int $balltree_maxleafsize_evh
+	 */
+	public $balltree_maxleafsize_evh;
 
 	/**
 	 * K paramenter of KNearestNeighbors for classification of innline scripts
@@ -106,22 +122,24 @@ class Nunil_Global_Settings {
 		$def_opts = array(
 
 			/* Rubix ML settings */
-			'dbscan_epsilon_inl'    => 40,
-			'dbscan_minsamples_inl' => 3,
-			'dbscan_epsilon_evh'    => 60,
-			'dbscan_minsamples_evh' => 3,
-			'knn_k_inl'             => 3,
-			'knn_k_evh'             => 3,
+			'dbscan_epsilon_inl'       => 40,
+			'dbscan_minsamples_inl'    => 3,
+			'balltree_maxleafsize_inl' => 100,
+			'dbscan_epsilon_evh'       => 30,
+			'dbscan_minsamples_evh'    => 3,
+			'balltree_maxleafsize_evh' => 100,
+			'knn_k_inl'                => 30,
+			'knn_k_evh'                => 3,
 
 			/* wp-cache expire time */
-			'expire_secs'           => array(
-				'inline_rows'   => 600, // 10 minutes.
-				'events_rows'   => 600,
-				'external_rows' => 600,
+			'expire_secs'              => array(
+				'inline_rows'   => 60, // 1 minute.
+				'events_rows'   => 60,
+				'external_rows' => 60,
 
 			),
 			/* misc */
-			'clustering_time_limit' => 500,
+			'clustering_time_limit'    => 600,
 		);
 
 		$opts = get_option( 'no-unsafe-inline-global-settings', $def_opts );

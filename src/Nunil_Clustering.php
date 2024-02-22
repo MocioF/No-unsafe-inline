@@ -50,19 +50,18 @@ class Nunil_Clustering {
 		$dataset = new Unlabeled( $samples );
 		switch ( $table ) {
 			case 'inline_scripts':
-				$dbscan = new DBSCAN( $gls->dbscan_epsilon_inl, $gls->dbscan_minsamples_inl, new BallTree( 20, new Nunil_Hamming_Distance() ) );
+				$dbscan = new DBSCAN( $gls->dbscan_epsilon_inl, $gls->dbscan_minsamples_inl, new BallTree( $gls->balltree_maxleafsize_inl, new Nunil_Hamming_Distance() ) );
 				break;
 			case 'event_handlers':
-				$dbscan = new DBSCAN( $gls->dbscan_epsilon_inl, $gls->dbscan_minsamples_evh, new BallTree( 20, new Nunil_Hamming_Distance() ) );
+				$dbscan = new DBSCAN( $gls->dbscan_epsilon_evh, $gls->dbscan_minsamples_evh, new BallTree( $gls->balltree_maxleafsize_evh, new Nunil_Hamming_Distance() ) );
 				break;
 
 			default:
-				$dbscan = new DBSCAN( $gls->dbscan_epsilon_inl, $gls->dbscan_minsamples_inl, new BallTree( 20, new Nunil_Hamming_Distance() ) );
+				$dbscan = new DBSCAN( $gls->dbscan_epsilon_inl, $gls->dbscan_minsamples_inl, new BallTree( $gls->balltree_maxleafsize_inl, new Nunil_Hamming_Distance() ) );
 				break;
 		}
 
 		$results = $dbscan->predict( $dataset );
-
 		return $results;
 	}
 
