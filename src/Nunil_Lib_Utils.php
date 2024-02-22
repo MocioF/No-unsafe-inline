@@ -157,4 +157,19 @@ class Nunil_Lib_Utils {
 			return null;
 		}
 	}
+
+	/**
+	 * Dev functions; don't commit
+	 *
+	 * @param mixed $var The var to log.
+	 * @return void
+	 */
+	public static function var_log( $var ) {
+		ob_start();
+		var_dump( $var );
+		$debug_dump = ob_get_clean();
+		if ( false !== $debug_dump ) {
+			error_log( $debug_dump );
+		}
+	}
 }

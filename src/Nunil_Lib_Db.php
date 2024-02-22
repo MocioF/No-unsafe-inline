@@ -261,7 +261,7 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_evh_id( $tagname, $tagid, $event_attribute, $hash ) {
 		global $wpdb;
-		$sql = $wpdb->prepare(
+		$sql = $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 			'SELECT `ID` FROM ' . self::event_handlers_table() . ' WHERE `tagname`=%s AND `tagid`=%s AND `event_attribute`=%s AND ' . self::src_hash( $hash ),
 			$tagname,
 			$tagid,
@@ -344,7 +344,7 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_inl_id( $tagname, $hash ) {
 		global $wpdb;
-		$sql = $wpdb->prepare(
+		$sql = $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 			'SELECT `ID` FROM ' . self::inline_scripts_table() . ' WHERE `tagname`=%s AND ' . self::src_hash( $hash ) . ' LIMIT 1',
 			$tagname,
 			$hash
@@ -1011,17 +1011,6 @@ class Nunil_Lib_Db {
 
 			if ( true === $delete_occurences ) {
 				self::delete_asset_occurences( $table, $id );
-				/*
-				$del_sc_occ = 'DELETE FROM ' . self::occurences_table() . ' WHERE `itemid` = %d AND dbtable = %s';
-				$del_occur  = $wpdb->query(
-					$wpdb->prepare(
-						$del_sc_occ,
-						$id,
-						substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
-					)
-				);
-				 *
-				 */
 			}
 		}
 		return $affected;
@@ -1816,19 +1805,20 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_last_nunil_ids( $ver ) {
 		global $wpdb;
-		$wild = '%';
-		$sql  = $wpdb->prepare(
+		$suffix = wp_scripts_get_suffix();
+		$wild   = '%';
+		$sql    = $wpdb->prepare(
 			'SELECT `ID` FROM ' . self::external_scripts_table() . ' WHERE '
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s OR '
 			. '`src_attrib` LIKE %s;',
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js?ver=' . $ver ),
-			$wild . $wpdb->esc_like( 'no-unsafe-inline-mutation-observer.min.js?ver=' . $ver )
+			$wild . $wpdb->esc_like( "no-unsafe-inline-fix-style$suffix.js?ver=" . $ver ),
+			$wild . $wpdb->esc_like( "no-unsafe-inline-prefilter-override$suffix.js?ver=" . $ver ),
+			$wild . $wpdb->esc_like( "no-unsafe-inline-admin$suffix.css?ver=" . $ver ),
+			$wild . $wpdb->esc_like( "no-unsafe-inline-admin$suffix.js?ver=" . $ver ),
+			$wild . $wpdb->esc_like( "no-unsafe-inline-mutation-observer$suffix.js?ver=" . $ver )
 		);
 		return $wpdb->get_results( $sql );
 	}
@@ -1868,7 +1858,8 @@ class Nunil_Lib_Db {
 	 */
 	public static function delete_legacy_nunil_assets( $ver ): void {
 		global $wpdb;
-		$wild = '%';
+		$suffix = wp_scripts_get_suffix();
+		$wild   = '%';
 		$wpdb->query(
 			$wpdb->prepare(
 				'DELETE FROM ' . self::external_scripts_table() . ' WHERE ('
@@ -1877,10 +1868,10 @@ class Nunil_Lib_Db {
 				. '`src_attrib` LIKE %s OR '
 				. '`src_attrib` LIKE %s ) AND '
 				. '`src_attrib` NOT LIKE %s;',
-				$wild . $wpdb->esc_like( 'no-unsafe-inline-fix-style.min.js' ) . $wild,
-				$wild . $wpdb->esc_like( 'no-unsafe-inline-prefilter-override.min.js' ) . $wild,
-				$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.css' ) . $wild,
-				$wild . $wpdb->esc_like( 'no-unsafe-inline-admin.min.js' ) . $wild,
+				$wild . $wpdb->esc_like( "no-unsafe-inline-fix-style$suffix.js" ) . $wild,
+				$wild . $wpdb->esc_like( "no-unsafe-inline-prefilter-override$suffix.js" ) . $wild,
+				$wild . $wpdb->esc_like( "no-unsafe-inline-admin$suffix.css" ) . $wild,
+				$wild . $wpdb->esc_like( "no-unsafe-inline-admin$suffix.js" ) . $wild,
 				$wild . $wpdb->esc_like( 'ver=' . $ver )
 			)
 		);

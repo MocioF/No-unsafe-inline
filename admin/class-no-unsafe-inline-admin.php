@@ -81,28 +81,23 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function enqueue_styles(): void {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in No_Unsafe_Inline_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The No_Unsafe_Inline_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		$suffix = wp_scripts_get_suffix();
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/no-unsafe-inline-admin.min.css', array(), $this->version, 'all' );
+			wp_enqueue_style(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . "css/no-unsafe-inline-admin$suffix.css",
+				array(),
+				$this->version,
+				'all'
+			);
 
 			$wp_scripts = wp_scripts();
 			wp_enqueue_style(
 				'jquery-ui-theme-smoothness',
 				plugin_dir_url( __FILE__ ) .
 				sprintf(
-					'css/jqueryui/%s/themes/smoothness/jquery-ui.min.css',
+					"css/jqueryui/%s/themes/smoothness/jquery-ui$suffix.css",
 					$wp_scripts->registered['jquery-ui-core']->ver
 				),
 				array(),
@@ -119,34 +114,48 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in No_Unsafe_Inline_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The No_Unsafe_Inline_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		$suffix  = wp_scripts_get_suffix();
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 		( 1 === $options['fix_setattribute_style'] && 1 === $options['protect_admin'] )
 		) {
-			wp_enqueue_script( $this->plugin_name . '_jquery-htmlprefilter-override', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . 'includes/js/no-unsafe-inline-prefilter-override.min.js', array( 'jquery' ), $this->version, false );
-			wp_enqueue_script( $this->plugin_name . '_fix_setattribute_style', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . 'includes/js/no-unsafe-inline-fix-style.min.js', array(), $this->version, false );
+			wp_enqueue_script(
+				$this->plugin_name . '_jquery-htmlprefilter-override',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-prefilter-override$suffix.js",
+				array( 'jquery' ),
+				$this->version,
+				false
+			);
+
+			wp_enqueue_script(
+				$this->plugin_name . '_fix_setattribute_style',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-fix-style$suffix.js",
+				array(),
+				$this->version,
+				false
+			);
 		}
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 		( 1 !== $options['use_unsafe-hashes'] ) ) {
-			wp_enqueue_script( $this->plugin_name . '_mutation-observer', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . 'includes/js/no-unsafe-inline-mutation-observer.min.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_script(
+				$this->plugin_name . '_mutation-observer',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-mutation-observer$suffix.js",
+				array( 'jquery' ),
+				$this->version,
+				true
+			);
 		}
 
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/no-unsafe-inline-admin.min.js', array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'wp-i18n' ), $this->version, false );
+			wp_enqueue_script(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . "js/no-unsafe-inline-admin$suffix.js",
+				array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'wp-i18n' ),
+				$this->version,
+				false
+			);
 
 			wp_localize_script(
 				$this->plugin_name,
@@ -156,8 +165,6 @@ class No_Unsafe_Inline_Admin {
 				)
 			);
 		}
-
-		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 	}
 
 	/**
