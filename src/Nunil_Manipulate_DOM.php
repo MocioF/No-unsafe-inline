@@ -287,7 +287,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					$evh_labels[]  = $row->event_attribute . '#' . $row->clustername;
 				}
 				if ( $evh_samples && $evh_labels ) {
-					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
+					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_evh, true, new Nunil_Hamming_Distance() );
 					$evh_dataset                     = new Labeled( $evh_samples, $evh_labels );
 					$this->event_handlers_classifier->train( $evh_dataset );
 				}
