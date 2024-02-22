@@ -206,20 +206,20 @@ class Nunil_Clustering {
 
 			switch ( $table ) {
 				case 'inline_scripts':
-					$radius     = $gls->dbscan_epsilon_inl;
-					$minSamples = $gls->dbscan_minsamples_inl;
+					$radius      = $gls->dbscan_epsilon_inl;
+					$min_samples = $gls->dbscan_minsamples_inl;
 					break;
 				case 'event_handlers':
-					$radius     = $gls->dbscan_epsilon_evh;
-					$minSamples = $gls->dbscan_minsamples_evh;
+					$radius      = $gls->dbscan_epsilon_evh;
+					$min_samples = $gls->dbscan_minsamples_evh;
 					break;
 			}
 
-			$substr        = 'DBSCAN params: radius: %s - minDensity: %s';
 			$result_string = $result_string . '<br>' . sprintf(
-				esc_html__( $substr, 'no-unsafe-inline' ),
+				// translators: first and second %s are parameters (numbers) fo the DBSCAN Clusterer.
+				esc_html__( 'DBSCAN params: radius: %1$s - minDensity: %2$s', 'no-unsafe-inline' ),
 				$radius,
-				$minSamples
+				$min_samples
 			);
 
 			$seg_fields = DB::get_segmentation_values( $tbl['segmentation_field'], $tbl['table'] );
@@ -229,7 +229,7 @@ class Nunil_Clustering {
 
 				foreach ( $tagnames as $tagname ) {
 					$obj_collection = DB::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
-					if ( $minSamples <= count( $obj_collection ) ) {
+					if ( $min_samples <= count( $obj_collection ) ) {
 						$result_string   = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
 						$result_string   = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
 						$dbscan_results  = self::make_db_scan( $obj_collection, $tbl['table'] );
