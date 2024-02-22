@@ -205,6 +205,24 @@ class Nunil_Clustering {
 
 			$table = $tbl['table'];
 
+			switch ( $table ) {
+				case 'inline_scripts':
+					$radius     = $gls->dbscan_epsilon_inl;
+					$minSamples = $gls->dbscan_minsamples_inl;
+					break;
+				case 'event_handlers':
+					$radius     = $gls->dbscan_epsilon_evh;
+					$minSamples = $gls->dbscan_minsamples_evh;
+					break;
+			}
+
+			$substr        = 'DBSCAN params: radius: %s - minDensity: %s';
+			$result_string = $result_string . '<br>' . sprintf(
+				esc_html__( $substr, 'no-unsafe-inline' ),
+				$radius,
+				$minSamples
+			);
+
 			$seg_fields = DB::get_segmentation_values( $tbl['segmentation_field'], $tbl['table'] );
 
 			foreach ( $seg_fields as $segment ) {
@@ -212,15 +230,16 @@ class Nunil_Clustering {
 
 				foreach ( $tagnames as $tagname ) {
 					$obj_collection = DB::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
+					if ( $minSamples <= count( $obj_collection ) ) {
+						$result_string   = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
+						$result_string   = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
+						$dbscan_results  = self::make_db_scan( $obj_collection, $tbl['table'] );
+						$clustered_built = self::cluster_digests( $table, $obj_collection, $dbscan_results );
 
-					$result_string   = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
-					$result_string   = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
-					$dbscan_results  = self::make_db_scan( $obj_collection, $tbl['table'] );
-					$clustered_built = self::cluster_digests( $table, $obj_collection, $dbscan_results );
+						$result_string = $result_string . esc_html__( 'Clusters built: ', 'no-unsafe-inline' ) . strval( $clustered_built ) . '<br>';
 
-					$result_string = $result_string . esc_html__( 'Clusters built: ', 'no-unsafe-inline' ) . strval( $clustered_built ) . '<br>';
-
-					$result_string = $result_string . ' ------- $$$ ------- <br>';
+						$result_string = $result_string . ' ------- $$$ ------- <br>';
+					}
 				}
 			}
 			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>';
