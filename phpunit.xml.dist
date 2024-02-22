@@ -13,4 +13,18 @@
 			<exclude>./tests/test-sample.php</exclude>
 		</testsuite>
 	</testsuites>
+        <coverage>
+            <include>
+                <directory suffix=".php">./</directory>
+            </include>
+            <exclude>
+                <directory>.github/</directory>
+                <directory>assets/</directory>
+                <directory>bin/</directory>
+                <directory>mu-plugins/</directory>
+                <directory>node_modules/</directory>
+                <directory>tests/</directory>
+                <directory>vendor/</directory>
+            </exclude>
+        </coverage>
 </phpunit>
