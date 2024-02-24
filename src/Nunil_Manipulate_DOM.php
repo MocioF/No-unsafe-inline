@@ -955,6 +955,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		}
 		$not_sri_sources = array(
 			'fonts.googleapis', // https://github.com/google/fonts/issues/473 .
+			'consent.cookiebot.com', // https://support.cookiebot.com/hc/en-us/community/posts/360029353353-Subresource-Integrity-SRI-and-Cookiebot .
+			'cookie-cdn.cookiepro.com', // https://wordpress.org/support/topic/cookie-pro-script-gets-blocked-from-time-to-time/ .
 		);
 
 		foreach ( $not_sri_sources as $source ) {
