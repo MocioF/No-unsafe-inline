@@ -1767,7 +1767,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
 			'<input class="nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
 			'name="no-unsafe-inline[new_endpoint]" %s /> 
-			<label for="nunil-btn nunil-btn-addnew">%s</label>',
+			<label for="no-unsafe-inline[new_endpoint]">%s</label>',
 			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
 			esc_html( $disabled ),
 			esc_html( $disabled ),
