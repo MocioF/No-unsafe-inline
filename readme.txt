@@ -3,7 +3,7 @@ Contributors: mociofiletto
 Donate link: https://paypal.me/GiuseppeF77
 Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
-Tested up to: 6.2
+Tested up to: 6.4
 Requires PHP: 7.4
 Stable tag: 1.1.2
 License: GPLv2 or later
@@ -157,6 +157,13 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.1.3 =
+* Reduce capture occurences
+* (dev) adding support for SCRIPT_DEBUG
+* Update composer and npm dependencies
+* Fix admin js for jquery deprecations
+* Adding some cookie scripts to the list of scripts that do not support SRI
+
 = 1.1.2 =
 * Removed the use of 'hash-value' to allow external styles - not supported by CSP
 * Removed the use of 'hash-value' to allow external images - not supported by CSP
