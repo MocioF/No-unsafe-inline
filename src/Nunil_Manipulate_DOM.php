@@ -477,7 +477,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				$hashes = $this->get_hashes( $content, $utf8 );
 
 				$wl_index = $this->check_single_whitelist( $hashes, $tagname );
-				if ( $wl_index ) {
+				if ( false !== $wl_index ) {
 					$this->allow_whitelisted( $node, $hashes, $directive );
 					// Devi aggiornare un lastseen ?
 				} else {
@@ -485,7 +485,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					$lsh_hex_digest = $lsh->hexDigest();
 					$wl_cluster     = $this->check_cluster_whitelist( $lsh_hex_digest, $tagname );
 
-					if ( $wl_cluster ) {
+					if ( false !== $wl_cluster ) {
 						$this->allow_whitelisted( $node, $hashes, $directive );
 
 						$options = (array) get_option( 'no-unsafe-inline' );
