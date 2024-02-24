@@ -122,10 +122,10 @@ class Nunil_Global_Settings {
 		$def_opts = array(
 
 			/* Rubix ML settings */
-			'dbscan_epsilon_inl'       => 40,
+			'dbscan_epsilon_inl'       => 60,
 			'dbscan_minsamples_inl'    => 3,
 			'balltree_maxleafsize_inl' => 100,
-			'dbscan_epsilon_evh'       => 30,
+			'dbscan_epsilon_evh'       => 60,
 			'dbscan_minsamples_evh'    => 3,
 			'balltree_maxleafsize_evh' => 100,
 			'knn_k_inl'                => 30,

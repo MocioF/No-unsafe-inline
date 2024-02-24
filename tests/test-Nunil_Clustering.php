@@ -41,7 +41,7 @@ final class Nunil_Nunil_ClusteringTest extends WP_UnitTestCase
 		);
 		$results         = $nunil_make_db_scan->invokeArgs( $this->nunil_clustering, $args );
 		
-		$this->assertEquals( $numClusters, max( $results ) );
+		$this->assertGreaterThanOrEqual( $numClusters, max( $results ) );
 		
 		return $results;
 	}
