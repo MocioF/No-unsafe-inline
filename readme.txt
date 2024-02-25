@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,7 +158,7 @@ No.
 
 == Changelog ==
 = 1.1.3 =
-* Reduce capture occurences
+* Reduce the number of capture occurences
 * (dev) adding support for SCRIPT_DEBUG
 * Update composer and npm dependencies
 * Fix admin js for jquery deprecations

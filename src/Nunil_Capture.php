@@ -784,7 +784,7 @@ class Nunil_Capture {
 					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
 				}
 			} else {
-				// The script is in already in the db.
+				// The script is already in the db.
 				// Now check if there is an occurence for the script in the page.
 				// since 1.1.3: we need occurences only for hashed content.
 				if ( true === $add_hashes_and_occurences ) {
