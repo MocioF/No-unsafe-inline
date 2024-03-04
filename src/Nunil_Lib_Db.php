@@ -156,7 +156,7 @@ class Nunil_Lib_Db {
 				ID INT(11) NOT NULL AUTO_INCREMENT,
 				directive VARCHAR(20) NOT NULL,
 				tagname VARCHAR(50) NOT NULL,
-				src_attrib VARCHAR(255) NOT NULL,
+				src_attrib VARCHAR(768) NOT NULL,
 				sha256 CHAR(44) COLLATE ascii_bin,
 				sha384 CHAR(64) COLLATE ascii_bin,
 				sha512 CHAR(88) COLLATE ascii_bin,
@@ -1894,5 +1894,51 @@ class Nunil_Lib_Db {
 			. ' ORDER BY `src_attrib` ASC;';
 
 		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Resize the src_attrib columns in external_scripts table
+	 *
+	 * Untill v1.1.3 src_attrib was set to a VARCHAR(255).
+	 * MySQL after 5.0.3 support a VARCHAR to be max 64kb; this means that in a VARCHAR can be stored
+	 * up to 65535 chars if the charset uses 1 byte per char,
+	 * or less if a multi-byte character is in use:
+	 *  up to 21844 chars for utf8 (3 bytes per char)
+	 *  up to 16383 chars for utf8mb4 (max 4 bytes per char).
+	 * However, the whole record has to respect the max row size that in MySQL is 64KB.
+	 * WP can generate URLs longer than 255 characters as in wp-admin/load-styles.php?...
+	 * The "true" max supported length of an URL is discussed here:
+	 * https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+	 * Using the suggested value of 2000 chars, we colud set src_attrib to VARCHAR(8000) from v1.1.4
+	 * One more issue is that src_attrib is indexed:
+	 * 767 bytes in MySQL version 5.6 (and prior versions), is the stated prefix limitation for InnoDB tables.
+	 * It's 1,000 bytes long for MyISAM tables.
+	 * This limit has been increased to 3072 bytes In MySQL version 5.7 (and upwards).
+	 * Actual WP recommends MySQL version 8.0 or greater OR MariaDB version 10.4 or greater.
+	 * We set `src_attrib` VARCHAR(768) (3072/4).
+	 *
+	 * @since 1.1.4
+	 * @access public
+	 * @return void
+	 */
+	public static function extend_ext_src_attrib_size() {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		global $wpdb;
+		$charset_collate        = $wpdb->get_charset_collate();
+		$external_scripts_table = self::external_scripts_table();
+
+		$sql = "CREATE TABLE $external_scripts_table (
+				ID INT(11) NOT NULL AUTO_INCREMENT,
+				directive VARCHAR(20) NOT NULL,
+				tagname VARCHAR(50) NOT NULL,
+				src_attrib VARCHAR(768) NOT NULL,
+				sha256 CHAR(44) COLLATE ascii_bin,
+				sha384 CHAR(64) COLLATE ascii_bin,
+				sha512 CHAR(88) COLLATE ascii_bin,
+				whitelist TINYINT(1) NOT NULL DEFAULT '0',
+				PRIMARY KEY  (ID),
+				KEY src_attrib_ind (`src_attrib`)
+				) $charset_collate;";
+		dbDelta( $sql );
 	}
 }

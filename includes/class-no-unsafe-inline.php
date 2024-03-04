@@ -210,7 +210,8 @@ class No_Unsafe_Inline {
 		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'update_muplugin', 10, 2 );
 		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'add_new_options', 11, 2 );
 		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'renew_plugin_assets', 12, 2 );
-		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'delete_old_occurences', 12, 2 );
+		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'delete_old_occurences', 13, 2 );
+		$this->loader->add_action( 'nunil_upgrade', $plugin_admin, 'alter_database', 14, 2 );
 
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'nunil_admin_options_submenu' );
 

@@ -347,6 +347,22 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
+	 * Alters the database structure.
+	 *
+	 * This method is hooked on nunil_upgrade.
+	 *
+	 * @since 1.1.4
+	 * @param string $new_ver New plugin version.
+	 * @param string $old_ver Old plugin version.
+	 * @return void
+	 */
+	public function alter_database( $new_ver, $old_ver ): void {
+		if ( version_compare( $old_ver, '1.1.4', '<' ) ) {
+			DB::extend_ext_src_attrib_size();
+		}
+	}
+
+	/**
 	 * Update version and rehash plugin's assets after version update
 	 *
 	 * @since 1.0.2
