@@ -1061,7 +1061,7 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Sanitize the tools status
 	 *
-	 * @param array<int|string> $input Contains the settings.
+	 * @param array<int|string>|null $input Contains the settings.
 	 * @return array<mixed>
 	 */
 	public function sanitize_tools( $input ) {
@@ -1073,6 +1073,15 @@ class No_Unsafe_Inline_Admin {
 			'test_policy',
 			'enable_protection',
 		);
+
+		// All tools are unchecked.
+		if ( is_null( $input ) ) {
+			foreach ( $options_checked as $option_name ) {
+				$input[ $option_name ] = 0;
+			}
+			$new_options = array_merge( $options, $input );
+			return $new_options;
+		}
 
 		foreach ( $input as $key => $value ) {
 			if ( ! in_array( $key, $options_checked ) ) {
