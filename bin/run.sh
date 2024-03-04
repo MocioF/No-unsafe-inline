@@ -77,7 +77,7 @@ OUTPUT_PATH="$DIST_PATH/source"
 create_dist() {
   rm -rf $DIST_PATH
   mkdir -p $SVN_PATH $OUTPUT_PATH
-  cp -Rp admin includes languages mu-plugins public src composer.json composer.lock index.php LICENSE.txt no-unsafe-inline.php readme.txt uninstall.php $OUTPUT_PATH
+  cp -Rp admin includes languages mu-plugins public src index.php LICENSE.txt no-unsafe-inline.php readme.txt uninstall.php $OUTPUT_PATH
   (cd $OUTPUT_PATH && composer install --quiet --no-dev --optimize-autoloader)
   cp index.php $OUTPUT_PATH/vendor/
 }
