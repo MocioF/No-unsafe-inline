@@ -212,7 +212,6 @@ This version of the plugin uses:
 * [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) to parse HTML;
 * [RubixML](https://rubixml.com/) for machine learning ***from version 1.1.0*** - _[PHP-ML](https://php-ml.readthedocs.io/en/latest/) was used in versions 1.0.x_;
 * [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests;
-* [spatie/async](https://github.com/spatie/async) to perform asynchronous and parallel PHP.
 
 The log functions have been taken from
 * [perfectyorg/perfecty-push-wp](https://github.com/perfectyorg/perfecty-push-wp), ***something you should [really try](https://wordpress.org/plugins/perfecty-push-notifications/) if you want to implement web Push notifications in your site.***

@@ -10,8 +10,8 @@
  */
 
 use NUNIL\Nunil_Lib_Log as Log;
-use Spatie\Async\Pool;
 use NUNIL\Nunil_Lib_Utils as Utils;
+
 
 /**
  * The public-facing functionality of the plugin.
@@ -145,39 +145,38 @@ class No_Unsafe_Inline_Public {
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
 		if ( 1 === $tools['capture_enabled'] ) {
-			/**
-			 * Async newer worked in apache because even if php is built with pcntl it just works in CLI.
-			 * More it creates error when the platform returns true to Pool::isSupported() even if it's not.
-			 * Now we are forceing synchronous execution, before removing spatie/async from codebase.
-			 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
-			 */
-			$pool = Pool::create()
-				->concurrency( 2 )
-				->timeout( 15 )
-				->sleepTime( 50000 )
-				->forceSynchronous();
+			if ( class_exists( 'Fiber' ) ) {
+				global $nunil_fibers;
+				$nunil_fibers[] = new Fiber(
+					function () use ( $htmlsource, $options ) {
+						$capture = new NUNIL\Nunil_Capture();
+						$capture->load_html( $htmlsource );
 
-			$pool[] = async(
-				function () use ( $htmlsource, $options ) {
-					$capture = new NUNIL\Nunil_Capture();
-					$capture->load_html( $htmlsource );
+						$capture_tags = new \NUNIL\Nunil_Captured_Tags();
+						$tags         = $capture_tags->get_captured_tags();
 
-					$capture_tags = new \NUNIL\Nunil_Captured_Tags();
-					$tags         = $capture_tags->get_captured_tags();
+						$capture->capture_tags( $tags );
 
-					$capture->capture_tags( $tags );
-
-					if ( 0 === $options['use_unsafe-hashes'] ) {
-						$capture->capture_handlers();
-						$capture->capture_inline_style();
+						if ( 0 === $options['use_unsafe-hashes'] ) {
+								$capture->capture_handlers();
+								$capture->capture_inline_style();
+						}
 					}
+				);
+			} else {
+				$capture = new NUNIL\Nunil_Capture();
+				$capture->load_html( $htmlsource );
+
+				$capture_tags = new \NUNIL\Nunil_Captured_Tags();
+				$tags         = $capture_tags->get_captured_tags();
+
+				$capture->capture_tags( $tags );
+
+				if ( 0 === $options['use_unsafe-hashes'] ) {
+					$capture->capture_handlers();
+					$capture->capture_inline_style();
 				}
-			)->catch(
-				function ( $exception ) {
-					error_log( print_r( $exception, true ) );
-				}
-			);
-			await( $pool );
+			}
 		}
 
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {

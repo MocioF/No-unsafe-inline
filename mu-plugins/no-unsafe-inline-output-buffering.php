@@ -56,6 +56,21 @@ add_action(
 		}
 		// phpcs:ignore
 		echo $manipulated;
+		if ( class_exists( 'Fiber' ) ) {
+			global $nunil_fibers;
+			if ( is_array( $nunil_fibers ) ) {
+				foreach ( $nunil_fibers as $i => $fiber ) {
+					if ( $fiber instanceof Fiber ) {
+						if ( ! $fiber->isStarted() ) {
+							$fiber->start();
+						}
+						if ( $fiber->isSuspended() ) {
+							$fiber->resume();
+						}
+					}
+				}
+			}
+		}
 	},
 	0
 );

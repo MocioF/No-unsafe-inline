@@ -15,7 +15,6 @@
         "opctim/php-nilsimsa": "^1.0",
         "league/uri": "^6.5",
         "scrivo/highlight.php": "^9.18",
-        "spatie/async": "^1.5",
         "league/uri-components": "^2.4",
         "rubix/ml": "^2.0",
         "rubix/tensor": "^3.0"

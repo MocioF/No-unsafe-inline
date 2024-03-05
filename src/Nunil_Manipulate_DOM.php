@@ -16,7 +16,6 @@ use Beager\Nilsimsa;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Datasets\Unlabeled;
-use Spatie\Async\Pool;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
@@ -152,15 +151,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	private $page_nonce;
 
 	/**
-	 * Making asyncronous insert in Database
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 * @var \Spatie\Async\Pool $insert_pool The pool used for insert in DB labelled scripts
-	 */
-	private $insert_pool;
-
-	/**
 	 * The class constructor.
 	 *
 	 * Set the domdocument attribute.
@@ -293,19 +283,6 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				}
 			}
 		}
-
-		/**
-		 * It was used to make asyncronous insert in DB.
-		 * Async newer worked in apache because even if php is built with pcntl it just works in CLI.
-		 * More it creates error when the platform returns true to Pool::isSupported() even if it's not.
-		 * Now we are forceing synchronous execution, before removing spatie/async from codebase.
-		 * https://wordpress.org/support/topic/enable-tag-capturing-on-this-site-does-not-seem-to-collect-data/#post-16707113
-		 */
-		$this->insert_pool = Pool::create()
-			->concurrency( 20 )
-			->timeout( 15 )
-			->sleepTime( 50000 )
-			->forceSynchronous();
 	}
 
 	/**
@@ -490,9 +467,16 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 						$options = (array) get_option( 'no-unsafe-inline' );
 						if ( 1 === $options['add_wl_by_cluster_to_db'] ) {
-							/* Start async block. */
-							$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
-							/* End async block. */
+							if ( class_exists( '\\Fiber' ) ) {
+								global $nunil_fibers;
+								$nunil_fibers[] = new \Fiber(
+									function () use ( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster ) {
+										$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
+									}
+								);
+							} else {
+								$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
+							}
 						}
 					}
 				}
@@ -1086,40 +1070,34 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$cache_group = 'no-unsafe-inline';
 		$inline_rows = wp_cache_delete( $cache_key, $cache_group );
 
-		$this->insert_pool[] = async(
-		// $this->insert_pool->add( // https://github.com/spatie/async/issues/167 .
-			function () use ( $tagname, $content, $hashes, $nilsimsa, $predicted_label ) {
-				$in_use    = $hashes['in_use'];
-				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
+		$in_use    = $hashes['in_use'];
+		$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
 
-				$pageurl = Nunil_Lib_Utils::get_page_url();
-				/* Before inserting, check if the script is in db. */
-				$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
-				if ( ! is_null( $script_id ) ) {
-					// Cluster and whitelist if in DB.
-					$affected = DB::upd_inl_cl_wl( $script_id, $predicted_label );
+		$pageurl = Nunil_Lib_Utils::get_page_url();
+		/* Before inserting, check if the script is in db. */
+		$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
+		if ( ! is_null( $script_id ) ) {
+			// Cluster and whitelist if in DB.
+			$affected = DB::upd_inl_cl_wl( $script_id, $predicted_label );
 
-					$occ_id = DB::get_occ_id( $script_id, 'inline_scripts', $pageurl );
+			$occ_id = DB::get_occ_id( $script_id, 'inline_scripts', $pageurl );
 
-					if ( ! is_null( $occ_id ) ) {
-						DB::update_lastseen( $occ_id );
-					} else {
-						$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
-					}
-				} else {
-					if ( 'script' === $tagname || 'style' === $tagname ) {
-						$utf8 = true;
-					} else {
-						$utf8 = false;
-					}
-					$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false, $utf8, $nilsimsa );
-					$affected  = DB::upd_inl_cl_wl( $script_id, $predicted_label );
-
-					$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
-				}
+			if ( ! is_null( $occ_id ) ) {
+				DB::update_lastseen( $occ_id );
+			} else {
+				$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts', $pageurl );
 			}
-		);
-		await( $this->insert_pool );
+		} else {
+			if ( 'script' === $tagname || 'style' === $tagname ) {
+				$utf8 = true;
+			} else {
+				$utf8 = false;
+			}
+			$script_id = DB::insert_inl_in_db( $tagname . '-src', $tagname, $content, $sticky = false, $utf8, $nilsimsa );
+			$affected  = DB::upd_inl_cl_wl( $script_id, $predicted_label );
+
+			$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
+		}
 	}
 
 	/**
@@ -1280,16 +1258,16 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 * @access private
 	 * @param \DOMElement $node The DOMNode passed by reference.
-	 * @param string      $class The new class to be added.
+	 * @param string      $cssclass The new class to be added.
 	 * @return void
 	 */
-	private function ils_allow_wl_hash( &$node, $class ): void {
+	private function ils_allow_wl_hash( &$node, $cssclass ): void {
 		if ( $node->hasAttribute( 'class' ) ) {
 			$old_class = $node->getAttribute( 'class' ) . ' ';
 		} else {
 			$old_class = '';
 		}
-		$new_class = $old_class . "$class";
+		$new_class = $old_class . "$cssclass";
 		$node->setAttribute( 'class', $new_class );
 
 		$style = $node->getAttribute( 'style' );
@@ -1303,7 +1281,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$node->removeAttribute( 'style' );
 
-		$line = '.' . $class . '{' . $style . ' }' . PHP_EOL;
+		$line = '.' . $cssclass . '{' . $style . ' }' . PHP_EOL;
 
 		$this->injected_inline_style = $this->injected_inline_style . $line;
 	}
