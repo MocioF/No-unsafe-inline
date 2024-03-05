@@ -1046,6 +1046,7 @@ class Nunil_Lib_Db {
 				$result = $wpdb->get_results(
 					'SELECT \'External Scripts\' AS \'type\', COUNT(`ID`) AS \'num\', '
 					. '`whitelist`, \'--\' AS \'clusters\' FROM ' . self::external_scripts_table() . ' '
+					. 'WHERE `directive` = \'script-src\' OR `directive` = \'style-src\' '
 					. 'GROUP BY `whitelist` '
 					. 'UNION ALL '
 					. 'SELECT \'Inline Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', `whitelist`, '
@@ -1069,8 +1070,8 @@ class Nunil_Lib_Db {
 					. 'ELSE \'No\' '
 					. 'END AS \'nonceable\', '
 					. 'CASE '
-					. 'WHEN `tagname` =\'script\' THEN `whitelist` '
-					. 'WHEN `tagname` =\'link\' THEN `whitelist` '
+					. 'WHEN `directive` =\'script-src\' THEN `whitelist` '
+					. 'WHEN `directive` =\'style-src\' THEN `whitelist` '
 					. 'ELSE \'--\' '
 					. 'END AS \'whitelist\', '
 					. 'COUNT(`ID`) AS \'num\' FROM ' . self::with_prefix( $table ) . ' '
