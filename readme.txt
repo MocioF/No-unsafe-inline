@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Content Security Policy (CSP) is a computer security standard introduced to prev
 Cross-site scripting (XSS) is a type of security vulnerability that can be found in some web applications.
 XSS attacks enable attackers to inject client-side scripts into web pages viewed by other users.
 A cross-site scripting vulnerability may be used by attackers to bypass access controls like the same-origin policy.
-Looking at National Vulnerability Database ran by US NIST, *more than 1,600 vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
+Looking at National Vulnerability Database ran by US NIST, *more than ~~1,600~~ 900 (March 2024) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
 
 *Keeping your site up-to-date* with the latest versions of plugins and themes is the **first** line of defense to ensure your site's security.
 
@@ -157,6 +157,11 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.1.4 =
+* Fix src_attrib field size for long URLs
+* Remove spatie\async from codebase and use fibers to execute long processes after page output
+* Fix summary report
+
 = 1.1.3 =
 * Reduce the number of capture occurences
 * (dev) adding support for SCRIPT_DEBUG
