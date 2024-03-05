@@ -102,11 +102,11 @@ class No_Unsafe_Inline_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param string $string The string to check.
+	 * @param string $value The string to check.
 	 * @return bool
 	 */
-	private function is_json( $string ) {
-		json_decode( $string );
+	private function is_json( $value ) {
+		json_decode( $value );
 		return json_last_error() === JSON_ERROR_NONE;
 	}
 
@@ -276,11 +276,9 @@ class No_Unsafe_Inline_Public {
 							$report_uri = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
 						}
 						if ( true === $endpoints_in_use ) {
-							// if ( is_array( $options['endpoints'] ) ) { // This check should be unuseful.
 							foreach ( $options['endpoints'] as $url ) {
 								$report_uri = $report_uri . $url . ' ';
 							}
-							// } // .
 						}
 
 						if ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) {
@@ -308,13 +306,11 @@ class No_Unsafe_Inline_Public {
 							}
 							if ( true === $endpoints_in_use ) {
 								$my_endpoints = '';
-								// if ( is_array( $options['endpoints'] ) ) { // This check should be unuseful.
 								foreach ( $options['endpoints'] as $url ) {
 									$my_endpoints = $my_endpoints
 									. '{ "url": "' . $url . '" }, ';
 								}
 									$my_endpoints = substr( $my_endpoints, 0, strlen( $my_endpoints ) - 2 );
-								// } // .
 
 								if ( 1 === $tools['capture_enabled'] ) {
 									$header_report_to = $header_report_to . ', ' . $my_endpoints;

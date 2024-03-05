@@ -230,7 +230,7 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Updates the mu-plugin to the last one.
+	 * Updates the mu-plugin to the last one
 	 *
 	 * This method is hooked on nunil_upgrade.
 	 *
@@ -250,7 +250,7 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
-	 * Adds new options to the database.
+	 * Adds new options to the database
 	 *
 	 * This method is hooked on nunil_upgrade.
 	 *
