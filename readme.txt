@@ -17,7 +17,7 @@ Content Security Policy (CSP) is a computer security standard introduced to prev
 Cross-site scripting (XSS) is a type of security vulnerability that can be found in some web applications.
 XSS attacks enable attackers to inject client-side scripts into web pages viewed by other users.
 A cross-site scripting vulnerability may be used by attackers to bypass access controls like the same-origin policy.
-Looking at National Vulnerability Database ran by US NIST, *more than ~~1,600~~ 900 (March 2024) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
+Looking at National Vulnerability Database ran by US NIST, *more than <del>1,600</del> <ins>900 (March 2024)</ins> vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
 
 *Keeping your site up-to-date* with the latest versions of plugins and themes is the **first** line of defense to ensure your site's security.
 
@@ -216,7 +216,7 @@ Give it a try!
 This version of the plugin uses:
 * [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) to parse HTML;
 * [RubixML](https://rubixml.com/) for machine learning ***from version 1.1.0*** - _[PHP-ML](https://php-ml.readthedocs.io/en/latest/) was used in versions 1.0.x_;
-* [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests;
+* [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests.
 
 The log functions have been taken from
 * [perfectyorg/perfecty-push-wp](https://github.com/perfectyorg/perfecty-push-wp), ***something you should [really try](https://wordpress.org/plugins/perfecty-push-notifications/) if you want to implement web Push notifications in your site.***
