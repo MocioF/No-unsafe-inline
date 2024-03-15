@@ -77,7 +77,7 @@ OUTPUT_PATH="$DIST_PATH/source"
 create_dist() {
   rm -rf $DIST_PATH
   mkdir -p $SVN_PATH $OUTPUT_PATH
-  cp -Rp admin includes languages mu-plugins public src index.php LICENSE.txt no-unsafe-inline.php readme.txt uninstall.php $OUTPUT_PATH
+  cp -Rp admin includes languages mu-plugins public src composer.json composer.lock index.php LICENSE.txt no-unsafe-inline.php readme.txt uninstall.php $OUTPUT_PATH
   (cd $OUTPUT_PATH && composer install --quiet --no-dev --optimize-autoloader)
   cp index.php $OUTPUT_PATH/vendor/
 }
@@ -96,7 +96,7 @@ bundle() {
 svnsync() {
   create_dist
   svn co -q https://plugins.svn.wordpress.org/no-unsafe-inline $SVN_PATH
-  cp assets/* "$SVN_PATH/assets/"
+  cp -r assets/* "$SVN_PATH/assets/"
 
   # we don't sync vendor if the lock file is the same
   shasum "$SVN_PATH/trunk/composer.lock"
