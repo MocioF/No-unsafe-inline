@@ -65,16 +65,16 @@ class Nunil_SRI {
 	 * @since 1.0.0
 	 * @param string|int|array<string|int> $id The id of the _external_script record.
 	 * @param bool                         $overwrite True to overwrite existing hashes.
-	 * @return void
+	 * @return bool
 	 */
-	public function put_hashes_in_db( $id, $overwrite = false ): void {
+	public function put_hashes_in_db( $id, $overwrite = false ): bool {
 		if ( ! is_array( $id ) ) {
 			$my_ids   = array();
 			$my_ids[] = $id;
 		} else {
 			$my_ids = $id;
 		}
-
+		$returned = true;
 		foreach ( $my_ids as $id ) {
 
 			// $wpdb->get_var always return a string.
@@ -112,10 +112,13 @@ class Nunil_SRI {
 					$affected = DB::update_ext_hashes( $data, $id, $format );
 				} else {
 					Log::warning( 'Unable to fetch ' . $data->src_attrib );
+					$returned = false;
 				}
 			} else {
 				Log::warning( 'Unable to get hashes of script with ID: ' . $id );
+				$returned = false;
 			}
 		}
+		return $returned;
 	}
 }

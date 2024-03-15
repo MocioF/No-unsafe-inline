@@ -245,7 +245,6 @@ class No_Unsafe_Inline {
 	private function define_public_hooks() {
 		$plugin_public = new No_Unsafe_Inline_Public( $this->get_plugin_name(), $this->get_version() );
 
-		// ~ $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 0 );
 
 		// This will output CSP (and Report-To) headers.
@@ -259,6 +258,12 @@ class No_Unsafe_Inline {
 
 		// Register a route to capture CSP violation of some -src directives.
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_capture_routes' );
+
+		// Updates external_scripts entries on plugin/theme update.
+		$this->loader->add_action( 'upgrader_process_complete', $plugin_public, 'update_external_script_entries', 10, 2 );
+		$this->loader->add_filter( 'upgrader_pre_install', $plugin_public, 'set_info_from_upgrader_pre_install', 10, 2 );
+		// Filters feedback messages displayed during the core update process. It is called 6 time during upgrade process.
+		$this->loader->add_filter( 'update_feedback', $plugin_public, 'set_info_from_core_upgrader', 10, 0 );
 	}
 
 	/**

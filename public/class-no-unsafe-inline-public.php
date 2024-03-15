@@ -465,7 +465,7 @@ class No_Unsafe_Inline_Public {
 	 * Returns the number of bytes of HTTP headers
 	 *
 	 * @since 1.0.1
-	 * @access public
+	 * @access private
 	 * @return int
 	 */
 	private static function response_headers_size() {
@@ -481,5 +481,48 @@ class No_Unsafe_Inline_Public {
 			$size = mb_strlen( serialize( (array) apache_response_headers() ), '8bit' );
 		}
 		return $size;
+	}
+
+	/**
+	 * Upgrades external_scripts entries after upgrade
+	 *
+	 * This function is hooked on upgrader_process_complete.
+	 *
+	 * @since 1.1.5
+	 * @access public
+	 * @param \WP_Upgrader|\Theme_Upgrader|\Plugin_Upgrader                                                              $upgrader_object WP_Upgrader instance.
+	 * @param array{'action': string, 'type': string, 'bulk': bool, 'plugins'?: array<string>, 'themes'?: array<string>} $options Array of bulk item update data.
+	 * @return void
+	 */
+	public function update_external_script_entries( $upgrader_object, $options ): void {
+		NUNIL\Nunil_Script_Upgrader::update_external_script_entries( $upgrader_object, $options );
+	}
+
+	/**
+	 * Sets/Updates a transient with data of the upgraded plugin/theme
+	 *
+	 * This function is hooked on upgrader_pre_install hook.
+	 *
+	 * @since 1.1.5
+	 * @access public
+	 * @param  bool|\WP_Error                                                                                                 $response Installation response.
+	 * @param array{'plugin'?: string, 'theme'?: string, 'temp_backup': array{'slug': string, 'src': string, 'dir': string}} $hook_extra Array of bulk item update data.
+	 * @return void
+	 */
+	public function set_info_from_upgrader_pre_install( $response, $hook_extra ): void {
+		NUNIL\Nunil_Script_Upgrader::set_info_from_upgrader_pre_install( $response, $hook_extra );
+	}
+
+	/**
+	 * Sets/Updates a transient with data on core upgrade
+	 *
+	 * This function is hooked on update_feedback hook.
+	 *
+	 * @since 1.1.5
+	 * @access public
+	 * @return void
+	 */
+	public function set_info_from_core_upgrader(): void {
+		NUNIL\Nunil_Script_Upgrader::set_info_from_core_upgrader();
 	}
 }

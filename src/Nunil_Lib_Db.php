@@ -1942,4 +1942,47 @@ class Nunil_Lib_Db {
 				) $charset_collate;";
 		dbDelta( $sql );
 	}
+
+	/**
+	 * Returns a list of IDs of external assets of a plugin or theme
+	 *
+	 * Used to renew external assets in plugins or themes that have
+	 * been upgraded.
+	 *
+	 * @since 1.1.5
+	 * @access public
+	 * @param string $slug The slug of the plugin or theme.
+	 * @return array<object{'ID': string, 'directive': string, 'tagname': string, 'src_attrib': string}>|null
+	 */
+	public static function get_external_with_slug( $slug ) {
+		global $wpdb;
+		$wild = '%';
+		$sql  = $wpdb->prepare(
+			'SELECT `ID`, `directive`, `tagname`, `src_attrib` FROM ' . self::external_scripts_table() . ' WHERE '
+			. '`src_attrib` LIKE %s '
+			. 'ORDER BY `ID` ASC;',
+			site_url() . $wild . $slug . $wild
+		);
+		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Updates the src_attrib of a script in external_scripts table
+	 *
+	 * @since 1.1.5
+	 * @param string $id The id of the script to update.
+	 * @param string $new_src_attrib The new src_attrib to set.
+	 * @return int|bool
+	 */
+	public static function update_src_attrib( $id, $new_src_attrib ) {
+		global $wpdb;
+		return $wpdb->query(
+			$wpdb->prepare(
+				'UPDATE ' . self::external_scripts_table() .
+				' SET `src_attrib` = %s WHERE `ID` = %d',
+				$new_src_attrib,
+				$id
+			)
+		);
+	}
 }
