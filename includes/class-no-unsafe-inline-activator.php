@@ -35,8 +35,33 @@ class No_Unsafe_Inline_Activator {
 	 * @return void
 	 */
 	public static function activate( $network_wide ): void {
-		$check_versions = self::nunil_check_minimum_versions();
-		if ( true === $check_versions ) {
+		$check_versions   = self::nunil_check_minimum_versions();
+		$check_extensions = self::check_php_required_extensions();
+		$error            = new \WP_Error();
+		if ( false === $check_versions ) {
+			$error_msg = sprintf(
+				// translators: %1$s is a php version; %2$s is a wp version.
+				esc_html__(
+					'no-unsafe-inline requires minimum php version %1$s and minimum WP version %2$s.',
+					'no-unsafe-inline'
+				),
+				NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION,
+				NO_UNSAFE_INLINE_MINIMUM_WP_VERSION
+			);
+			$error->add( 'minimum_versions', $error_msg );
+		}
+		if ( '' !== $check_extensions ) {
+			$error_msg = sprintf(
+				// translators: %s is a list of PHP extensions separated by space.
+				esc_html__(
+					'no-unsafe-inline requires some PHP extensions to work. The following extension are needed and are not loaded on your server: %s',
+					'no-unsafe-inline'
+				),
+				$check_extensions
+			);
+			$error->add( 'required_extensions', $error_msg );
+		}
+		if ( 0 === count( $error->get_error_codes() ) ) {
 			if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
 				if ( function_exists( 'get_sites' ) && class_exists( 'WP_Site_Query' ) ) {
 					$args  = array(
@@ -62,16 +87,33 @@ class No_Unsafe_Inline_Activator {
 					}
 				} else {
 					// on wp < 4.6 wp_get_sites() return empty array if nework is bigger than 10000 sites.
-					$error = esc_html__( 'no-unsafe-inline cannot be network activated on very big networks.', 'no-unsafe-inline' );
-					die( esc_html( $error ) );
+					$error_msg = esc_html__( 'no-unsafe-inline cannot be network activated on very big networks.', 'no-unsafe-inline' );
+					$error->add( 'too_big_network', $error_msg );
 				}
 			} else {
 				self::single_activate();
 			}
-		} else {
-			// translators: %1$s is a php version; %2$s is a wp version.
-			$error = sprintf( esc_html__( 'no-unsafe-inline requires minimum php version %1$s and minimum WP version %2$s.', 'no-unsafe-inline' ), NO_UNSAFE_INLINE_MINIMUM_PHP_VERSION, NO_UNSAFE_INLINE_MINIMUM_WP_VERSION );
-			die( esc_html( $error ) );
+		}
+		if ( 0 < count( $error->get_error_codes() ) ) {
+			$codes         = $error->get_error_codes();
+			$admin_message = '';
+			foreach ( $codes as $error_code ) {
+				$admin_message .= '<p><b>' . $error_code . '</b>: ' . $error->get_error_message( $error_code ) . '</p>';
+			}
+
+			$allowed_html = array(
+				'p' => array(),
+				'b' => array(),
+			);
+
+			wp_die(
+				wp_kses( $admin_message, $allowed_html ),
+				esc_html__( 'no-unsafe-inline activation error', 'no-unsafe-inline' ),
+				array(
+					'response'  => 200,
+					'back_link' => true,
+				)
+			);
 		}
 	}
 
@@ -241,5 +283,74 @@ class No_Unsafe_Inline_Activator {
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Check if required php extensions are loaded
+	 *
+	 * @since 1.1.5
+	 * @return string
+	 */
+	public static function check_php_required_extensions() {
+		$needed   = '';
+		$required = array(
+			// no-unsafe-inline plugin.
+			'ctype',
+			'date',
+			'dom',
+			'filter',
+			'hash',
+			'json',
+			'libxml',
+			'mbstring',
+			'pcre',
+			// League\Uri\Components .
+			array( 'bcmath', 'gmp' ),
+
+			// League\Uri .
+			'fileinfo',
+		);
+
+		/* php 8.2 */
+		if (
+			version_compare( PHP_VERSION, '8.2.0', '>=' ) &&
+			version_compare( PHP_VERSION, '8.3.0', '<' )
+		) {
+			$required[] = 'random';
+		}
+
+		/* php 8.3 */
+		if (
+			version_compare( PHP_VERSION, '8.2.0', '>=' ) &&
+			version_compare( PHP_VERSION, '8.3.0', '<' )
+		) {
+			$required[] = 'random';
+		}
+
+		foreach ( $required as $extension ) {
+			if ( is_array( $extension ) ) {
+				// Alternative extensions needed.
+				$found = false;
+				foreach ( $extension as $alternative ) {
+					$found = $found || extension_loaded( $alternative );
+				}
+				if ( false === $found ) {
+					$needed .= ' (';
+					foreach ( $extension as $alternative ) {
+						$needed .= $alternative . ' or ';
+					}
+					$needed  = substr( $needed, 0, strlen( $needed ) - 4 );
+					$needed .= ')';
+				}
+			} elseif ( false === extension_loaded( $extension ) ) {
+					$needed .= ' ' . $extension;
+			}
+		}
+		if ( 'cli' === php_sapi_name() ) {
+			echo PHP_VERSION . PHP_EOL;
+			echo 'REQUIRED: ' . PHP_EOL;
+			echo esc_html( $needed );
+		}
+		return $needed;
 	}
 }
