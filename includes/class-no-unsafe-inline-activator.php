@@ -346,10 +346,10 @@ class No_Unsafe_Inline_Activator {
 					$needed .= ' ' . $extension;
 			}
 		}
-		if ( 'cli' === php_sapi_name() ) {
+		if ( '' !== $needed && 'cli' === php_sapi_name() ) {
 			echo PHP_VERSION . PHP_EOL;
-			echo 'REQUIRED: ' . PHP_EOL;
-			echo esc_html( $needed );
+			echo 'EXTENSIONS REQUIRED: ' . PHP_EOL;
+			echo $needed;
 		}
 		return $needed;
 	}

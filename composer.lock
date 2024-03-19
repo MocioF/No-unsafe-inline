@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "846957c720628f353a9f186cdda0cf85",
+    "content-hash": "638f2d7fbc3db9b9074ce67470875f4e",
     "packages": [
         {
             "name": "amphp/amp",
@@ -2204,6 +2204,57 @@
                 "source": "https://github.com/wamania/php-stemmer/tree/v3.0.1"
             },
             "time": "2023-05-11T10:50:27+00:00"
+        },
+        {
+            "name": "zendtech/polyfill-mb-ereg",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendtech/polyfill-mb-ereg.git",
+                "reference": "813e5b2d0669a8c619e6b5439916b2e5d20d7af0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendtech/polyfill-mb-ereg/zipball/813e5b2d0669a8c619e6b5439916b2e5d20d7af0",
+                "reference": "813e5b2d0669a8c619e6b5439916b2e5d20d7af0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "ext-mbstring": "*",
+                "laminas/laminas-coding-standard": "~2.3.0",
+                "php": "^7.3 || ^8.0",
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/autoload.php"
+                ],
+                "psr-4": {
+                    "ZendTech\\Polyfill\\MbEreg\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Polyfill for mb_ereg(), mb_eregi(), mb_ereg_match(), and mb_ereg_replace*() functions; primary use case is for mbstring on Windows 7.4+",
+            "homepage": "https://github.com/zendtech/polyfill-mb-ereg",
+            "keywords": [
+                "mbstring",
+                "polyfill",
+                "zend"
+            ],
+            "support": {
+                "issues": "https://github.com/zend-tech/polyfill-mb-ereg/issues",
+                "rss": "https://github.com/zend-tech/polyfill-mb-ereg/releases.atom",
+                "source": "https://github.com/zend-tech/polyfill-mb-ereg"
+            },
+            "time": "2021-08-06T14:25:07+00:00"
         }
     ],
     "packages-dev": [
