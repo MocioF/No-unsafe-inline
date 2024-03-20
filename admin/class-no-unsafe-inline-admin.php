@@ -2329,6 +2329,7 @@ class No_Unsafe_Inline_Admin {
 		$result_string = $result_string . $prune->delete_orphan_occurences();
 		$result_string = $result_string . $prune->prune_big_clusters();
 		$result_string = $result_string . $prune->prune_external_assets();
+		$result_string = $result_string . $prune->prune_old_occurences();
 
 		\NUNIL\Nunil_Lib_Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'pruned the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
 		\NUNIL\Nunil_Lib_Log::info( 'pruned the database at the user\'s request' );

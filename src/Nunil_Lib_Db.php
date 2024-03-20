@@ -1669,6 +1669,31 @@ class Nunil_Lib_Db {
 	}
 
 	/**
+	 * Delete occurences older than n days
+	 *
+	 * @param int    $days How many days old are occurences to be deleted.
+	 * @param string $table The internal table name.
+	 * @return int|false
+	 */
+	public static function delete_old_occurence( $days, $table = '' ) {
+		global $wpdb;
+
+		$sql = $wpdb->prepare(
+			'DELETE FROM ' . self::occurences_table() . ' ' .
+			'WHERE `lastseen` < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))',
+			$days
+		);
+		if ( '' !== $table ) {
+			$sql .= $wpdb->prepare(
+				' AND `dbtable` = %s',
+				$table
+			);
+		}
+		return $wpdb->query( $sql );
+	}
+
+
+	/**
 	 * Delete occurence of a single asset
 	 *
 	 * @param string $table The script full table name.
@@ -1687,6 +1712,29 @@ class Nunil_Lib_Db {
 			)
 		);
 		return $del_occur;
+	}
+
+	/**
+	 * Update the asset ID of an entry in occurences table
+	 *
+	 * @param string $table The script full table name.
+	 * @param string $old_asset_id The old asset ID.
+	 * @param string $new_asset_id The new asset ID.
+	 * @since 1.1.5
+	 * @return int|false
+	 */
+	private static function update_asset_occurences( $table, $old_asset_id, $new_asset_id ) {
+		global $wpdb;
+		$upd_sc_occ = 'UPDATE ' . self::occurences_table() . ' SET `itemid` = %d WHERE `itemid` = %d AND dbtable = %s';
+		$upd_occur  = $wpdb->query(
+			$wpdb->prepare(
+				$upd_sc_occ,
+				$new_asset_id,
+				$old_asset_id,
+				substr( $table, strlen( $wpdb->prefix . 'nunil_' ) )
+			)
+		);
+		return $upd_occur;
 	}
 
 	/**
@@ -1724,6 +1772,46 @@ class Nunil_Lib_Db {
 		$affected = self::delete_asset_occurences( self::event_handlers_table(), $asset_id );
 		return $affected;
 	}
+
+	/**
+	 * Update the asset id of an occurence of a single external asset
+	 *
+	 * @param string $old_asset_id The old asset ID.
+	 * @param string $new_asset_id The new asset ID.
+	 * @since 1.1.5
+	 * @return int|false
+	 */
+	public static function ext_occurences_update( $old_asset_id, $new_asset_id ) {
+		$affected = self::update_asset_occurences( self::external_scripts_table(), $old_asset_id, $new_asset_id );
+		return $affected;
+	}
+
+	/**
+	 * Update the asset id of an occurence of a single inline asset
+	 *
+	 * @param string $old_asset_id The old asset ID.
+	 * @param string $new_asset_id The new asset ID.
+	 * @since 1.1.5
+	 * @return int|false
+	 */
+	public static function inl_occurences_update( $old_asset_id, $new_asset_id ) {
+		$affected = self::update_asset_occurences( self::inline_scripts_table(), $old_asset_id, $new_asset_id );
+		return $affected;
+	}
+
+	/**
+	 * Update the asset id of an occurence of a single event handler
+	 *
+	 * @param string $old_asset_id The old asset ID.
+	 * @param string $new_asset_id The new asset ID.
+	 * @since 1.1.5
+	 * @return int|false
+	 */
+	public static function evh_occurences_update( $old_asset_id, $new_asset_id ) {
+		$affected = self::update_asset_occurences( self::event_handlers_table(), $old_asset_id, $new_asset_id );
+		return $affected;
+	}
+
 
 	/**
 	 * Select clustername in table with numerosity bigger than limit

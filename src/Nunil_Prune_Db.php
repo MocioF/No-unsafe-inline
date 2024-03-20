@@ -36,6 +36,13 @@ class Nunil_Prune_Db {
 	private static $cluster_limit = 150;
 
 	/**
+	 * Max occurence kept days
+	 *
+	 * @var int Maximum number of days spent since the last time an occurrence has been seen to be kept.
+	 */
+	private static $max_occ_days = 180;
+
+	/**
 	 * Delete orphans in _nunil_occurences table
 	 *
 	 * @since 1.0.0
@@ -182,6 +189,8 @@ class Nunil_Prune_Db {
 						usort( $atp, array( $this, 'ver_compare' ) );
 
 						$latest_version = $atp[0]['ver'];
+						$src_attrib     = $atp[0]['src_attrib'];
+						$id             = $atp[0]['ID'];
 
 						foreach ( $atp as $k => $value ) {
 							if ( $k > 0 && $atp[ $k ]['ver'] !== $latest_version ) {
@@ -197,6 +206,19 @@ class Nunil_Prune_Db {
 									$end_message = $end_message . $message . '<br>';
 									Log::info( $message );
 								}
+							} elseif ( $k > 0 && $atp[ $k ]['src_attrib'] === $src_attrib ) {
+								$message = sprintf(
+									// translators: %1$s is the asset url; %2$s is the internal table name.
+									esc_html__( 'Deleted duplicated asset: %1$s from table %2$s', 'no-unsafe-inline' ),
+									$value['src_attrib'],
+									$table_name
+								);
+								$deleted = DB::ext_delete( $value['ID'], true );
+								if ( $deleted > 0 ) {
+									$end_message = $end_message . $message . '<br>';
+									Log::info( $message );
+								}
+								$upd_occurences = DB::ext_occurences_update( $id, $value['ID'] );
 							} elseif ( 0 === $k ) {
 								$message = sprintf(
 									// translators: %1$s is the asset url..
@@ -219,6 +241,35 @@ class Nunil_Prune_Db {
 			}
 		}
 		$end_message = $end_message . '<br>';
+		return $end_message;
+	}
+
+	/**
+	 * Delete old entries in occurences table
+	 *
+	 * @since 1.1.5
+	 * @access public
+	 * @return string
+	 */
+	public function prune_old_occurences() {
+		$end_message = '<b>' . esc_html__( 'Starting pruning old occurences', 'no-unsafe-inline' ) . '</b><br>';
+		$deleted     = DB::delete_old_occurence( self::$max_occ_days );
+		if ( false === $deleted ) {
+			$end_message = $end_message . sprintf(
+				// translators: $d is a number of days.
+				esc_html__( 'No occurence found older than %d days', 'no-unsafe-inline' ),
+				self::$max_occ_days
+			)
+			. '<br>';
+		} else {
+			$end_message = $end_message . sprintf(
+				// translators: %1$d is the number of entries deleted; %2$d is a number of days.
+				esc_html__( 'Deleted %1$d occurrences older than %2$d days', 'no-unsafe-inline' ),
+				$deleted,
+				self::$max_occ_days
+			)
+			. '<br>';
+		}
 		return $end_message;
 	}
 
