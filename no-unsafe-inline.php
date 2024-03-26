@@ -61,10 +61,6 @@ define( 'NO_UNSAFE_INLINE_TABLE_PREFIX', $nunil_table_prefix );
  * @return void
  */
 function no_unsafe_inline_activate( $network_wide ) {
-	if ( ! function_exists( 'mb_regex_encoding' ) ) {
-		require_once plugin_dir_path( __FILE__ ) . 'vendor/zendtech/polyfill-mb-ereg/src/MbEreg';
-		require_once plugin_dir_path( __FILE__ ) . 'vendor/zendtech/polyfill-mb-ereg/src/autoload.php';
-	}
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
 	No_Unsafe_Inline_Activator::activate( $network_wide );
 }
