@@ -7,7 +7,7 @@
  * that the plugin will parse and manipulate.
  *
  * @package    No_unsafe-inline
- * @subpackage No_unsafe-inline/mu-plugins
+ * @subpackage No_unsafe-inline/mu-plugin
  *
  * @link  https://profiles.wordpress.org/mociofiletto/
  * @link  https://stackoverflow.com/a/22818089/17718976

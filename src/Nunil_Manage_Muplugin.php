@@ -46,7 +46,7 @@ class Nunil_Manage_Muplugin {
 	public static function toggle_nunil_muplugin_installation() {
 		$mu_dir = ( defined( 'WPMU_PLUGIN_DIR' ) && defined( 'WPMU_PLUGIN_URL' ) ) ? WPMU_PLUGIN_DIR : trailingslashit( WP_CONTENT_DIR ) . 'mu-plugins';
 		$mu_dir = untrailingslashit( $mu_dir );
-		$source = NO_UNSAFE_INLINE_PLUGIN_DIR . '/mu-plugins/no-unsafe-inline-output-buffering.php';
+		$source = NO_UNSAFE_INLINE_PLUGIN_DIR . '/mu-plugin/no-unsafe-inline-output-buffering.php';
 		$dest   = $mu_dir . '/no-unsafe-inline-output-buffering.php';
 
 		$result = array(

@@ -13,7 +13,7 @@ final class No_Unsafe_Inline_AdminTest extends WP_UnitTestCase {
 	}
 
 	public function test_nunil_upgrade() {
-		$real_file              = 'mu-plugins/no-unsafe-inline-output-buffering.php';
+		$real_file              = 'mu-plugin/no-unsafe-inline-output-buffering.php';
 		$new_ver_mu_plugin_hash = md5_file( $real_file );
 
 		$fake_file = fopen( WPMU_PLUGIN_DIR . '/no-unsafe-inline-output-buffering.php', 'w' );
