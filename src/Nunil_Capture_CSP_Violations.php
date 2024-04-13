@@ -35,7 +35,7 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 	 * @param \WP_REST_Request<T> $request The rest api request.
 	 * @return \WP_REST_Response|void
 	 */
-	public function capture_violations( \WP_REST_Request $request ) {
+	public function capture_violations( $request ) {
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( empty( $options ) ) {
