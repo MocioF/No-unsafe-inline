@@ -14,4 +14,3 @@ parameters:
 	ignoreErrors:
 		- '#Constant NO_UNSAFE_INLINE_PLUGIN_DIR not found.#'
 		- '#Constant NO_UNSAFE_INLINE_PLUGIN_BASENAME not found.#'
-		- '#Constant WP_CONTENT_DIR not found.#'
