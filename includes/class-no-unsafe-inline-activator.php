@@ -37,6 +37,7 @@ class No_Unsafe_Inline_Activator {
 	public static function activate( $network_wide ): void {
 		$check_versions   = self::nunil_check_minimum_versions();
 		$check_extensions = self::check_php_required_extensions();
+		$check_build_opts = self::check_php_build_options();
 		$error            = new \WP_Error();
 		if ( false === $check_versions ) {
 			$error_msg = sprintf(
@@ -60,6 +61,17 @@ class No_Unsafe_Inline_Activator {
 				$check_extensions
 			);
 			$error->add( 'required_extensions', $error_msg );
+		}
+		if ( '' !== $check_build_opts ) {
+			$error_msg = sprintf(
+				// translators: %s is a list of PHP build options separated by space.
+				esc_html__(
+					'no-unsafe-inline requires PHP to be built with some configure options. It seems that PHP is built with the following NOT compatible options: %s',
+					'no-unsafe-inline'
+				),
+				$check_build_opts
+			);
+			$error->add( 'php_build_options', $error_msg );
 		}
 		if ( 0 === count( $error->get_error_codes() ) ) {
 			if ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide ) {
@@ -307,7 +319,11 @@ class No_Unsafe_Inline_Activator {
 			// League\Uri\Components .
 			array( 'bcmath', 'gmp' ),
 
-			// League\Uri .
+			/**
+			 * League\Uri 6 since 6.2; Not needed for League\Uri 7, but it needs PHP>=8.1
+			 * https://uri.thephpleague.com/uri/6.0/#system-requirements
+			 * https://uri.thephpleague.com/uri/7.0/#system-requirements
+			 */
 			'fileinfo',
 		);
 
@@ -321,8 +337,8 @@ class No_Unsafe_Inline_Activator {
 
 		/* php 8.3 */
 		if (
-			version_compare( PHP_VERSION, '8.2.0', '>=' ) &&
-			version_compare( PHP_VERSION, '8.3.0', '<' )
+			version_compare( PHP_VERSION, '8.3.0', '>=' ) &&
+			version_compare( PHP_VERSION, '8.4.0', '<' )
 		) {
 			$required[] = 'random';
 		}
@@ -352,5 +368,20 @@ class No_Unsafe_Inline_Activator {
 			echo $needed;
 		}
 		return $needed;
+	}
+
+	/**
+	 * Check if PHP is built with some uncompatible options
+	 *
+	 * @since 1.1.6
+	 * @return string
+	 */
+	public static function check_php_build_options() {
+		$options        = '';
+		$check_mb_regex = function_exists( 'mb_regex_encoding' );
+		if ( false === $check_mb_regex ) {
+			$options .= ' --disable-mbregex';
+		}
+		return $options;
 	}
 }
