@@ -1518,7 +1518,7 @@ class Nunil_Lib_Db {
 	public static function delete_old_logs( $days ) {
 		global $wpdb;
 
-		$sql = $wpdb->prepare( 'DELETE FROM ' . self::logs_table() . ' WHERE created_at < (NOW() - INTERVAL %d DAY) LIMIT 1000', $days );
+		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
 		return $wpdb->query( $sql );
 	}
 
