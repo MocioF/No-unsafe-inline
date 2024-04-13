@@ -257,7 +257,7 @@ class No_Unsafe_Inline_Public {
 								}
 							}
 							if ( ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) &&
-							'script-src' === $dir || 'style-src' === $dir ) {
+							( 'script-src' === $dir || 'style-src' === $dir ) ) {
 								$csp = $csp . ' \'report-sample\'';
 							}
 						}
