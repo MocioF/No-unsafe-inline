@@ -490,7 +490,8 @@ class Nunil_Capture {
 					return false;
 				}
 				if ( ! mb_check_encoding( $string, 'utf8' ) ) {
-					$string = utf8_encode( $string );
+					// Fix PHP8.2 deprecation: https://php.watch/versions/8.2/utf8_encode-utf8_decode-deprecated#utf8_encode-replace .
+					$string = mb_convert_encoding( $string, 'UTF-8', mb_list_encodings() );
 				}
 			}
 			$base64 = base64_encode( hash( $algo, $string, true ) );
