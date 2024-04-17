@@ -226,7 +226,7 @@ class Nunil_Script_Upgrader {
 	 */
 	private static function update_wp_asset_scripts( $type, $slug, $oldver, $newver ) {
 		$msg_upd = sprintf(
-			// translators: %1$s is the type of wo asset (plugin, theme), %2$s is the slug of the wp asset, %3$s is the old version, %4$s is the new version.
+			// translators: %1$s is the type of wp asset (plugin, theme), %2$s is the slug of the wp asset, %3$s is the old version, %4$s is the new version.
 			esc_html__(
 				'The following script has been updated while upgrading %1$s %2$s from version %3$s to version %4$s: ',
 				'no-unsafe-inline'
@@ -237,7 +237,7 @@ class Nunil_Script_Upgrader {
 			$newver
 		);
 		$msg_del = sprintf(
-			// translators: %1$s is the type of wo asset (plugin, theme), %2$s is the slug of the wp asset, %3$s is the old version, %4$s is the new version.
+			// translators: %1$s is the type of wp asset (plugin, theme), %2$s is the slug of the wp asset, %3$s is the old version, %4$s is the new version.
 			esc_html__(
 				'The following script has been deleted while upgrading %1$s %2$s from version %3$s to version %4$s: ',
 				'no-unsafe-inline'

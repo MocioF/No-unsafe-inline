@@ -1181,7 +1181,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	/**
 	 * Removes inline styles
 	 *
-	 * Removes script attribute from html tags and
+	 * Removes style attribute from html tags and
 	 * prepares code to be output in a injected inline <style>
 	 *
 	 * @since 1.0.0
@@ -1252,7 +1252,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * Creates the internal CSS
 	 *
 	 * Inserts classes for whitelisted inline styles in a string used
-	 * to create an inline css with <script>.
+	 * to create an internal css with <style>.
 	 * Removes the style attribute from the node and add the class to it.
 	 *
 	 * @since 1.0.0

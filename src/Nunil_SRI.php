@@ -52,10 +52,10 @@ class Nunil_SRI {
 	 * @return array<mixed>|\WP_Error
 	 */
 	public function fetch_resource( $rsrc_url ) {
-		$url          = ( 0 === strpos( $rsrc_url, '//' ) )
+		$url      = ( 0 === strpos( $rsrc_url, '//' ) )
 			? ( ( is_ssl() ) ? "https:$rsrc_url" : "http:$rsrc_url" )
 			: $rsrc_url;
-			$response = wp_remote_get( $url );
+		$response = wp_remote_get( $url );
 		return $response;
 	}
 
