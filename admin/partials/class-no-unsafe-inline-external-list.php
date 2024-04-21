@@ -206,6 +206,7 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			default:
 				break;
 		}
+		Utils::set_last_modified( 'inline_scripts' );
 	}
 
 

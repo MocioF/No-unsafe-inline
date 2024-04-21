@@ -11,14 +11,12 @@
 
 namespace NUNIL;
 
-use IvoPetkov\HTML5DOMDocument;
 use Beager\Nilsimsa;
-use Rubix\ML\Classifiers\KNearestNeighbors;
-use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Datasets\Unlabeled;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_Knn_Trainer;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -168,10 +166,59 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$this->managed_tags = Nunil_Captured_Tags::get_captured_tags();
 
-		$gls = new Nunil_Global_Settings();
+		// Set properties with db results.
+		$cache_keys = array( 'inline_rows', 'events_rows', 'external_rows' );
+		foreach ( $cache_keys as $cache_key ) {
+			$this->get_db_rows( $cache_key );
+		}
 
-		/* performs DB queries and set them in the private properties */
-		$cache_key   = 'inline_rows';
+		$this->inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
+
+		$this->page_nonce = $this->generate_nonce();
+
+		if ( 1 === $plugin_options['script-src_enabled'] ) {
+			$nunil_trainer_script = new Nunil_Knn_Trainer( $this->inline_rows, 'script' );
+
+			/**
+			 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
+			 * use cache to avoid not updating clusternames after recluster.
+			 */
+			if ( 1 === $tools['capture_enabled'] ) {
+				$this->inline_scripts_classifier = $nunil_trainer_script->get_trained( false );
+			} else {
+				$this->inline_scripts_classifier = $nunil_trainer_script->get_trained();
+			}
+		}
+
+		if ( 1 === $plugin_options['style-src_enabled'] ) {
+			$nunil_trainer_style = new Nunil_Knn_Trainer( $this->inline_rows, 'style' );
+			if ( 1 === $tools['capture_enabled'] ) {
+				$this->internal_css_classifier = $nunil_trainer_style->get_trained( false );
+			} else {
+				$this->internal_css_classifier = $nunil_trainer_style->get_trained();
+			}
+		}
+
+		// Create classifier for event_handlers $event_handlers_classifier.
+		if ( 0 === $plugin_options['use_unsafe-hashes'] ) {
+			$nunil_trainer_event = new Nunil_Knn_Trainer( $this->events_rows, 'event' );
+			if ( 1 === $tools['capture_enabled'] ) {
+				$this->event_handlers_classifier = $nunil_trainer_event->get_trained( false );
+			} else {
+				$this->event_handlers_classifier = $nunil_trainer_event->get_trained();
+			}
+		}
+	}
+
+	/**
+	 * Sets DB results in caache
+	 *
+	 * @param string $cache_key The cache key used to store db results.
+	 * @return void
+	 */
+	private function get_db_rows( $cache_key ) {
+		$gls         = new Nunil_Global_Settings();
+		$tools       = (array) get_option( 'no-unsafe-inline-tools' );
 		$cache_group = 'no-unsafe-inline';
 		$expire_secs = $gls->expire_secs[ $cache_key ];
 		/**
@@ -181,107 +228,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 1 === $tools['capture_enabled'] ) {
 			wp_cache_delete( $cache_key, $cache_group );
 		}
-
-		$inline_rows = wp_cache_get( $cache_key, $cache_group );
-		if ( false === $inline_rows ) {
-			$inline_rows = DB::get_inline_rows();
-			wp_cache_set( $cache_key, $inline_rows, $cache_group, $expire_secs );
+		$db_rows = wp_cache_get( $cache_key, $cache_group );
+		if ( false === $db_rows ) {
+			$method  = 'get_' . $cache_key;
+			$db_rows = DB::$method();
+			wp_cache_set( $cache_key, $db_rows, $cache_group, $expire_secs );
 		}
-		if ( is_array( $inline_rows ) ) {
-			$this->inline_rows = $inline_rows;
-		}
-
-		$cache_key   = 'events_rows';
-		$cache_group = 'no-unsafe-inline';
-		$expire_secs = $gls->expire_secs[ $cache_key ];
-		/**
-		 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
-		 * use cache to avoid not updating clusternames after recluster.
-		 */
-		if ( 1 === $tools['capture_enabled'] ) {
-			wp_cache_delete( $cache_key, $cache_group );
-		}
-
-		$events_rows = wp_cache_get( $cache_key, $cache_group );
-		if ( false === $events_rows ) {
-			$events_rows = DB::get_events_rows();
-			wp_cache_set( $cache_key, $events_rows, $cache_group, $expire_secs );
-		}
-		if ( is_array( $events_rows ) ) {
-			$this->events_rows = $events_rows;
-		}
-
-		if ( 1 === $tools['capture_enabled'] ) {
-			wp_cache_delete( $cache_key, $cache_group );
-		}
-		$cache_key   = 'external_rows';
-		$cache_group = 'no-unsafe-inline';
-		$expire_secs = $gls->expire_secs[ $cache_key ];
-
-		$external_rows = wp_cache_get( $cache_key, $cache_group );
-		if ( false === $external_rows ) {
-			$external_rows = DB::get_external_rows();
-			wp_cache_set( $cache_key, $external_rows, $cache_group, $expire_secs );
-		}
-		if ( is_array( $external_rows ) ) {
-			$this->external_rows = $external_rows;
-		}
-
-		$this->inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
-
-		$this->page_nonce = $this->generate_nonce();
-
-		if ( 1 === $plugin_options['script-src_enabled'] ) {
-			$inline_scripts_samples = array();
-			$inline_scripts_labels  = array();
-			if ( is_array( $inline_rows ) ) {
-				foreach ( $inline_rows as $row ) {
-					if ( 'script' === $row->tagname ) {
-						$inline_scripts_samples[] = $row->nilsimsa;
-						$inline_scripts_labels[]  = $row->clustername;
-					}
-				}
-				if ( $inline_scripts_samples && $inline_scripts_labels ) {
-					$this->inline_scripts_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
-					$inl_scr_dataset                 = new Labeled( $inline_scripts_samples, $inline_scripts_labels );
-					$this->inline_scripts_classifier->train( $inl_scr_dataset );
-				}
-			}
-		}
-
-		if ( 1 === $plugin_options['style-src_enabled'] ) {
-			$internal_css_samples = array();
-			$internal_css_labels  = array();
-			if ( is_array( $inline_rows ) ) {
-				foreach ( $inline_rows as $row ) {
-					if ( 'style' === $row->tagname ) {
-						$internal_css_samples[] = $row->nilsimsa;
-						$internal_css_labels[]  = $row->clustername;
-					}
-				}
-				if ( $internal_css_samples && $internal_css_labels ) {
-					$this->internal_css_classifier = new KNearestNeighbors( $gls->knn_k_inl, true, new Nunil_Hamming_Distance() );
-					$int_css_dataset               = new Labeled( $internal_css_samples, $internal_css_labels );
-					$this->internal_css_classifier->train( $int_css_dataset );
-				}
-			}
-		}
-
-		// Create classifier for event_handlers $event_handlers_classifier.
-		if ( 0 === $plugin_options['use_unsafe-hashes'] ) {
-			$evh_samples = array();
-			$evh_labels  = array();
-			if ( is_array( $events_rows ) ) {
-				foreach ( $events_rows as $row ) {
-					$evh_samples[] = $row->nilsimsa;
-					$evh_labels[]  = $row->event_attribute . '#' . $row->clustername;
-				}
-				if ( $evh_samples && $evh_labels ) {
-					$this->event_handlers_classifier = new KNearestNeighbors( $gls->knn_k_evh, true, new Nunil_Hamming_Distance() );
-					$evh_dataset                     = new Labeled( $evh_samples, $evh_labels );
-					$this->event_handlers_classifier->train( $evh_dataset );
-				}
-			}
+		if ( is_array( $db_rows ) ) {
+			$this->$cache_key = $db_rows;
 		}
 	}
 
@@ -1098,6 +1052,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 			$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
 		}
+		Utils::set_last_modified( 'inline_scripts' );
 	}
 
 	/**

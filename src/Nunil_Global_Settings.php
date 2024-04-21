@@ -96,6 +96,15 @@ class Nunil_Global_Settings {
 	public $knn_k_evh;
 
 	/**
+	 * Max numbers of samples to use at once in online knn training
+	 *
+	 * @sice 1.2.0
+	 * @access public
+	 * @var int knn_train_batch_size
+	 */
+	public $knn_train_batch_size;
+
+	/**
 	 * Array of cache $expire_secs keyed by $cache_key in 'no-unsafe-inline' $cache_group
 	 *
 	 * @since 1.0.0
@@ -130,6 +139,7 @@ class Nunil_Global_Settings {
 			'balltree_maxleafsize_evh' => 100,
 			'knn_k_inl'                => 30,
 			'knn_k_evh'                => 3,
+			'knn_train_batch_size'     => 150,
 
 			/* wp-cache expire time */
 			'expire_secs'              => array(

@@ -11,14 +11,12 @@
 
 namespace NUNIL;
 
-use Beager\Nilsimsa;
-
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\ML\Clusterers\DBSCAN;
 use Rubix\ML\Graph\Trees\BallTree;
-
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 /**
  * Class with methods used to cluster scripts
@@ -135,6 +133,7 @@ class Nunil_Clustering {
 			);
 
 			DB::update_cluster( $table, $data, $where );
+			Utils::set_last_modified( $table );
 		}
 
 		if ( true === $has_noise ) {

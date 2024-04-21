@@ -13,6 +13,7 @@ namespace NUNIL;
 
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 use League\Uri\Components\Query;
 use League\Uri\Uri;
 
@@ -73,6 +74,9 @@ class Nunil_Prune_Db {
 			Log::info( $message );
 		}
 		$end_message = $end_message . '<br>';
+		if ( $total > 0 ) {
+			Utils::set_last_modified( 'occurences' );
+		}
 		return $end_message;
 	}
 
@@ -134,6 +138,7 @@ class Nunil_Prune_Db {
 					// translators: %s is the clustername.
 					$end_message = $end_message . sprintf( esc_html__( 'Pruned cluster %s', 'no-unsafe-inline' ), $cluster->clustername ) . '<br>';
 				}
+				Utils::set_last_modified( $table_name );
 			}
 		}
 		$end_message = $end_message . '<br>';
@@ -239,6 +244,7 @@ class Nunil_Prune_Db {
 					}
 				}
 			}
+			Utils::set_last_modified( 'external_scripts' );
 		}
 		$end_message = $end_message . '<br>';
 		return $end_message;
@@ -269,6 +275,7 @@ class Nunil_Prune_Db {
 				self::$max_occ_days
 			)
 			. '<br>';
+			Utils::set_last_modified( 'occurences' );
 		}
 		return $end_message;
 	}

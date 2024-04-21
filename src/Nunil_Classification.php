@@ -16,12 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use NUNIL\Nunil_Lib_Db as DB;
-
 use Rubix\ML\Classifiers\KNearestNeighbors;
-
-use Rubix\ML\Graph\Trees\BallTree;
-use Rubix\ML\Classifiers\KDNeighbors;
-
 use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Datasets\Unlabeled;
 

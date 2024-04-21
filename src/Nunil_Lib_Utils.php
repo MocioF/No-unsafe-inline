@@ -172,4 +172,28 @@ class Nunil_Lib_Utils {
 			error_log( $debug_dump );
 		}
 	}
+
+	/**
+	 * Writes in a WP_Option the last time plugin tables have been modified
+	 *
+	 * @param string $table_name The internal (unprefixed) table name.
+	 * @return void
+	 */
+	public static function set_last_modified( $table_name ) {
+		$nunil_lm_opt = 'nunil_last_modified_times';
+		$now          = time();
+
+		$default       = array(
+			'event_handlers'   => $now,
+			'external_scripts' => $now,
+			'inline_scripts'   => $now,
+			'logs'             => $now,
+			'occurences'       => $now,
+		);
+		$last_modifies = get_option( $nunil_lm_opt, $default );
+		if ( is_array( $last_modifies ) && array_key_exists( $table_name, $last_modifies ) ) {
+			$last_modifies[ $table_name ] = $now;
+			update_option( $nunil_lm_opt, $last_modifies, true );
+		}
+	}
 }

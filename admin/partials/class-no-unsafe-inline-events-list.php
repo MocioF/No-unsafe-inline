@@ -176,6 +176,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 				// do nothing or something else.
 				break;
 		}
+		Utils::set_last_modified( 'event_handlers' );
 	}
 
 	/**

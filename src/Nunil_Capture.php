@@ -13,14 +13,12 @@
 namespace NUNIL;
 
 use IvoPetkov\HTML5DOMDocument;
-use Beager\Nilsimsa;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
 
 use League\Uri\Http;
 use League\Uri\Uri;
 use League\Uri\UriModifier;
-use League\Uri\UriInfo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -148,6 +146,7 @@ class Nunil_Capture {
 	public function capture_handlers(): void {
 		$rows = $this->get_event_handlers_in_page();
 		$this->put_handlers_in_db( $rows );
+		Utils::set_last_modified( 'event_handlers' );
 	}
 
 	/**
@@ -160,6 +159,7 @@ class Nunil_Capture {
 	public function capture_inline_style(): void {
 		$rows = $this->get_inline_style_in_page();
 		$this->put_styles_in_db( $rows );
+		Utils::set_last_modified( 'inline_scripts' );
 	}
 
 	/**
@@ -630,6 +630,8 @@ class Nunil_Capture {
 			++$node_index;
 		}
 		$this->processed = array_merge( $this->processed, $processed );
+		Utils::set_last_modified( 'external_scripts' );
+		Utils::set_last_modified( 'inline_scripts' );
 	}
 
 	/**

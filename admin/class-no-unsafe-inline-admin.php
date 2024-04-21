@@ -2287,6 +2287,7 @@ class No_Unsafe_Inline_Admin {
 			$delete_string = $delete ? esc_html__( 'succeded', 'no-unsafe-inline' ) : esc_html__( 'FAILED', 'no-unsafe-inline' );
 
 			$result_string = $result_string . ( "<li>TRUNCATE $table: $delete_string</li>" );
+			Utils::set_last_modified( $table );
 		}
 		$result_string = $result_string . '</ul>';
 
