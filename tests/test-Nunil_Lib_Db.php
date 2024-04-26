@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-use NUNIL\Nunil_Lib_Db as Db;
 
 final class Nunil_Lib_DbTest extends WP_UnitTestCase {
 

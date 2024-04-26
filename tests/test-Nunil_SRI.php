@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-use PHPUnit\Framework\TestCase;
 
 final class Nunil_SRITest extends WP_UnitTestCase {
 

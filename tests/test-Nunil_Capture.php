@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-use NUNIL\Nunil_Lib_Db as Db;
 
 final class Nunil_CaptureTest extends WP_UnitTestCase {
 
@@ -18,6 +17,7 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 
 	/**
 	 * @dataProvider tagListProvider
+	 * @group capture
 	 */
 	public function testcapture_tag( string $tagname, array $taglist, int $num_ext, int $num_inl, string $source ): void {
 		global $wpdb;
@@ -134,6 +134,7 @@ final class Nunil_CaptureTest extends WP_UnitTestCase {
 
 	/**
 	 * @dataProvider srcListProvider
+	 * @group capture
 	 */
 	public function testconv_to_absolute_url ( string $base_url, string $src_input, string $exp_output ) {
 		$capture = new \ReflectionClass( 'NUNIL\Nunil_Capture' );

@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
-use PHPUnit\Framework\TestCase;
+
 use NUNIL\Nunil_Lib_Log as Log;
-use NUNIL\Nunil_Lib_Db as Db;
 
 final class Nunil_Lib_LogTest extends WP_UnitTestCase
 {
@@ -45,9 +44,7 @@ final class Nunil_Lib_LogTest extends WP_UnitTestCase
 	 */
 	public function testLogWriter( string $method, int $level, string $message ) {
 		global $wpdb;
-		
-		
-		
+
 		Log::$method( $message );
 		
 		$sql = 'SELECT `level`, `message` FROM ' . $wpdb->prefix . 'nunil_logs';

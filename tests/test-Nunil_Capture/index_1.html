@@ -264,5 +264,8 @@ body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: 
 		sibling.parentElement.insertBefore( skipLink, sibling );
 	}() );
 	</script>
+        <!-- This is invalid and should not be captured; a warning should be logged -->
+        <!-- see https://wordpress.org/support/topic/http-error-500-troubleshooting-functions-php/ -->
+        <script type="text/javascript" src="https://www.tsl.comhttps:unpkg.com/isotope-layout@3/dist/isotope.pkgd.js" id="isotope-js"></script>
 	</body>
 </html>
