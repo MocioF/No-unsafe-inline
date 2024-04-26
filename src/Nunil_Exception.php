@@ -70,7 +70,7 @@ class Nunil_Exception extends \Exception {
 	 */
 	private function set_log_msg() {
 		$log_msg = 'Error on line ' . $this->getLine() . ' in ' . $this->getFile() .
-		' - [' . $this->getCode() . ']: ' . $this->getMessage() . '\n' . $this->getTraceAsString();
+		' - [' . $this->getCode() . ']: ' . $this->getMessage() . PHP_EOL . $this->getTraceAsString();
 		$options = get_option( 'no-unsafe-inline' );
 		if (
 			is_array( $options ) &&

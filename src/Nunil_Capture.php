@@ -15,9 +15,11 @@ namespace NUNIL;
 use IvoPetkov\HTML5DOMDocument;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_Exception;
 
 use League\Uri\Http;
 use League\Uri\Uri;
+use League\Uri\Contracts\UriException;
 use League\Uri\UriModifier;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -88,7 +90,7 @@ class Nunil_Capture {
 	 * Set $hash_in_use to SHA algo used to search for scripts in db.
 	 *
 	 * @since 1.0.0
-	 * @throws \Exception Exception raised when the plugin options are not set.
+	 * @throws Nunil_Exception Exception raised when the plugin options are not set.
 	 */
 	public function __construct() {
 		$this->domdocument                     = new HTML5DOMDocument();
@@ -103,7 +105,7 @@ class Nunil_Capture {
 				$this->hash_in_use = $inline_scripts_mode;
 			}
 		} else {
-			throw new \Exception( 'The option no-unsafe-inline has to be an array' );
+			throw new Nunil_Exception( 'The option no-unsafe-inline has to be an array', 3001, 3 );
 		}
 	}
 
@@ -461,12 +463,12 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string $algo   One of CSP supported algo: sha256, sha384, sha512.
-	 * @param  string $string String to be hashed (the inline tag content).
-	 * @param  bool   $utf8  Convert (true) the string to UTF8, before calculating hash.
-	 * @return string|false  The hased string.
+	 * @param  string $algo    One of CSP supported algo: sha256, sha384, sha512.
+	 * @param  string $content String to be hashed (the inline tag content).
+	 * @param  bool   $utf8    Convert (true) the string to UTF8, before calculating hash.
+	 * @return string|false    The hased string.
 	 */
-	public static function calculate_hash( $algo, $string, $utf8 = false ) {
+	public static function calculate_hash( $algo, $content, $utf8 = false ) {
 		$haystack = array( 'sha256', 'sha384', 'sha512' );
 		if ( in_array( $algo, $haystack, true ) ) {
 			/**
@@ -484,17 +486,17 @@ class Nunil_Capture {
 				 * It seems what FF and Chrome do.
 				 * More evidence needed.
 				 */
-				$string = preg_replace( '~\R~u', "\n", $string );
+				$content = preg_replace( '~\R~u', "\n", $content );
 
-				if ( is_null( $string ) ) {
+				if ( is_null( $content ) ) {
 					return false;
 				}
-				if ( ! mb_check_encoding( $string, 'utf8' ) ) {
+				if ( ! mb_check_encoding( $content, 'utf8' ) ) {
 					// Fix PHP8.2 deprecation: https://php.watch/versions/8.2/utf8_encode-utf8_decode-deprecated#utf8_encode-replace .
-					$string = mb_convert_encoding( $string, 'UTF-8', mb_list_encodings() );
+					$content = mb_convert_encoding( $content, 'UTF-8', mb_list_encodings() );
 				}
 			}
-			$base64 = base64_encode( hash( $algo, $string, true ) );
+			$base64 = base64_encode( hash( $algo, $content, true ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			return $base64;
 		} else {
 			return false;
@@ -756,15 +758,26 @@ class Nunil_Capture {
 	 * @param  string $tagname    A string containing the HTML tag name.
 	 * @param  string $src_attrib The content of src attr.
 	 * @param  string $this_page_url (optional): The page where the element has been seen.
+	 * @throws \League\Uri\Contracts\UriException Exception for invalid url found in src attrib.
 	 * @return false|int $external_script_id the ID (as int) of the inserted tag or false if not new tag to insert
 	 */
 	protected function insert_external_tag_in_db( $directive, $tagname, $src_attrib, $this_page_url = null ) {
 		$returned_id = false;
 
 		if ( '' !== $src_attrib ) {
-			$src_attrib = $this->clean_random_params( $src_attrib );
+			try {
+				$src_attrib = $this->clean_random_params( $src_attrib );
+			} catch ( Nunil_Exception $e ) {
+				$e->logexception();
+				return $returned_id;
+			}
 
-			$src_attrib = $this->conv_to_absolute_url( $src_attrib );
+			try {
+				$src_attrib = $this->conv_to_absolute_url( $src_attrib );
+			} catch ( Nunil_Exception $e ) {
+				$e->logexception();
+				return $returned_id;
+			}
 
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
 
@@ -786,21 +799,19 @@ class Nunil_Capture {
 				if ( true === $add_hashes_and_occurences ) {
 					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
 				}
-			} else {
+			} elseif ( true === $add_hashes_and_occurences ) {
 				// The script is already in the db.
 				// Now check if there is an occurence for the script in the page.
 				// since 1.1.3: we need occurences only for hashed content.
-				if ( true === $add_hashes_and_occurences ) {
-					$occurrence_id = Nunil_Lib_Db::get_occ_id( $external_script_id, 'external_scripts', $this_page_url );
 
-					if ( is_null( $occurrence_id ) ) {
-						$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
-					} else {
-						// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
-						Nunil_Lib_Db::update_lastseen( $occurrence_id );
-					}
+				$occurrence_id = Nunil_Lib_Db::get_occ_id( $external_script_id, 'external_scripts', $this_page_url );
+
+				if ( is_null( $occurrence_id ) ) {
+					$occurrence_id = Nunil_Lib_Db::insert_occ_in_db( $external_script_id, 'external_scripts', $this_page_url );
+				} else {
+					// We have alredy recorded the occurence of the script in the page, so just update the timestamp.
+					Nunil_Lib_Db::update_lastseen( $occurrence_id );
 				}
-				$returned_id = false;
 			}
 		}
 
@@ -812,14 +823,25 @@ class Nunil_Capture {
 	 *
 	 * @since 1.1.2
 	 * @param int $external_script_id The id of the external resource in db.
+	 * @throws Nunil_Exception Error in writing hashes to the db.
 	 * @return void
 	 */
 	protected function insert_hashes_in_db( $external_script_id ): void {
 		try {
-			$sri = new Nunil_SRI();
-			$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-		} catch ( \Exception $ex ) {
-			Log::warning( 'Could not insert hashes of remote resource in db: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
+			try {
+				$sri = new Nunil_SRI();
+				$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
+			} catch ( \Exception $ex ) {
+				throw new Nunil_Exception(
+					'Could not insert hashes of remote resource in db: ' .
+					$ex->getMessage() . ', ' . $ex->getTraceAsString(),
+					2002,
+					2,
+					$ex
+				);
+			}
+		} catch ( Nunil_Exception $e ) {
+			$e->logexception();
 		}
 	}
 
@@ -851,6 +873,7 @@ class Nunil_Capture {
 	 * @access protected
 	 *
 	 * @param string $uri_string The original URI.
+	 * @throws Nunil_Exception Invalid url exception.
 	 * @return string
 	 */
 	protected function clean_random_params( $uri_string ) {
@@ -860,8 +883,8 @@ class Nunil_Capture {
 		);
 		try {
 			$uri = Uri::createFromString( $uri_string );
-		} catch ( \Exception $e ) {
-			return $uri_string;
+		} catch ( \League\Uri\Contracts\UriException $e ) {
+			throw new Nunil_Exception( 'Invalid url in DOM: ' . esc_html( $uri_string ) . PHP_EOL . esc_html( $e ), 2001, 2 );
 		}
 
 		foreach ( $removed_params as $param ) {
@@ -876,13 +899,14 @@ class Nunil_Capture {
 	 * Returns the absolute url of the resource
 	 *
 	 * @since 1.1.1
-	 * @access private
+	 * @access protected
 	 *
 	 * @param string $src_string The search string.
 	 * @param string $base_url The url of the page where links are found.
+	 * @throws Nunil_Exception Invalid url exception.
 	 * @return string
 	 */
-	private function conv_to_absolute_url( $src_string, $base_url = '' ) {
+	protected function conv_to_absolute_url( $src_string, $base_url = '' ) {
 		global $wp;
 		if ( '' === $base_url ) {
 			$current_url = home_url( add_query_arg( array(), $wp->request ) );
@@ -890,8 +914,13 @@ class Nunil_Capture {
 			$current_url = $base_url;
 		}
 
-		$home_url   = Uri::createFromString( $current_url );
-		$uri_object = Uri::createFromString( $src_string );
+		$home_url = Uri::createFromString( $current_url );
+
+		try {
+			$uri_object = Uri::createFromString( $src_string );
+		} catch ( \League\Uri\Contracts\UriException $e ) {
+			throw new Nunil_Exception( 'Invalid url in DOM: ' . esc_html( $src_string ) . PHP_EOL . esc_html( $e ), 2002, 2 );
+		}
 
 		if ( is_null( $uri_object->getScheme() ) ) {
 			$scheme = $home_url->getScheme();
@@ -900,7 +929,6 @@ class Nunil_Capture {
 		}
 
 		if ( is_null( $uri_object->getHost() ) ) {
-			$host           = $home_url->getHost();
 			$new_uri_object = Http::createFromBaseUri( $src_string, $current_url );
 		}
 
@@ -908,6 +936,6 @@ class Nunil_Capture {
 			$new_uri_object = Uri::createFromString( $src_string )
 			->withScheme( $scheme );
 		}
-		return '' . $new_uri_object;
+		return $new_uri_object->__toString();
 	}
 }

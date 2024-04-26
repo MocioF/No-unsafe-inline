@@ -17,6 +17,7 @@ use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Knn_Trainer;
+use NUNIL\Nunil_Exception;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -675,7 +676,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	}
 
 	/**
-	 * Check is a resource is in external whitelist
+	 * Check if a resource is in external whitelist
 	 *
 	 * @since 1.0.0
 	 * @access private
@@ -687,7 +688,19 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( ! is_array( $ext_wlist ) ) {
 			return false; // BL: no external whitelist present.
 		} elseif ( 0 < count( $ext_wlist ) ) {
+			try {
 				$src_attrib = $this->clean_random_params( $src_attrib );
+			} catch ( Nunil_Exception $e ) {
+				$e->logexception();
+				return false;
+			}
+
+			try {
+				$src_attrib = $this->conv_to_absolute_url( $src_attrib );
+			} catch ( Nunil_Exception $e ) {
+				$e->logexception();
+				return false;
+			}
 
 			foreach ( $ext_wlist as $index => $obj ) {
 				if ( $src_attrib === $obj->src_attrib ) {
