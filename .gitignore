@@ -12,4 +12,4 @@ npm-debug.log
 docs
 .sass-cache
 /.phpunit.result.cache
-/nbproject/private/
+nbproject/
