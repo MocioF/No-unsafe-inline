@@ -360,7 +360,7 @@ class Nunil_Knn_Trainer {
 	 * @return int|bool
 	 */
 	private function get_last_update_table_time() {
-		$nunil_lm_opt = 'nunil_last_modified_times';
+		$nunil_lm_opt = 'no-unsafe-inline-dbtables-mtime';
 		if ( 'event' === $this->model_type ) {
 			$table = 'event_handlers';
 		} else {

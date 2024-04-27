@@ -180,7 +180,7 @@ class Nunil_Lib_Utils {
 	 * @return void
 	 */
 	public static function set_last_modified( $table_name ) {
-		$nunil_lm_opt = 'nunil_last_modified_times';
+		$nunil_lm_opt = 'no-unsafe-inline-dbtables-mtime';
 		$now          = time();
 
 		$default       = array(
