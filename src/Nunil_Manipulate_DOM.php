@@ -170,7 +170,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		// Set properties with db results.
 		$cache_keys = array( 'inline_rows', 'events_rows', 'external_rows' );
 		foreach ( $cache_keys as $cache_key ) {
-			$this->get_db_rows( $cache_key );
+			$db_rows = \NUNIL\Nunil_Knn_Trainer::get_db_rows( $cache_key );
+			if ( is_array( $db_rows ) ) {
+				$this->$cache_key = $db_rows;
+			}
 		}
 
 		$this->inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
@@ -178,7 +181,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$this->page_nonce = $this->generate_nonce();
 
 		if ( 1 === $plugin_options['script-src_enabled'] ) {
-			$nunil_trainer_script = new Nunil_Knn_Trainer( $this->inline_rows, 'script' );
+			$nunil_trainer_script = new Nunil_Knn_Trainer( 'script' );
 
 			/**
 			 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
@@ -192,7 +195,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		}
 
 		if ( 1 === $plugin_options['style-src_enabled'] ) {
-			$nunil_trainer_style = new Nunil_Knn_Trainer( $this->inline_rows, 'style' );
+			$nunil_trainer_style = new Nunil_Knn_Trainer( 'style' );
 			if ( 1 === $tools['capture_enabled'] ) {
 				$this->internal_css_classifier = $nunil_trainer_style->get_trained( false );
 			} else {
@@ -202,41 +205,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		// Create classifier for event_handlers $event_handlers_classifier.
 		if ( 0 === $plugin_options['use_unsafe-hashes'] ) {
-			$nunil_trainer_event = new Nunil_Knn_Trainer( $this->events_rows, 'event' );
+			$nunil_trainer_event = new Nunil_Knn_Trainer( 'event' );
 			if ( 1 === $tools['capture_enabled'] ) {
 				$this->event_handlers_classifier = $nunil_trainer_event->get_trained( false );
 			} else {
 				$this->event_handlers_classifier = $nunil_trainer_event->get_trained();
 			}
-		}
-	}
-
-	/**
-	 * Sets DB results in caache
-	 *
-	 * @param string $cache_key The cache key used to store db results.
-	 * @return void
-	 */
-	private function get_db_rows( $cache_key ) {
-		$gls         = new Nunil_Global_Settings();
-		$tools       = (array) get_option( 'no-unsafe-inline-tools' );
-		$cache_group = 'no-unsafe-inline';
-		$expire_secs = $gls->expire_secs[ $cache_key ];
-		/**
-		 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
-		 * use cache to avoid not upgrading clusternames dinamically
-		 */
-		if ( 1 === $tools['capture_enabled'] ) {
-			wp_cache_delete( $cache_key, $cache_group );
-		}
-		$db_rows = wp_cache_get( $cache_key, $cache_group );
-		if ( false === $db_rows ) {
-			$method  = 'get_' . $cache_key;
-			$db_rows = DB::$method();
-			wp_cache_set( $cache_key, $db_rows, $cache_group, $expire_secs );
-		}
-		if ( is_array( $db_rows ) ) {
-			$this->$cache_key = $db_rows;
 		}
 	}
 

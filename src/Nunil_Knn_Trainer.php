@@ -17,6 +17,7 @@ use Rubix\ML\Persisters\Filesystem;
 use Rubix\ML\Serializers\RBX;
 use Rubix\ML\Serializers\Serializer;
 use Rubix\ML\Datasets\Labeled;
+use NUNIL\Nunil_Lib_Db as DB;
 
 /**
  * Class used to train AI models used by No unsafe-inline
@@ -122,16 +123,14 @@ class Nunil_Knn_Trainer {
 	/**
 	 * Class constructor
 	 *
-	 * @param array<\stdClass>|null $db_rows The array of rows as object returned by$wpdb->get_results.
-	 * @param string                $model_type The model type.
+	 * @param string $model_type The model type.
 	 */
-	public function __construct( $db_rows, $model_type = 'script' ) {
+	public function __construct( $model_type = 'script' ) {
 		if ( in_array( $model_type, $this->model_types, true ) ) {
 			$this->model_type = $model_type;
 		} else {
 			$model_type = 'script';
 		}
-		$this->set_raw_db_results( $db_rows );
 		$this->get_gls();
 		$this->set_page_size( $this->gls->knn_train_batch_size );
 		$this->can_use_persistent = $this->check_write_permission();
@@ -213,10 +212,16 @@ class Nunil_Knn_Trainer {
 	/**
 	 * Check for cached results and sets $raw_db_results
 	 *
-	 * @param array<\stdClass>|null $db_rows The array of rows as object returned by$wpdb->get_results.
 	 * @return void
 	 */
-	private function set_raw_db_results( $db_rows ) {
+	private function set_raw_db_results() {
+		switch ( $this->model_type ) {
+			case 'event':
+				$db_rows = self::get_db_rows( 'events_rows' );
+				break;
+			default:
+				$db_rows = self::get_db_rows( 'inline_rows' );
+		}
 		if ( is_array( $db_rows ) ) {
 			$this->raw_db_results = $db_rows;
 		}
@@ -274,6 +279,7 @@ class Nunil_Knn_Trainer {
 	 * @return void
 	 */
 	private function train_classifier() {
+		$this->set_raw_db_results();
 		$this->set_filtered_db_results();
 		$this->set_classifier();
 
@@ -372,5 +378,32 @@ class Nunil_Knn_Trainer {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Sets DB results in cache and returns DB results
+	 *
+	 * @param string $cache_key The cache key used to store db results.
+	 * @return array<\stdClass>|null
+	 */
+	public static function get_db_rows( $cache_key ) {
+		$gls         = new Nunil_Global_Settings();
+		$tools       = (array) get_option( 'no-unsafe-inline-tools' );
+		$cache_group = 'no-unsafe-inline';
+		$expire_secs = $gls->expire_secs[ $cache_key ];
+		/**
+		 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
+		 * use cache to avoid not upgrading clusternames dinamically
+		 */
+		if ( 1 === $tools['capture_enabled'] ) {
+			wp_cache_delete( $cache_key, $cache_group );
+		}
+		$db_rows = wp_cache_get( $cache_key, $cache_group );
+		if ( false === $db_rows ) {
+			$method  = 'get_' . $cache_key;
+			$db_rows = DB::$method();
+			wp_cache_set( $cache_key, $db_rows, $cache_group, $expire_secs );
+		}
+		return $db_rows;
 	}
 }

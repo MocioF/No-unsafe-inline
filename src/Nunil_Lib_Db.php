@@ -592,47 +592,6 @@ class Nunil_Lib_Db {
 	}
 
 	/**
-	 * Get a random ID from $table
-	 *
-	 * Get a (not truly) random ID from $table assuming that
-	 * distribution of ids is equal, and that there can be gaps in
-	 * the ID list.
-	 * See: http://jan.kneschke.de/projects/mysql/order-by-rand/
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @param string $table The internal table name.
-	 * @return array<string>|null
-	 * @throws \Exception If called method is not found.
-	 */
-	public static function get_random_cluster_data( $table ) {
-		global $wpdb;
-		$callable = array( __CLASS__, $table . '_table' );
-
-		if ( is_callable( $callable ) ) {
-			$my_table = call_user_func( $callable );
-		} else {
-			throw new \Exception( 'Method not found' );
-		}
-
-		$sql = 'SELECT `clustername` AS \'exp_label\', `nilsimsa` AS \'hexDvalue\'
-			FROM ' . $my_table . ' AS r1 JOIN
-				(SELECT CEIL(RAND() *
-                     (SELECT MAX(ID)
-                        FROM ' . $my_table . ')) AS id)
-				AS r2
-			WHERE r1.id >= r2.id
-			ORDER BY r1.id ASC
-			LIMIT 1';
-		$row = $wpdb->get_results( $sql, ARRAY_A );
-		if ( ! is_null( $row ) && count( $row ) > 0 ) {
-			return $row[0];
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * WhiteList a inline script
 	 *
 	 * @param string|array<string> $id The inline script id or an ARRAY_N of script_id.
@@ -1198,25 +1157,6 @@ class Nunil_Lib_Db {
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * Get samples for classification test.
-	 *
-	 * @since 1.0.0
-	 * @param string $tagname The HTML tag to get samples for.
-	 * @return array<\stdClass>
-	 */
-	public static function get_classification_samples( $tagname = '' ) {
-		global $wpdb;
-		$sql = 'SELECT `nilsimsa` AS \'hexDigest\', `clustername`, `whitelist` FROM ' . self::inline_scripts_table()
-		. ' WHERE (`whitelist` = true AND `clustername` <> \'Unclustered\' ) OR `clustername` = \'Unclustered\'';
-
-		if ( '' !== $tagname ) {
-			$sql = $sql . ' AND `tagname` = %s';
-			$sql = $wpdb->prepare( $sql, $tagname );
-		}
-		return $wpdb->get_results( $sql );
 	}
 
 	/**
