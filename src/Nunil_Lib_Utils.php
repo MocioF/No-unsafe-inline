@@ -196,4 +196,23 @@ class Nunil_Lib_Utils {
 			update_option( $nunil_lm_opt, $last_modifies, true );
 		}
 	}
+
+	/**
+	 * Checks if all elements of array are strings
+	 *
+	 * @param mixed $value
+	 * @phpstan-assert-if-true array<string> $value
+	 */
+	public static function is_one_dimensional_string_array( $value ): bool {
+		if ( ! is_array( $value ) ) {
+			return false;
+		}
+
+		foreach ( $value as $element ) {
+			if ( is_array( $element ) || ! is_string( $element ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
