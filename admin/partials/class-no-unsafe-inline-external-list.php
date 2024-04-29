@@ -370,7 +370,13 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 			case 'sha512':
 				return $item[ $column_name ];
 			default:
-				Log::debug( 'Error in column_default( $item, $column_name ) ' . print_r( $item, true ) );
+				Log::debug(
+					sprintf(
+						// translators: %s is a dumped variable content.
+						esc_html__( 'Error in column_default( $item, $column_name ). $item is: %s', 'no-unsafe-inline' ),
+						'<pre><code>' . esc_html( print_r( $item, true ) ) . '</code></pre>'
+					)
+				);
 				return;
 		}
 	}

@@ -18,6 +18,7 @@ use Rubix\ML\Serializers\RBX;
 use Rubix\ML\Serializers\Serializer;
 use Rubix\ML\Datasets\Labeled;
 use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Lib_Log as Log;
 
 /**
  * Class used to train AI models used by No unsafe-inline
@@ -165,7 +166,16 @@ class Nunil_Knn_Trainer {
 	 * @return bool
 	 */
 	private function check_write_permission() {
-		return $this->create_path() && wp_is_writable( $this->persistent_files_basename() );
+		$write_permission = $this->create_path() && wp_is_writable( $this->persistent_files_basename() );
+		if ( false === $write_permission ) {
+			$message = sprintf(
+				// translators: %s is a directory path.
+				esc_html__( 'AI estimators cannot be persistent because %s is unwritable by PHP.', 'no-unsafe-inline' ),
+				$this->persistent_files_basename()
+			);
+			Log::info( $message );
+		}
+		return $write_permission;
 	}
 
 

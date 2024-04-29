@@ -39,8 +39,9 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 		$options = (array) get_option( 'no-unsafe-inline' );
 
 		if ( empty( $options ) ) {
-			Log::error( 'The option no-unsafe-inline has to be an array' );
-			exit( 'The option no-unsafe-inline has to be an array' );
+			$message = __( 'The option no-unsafe-inline has to be an array', 'no-unsafe-inline' );
+			Log::error( $message );
+			exit( esc_html( $message ) );
 		}
 
 		// Only continue if it's valid JSON that is not just `null`, `0`, `false` or an empty string, i.e. if it could be a CSP violation report.
@@ -138,7 +139,13 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 								$partial .= ' line-number: ' . $line_number;
 							}
 
-							Log::warning( "CSP blocked inline script while capture is enabled: $partial" );
+							Log::warning(
+								sprintf(
+									// translators: %s is a string with document-uri, column-number and line number.
+									esc_html__( 'CSP blocked inline script while capture is enabled: %s', 'no-unsafe-inline' ),
+									$partial
+								)
+							);
 						}
 						if ( 'eval' === $blocked_url || 'empty' === $blocked_url ) {
 							$capture->insert_external_tag_in_db(

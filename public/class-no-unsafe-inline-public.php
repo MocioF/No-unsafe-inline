@@ -362,20 +362,20 @@ class No_Unsafe_Inline_Public {
 						$csp_size = strlen( $header_csp );
 						if ( $csp_size > $max_csp_allowed_size ) {
 							if ( 'nonce' !== $options['inline_scripts_mode'] ) {
-								Log::warning( 'CSP header is too long: please try to use \'nonce\' for inline_scripts_mode' );
+								Log::warning( esc_html__( 'CSP header is too long: please try to use \'nonce\' for inline_scripts_mode', 'no-unsafe-inline' ) );
 							}
 
 							// 1. We remove optional-ascii-whitespace
 							$header_csp = str_replace( ' ;', ';', $header_csp );
 							$header_csp = str_replace( '; ', ';', $header_csp );
-							Log::warning( 'CSP header is too long: removed optional-ascii-whitespace' );
+							Log::warning( esc_html__( 'CSP header is too long: removed optional-ascii-whitespace', 'no-unsafe-inline' ) );
 						}
 
 						$csp_size = strlen( $header_csp );
 						if ( $csp_size > $max_csp_allowed_size ) {
 							// 2. We reduce img-src to *;
 							$header_csp = preg_replace( '/img-src(.*?);/m', 'img-src *;', $header_csp );
-							Log::warning( 'CSP header is too long: img-src was reduced to * (every image allowed)' );
+							Log::warning( esc_html__( 'CSP header is too long: img-src was reduced to * (every image allowed)', 'no-unsafe-inline' ) );
 						}
 
 						if ( ! is_null( $header_csp ) ) {
@@ -395,7 +395,8 @@ class No_Unsafe_Inline_Public {
 									$header_csp
 								);
 								$nunil_csp_meta    = '<meta http-equiv="Content-Security-Policy" content="' . $csp_meta_fallback . '">';
-								Log::warning( 'CSP header is too long: reduced CSP was deployed via &lt;meta http-equiv&gt;' );
+								// translators: %s is &lt;meta http-equiv&gt;.
+								Log::warning( sprintf( esc_html__( 'CSP header is too long: reduced CSP was deployed via %s', 'no-unsafe-inline' ), '&lt;meta http-equiv&gt;' ) );
 							}
 						}
 						if ( '' === $nunil_csp_meta && ( ! is_null( $header_csp ) ) ) {

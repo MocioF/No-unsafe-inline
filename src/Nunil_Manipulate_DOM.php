@@ -740,7 +740,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			// This if statement, should never been run, because index should be always an array.
 			if ( ! is_array( $input_index ) ) {
 				$run_index[] = $input_index;
-				Log::debug( '$input_index was not array in manipulate_external_node()' );
+				Log::debug( esc_html__( '$input_index was not array in manipulate_external_node()', 'no-unsafe-inline' ) );
 			} else {
 				$run_index = $input_index;
 			}

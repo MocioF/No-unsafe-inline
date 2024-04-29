@@ -11,6 +11,8 @@
 
 namespace NUNIL;
 
+use NUNIL\Nunil_Exception;
+
 /**
  * Class with static methods called while operating on db
  *
@@ -569,13 +571,21 @@ class Nunil_Lib_Db {
 	 * @param string $order_asc Sort: 'asc' or 'desc'.
 	 * @param string $mode Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
 	 * @return array<array<\stdClass>>|array<array<string>>|array<\stdClass> The result with the logs
-	 * @throws \Exception If $order_by parameter is invalid.
+	 * @throws \NUNIL\Nunil_Exception If $order_by parameter is invalid.
 	 */
 	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $mode = OBJECT ) {
 		global $wpdb;
 
 		if ( strpos( self::$allowed_logs_fields, $order_by ) === false ) {
-			throw new \Exception( "The order by [$order_by] field is not allowed" );
+			throw new Nunil_Exception(
+				sprintf(
+					// translators: %s is the order_by parameter.
+					esc_html__( 'The order by [%s] field is not allowed', 'no-unsafe-inline' ),
+					esc_html( $order_by )
+				),
+				3020,
+				3
+			);
 		}
 		$order_asc = 'asc' === $order_asc ? 'asc' : 'desc';
 

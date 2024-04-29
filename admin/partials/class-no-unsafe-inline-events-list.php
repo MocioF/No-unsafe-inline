@@ -189,7 +189,7 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 	public function column_script( $item ) {
 		$admin_page_url = admin_url( 'options-general.php' );
 
-		$hl = new \Highlight\Highlighter();
+		$hl = new Highlighter();
 		$hl->setAutodetectLanguages( array( 'javascript', 'css', 'json', 'wasm' ) );
 		$highlighted = $hl->highlightAuto( $item['script'] );
 		$code        = '<div class="nunil-code-wrapper-' . $item['ID'] . '"><div class="code-accordion-' . $item['ID'] . '"><h4>' . esc_html__( 'View code', 'no-unsafe-inline' ) . '</h4>';
@@ -317,7 +317,13 @@ class No_Unsafe_Inline_Events_List extends WP_List_Table {
 			case 'occurences':
 				return $item[ $column_name ];
 			default:
-				Log::debug( 'Error in column_default( $item, $column_name ) ' . print_r( $item, true ) );
+				Log::debug(
+					sprintf(
+						// translators: %s is a dumped variable content.
+						esc_html__( 'Error in column_default( $item, $column_name ). $item is:%s ', 'no-unsafe-inline' ),
+						'<pre><code>' . esc_html( print_r( $item, true ) ) . '</code></pre>'
+					)
+				);
 				return;
 		}
 	}

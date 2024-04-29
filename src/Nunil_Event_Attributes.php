@@ -211,8 +211,8 @@ class Nunil_Event_Attributes {
 		} else {
 			$new = array_filter(
 				$this->attributes,
-				function ( $var ) use ( $filter_by ) {
-					return ( $var['object'] === $filter_by );
+				function ( $myvar ) use ( $filter_by ) {
+					return ( $myvar['object'] === $filter_by );
 				}
 			);
 			return $new;

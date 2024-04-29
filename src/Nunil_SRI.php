@@ -13,7 +13,7 @@ namespace NUNIL;
 
 use League\Uri\UriString;
 use NUNIL\Nunil_Lib_Db as DB;
-use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Exception;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -65,6 +65,7 @@ class Nunil_SRI {
 	 * @since 1.0.0
 	 * @param string|int|array<string|int> $id The id of the _external_script record.
 	 * @param bool                         $overwrite True to overwrite existing hashes.
+	 * @throws \NUNIL\Nunil_Exception           Unable to fetch asset, or Unable to get hashes.
 	 * @return bool
 	 */
 	public function put_hashes_in_db( $id, $overwrite = false ): bool {
@@ -111,12 +112,14 @@ class Nunil_SRI {
 
 					$affected = DB::update_ext_hashes( $data, $id, $format );
 				} else {
-					Log::warning( 'Unable to fetch ' . $data->src_attrib );
 					$returned = false;
+					// translators: %s is the URL of the resource to fetch.
+					throw new Nunil_Exception( sprintf( esc_html__( 'Unable to fetch %s', 'no-unsafe-inline' ), esc_html( $data->src_attrib ) ), 2003, 2 );
 				}
 			} else {
-				Log::warning( 'Unable to get hashes of script with ID: ' . $id );
 				$returned = false;
+				// translators: %s is the internal ID of the script.
+				throw new Nunil_Exception( sprintf( esc_html__( 'Unable to get hashes of script with ID: %s', 'no-unsafe-inline' ), esc_html( strval( $id ) ) ), 2004, 2 );
 			}
 		}
 		return $returned;

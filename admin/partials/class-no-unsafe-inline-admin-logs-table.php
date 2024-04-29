@@ -99,8 +99,12 @@ class No_Unsafe_Inline_Admin_Logs_Table extends WP_List_Table {
 		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : 'created_at';
 		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'desc';
 
-		$logs        = NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );
-		$this->items = (array) $logs;
+		try {
+			$logs        = NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );
+			$this->items = (array) $logs;
+		} catch ( NUNIL\Nunil_Exception $ex ) {
+			$ex->logexception();
+		}
 
 		$this->set_pagination_args(
 			array(

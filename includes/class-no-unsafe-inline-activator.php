@@ -12,6 +12,7 @@
 use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Exception;
 
 /**
  * Fired during plugin activation.
@@ -144,15 +145,14 @@ class No_Unsafe_Inline_Activator {
 		self::disable_all_tools();
 		self::set_default_options();
 
-		try {
-			if ( ! Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+		if ( ! Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+			try {
 				Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+			} catch ( Nunil_Exception $ex ) {
+				$ex->logexception();
+				require_once __DIR__ . '/class-no-unsafe-inline-deactivator.php';
+				\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 			}
-		} catch ( Exception $ex ) {
-			Log::error( 'Impossible to install mu-plugin: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
-			Log::error( 'no-unsafe-inline cannot work without mu-plugin. Deactivate.' );
-			require_once __DIR__ . '/class-no-unsafe-inline-deactivator.php';
-			\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 		}
 		Log::info( 'Activated plugin.' );
 	}
@@ -365,7 +365,7 @@ class No_Unsafe_Inline_Activator {
 		if ( '' !== $needed && 'cli' === php_sapi_name() ) {
 			echo PHP_VERSION . PHP_EOL;
 			echo 'EXTENSIONS REQUIRED: ' . PHP_EOL;
-			echo $needed;
+			echo esc_html( $needed );
 		}
 		return $needed;
 	}

@@ -60,7 +60,7 @@ class Nunil_Base_Src_Rules {
 	 * Calls the WP-List child class to print the table.
 	 *
 	 * @since    1.0.0
-	 * @throws \Exception The directives var is not an array.
+	 * @throws \NUNIL\Nunil_Exception The directives var is not an array.
 	 */
 	public function __construct() {
 		$cache_key   = 'external_scripts_directives';
@@ -76,8 +76,8 @@ class Nunil_Base_Src_Rules {
 		if ( is_array( $directives ) ) {
 			$this->directives = $directives;
 		} else {
-			Nunil_Lib_Log::error( '$directives should be an array' );
-			throw new \Exception( '$directives should be an array' );
+			$message = __( 'Error retriving base src rules: $directives should be an array', 'no-unsafe-inline' );
+			throw new Nunil_Exception( esc_html( $message ), 3004, 3 );
 		}
 	}
 

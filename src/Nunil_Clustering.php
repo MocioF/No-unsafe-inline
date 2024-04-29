@@ -241,7 +241,13 @@ class Nunil_Clustering {
 				}
 			}
 			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>';
-			Log::info( 'Performed clustering on ' . $tbl['table'] );
+			Log::info(
+				sprintf(
+					// translators: %s is table name.
+					esc_html__( 'Performed clustering on %s', 'no-unsafe-inline' ),
+					$tbl['table']
+				)
+			);
 		}
 		$end_time = microtime( true );
 

@@ -123,6 +123,10 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 		$hidden                = array();
 		$sortable              = $this->get_sortable_columns();
 		$this->_column_headers = array( $columns, $hidden, $sortable );
-		$this->items           = self::get_sources();
+		try {
+			$this->items = self::get_sources();
+		} catch ( NUNIL\Nunil_Exception $ex ) {
+			$ex->logexception();
+		}
 	}
 }

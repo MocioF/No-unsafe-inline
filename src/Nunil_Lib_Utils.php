@@ -200,7 +200,7 @@ class Nunil_Lib_Utils {
 	/**
 	 * Checks if all elements of array are strings
 	 *
-	 * @param mixed $value
+	 * @param mixed $value The array to check.
 	 * @phpstan-assert-if-true array<string> $value
 	 */
 	public static function is_one_dimensional_string_array( $value ): bool {

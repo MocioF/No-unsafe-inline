@@ -13,7 +13,6 @@
 namespace NUNIL;
 
 use IvoPetkov\HTML5DOMDocument;
-use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Exception;
 
@@ -105,7 +104,7 @@ class Nunil_Capture {
 				$this->hash_in_use = $inline_scripts_mode;
 			}
 		} else {
-			throw new Nunil_Exception( 'The option no-unsafe-inline has to be an array', 3001, 3 );
+			throw new Nunil_Exception( 'The option no-unsafe-inline has to be an array', 3010, 3 );
 		}
 	}
 
@@ -758,7 +757,6 @@ class Nunil_Capture {
 	 * @param  string $tagname    A string containing the HTML tag name.
 	 * @param  string $src_attrib The content of src attr.
 	 * @param  string $this_page_url (optional): The page where the element has been seen.
-	 * @throws \League\Uri\Contracts\UriException Exception for invalid url found in src attrib.
 	 * @return false|int $external_script_id the ID (as int) of the inserted tag or false if not new tag to insert
 	 */
 	protected function insert_external_tag_in_db( $directive, $tagname, $src_attrib, $this_page_url = null ) {
@@ -828,20 +826,10 @@ class Nunil_Capture {
 	 */
 	protected function insert_hashes_in_db( $external_script_id ): void {
 		try {
-			try {
-				$sri = new Nunil_SRI();
-				$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
-			} catch ( \Exception $ex ) {
-				throw new Nunil_Exception(
-					'Could not insert hashes of remote resource in db: ' .
-					$ex->getMessage() . ', ' . $ex->getTraceAsString(),
-					2002,
-					2,
-					$ex
-				);
-			}
-		} catch ( Nunil_Exception $e ) {
-			$e->logexception();
+			$sri = new Nunil_SRI();
+			$sri->put_hashes_in_db( $external_script_id, $overwrite = false );
+		} catch ( Nunil_Exception $ex ) {
+			$ex->logexception();
 		}
 	}
 
@@ -883,7 +871,7 @@ class Nunil_Capture {
 		);
 		try {
 			$uri = Uri::createFromString( $uri_string );
-		} catch ( \League\Uri\Contracts\UriException $e ) {
+		} catch ( UriException $e ) {
 			throw new Nunil_Exception( 'Invalid url in DOM: ' . esc_html( $uri_string ) . PHP_EOL . esc_html( $e ), 2001, 2 );
 		}
 
@@ -918,7 +906,7 @@ class Nunil_Capture {
 
 		try {
 			$uri_object = Uri::createFromString( $src_string );
-		} catch ( \League\Uri\Contracts\UriException $e ) {
+		} catch ( UriException $e ) {
 			throw new Nunil_Exception( 'Invalid url in DOM: ' . esc_html( $src_string ) . PHP_EOL . esc_html( $e ), 2002, 2 );
 		}
 

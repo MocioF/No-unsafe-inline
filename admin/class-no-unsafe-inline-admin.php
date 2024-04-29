@@ -11,6 +11,8 @@
 
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Exception;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -471,11 +473,15 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function register_options(): void {
-		register_setting(
-			'no-unsafe-inline_group',
-			'no-unsafe-inline',
-			array( $this, 'sanitize_options' )
-		);
+		try {
+			register_setting(
+				'no-unsafe-inline_group',
+				'no-unsafe-inline',
+				array( $this, 'sanitize_options' )
+			);
+		} catch ( Nunil_Exception $ex ) {
+			$ex->logexception();
+		}
 
 		add_settings_section(
 			'no-unsafe-inline_fetch_directives_settings',
@@ -885,7 +891,7 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Sanitize the settings
 	 *
-	 * @throws \Exception Main option is not an array.
+	 * @throws \NUNIL\Nunil_Exception Main option is not an array.
 	 * @param array<string|array<string>> $input Contains the settings.
 	 * @return array<mixed>
 	 */
@@ -897,7 +903,7 @@ class No_Unsafe_Inline_Admin {
 
 		$options = (array) get_option( 'no-unsafe-inline' );
 		if ( empty( $options ) ) {
-			throw( new Exception( 'Option no-unsafe-inline is not an array' ) );
+			throw new Nunil_Exception( esc_html__( 'The wp-option no-unsafe-inline is not an array', 'no-unsafe-inline' ) );
 		}
 
 		// Checkboxes.
@@ -927,7 +933,7 @@ class No_Unsafe_Inline_Admin {
 		foreach ( $check_box_options as $option_name ) {
 			if ( ! isset( $input[ $option_name ] ) ) {
 				$new_input[ $option_name ] = 0;
-			} elseif ( ! in_array( $input[ $option_name ], $admitted_values ) ) {
+			} elseif ( ! in_array( $input[ $option_name ], $admitted_values, true ) ) {
 				$new_input[ $option_name ] = 0;
 			} elseif ( 'on' === $input[ $option_name ] ) {
 				$new_input[ $option_name ] = 1;
@@ -1020,7 +1026,7 @@ class No_Unsafe_Inline_Admin {
 			'errorlog',
 		);
 		if ( isset( $input['log_driver'] ) && is_string( $input['log_driver'] ) ) {
-			if ( in_array( $input['log_driver'], $admitted_log_drivers ) ) {
+			if ( in_array( $input['log_driver'], $admitted_log_drivers, true ) ) {
 				$new_input['log_driver'] = sanitize_text_field( $input['log_driver'] );
 			}
 		}
@@ -1032,7 +1038,7 @@ class No_Unsafe_Inline_Admin {
 			'debug',
 		);
 		if ( isset( $input['log_level'] ) && is_string( $input['log_level'] ) ) {
-			if ( in_array( $input['log_level'], $admitted_log_levels ) ) {
+			if ( in_array( $input['log_level'], $admitted_log_levels, true ) ) {
 				$new_input['log_level'] = sanitize_text_field( $input['log_level'] );
 			}
 		}
@@ -1084,7 +1090,7 @@ class No_Unsafe_Inline_Admin {
 		}
 
 		foreach ( $input as $key => $value ) {
-			if ( ! in_array( $key, $options_checked ) ) {
+			if ( ! in_array( $key, $options_checked, true ) ) {
 				unset( $input[ $key ] );
 			}
 		}
@@ -1092,7 +1098,7 @@ class No_Unsafe_Inline_Admin {
 			if ( ! isset( $input[ $option_name ] ) ) {
 				$input[ $option_name ] = 0;
 			}
-			if ( ! in_array( $input[ $option_name ], $admitted_values ) ) {
+			if ( ! in_array( $input[ $option_name ], $admitted_values, true ) ) {
 				$input[ $option_name ] = 0;
 			}
 			if ( 'on' === $input[ $option_name ] ) {
@@ -1659,7 +1665,7 @@ class No_Unsafe_Inline_Admin {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$value   = ( isset( $options['log_driver'] ) && is_string( $options['log_driver'] ) ) ? esc_attr( $options['log_driver'] ) : 'errorlog';
 
-		$print_selected = function( $val ) use ( $value ) {
+		$print_selected = function ( $val ) use ( $value ) {
 			return $val === $value ? 'selected' : '';
 		};
 		printf(
@@ -1680,7 +1686,7 @@ class No_Unsafe_Inline_Admin {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$value   = ( isset( $options['log_level'] ) && is_string( $options['log_level'] ) ) ? esc_attr( $options['log_level'] ) : 'error';
 
-		$print_selected = function( $val ) use ( $value ) {
+		$print_selected = function ( $val ) use ( $value ) {
 			return $val === $value ? 'selected' : '';
 		};
 		printf(
@@ -2248,10 +2254,8 @@ class No_Unsafe_Inline_Admin {
 
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
-		} else {
-			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
-			}
 		}
 
 		wp_die();
@@ -2291,8 +2295,8 @@ class No_Unsafe_Inline_Admin {
 		}
 		$result_string = $result_string . '</ul>';
 
-		\NUNIL\Nunil_Lib_Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'cleaned up the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
-		\NUNIL\Nunil_Lib_Log::info( 'cleaned up the database at the user\'s request' );
+		Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'Eliminated the content of the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
+		Log::info( esc_html__( 'Eliminated the content of the database at the user\'s request', 'no-unsafe-inline' ) );
 
 		$result = array(
 			'type'   => 'success',
@@ -2301,10 +2305,8 @@ class No_Unsafe_Inline_Admin {
 
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
-		} else {
-			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
-			}
 		}
 
 		wp_die();
@@ -2332,8 +2334,8 @@ class No_Unsafe_Inline_Admin {
 		$result_string = $result_string . $prune->prune_external_assets();
 		$result_string = $result_string . $prune->prune_old_occurences();
 
-		\NUNIL\Nunil_Lib_Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'pruned the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
-		\NUNIL\Nunil_Lib_Log::info( 'pruned the database at the user\'s request' );
+		Utils::show_message( '<strong>No unsafe-inline</strong> ' . esc_html__( 'Pruned the database at the user\'s request', 'no-unsafe-inline' ), 'success' );
+		Log::info( esc_html__( 'Pruned the database at the user\'s request', 'no-unsafe-inline' ) );
 
 		$result = array(
 			'type'   => 'success',
@@ -2342,10 +2344,8 @@ class No_Unsafe_Inline_Admin {
 
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
-		} else {
-			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
-			}
 		}
 
 		wp_die();
@@ -2368,10 +2368,8 @@ class No_Unsafe_Inline_Admin {
 
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
-		} else {
-			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
-			}
 		}
 
 		wp_die();
@@ -2562,10 +2560,8 @@ class No_Unsafe_Inline_Admin {
 		);
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
-		} else {
-			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
 				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
-			}
 		}
 
 		wp_die();

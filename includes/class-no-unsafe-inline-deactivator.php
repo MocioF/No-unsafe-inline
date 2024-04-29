@@ -12,6 +12,7 @@
 use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as DB;
+use NUNIL\Nunil_Exception;
 
 /**
  * Fired during plugin deactivation.
@@ -58,19 +59,19 @@ class No_Unsafe_Inline_Deactivator {
 					if ( in_array( NO_UNSAFE_INLINE_PLUGIN_BASENAME, (array) get_option( 'active_plugins', array() ), true ) ) {
 						$remove_mu_plugin = false;
 					}
-					Log::info( 'Deactivated plugin.' );
+					Log::info( esc_html__( 'Deactivated plugin.', 'no-unsafe-inline' ) );
 					restore_current_blog();
 				}
 				// On network wide deactivation, remove mu-plugin.
-				try {
-					if ( true === $remove_mu_plugin && Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+				if ( true === $remove_mu_plugin && Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+					try {
 						Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+					} catch ( Nunil_Exception $ex ) {
+						$ex->logexception();
 					}
-				} catch ( Exception $ex ) {
-					Log::error( 'Impossible to uninstall mu-plugin: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
 				}
 			} else {
-				Log::error( 'Impossible to perform network deactivation on older wp installation with more than 10000 sites' );
+				Log::error( esc_html__( 'Impossible to perform network deactivation on older wp installation with more than 10000 sites', 'no-unsafe-inline' ) );
 			}
 		} else {
 			// On single site deactivation, remove tables and settings, if set in options.
@@ -96,12 +97,12 @@ class No_Unsafe_Inline_Deactivator {
 				}
 			}
 			// Remove mu-plugin only if is not a multisite enviroment.
-			try {
-				if ( false === is_multisite() && Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+			if ( false === is_multisite() && Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+				try {
 					Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+				} catch ( Nunil_Exception $ex ) {
+					$ex->logexception();
 				}
-			} catch ( Exception $ex ) {
-				Log::error( 'Impossible to uninstall mu-plugin: ' . $ex->getMessage() . ', ' . $ex->getTraceAsString() );
 			}
 		}
 	}
