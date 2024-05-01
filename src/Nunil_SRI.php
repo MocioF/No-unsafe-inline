@@ -44,7 +44,7 @@ class Nunil_SRI {
 	/**
 	 * Fetch resource
 	 *
-	 * Fetch a resource using wp_remote_get
+	 * Fetch a resource using wp_safe_remote_get
 	 *
 	 * @since 1.0.0
 	 * @link https://plugins.trac.wordpress.org/browser/wp-sri/trunk/wp-sri.php#L138
@@ -55,7 +55,7 @@ class Nunil_SRI {
 		$url      = ( 0 === strpos( $rsrc_url, '//' ) )
 			? ( ( is_ssl() ) ? "https:$rsrc_url" : "http:$rsrc_url" )
 			: $rsrc_url;
-		$response = wp_remote_get( $url );
+		$response = wp_safe_remote_get( $url );
 		return $response;
 	}
 
