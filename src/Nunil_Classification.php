@@ -60,7 +60,7 @@ class Nunil_Classification {
 					if ( is_array( $rows ) ) {
 						foreach ( $rows as $row ) {
 							if ( 'script' === $row->tagname ) {
-								$samples[] = $row->nilsimsa;
+								$samples[] = array( $row->nilsimsa );
 								$labels[]  = $row->clustername;
 							}
 						}
@@ -72,7 +72,7 @@ class Nunil_Classification {
 					if ( is_array( $rows ) ) {
 						foreach ( $rows as $row ) {
 							if ( 'style' === $row->tagname ) {
-								$samples[] = $row->nilsimsa;
+								$samples[] = array( $row->nilsimsa );
 								$labels[]  = $row->clustername;
 							}
 						}
@@ -83,7 +83,7 @@ class Nunil_Classification {
 					$rows      = Nunil_Knn_Trainer::get_db_rows( $cache_key );
 					if ( is_array( $rows ) ) {
 						foreach ( $rows as $row ) {
-							$samples[] = $row->nilsimsa;
+							$samples[] = array( $row->nilsimsa );
 							$labels[]  = $row->event_attribute . '#' . $row->clustername;
 						}
 					}

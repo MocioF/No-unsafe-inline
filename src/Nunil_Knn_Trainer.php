@@ -300,14 +300,13 @@ class Nunil_Knn_Trainer {
 				$samples = array();
 				$labels  = array();
 				foreach ( $chunk as $row ) {
-					$samples[] = $row->nilsimsa;
+					$samples[] = array( $row->nilsimsa );
 					if ( 'event' === $this->model_type ) {
 						$labels[] = $row->event_attribute . '#' . $row->clustername;
 					} else {
 						$labels[] = $row->clustername;
 					}
 				}
-
 				$partial_dataset = new Labeled( $samples, $labels );
 				if ( 0 === $key ) {
 					$this->classifier->train( $partial_dataset );
