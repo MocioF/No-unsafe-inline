@@ -298,7 +298,7 @@ class Nunil_Capture {
 	 * @since  1.0.0
 	 * @access public
 	 * @param  \DOMElement $node The element we are processing.
-	 * @return array<array<string>> An array of associative arrays: [tag], [id], [event_attribute], [script].
+	 * @return array<array{"tagname": string, "tagid": string, "event_attribute": string, "script": string}> An array of associative arrays: [tag], [id], [event_attribute], [script].
 	 */
 	public function get_event_handlers_in_node( $node ) {
 		$event_attributes = new Nunil_Event_Attributes();

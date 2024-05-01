@@ -1131,6 +1131,24 @@ class Nunil_Lib_Db {
 	}
 
 	/**
+	 * Cluster and whitelist an event of an event handler
+	 *
+	 * @since 1.2.0
+	 * @access public
+	 * @param int    $id The script ID.
+	 * @param string $clustername The clustername.
+	 * @return int|false The number of rows updated, or false on error.
+	 */
+	public static function upd_evh_cl_wl( $id, $clustername ) {
+		global $wpdb;
+		$data = array(
+			'clustername' => $clustername,
+			'whitelist'   => 1,
+		);
+		return $wpdb->update( self::event_handlers_table(), $data, array( 'ID' => $id ), array( '%s', '%d' ), array( '%d' ) );
+	}
+
+	/**
 	 * Get scrattrib and hashes from external_script id
 	 *
 	 * @since 1.0.0

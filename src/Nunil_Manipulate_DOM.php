@@ -1051,8 +1051,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$cache_group = 'no-unsafe-inline';
 		$inline_rows = wp_cache_delete( $cache_key, $cache_group );
 
-		$in_use    = $hashes['in_use'];
-		$script_id = DB::get_inl_id( $tagname, $hashes[ $in_use ] );
+		$in_use = $hashes['in_use'];
 
 		$pageurl = Nunil_Lib_Utils::get_page_url();
 		/* Before inserting, check if the script is in db. */
@@ -1080,6 +1079,53 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			$occ_id = DB::insert_occ_in_db( $script_id, 'inline_scripts' );
 		}
 		Utils::set_last_modified( 'inline_scripts' );
+	}
+
+	/**
+	 * Insert a new script triggered by an event handler in db
+	 *
+	 * If a new event script is allowed, because it has been classified in a cluster, we can insert this one in the database.
+	 * This should help in further classifications, because we cannot know clusters' shape.
+	 * This behaviour can be enabled by option page.
+	 *
+	 * @since 1.2.0
+	 * @access private
+	 * @param array{"tagname": string, "tagid": string, "event_attribute": string, "script": string} $row Array of event handlers attributes.
+	 * @param array<string>                                                                          $hashes The sha hashes array.
+	 * @param string                                                                                 $nilsimsa Nilsimsa hexDigest.
+	 * @param string                                                                                 $predicted_label The current clustername.
+	 * @return void
+	 */
+	private function insert_new_event_in_db( $row, $hashes, $nilsimsa, $predicted_label ) {
+		$cache_key   = 'events_rows';
+		$cache_group = 'no-unsafe-inline';
+		$events_rows = wp_cache_delete( $cache_key, $cache_group );
+
+		$in_use = $hashes['in_use'];
+
+		$pageurl = Nunil_Lib_Utils::get_page_url();
+		/* Before inserting, check if the script is in db. */
+		$event_id = DB::get_evh_id( $row['tagname'], $row['tagid'], $row['event_attribute'], $hashes[ $in_use ] );
+		if ( ! is_null( $event_id ) ) {
+			// Cluster and whitelist if in DB.
+			$affected = DB::upd_evh_cl_wl( $event_id, $predicted_label );
+
+			$occ_id = DB::get_occ_id( $event_id, 'event_handlers', $pageurl );
+
+			if ( ! is_null( $occ_id ) ) {
+				DB::update_lastseen( $occ_id );
+			} else {
+				$occ_id = DB::insert_occ_in_db( $event_id, 'event_handlers', $pageurl );
+			}
+		} else {
+			$row['nilsimsa'] = $nilsimsa;
+
+			$event_id = DB::insert_evh_in_db( $row );
+			$affected = DB::upd_evh_cl_wl( $event_id, $predicted_label );
+
+			$occ_id = DB::insert_occ_in_db( $event_id, 'event_handlers' );
+		}
+		Utils::set_last_modified( 'event_handlers' );
 	}
 
 	/**
@@ -1152,6 +1198,26 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 							if ( false !== $wl_cluster ) {
 								$this->evh_allow_wl_hash( $node, $row['event_attribute'] );
+
+								$options = (array) get_option( 'no-unsafe-inline' );
+								if ( 1 === $options['add_wl_by_cluster_to_db'] ) {
+									if ( class_exists( '\\Fiber' ) ) {
+										global $nunil_fibers;
+										$nunil_fibers[] = new \Fiber(
+											function () use ( $row, $hashes, $lsh_hex_digest, $wl_cluster ) {
+												$this->insert_new_event_in_db( $row, $hashes, $lsh_hex_digest, $wl_cluster );
+											}
+										);
+										$nunil_fibers[] = new \Fiber(
+											function () use ( $lsh_hex_digest, $wl_cluster ) {
+												$this->nunil_trainer_event->update( $lsh_hex_digest, $wl_cluster );
+											}
+										);
+									} else {
+										$this->insert_new_event_in_db( $row, $hashes, $lsh_hex_digest, $wl_cluster );
+										$this->nunil_trainer_event->update( $lsh_hex_digest, $wl_cluster );
+									}
+								}
 							}
 						}
 					}
