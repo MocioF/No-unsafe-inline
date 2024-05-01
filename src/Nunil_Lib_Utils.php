@@ -68,14 +68,14 @@ class Nunil_Lib_Utils {
 	 * Checks if all values in array are integers
 	 *
 	 * @since 1.0.0
-	 * @param mixed $array The array to check.
+	 * @param mixed $myarray The array to check.
 	 * @return bool True if all values of $array are integers, false otherwise
 	 */
-	public static function is_array_of_integer_strings( $array ) {
-		if ( ! is_array( $array ) ) {
+	public static function is_array_of_integer_strings( $myarray ) {
+		if ( ! is_array( $myarray ) ) {
 			return false;
 		}
-		foreach ( $array as $value ) {
+		foreach ( $myarray as $value ) {
 			if ( ! is_numeric( $value ) ) {
 				return false;
 			}
@@ -115,11 +115,11 @@ class Nunil_Lib_Utils {
 	 * Casts $var to admitted type for strval or returns null
 	 *
 	 * @since 1.1.2
-	 * @param mixed $var The var to get string value from.
+	 * @param mixed $myvar The var to get string value from.
 	 * @return bool|float|int|resource|string|null
 	 */
-	public static function cast_strval( $var ) {
-		$new_var = $var;
+	public static function cast_strval( $myvar ) {
+		$new_var = $myvar;
 		if (
 				is_bool( $new_var ) ||
 				is_float( $new_var ) ||
@@ -138,11 +138,11 @@ class Nunil_Lib_Utils {
 	 * Casts $var to admitted type for intval or returns null
 	 *
 	 * @since 1.1.2
-	 * @param mixed $var The var to get int value from.
+	 * @param mixed $myvar The var to get int value from.
 	 * @return array<mixed>|bool|float|int|resource|string|null
 	 */
-	public static function cast_intval( $var ) {
-		$new_var = $var;
+	public static function cast_intval( $myvar ) {
+		$new_var = $myvar;
 		if (
 				is_array( $new_var ) ||
 				is_bool( $new_var ) ||
@@ -155,21 +155,6 @@ class Nunil_Lib_Utils {
 			return( $new_var );
 		} else {
 			return null;
-		}
-	}
-
-	/**
-	 * Dev functions; don't commit
-	 *
-	 * @param mixed $var The var to log.
-	 * @return void
-	 */
-	public static function var_log( $var ) {
-		ob_start();
-		var_dump( $var );
-		$debug_dump = ob_get_clean();
-		if ( false !== $debug_dump ) {
-			error_log( $debug_dump );
 		}
 	}
 
