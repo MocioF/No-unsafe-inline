@@ -141,6 +141,30 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	private $event_handlers_classifier;
 
 	/**
+	 * The Trainer used for inline scripts
+	 *
+	 * @since 1.2.0
+	 * @var \NUNIL\Nunil_Knn_Trainer
+	 */
+	private $nunil_trainer_script;
+
+	/**
+	 * The Trainer used for inline styles
+	 *
+	 * @since 1.2.0
+	 * @var \NUNIL\Nunil_Knn_Trainer
+	 */
+	private $nunil_trainer_style;
+
+	/**
+	 * The Trainer used for event handlers
+	 *
+	 * @since 1.2.0
+	 * @var \NUNIL\Nunil_Knn_Trainer
+	 */
+	private $nunil_trainer_event;
+
+	/**
 	 * Nonce used for the page if $inline_scripts_mode is set to 'nonce'
 	 *
 	 * @since 1.0.0
@@ -181,35 +205,35 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$this->page_nonce = $this->generate_nonce();
 
 		if ( 1 === $plugin_options['script-src_enabled'] ) {
-			$nunil_trainer_script = new Nunil_Knn_Trainer( 'script' );
+			$this->nunil_trainer_script = new Nunil_Knn_Trainer( 'script' );
 
 			/**
 			 * When capturing is enabled with a protection policy enabled or in test, we need NOT to
 			 * use cache to avoid not updating clusternames after recluster.
 			 */
 			if ( 1 === $tools['capture_enabled'] ) {
-				$this->inline_scripts_classifier = $nunil_trainer_script->get_trained( false );
+				$this->inline_scripts_classifier = $this->nunil_trainer_script->get_trained( false );
 			} else {
-				$this->inline_scripts_classifier = $nunil_trainer_script->get_trained();
+				$this->inline_scripts_classifier = $this->nunil_trainer_script->get_trained();
 			}
 		}
 
 		if ( 1 === $plugin_options['style-src_enabled'] ) {
-			$nunil_trainer_style = new Nunil_Knn_Trainer( 'style' );
+			$this->nunil_trainer_style = new Nunil_Knn_Trainer( 'style' );
 			if ( 1 === $tools['capture_enabled'] ) {
-				$this->internal_css_classifier = $nunil_trainer_style->get_trained( false );
+				$this->internal_css_classifier = $this->nunil_trainer_style->get_trained( false );
 			} else {
-				$this->internal_css_classifier = $nunil_trainer_style->get_trained();
+				$this->internal_css_classifier = $this->nunil_trainer_style->get_trained();
 			}
 		}
 
 		// Create classifier for event_handlers $event_handlers_classifier.
 		if ( 0 === $plugin_options['use_unsafe-hashes'] ) {
-			$nunil_trainer_event = new Nunil_Knn_Trainer( 'event' );
+			$this->nunil_trainer_event = new Nunil_Knn_Trainer( 'event' );
 			if ( 1 === $tools['capture_enabled'] ) {
-				$this->event_handlers_classifier = $nunil_trainer_event->get_trained( false );
+				$this->event_handlers_classifier = $this->nunil_trainer_event->get_trained( false );
 			} else {
-				$this->event_handlers_classifier = $nunil_trainer_event->get_trained();
+				$this->event_handlers_classifier = $this->nunil_trainer_event->get_trained();
 			}
 		}
 	}
@@ -403,8 +427,24 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 										$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
 									}
 								);
+								$nunil_fibers[] = new \Fiber(
+									function () use ( $tagname, $lsh_hex_digest, $wl_cluster ) {
+										if ( 'script' === $tagname ) {
+											$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
+										}
+										if ( 'style' === $tagname ) {
+											$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
+										}
+									}
+								);
 							} else {
 								$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
+								if ( 'script' === $tagname ) {
+									$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
+								}
+								if ( 'style' === $tagname ) {
+									$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
+								}
 							}
 						}
 					}

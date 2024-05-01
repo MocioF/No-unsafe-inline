@@ -357,6 +357,27 @@ class Nunil_Knn_Trainer {
 	}
 
 	/**
+	 * Updates the classifier adding a new labeled sample.
+	 *
+	 * @param string $sample The new sample to add.
+	 * @param string $label The new label to add.
+	 * @return void
+	 */
+	public function update( $sample, $label ) {
+		if ( $this->classifier->trained() ) {
+			$samples         = array();
+			$labels          = array();
+			$samples[]       = array( $sample );
+			$labels[]        = $label;
+			$partial_dataset = new Labeled( $samples, $labels );
+			$this->classifier->partial( $partial_dataset );
+			if ( $this->can_use_persistent ) {
+				$this->save_trained();
+			}
+		}
+	}
+
+	/**
 	 * Returns the time when the content of the persister file was changed
 	 *
 	 * This returns false on failure.
