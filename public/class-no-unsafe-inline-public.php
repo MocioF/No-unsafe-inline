@@ -102,11 +102,11 @@ class No_Unsafe_Inline_Public {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param string $value The string to check.
+	 * @param string $mystring The string to check.
 	 * @return bool
 	 */
-	private function is_json( $value ) {
-		json_decode( $value );
+	private function is_json( $mystring ) {
+		json_decode( $mystring );
 		return json_last_error() === JSON_ERROR_NONE;
 	}
 
@@ -115,14 +115,14 @@ class No_Unsafe_Inline_Public {
 	 *
 	 * @since 1.0.2
 	 * @access private
-	 * @param string $string The string to check.
+	 * @param string $mystring The string to check.
 	 * @return bool
 	 */
-	private function is_html( $string ) {
-		if ( $this->is_json( $string ) ) {
+	private function is_html( $mystring ) {
+		if ( $this->is_json( $mystring ) ) {
 			return false;
 		}
-		return strip_tags( $string ) !== $string ? true : false;
+		return wp_strip_all_tags( $mystring ) !== $mystring ? true : false;
 	}
 
 	/**

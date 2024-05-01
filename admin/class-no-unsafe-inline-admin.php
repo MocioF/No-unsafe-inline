@@ -2397,15 +2397,15 @@ class No_Unsafe_Inline_Admin {
 		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Type', 'no-unsafe-inline' ) . '">' . $print->type . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Type', 'no-unsafe-inline' ) . '">' . $print->type . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {
 					$wl_text = __( 'WL', 'no-unsafe-inline' );
 				}
-				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->clusters . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Num. Clusters', 'no-unsafe-inline' ) . '">' . $print->clusters . '</td>';
 				$htb = $htb . '</tr>';
 			}
 		}
@@ -2437,16 +2437,16 @@ class No_Unsafe_Inline_Admin {
 		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Nonceable', 'no-unsafe-inline' ) . '">' . $print->nonceable . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Nonceable', 'no-unsafe-inline' ) . '">' . $print->nonceable . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {
 					$wl_text = __( 'WL', 'no-unsafe-inline' );
 				}
-				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
 				$htb = $htb . '</tr>';
 			}
 		}
@@ -2478,16 +2478,16 @@ class No_Unsafe_Inline_Admin {
 		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Directive', 'no-unsafe-inline' ) . '">' . $print->directive . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {
 					$wl_text = __( 'WL', 'no-unsafe-inline' );
 				}
-				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
 				$htb = $htb . '</tr>';
 			}
 		}
@@ -2519,16 +2519,16 @@ class No_Unsafe_Inline_Admin {
 		if ( isset( $result ) ) {
 			foreach ( $result as $print ) {
 				$htb = $htb . '<tr>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Event Attribute', 'no-unsafe-inline' ) . '">' . $print->event_attribute . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Tagname', 'no-unsafe-inline' ) . '">' . $print->tagname . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Event Attribute', 'no-unsafe-inline' ) . '">' . $print->event_attribute . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Cluster', 'no-unsafe-inline' ) . '">' . $print->clustername . '</td>';
 				if ( '0' === $print->whitelist ) {
 					$wl_text = __( 'BL', 'no-unsafe-inline' );
 				} else {
 					$wl_text = __( 'WL', 'no-unsafe-inline' );
 				}
-				$htb = $htb . '<td data-th="' . esc_html__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
-				$htb = $htb . '<td data-th="' . esc_html__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Whitelist', 'no-unsafe-inline' ) . '">' . $wl_text . '</td>';
+				$htb = $htb . '<td data-th="' . esc_attr__( 'Num.', 'no-unsafe-inline' ) . '">' . $print->num . '</td>';
 				$htb = $htb . '</tr>';
 			}
 		}
