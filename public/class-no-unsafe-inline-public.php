@@ -246,7 +246,7 @@ class No_Unsafe_Inline_Public {
 						$dir     = str_replace( '_base_rule', '', $directive );
 						$csp     = trim( strval( Utils::cast_strval( $base_sources ) ) );
 						$enabled = $dir . '_enabled';
-						if ( 'script-src' === $dir && 1 === $options['use_strict-dynamic'] ) {
+						if ( ( 'script-src' === $dir || 'default-src' === $dir ) && 1 === $options['use_strict-dynamic'] ) {
 							$csp = $csp . ' \'strict-dynamic\'';
 						}
 						// If in base rules is set 'none' for a directive, don't add anything to that.

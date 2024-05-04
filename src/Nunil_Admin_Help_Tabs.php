@@ -766,7 +766,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
-			. esc_html__( 'Choose here if to add \'strict-dynamic\' in script-src or not.', 'no-unsafe-inline' )
+			. esc_html__( 'Choose here if to add \'strict-dynamic\' in script-src and default-src or not.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'

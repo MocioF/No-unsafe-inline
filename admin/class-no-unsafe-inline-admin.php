@@ -644,7 +644,7 @@ class No_Unsafe_Inline_Admin {
 
 		add_settings_field(
 			'use_strict-dynamic',
-			esc_html__( 'Use sctrict-dynamic in <script>', 'no-unsafe-inline' ),
+			esc_html__( 'Use strict-dynamic for <script>', 'no-unsafe-inline' ),
 			array( $this, 'print_use_strict_dynamic_option' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc'
@@ -1510,7 +1510,7 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[use_strict-dynamic]">%s</label>',
 			esc_html( $enabled ),
 			// translators: strict-dynamic link.
-			sprintf( esc_html__( 'Add %s in script-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
+			sprintf( esc_html__( 'Add %s in script-src and default-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
 			// translators: %1$s and %2$s are link to external websites.
 				esc_html__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
 				'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
