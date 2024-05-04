@@ -327,7 +327,7 @@ div.nunil_temp_div {
 }
 
 .rwd-table tr {
-	border-top: 1px solid #ddd;
+	border-top: 0px;
 }
 
 .rwd-table th {
@@ -386,16 +386,7 @@ div.nunil_temp_div {
 
 .rwd-table {
 	background: #01263a;
-/*
-	background: #34495E;
-*/
-/*
-	background: #7796e6;
-*/
 	color: #fff;
-/*
-	color: #122313;
-*/
 	border-radius: .4em;
 	overflow: hidden;
 }
@@ -421,9 +412,6 @@ div.nunil_temp_div {
 .rwd-table th,
 .rwd-table td:before {
 	color: #dd5;
-/*
-	color: #e68b77;
-*/
 }
 
 .nunil-tools-wrapper {
@@ -460,9 +448,6 @@ div.nunil_temp_div {
 
 .nunil-tools-button-wrapper {
 	margin: 5px;
-/*
-	border: 1px solid #3582ca;
-*/
 	border: 0px;
 	text-align: center;
 
@@ -499,18 +484,23 @@ div.nunil_temp_div {
 	padding: 1em !important;
 	border-color: #46637f;
 	border-bottom: 1px dotted;
-	border-top: 1px solid #ddd;
+	border-top: 1px dotted;
 	font-size: 1.1em;
 	font-weight: bold;
 	
 }
 .nunil_tools_operation_report_container {
-	height: 340px;
+	height: 380px;
 	padding: 0px 1em 1em 1em;
 	background: #01263a;
+    position: relative;
+	border-radius: .4em;
+	display: flex;
+    flex-direction: column;
 }
 .nunil_tools_operation_report {
-	height: 280px;
+	height: 290px;
+	max-height: fit-content;
 	overflow: auto;
 	background: #01263a;
 	color: #fff;
@@ -521,7 +511,7 @@ div.nunil_temp_div {
 	border: none;
 	border-radius: 4px;
 	color: white;
-	padding: 4px 9px;
+	padding: 2px 2px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
@@ -594,4 +584,41 @@ div.nunil_temp_div {
 }
 .nunil-new-endpoint:focus {
 	background-color: LightCyan;
+}
+.nunil-db-sum-tabs-5 {
+    position: relative;
+}
+.nunil_tools_operation_report_buttons {
+	position: absolute;
+        bottom: 0.5em;
+        right:1.4em;
+        display: flex;
+        flex-direction: row;
+}
+.nunil_tools_operation_report_button_clipboard {
+	background-color: white; 
+	color: #99ccff; 
+	border: 2px solid #99ccff;
+}
+.nunil_tools_operation_report_button_clipboard:hover:enabled {
+	background-color: #99ccff;
+	color: white;
+}
+.nunil_tools_operation_report_button_clear {
+	background-color: white; 
+	color: #f44336; 
+	border: 2px solid #f44336;
+}
+.nunil_tools_operation_report_button_clear:hover:enabled {
+	background-color: #f44336;
+	color: white;
+}
+.copy-notification{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.no-titlebar .ui-dialog-titlebar {
+	display: none;
 }

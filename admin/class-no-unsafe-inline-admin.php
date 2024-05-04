@@ -154,7 +154,7 @@ class No_Unsafe_Inline_Admin {
 			wp_enqueue_script(
 				$this->plugin_name,
 				plugin_dir_url( __FILE__ ) . "js/no-unsafe-inline-admin$suffix.js",
-				array( 'jquery', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'wp-i18n' ),
+				array( 'jquery', 'jquery-ui-dialog', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'wp-i18n' ),
 				$this->version,
 				false
 			);
@@ -1810,13 +1810,14 @@ class No_Unsafe_Inline_Admin {
 			// Add a line for each url.
 			foreach ( $endpoints as $index => $endpoint ) {
 				printf(
-					'<li>
-					<input class="nunil-btn nunil-btn-del-endpoint" type="button" ' .
-					'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]" value="&#x2425;">
-					<span class="nunil-endpoint-string txt-active">%s</span>
-					<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]"' .
-					'name="no-unsafe-inline[endpoints][%d]" value="%s" />
-					</li>',
+					'<li>' .
+					'<button class="nunil-btn nunil-btn-del-endpoint" ' .
+					'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]">' .
+					'<span class="dashicons dashicons-remove"> </span></button>' .
+					'<span class="nunil-endpoint-string txt-active">%s</span>' .
+					'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]" ' .
+					'name="no-unsafe-inline[endpoints][%d]" value="%s" />' .
+					'</li>',
 					esc_html( $index ),
 					esc_html( $index ),
 					esc_html( $endpoint ),
@@ -1908,7 +1909,7 @@ class No_Unsafe_Inline_Admin {
 		$enabled = $value ? 'checked' : '';
 
 		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[capture_enabled]"' .
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[capture_enabled]" ' .
 			'name="no-unsafe-inline-tools[capture_enabled]" %s />
 			<label for="no-unsafe-inline-tools[capture_enabled]">%s</label>',
 			esc_html( $enabled ),
@@ -1929,7 +1930,7 @@ class No_Unsafe_Inline_Admin {
 		$enabled = $value ? 'checked' : '';
 
 		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[test_policy]"' .
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[test_policy]" ' .
 			'name="no-unsafe-inline-tools[test_policy]" %s />
 			<label for="no-unsafe-inline-tools[test_policy]">%s</label>',
 			esc_html( $enabled ),
@@ -1950,7 +1951,7 @@ class No_Unsafe_Inline_Admin {
 		$enabled = $value ? 'checked' : '';
 
 		printf(
-			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[enable_protection]"' .
+			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline-tools[enable_protection]" ' .
 			'name="no-unsafe-inline-tools[enable_protection]" %s />
 			<label for="no-unsafe-inline-tools[enable_protection]">%s</label>',
 			esc_html( $enabled ),

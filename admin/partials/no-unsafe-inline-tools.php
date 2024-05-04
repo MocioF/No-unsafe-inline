@@ -165,10 +165,18 @@
 		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
-	<div id="nunil-db-sum-tabs-5">
+	<div id="nunil-db-sum-tabs-5" class="nunil-db-sum-tabs-5">
 		<div id="nunil_tools_operation_report_container" class="nunil_tools_operation_report_container">
 			<p class="nunil_tools_operation_report_title"><?php printf( esc_html__( 'Operations performed in this section', 'no-unsafe-inline' ) ); ?></p>
 			<div id="nunil_tools_operation_report" class="nunil_tools_operation_report">
+			</div>
+			<div id="nunil_tools_operation_report_buttons" class="nunil_tools_operation_report_buttons">
+				<button id="nunil_tools_operation_report_button_clipboard" class="nunil-btn nunil_tools_operation_report_button_clipboard" title="<?php printf( esc_attr__( 'Copy report to clipboard', 'no-unsafe-inline' ) ); ?>" data-notification="<?php printf( esc_attr__( 'Copied to clipboard', 'no-unsafe-inline' ) ); ?>">
+					<span class="dashicons dashicons-clipboard"> </span>
+				</button>
+				<button id="nunil_tools_operation_report_button_clear" class="nunil-btn nunil_tools_operation_report_button_clear" title="<?php printf( esc_attr__( 'Clear report content', 'no-unsafe-inline' ) ); ?>" data-dialog-message="<?php printf( esc_attr__( 'Clear report content?', 'no-unsafe-inline' ) ); ?>" data-notification="<?php printf( esc_attr__( 'Content cleared', 'no-unsafe-inline' ) ); ?>">
+					<span class="dashicons dashicons-trash"> </span>
+				</button>
 			</div>
 		</div>
 	</div>

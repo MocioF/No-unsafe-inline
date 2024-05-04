@@ -1,7 +1,7 @@
 /*global
  alert, console, event, nunil_object, jQuery, wp
  */
-jQuery(document).ready(function ($) {
+ jQuery(document).ready(function($) {
   "use strict";
 
   var a; // Used for endpoints list.
@@ -10,12 +10,12 @@ jQuery(document).ready(function ($) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split("&");
     var sParameterName;
-    var  i;
+    var i;
 
-    for (i = 0; i < sURLVariables.length; i+=1) {
+    for (i = 0; i < sURLVariables.length; i += 1) {
       sParameterName = sURLVariables[i].split("=");
       if (sParameterName[0] === sParam) {
-        return ( sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]) );
+        return (sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]));
       }
     }
     return false;
@@ -24,19 +24,19 @@ jQuery(document).ready(function ($) {
   var mytab = getUrlParameter("tab");
   var tb = $("table.nunil-ext-sources tbody");
 
-  const {__} = wp.i18n;
+  const {
+    __
+  } = wp.i18n;
 
-  $.fn.extend(
-    {
-      clearText: function () {
-        return this.clone() // clone the element
-          .children() // select all the children
-          .remove() // remove all the children
-          .end() // again go back to selected element
-          .text();
-      }
+  $.fn.extend({
+    clearText: function() {
+      return this.clone() // clone the element
+        .children() // select all the children
+        .remove() // remove all the children
+        .end() // again go back to selected element
+        .text();
     }
-  );
+  });
 
   // Used to order strings in base rules
   function uniqueOrdered(string) {
@@ -99,7 +99,7 @@ jQuery(document).ready(function ($) {
     var now;
     var multiplier;
 
-    if ( performance !== undefined && performance.now) {
+    if (performance !== undefined && performance.now) {
       now = (performance.now() + performance.timing.navigationStart) / 1000;
       multiplier = 1e6; // 1,000,000 for microseconds
     } else {
@@ -119,125 +119,123 @@ jQuery(document).ready(function ($) {
   }
 
   function updateSummaryTablesWorker(once) {
-    $.ajax(
-      {
-        complete: function () {
-          // Schedule the next request when the current one"s complete
-          if ($("input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']").prop("checked")) {
-            if (once === undefined) {
-              setTimeout(updateSummaryTablesWorker, 25000);
-            }
-          } else {
-            clearTimeout(updateSummaryTablesWorker);
+    $.ajax({
+      complete: function() {
+        // Schedule the next request when the current one"s complete
+        if ($("input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']").prop("checked")) {
+          if (once === undefined) {
+            setTimeout(updateSummaryTablesWorker, 25000);
           }
-        },
-        data: {
-          action: "nunil_update_summary_tables"
-        },
-        dataType: "json",
-        success: function (res) {
-          var nunil_db_summary_data = "";
-          var nunil_external_table_summary_data = "";
-          var nunil_inline_table_summary_data = "";
-          var nunil_eventhandlers_table_summary_data = "";
-          $.each(
-            res,
-            function (index, label) {
-              if ("global" === index) {
-                $.each(
-                  label,
-                  function (index, value) {
-                    var wlText = "";
-                    nunil_db_summary_data += "<tr>";
-                    nunil_db_summary_data += "<td data-th=\"" + __("Type", "no-unsafe-inline") + "\">" + value.type + "</td>";
-                    if ("1" === value.whitelist) {
-                      wlText = __("WL", "no-unsafe-inline");
-                    } else {
-                      wlText = __("BL", "no-unsafe-inline");
-                    }
-                    nunil_db_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
-                    nunil_db_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
-                    nunil_db_summary_data += "<td data-th=\"" + __("Num. Clusters", "no-unsafe-inline") + "\">" + value.clusters + "</td>";
-                    nunil_db_summary_data += "</tr>";
+        } else {
+          clearTimeout(updateSummaryTablesWorker);
+        }
+      },
+      data: {
+        action: "nunil_update_summary_tables"
+      },
+      dataType: "json",
+      success: function(res) {
+        var nunil_db_summary_data = "";
+        var nunil_external_table_summary_data = "";
+        var nunil_inline_table_summary_data = "";
+        var nunil_eventhandlers_table_summary_data = "";
+        $.each(
+          res,
+          function(index, label) {
+            if ("global" === index) {
+              $.each(
+                label,
+                function(index, value) {
+                  var wlText = "";
+                  nunil_db_summary_data += "<tr>";
+                  nunil_db_summary_data += "<td data-th=\"" + __("Type", "no-unsafe-inline") + "\">" + value.type + "</td>";
+                  if ("1" === value.whitelist) {
+                    wlText = __("WL", "no-unsafe-inline");
+                  } else {
+                    wlText = __("BL", "no-unsafe-inline");
                   }
-                );
-              }
-              if ("inline" === index) {
-                $.each(
-                  label,
-                  function (index, value) {
-                    var wlText = "";
-                    nunil_inline_table_summary_data += "<tr>";
-                    nunil_inline_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
-                    nunil_inline_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
-                    nunil_inline_table_summary_data += "<td data-th=\"" + __("Cluster", "no-unsafe-inline") + "\">" + value.clustername + "</td>";
-                    if ("1" === value.whitelist) {
-                      wlText = __("WL", "no-unsafe-inline");
-                    } else {
-                      wlText = __("BL", "no-unsafe-inline");
-                    }
-                    nunil_inline_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
-                    nunil_inline_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
-                    nunil_inline_table_summary_data += "</tr>";
-                  }
-                );
-              }
-              if ("external" === index) {
-                $.each(
-                  label,
-                  function (index, value) {
-                    var wlText = "";
-                    nunil_external_table_summary_data += "<tr>";
-                    nunil_external_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
-                    nunil_external_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
-                    nunil_external_table_summary_data += "<td data-th=\"" + __("Nonceable", "no-unsafe-inline") + "\">" + value.nonceable + "</td>";
-                    switch (value.whitelist) {
-                      case "1":
-                        wlText = __("WL", "no-unsafe-inline");
-                        break;
-                      case "0":
-                        wlText = __("BL", "no-unsafe-inline");
-                        break;
-                      default:
-                        wlText = "--";
-                    }
-                    nunil_external_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
-                    nunil_external_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
-                    nunil_external_table_summary_data += "</tr>";
-                  }
-                );
-              }
-              if ("events" === index) {
-                $.each(
-                  label,
-                  function (index, value) {
-                    var wlText = "";
-                    nunil_eventhandlers_table_summary_data += "<tr>";
-                    nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
-                    nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Event Attribute", "no-unsafe-inline") + "\">" + value.event_attribute + "</td>";
-                    nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Cluster", "no-unsafe-inline") + "\">" + value.clustername + "</td>";
-                    if ("1" === value.whitelist) {
-                      wlText = __("WL", "no-unsafe-inline");
-                    } else {
-                      wlText = __("BL", "no-unsafe-inline");
-                    }
-                    nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
-                    nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
-                    nunil_eventhandlers_table_summary_data += "</tr>";
-                  }
-                );
-              }
+                  nunil_db_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
+                  nunil_db_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
+                  nunil_db_summary_data += "<td data-th=\"" + __("Num. Clusters", "no-unsafe-inline") + "\">" + value.clusters + "</td>";
+                  nunil_db_summary_data += "</tr>";
+                }
+              );
             }
-          );
-          $("#nunil_db_summary_body").html(nunil_db_summary_data);
-          $("#nunil_external_table_summary_body").html(nunil_external_table_summary_data);
-          $("#nunil_inline_table_summary_body").html(nunil_inline_table_summary_data);
-          $("#nunil_eventhandlers_table_summary_body").html(nunil_eventhandlers_table_summary_data);
-        },
-        type: "post",
-        url: nunil_object.ajax_url
-      }
-    );
+            if ("inline" === index) {
+              $.each(
+                label,
+                function(index, value) {
+                  var wlText = "";
+                  nunil_inline_table_summary_data += "<tr>";
+                  nunil_inline_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
+                  nunil_inline_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
+                  nunil_inline_table_summary_data += "<td data-th=\"" + __("Cluster", "no-unsafe-inline") + "\">" + value.clustername + "</td>";
+                  if ("1" === value.whitelist) {
+                    wlText = __("WL", "no-unsafe-inline");
+                  } else {
+                    wlText = __("BL", "no-unsafe-inline");
+                  }
+                  nunil_inline_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
+                  nunil_inline_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
+                  nunil_inline_table_summary_data += "</tr>";
+                }
+              );
+            }
+            if ("external" === index) {
+              $.each(
+                label,
+                function(index, value) {
+                  var wlText = "";
+                  nunil_external_table_summary_data += "<tr>";
+                  nunil_external_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
+                  nunil_external_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
+                  nunil_external_table_summary_data += "<td data-th=\"" + __("Nonceable", "no-unsafe-inline") + "\">" + value.nonceable + "</td>";
+                  switch (value.whitelist) {
+                    case "1":
+                      wlText = __("WL", "no-unsafe-inline");
+                      break;
+                    case "0":
+                      wlText = __("BL", "no-unsafe-inline");
+                      break;
+                    default:
+                      wlText = "--";
+                  }
+                  nunil_external_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
+                  nunil_external_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
+                  nunil_external_table_summary_data += "</tr>";
+                }
+              );
+            }
+            if ("events" === index) {
+              $.each(
+                label,
+                function(index, value) {
+                  var wlText = "";
+                  nunil_eventhandlers_table_summary_data += "<tr>";
+                  nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
+                  nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Event Attribute", "no-unsafe-inline") + "\">" + value.event_attribute + "</td>";
+                  nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Cluster", "no-unsafe-inline") + "\">" + value.clustername + "</td>";
+                  if ("1" === value.whitelist) {
+                    wlText = __("WL", "no-unsafe-inline");
+                  } else {
+                    wlText = __("BL", "no-unsafe-inline");
+                  }
+                  nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Whitelist", "no-unsafe-inline") + "\">" + wlText + "</td>";
+                  nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Num.", "no-unsafe-inline") + "\">" + value.num + "</td>";
+                  nunil_eventhandlers_table_summary_data += "</tr>";
+                }
+              );
+            }
+          }
+        );
+        $("#nunil_db_summary_body").html(nunil_db_summary_data);
+        $("#nunil_external_table_summary_body").html(nunil_external_table_summary_data);
+        $("#nunil_inline_table_summary_body").html(nunil_inline_table_summary_data);
+        $("#nunil_eventhandlers_table_summary_body").html(nunil_eventhandlers_table_summary_data);
+      },
+      type: "post",
+      url: nunil_object.ajax_url
+    });
   }
 
   function isValidReportUrl(_string) {
@@ -253,7 +251,7 @@ jQuery(document).ready(function ($) {
   // Open inline help from link
   $("#nunil-help-link").on(
     "click",
-    function () {
+    function() {
       $("#contextual-help-link").click();
     }
   );
@@ -261,13 +259,117 @@ jQuery(document).ready(function ($) {
   // Trigger checkboxes check on select-all click.
   $("#cb-select-all-1").on(
     "click",
-    function () {
+    function() {
       $(":checkbox[name*='bulk-select[]']")
         .prop("checked", this.checked)
         .change();
     }
   );
+  // Buttons on operation report.
+  $("#nunil-db-sum-tabs-5").on(
+    "mouseenter",
+    function() {
+      $("#nunil_tools_operation_report_buttons").stop(true).fadeIn(600);
+    }
+  );
 
+  $("#nunil-db-sum-tabs-5").on(
+    "mouseleave",
+    function() {
+      $("#nunil_tools_operation_report_buttons").stop(true).fadeOut(600);
+    }
+  );
+  $("#nunil_tools_operation_report_button_clipboard").tooltip({
+    position: {
+      at: "right center",
+      my: "left+15 center"
+    }
+  });
+  $("#nunil_tools_operation_report_button_clear").tooltip({
+    position: {
+      at: "right center",
+      my: "left+15 center"
+    }
+  });
+
+  $("#nunil_tools_operation_report_button_clipboard").on(
+    "click",
+    function(event) {
+      event.preventDefault();
+      CopyToClipboard($("#nunil_tools_operation_report").text(), true, $(this).data("notification"));
+    }
+  );
+
+  function CopyToClipboard(value, showNotification, notificationText) {
+    var temparea = $("<textarea>");
+    $("body").append(temparea);
+    temparea
+      .val(value)
+      .trigger("select");
+    document
+      .execCommand("copy");
+    temparea
+      .remove();
+
+    if (typeof showNotification === "undefined") {
+      showNotification = true;
+    }
+    if (typeof notificationText === "undefined") {
+      notificationText = "Copied to clipboard";
+    }
+    if (showNotification) {
+      new NunilOperationNotify(notificationText);
+    }
+  }
+
+  function NunilOperationNotify(notificationText) {
+    var notificationTag = $("div.copy-notification");
+    if (notificationTag.length == 0) {
+      notificationTag = $("<div/>", {
+        "class": "ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content copy-notification",
+        text: notificationText
+      });
+      $("#nunil_tools_operation_report_container").append(notificationTag);
+
+      notificationTag.fadeIn("slow", function() {
+        setTimeout(function() {
+          notificationTag.fadeOut("slow", function() {
+            notificationTag.remove();
+          });
+        }, 1000);
+      });
+    }
+  }
+  $("#nunil_tools_operation_report_button_clear").on(
+    "click",
+    function(event, notificationText = $(this).data("notification"), mytext = $(this).data("dialog-message")) {
+      event.preventDefault();
+      var dialog = $("div.nunil-tools-dialog");
+      dialog = $("<div/>", {
+        "class": "nunil-tools-dialog",
+        text: mytext
+      });
+      $("#nunil_tools_operation_report_container").append(dialog);
+      $(".nunil-tools-dialog").dialog({
+        buttons: {
+          Ok: function() {
+            $(this).dialog("close");
+            dialog.remove();
+            $("#nunil_tools_operation_report").text('');
+            NunilOperationNotify(notificationText);
+          },
+          Cancel: function() {
+            $(this).dialog("close");
+            dialog.remove();
+          }
+        },
+        dialogClass: "no-titlebar",
+        height: "auto",
+        modal: true,
+        resizable: false
+      });
+    }
+  );
   // START base rules main tab.
   mypage = getUrlParameter("page");
   mytab = getUrlParameter("tab");
@@ -278,7 +380,7 @@ jQuery(document).ready(function ($) {
 
     // Populate -src input field on checkbox check.
     $("input[type='checkbox'][name*='bulk-select[]']").on("change",
-      function () {
+      function() {
         var $chk = $(this);
         var directive = $chk
           .parent()
@@ -295,31 +397,31 @@ jQuery(document).ready(function ($) {
               $("#" + textboxId)
               .val()
               .trim()
-              )
-            );
+            )
+          );
         } else {
           $("#" + textboxId).val(
             $("#" + textboxId)
             .val()
             .replace(source, "")
-            );
+          );
           $("#" + textboxId).val(
             uniqueOrdered(
               $("#" + textboxId)
               .val()
               .trim()
-              )
-            );
+            )
+          );
         }
       }
     );
 
     tb.find("tr").each(
-      function (index, element) {
+      function(index, element) {
         $(element)
           .find("td")
           .each(
-            function (index, element) {
+            function(index, element) {
               var colVal = $(element).clearText();
               row.push(colVal);
             }
@@ -346,22 +448,22 @@ jQuery(document).ready(function ($) {
     ];
     var srcDirectiveId;
     managedDirectives.forEach(
-      function (directive) {
+      function(directive) {
         srcDirectiveId =
           "no-unsafe-inline-base-rule\\[" + directive + "_base_rule\\]";
         const SetSources = $("#" + srcDirectiveId)
           .val()
           .split(" ");
         SetSources.forEach(
-          function (source) {
+          function(source) {
             matrix.forEach(
-              function (element, index) {
+              function(element, index) {
                 if (element[0] === directive && element[1] === source) {
                   $(
                     "input[type='checkbox'][name*='bulk-select[]'][value='" +
                     (index + 1) +
                     "']"
-                    ).prop("checked", true);
+                  ).prop("checked", true);
                 }
               }
             );
@@ -385,10 +487,10 @@ jQuery(document).ready(function ($) {
       collapsible: true,
       heightStyle: "content"
     };
-    $("div[class^='code-accordion-']").each(function () {
+    $("div[class^='code-accordion-']").each(function() {
       $(this).accordion(acc_options);
     });
-    $("div[class^='pages-accordion-']").each(function () {
+    $("div[class^='pages-accordion-']").each(function() {
       $(this).accordion(acc_options);
     });
   }
@@ -411,26 +513,26 @@ jQuery(document).ready(function ($) {
   // Handle SRI options in settings tab.
   if ("no-unsafe-inline" === mypage && "settings" === mytab) {
     $("input[type='checkbox'][name='no-unsafe-inline[sri_script]']").on("change",
-      function () {
+      function() {
         var chk = $(this);
         if (chk.prop("checked")) {
           if ($("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked") === false &&
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha384]']").prop("checked") === false &&
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha512]']").prop("checked") === false
-            ) {
+          ) {
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked", true);
           }
         }
       }
     );
     $("input[type='checkbox'][name='no-unsafe-inline[sri_link]']").on("change",
-      function () {
+      function() {
         var chk = $(this);
         if (chk.prop("checked")) {
           if ($("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked") === false &&
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha384]']").prop("checked") === false &&
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha512]']").prop("checked") === false
-            ) {
+          ) {
             $("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked", true);
           }
         }
@@ -450,7 +552,7 @@ jQuery(document).ready(function ($) {
       $(".nunil-endpoint-string").addClass("txt-inactive");
     }
     $("input[type='checkbox'][name='no-unsafe-inline[use_reports]']").on("change",
-      function () {
+      function() {
         var chk = $(this);
         if (chk.prop("checked")) {
           $("input[type='text'][name='no-unsafe-inline[group_name]']").prop("disabled", false);
@@ -475,16 +577,16 @@ jQuery(document).ready(function ($) {
     );
     // needed for event delegation.
     // https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
-    $("#nunil-endpoints-list").on("click", ".nunil-btn-del-endpoint", function () {
+    $("#nunil-endpoints-list").on("click", ".nunil-btn-del-endpoint", function() {
       $(this).closest("li").remove();
     });
     $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").on("focus",
-      function () {
+      function() {
         $(this).removeClass("nunil-error-input");
       }
     );
     $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").on("click",
-      function () {
+      function() {
         var new_endpoint;
         if (isValidReportUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val())) {
           new_endpoint = $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val().trim();
@@ -520,115 +622,118 @@ jQuery(document).ready(function ($) {
   });
   // AJAX for Clustering button.
   $("#nunil_trigger_clustering").on("click",
-    function (e) {
+    function(e) {
       var clustering_nonce = $("#clustering_nonce").val();
       e.preventDefault();
       $("#nunil_trigger_clustering").prop("disabled", true);
-      $.ajax(
-        {
-          beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
-            $("#nunil-spinner-blocks").removeClass("hidden");
-          },
-          complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-            $("#nunil-spinner-blocks").addClass("hidden");
-          },
-          data: {
-            action: "nunil_trigger_clustering",
-            nonce: clustering_nonce
-          },
-          dataType: "json",
-          success: function (res) {
-            if (res.type === "success") {
-              $("div#nunil_tools_operation_report").append(res.report);
-              $("#nunil_trigger_clustering").prop("disabled", false);
-              updateSummaryTablesWorker("once");
-            } else {
-              $("div#nunil_tools_operation_report").append(
-                microtime(true) + __("Error in clustering scripts.", "no-unsafe-inline") + "<br>"
-                );
-              $("#nunil_trigger_clustering").prop("disabled", false);
-            }
-          },
-          type: "post",
-          url: nunil_object.ajax_url
-        }
-      );
+      $.ajax({
+        beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+          $("#nunil-spinner-blocks").removeClass("hidden");
+        },
+        complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+          $("#nunil-spinner-blocks").addClass("hidden");
+        },
+        data: {
+          action: "nunil_trigger_clustering",
+          nonce: clustering_nonce
+        },
+        dataType: "json",
+        success: function(res) {
+          if (res.type === "success") {
+            $("div#nunil_tools_operation_report").append(res.report);
+            $("#nunil_trigger_clustering").prop("disabled", false);
+            updateSummaryTablesWorker("once");
+          } else {
+            $("div#nunil_tools_operation_report").append(
+              microtime(true) + __("Error in clustering scripts.", "no-unsafe-inline") + "<br>"
+            );
+            $("#nunil_trigger_clustering").prop("disabled", false);
+          }
+          $("#nunil_tools_operation_report").animate({
+            scrollTop: $("#nunil_tools_operation_report").prop("scrollHeight")
+          }, 1000);
+        },
+        type: "post",
+        url: nunil_object.ajax_url
+      });
     }
   );
 
   // AJAX for Test Classifier Button.
   $("#nunil_test_classifier").on("click",
-    function (e) {
+    function(e) {
       var clustering_nonce = $("#test_clussifier_nonce").val();
       e.preventDefault();
       $("#nunil_test_classifier").prop("disabled", true);
-      $.ajax(
-        {
-          beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
-            $("#nunil-spinner-blocks").removeClass("hidden");
-          },
-          complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-            $("#nunil-spinner-blocks").addClass("hidden");
-          },
-          data: {
-            action: "nunil_test_classifier",
-            nonce: clustering_nonce
-          },
-          dataType: "json",
-          success: function (res) {
-            if (res.type === "success") {
-              $("div#nunil_tools_operation_report").append(res.report);
-              $("#nunil_test_classifier").prop("disabled", false);
-            } else {
-              $("div#nunil_tools_operation_report").append(
-                microtime(true) + __("Error in test classifier scripts.", "no-unsafe-inline") + "<br>"
-                );
-              $("#nunil_test_classifier").prop("disabled", false);
-            }
-          },
-          type: "post",
-          url: nunil_object.ajax_url
-        }
-      );
+      $.ajax({
+        beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+          $("#nunil-spinner-blocks").removeClass("hidden");
+        },
+        complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+          $("#nunil-spinner-blocks").addClass("hidden");
+        },
+        data: {
+          action: "nunil_test_classifier",
+          nonce: clustering_nonce
+        },
+        dataType: "json",
+        success: function(res) {
+          if (res.type === "success") {
+            $("div#nunil_tools_operation_report").append(res.report);
+            $("#nunil_test_classifier").prop("disabled", false);
+          } else {
+            $("div#nunil_tools_operation_report").append(
+              microtime(true) + __("Error in test classifier scripts.", "no-unsafe-inline") + "<br>"
+            );
+            $("#nunil_test_classifier").prop("disabled", false);
+          }
+          $("#nunil_tools_operation_report").animate({
+            scrollTop: $("#nunil_tools_operation_report").prop("scrollHeight")
+          }, 1000);
+        },
+        type: "post",
+        url: nunil_object.ajax_url
+      });
     }
   );
 
   // AJAX for Clean Database Button.
   $("#nunil_clean_database").on("click",
-    function (e) {
+    function(e) {
       var db_clean_nonce = $("#clean_db_nonce").val();
       if (window.confirm(__("Are you sure you want to clean db data?\n(This will not clear your base rules)", "no-unsafe-inline"))) {
         e.preventDefault();
         $("#nunil_clean_database").prop("disabled", true);
-        $.ajax(
-          {
-            beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
-              $("#nunil-spinner-blocks").removeClass("hidden");
-            },
-            complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-              $("#nunil-spinner-blocks").addClass("hidden");
-            },
-            data: {
-              action: "nunil_clean_database",
-              nonce: db_clean_nonce
-            },
-            dataType: "json",
-            success: function (res) {
-              if (res.type === "success") {
-                $("div#nunil_tools_operation_report").append(res.report);
-                $("#nunil_clean_database").prop("disabled", false);
-                updateSummaryTablesWorker("once");
-              } else {
-                $("div#nunil_tools_operation_report").append(
-                  microtime(true) + __("Error in cleaning tables.", "no-unsafe-inline") + "<br>"
-                  );
-                $("#nunil_clean_database").prop("disabled", false);
-              }
-            },
-            type: "post",
-            url: nunil_object.ajax_url
-          }
-        );
+        $.ajax({
+          beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+            $("#nunil-spinner-blocks").removeClass("hidden");
+          },
+          complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+            $("#nunil-spinner-blocks").addClass("hidden");
+          },
+          data: {
+            action: "nunil_clean_database",
+            nonce: db_clean_nonce
+          },
+          dataType: "json",
+          success: function(res) {
+            if (res.type === "success") {
+              $("div#nunil_tools_operation_report").append(res.report);
+              $("#nunil_clean_database").prop("disabled", false);
+              updateSummaryTablesWorker("once");
+            } else {
+              $("div#nunil_tools_operation_report").append(
+                microtime(true) + __("Error in cleaning tables.", "no-unsafe-inline") + "<br>"
+              );
+              $("#nunil_clean_database").prop("disabled", false);
+            }
+            $("#nunil_tools_operation_report").animate({
+              scrollTop: $("#nunil_tools_operation_report").prop("scrollHeight")
+            }, 1000);
+          },
+          type: "post",
+          url: nunil_object.ajax_url
+        });
       } else {
         return false;
       }
@@ -637,40 +742,41 @@ jQuery(document).ready(function ($) {
 
   // AJAX for Prune Database Button.
   $("#nunil_prune_database").on("click",
-    function (e) {
+    function(e) {
       var db_prune_nonce = $("#prune_db_nonce").val();
       if (window.confirm(__("Are you sure you want to prune db data?\n(This will reduce cluster size and remove orphans entries from occurences table)", "no-unsafe-inline"))) {
         e.preventDefault();
         $("#nunil_prune_database").prop("disabled", true);
-        $.ajax(
-          {
-            beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
-              $("#nunil-spinner-blocks").removeClass("hidden");
-            },
-            complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
-              $("#nunil-spinner-blocks").addClass("hidden");
-            },
-            data: {
-              action: "nunil_prune_database",
-              nonce: db_prune_nonce
-            },
-            dataType: "json",
-            success: function (res) {
-              if (res.type === "success") {
-                $("div#nunil_tools_operation_report").append(res.report);
-                $("#nunil_prune_database").prop("disabled", false);
-                updateSummaryTablesWorker("once");
-              } else {
-                $("div#nunil_tools_operation_report").append(
-                  microtime(true) + __("Error in pruning tables.", "no-unsafe-inline") + "<br>"
-                  );
-                $("#nunil_prune_database").prop("disabled", false);
-              }
-            },
-            type: "post",
-            url: nunil_object.ajax_url
-          }
-        );
+        $.ajax({
+          beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+            $("#nunil-spinner-blocks").removeClass("hidden");
+          },
+          complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+            $("#nunil-spinner-blocks").addClass("hidden");
+          },
+          data: {
+            action: "nunil_prune_database",
+            nonce: db_prune_nonce
+          },
+          dataType: "json",
+          success: function(res) {
+            if (res.type === "success") {
+              $("div#nunil_tools_operation_report").append(res.report);
+              $("#nunil_prune_database").prop("disabled", false);
+              updateSummaryTablesWorker("once");
+            } else {
+              $("div#nunil_tools_operation_report").append(
+                microtime(true) + __("Error in pruning tables.", "no-unsafe-inline") + "<br>"
+              );
+              $("#nunil_prune_database").prop("disabled", false);
+            }
+            $("#nunil_tools_operation_report").animate({
+              scrollTop: $("#nunil_tools_operation_report").prop("scrollHeight")
+            }, 1000);
+          },
+          type: "post",
+          url: nunil_object.ajax_url
+        });
       } else {
         return false;
       }
@@ -686,7 +792,7 @@ jQuery(document).ready(function ($) {
   }
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']").on("change",
-    function () {
+    function() {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {
@@ -696,7 +802,7 @@ jQuery(document).ready(function ($) {
   );
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[test_policy]']").on("change",
-    function () {
+    function() {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {
@@ -706,7 +812,7 @@ jQuery(document).ready(function ($) {
   );
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[enable_protection]']").on("change",
-    function () {
+    function() {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {

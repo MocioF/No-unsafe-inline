@@ -37,7 +37,7 @@ class Nunil_Classification {
 	 */
 	public function test_cases() {
 		$time_start_global = microtime( true );
-		$result_string     = '<p><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no-unsafe-inline' ) . ' --- </b><p>';
+		$result_string     = '<p><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no-unsafe-inline' ) . ' --- </b><p>' . PHP_EOL;
 		$model_types       = array(
 			'script',
 			'style',
@@ -49,7 +49,7 @@ class Nunil_Classification {
 				esc_html__( 'Reports on %s classifier', 'no-unsafe-inline' ),
 				'<b>' . $model . '</b>'
 			)
-					. ' --</p>';
+					. ' --</p>' . PHP_EOL;
 
 			$time_start = microtime( true );
 
@@ -124,20 +124,20 @@ class Nunil_Classification {
 
 				$time_execution = ( $time_end - $time_start );
 
-				$result_string .= '<p><b>' . esc_html__( 'Execution time (sec): ', 'no-unsafe-inline' ) . $time_execution . '</b><br>';
-				$result_string .= esc_html__( 'Sec. to got trained: ', 'no-unsafe-inline' ) . $time_got_trained . '<br>';
-				$result_string .= esc_html__( 'Sec. to build dataset: ', 'no-unsafe-inline' ) . $time_dataset_build . '<br>';
-				$result_string .= esc_html__( 'Sec. to make predictions: ', 'no-unsafe-inline' ) . $time_predictions . '<br>';
-				$result_string .= esc_html__( 'Sec. to generate report: ', 'no-unsafe-inline' ) . $time_generate_report . '<br>';
-				$result_string .= '-- --</p>';
+				$result_string .= '<p><b>' . esc_html__( 'Execution time (sec): ', 'no-unsafe-inline' ) . $time_execution . '</b><br>' . PHP_EOL;
+				$result_string .= esc_html__( 'Sec. to got trained: ', 'no-unsafe-inline' ) . $time_got_trained . '<br>' . PHP_EOL;
+				$result_string .= esc_html__( 'Sec. to build dataset: ', 'no-unsafe-inline' ) . $time_dataset_build . '<br>' . PHP_EOL;
+				$result_string .= esc_html__( 'Sec. to make predictions: ', 'no-unsafe-inline' ) . $time_predictions . '<br>' . PHP_EOL;
+				$result_string .= esc_html__( 'Sec. to generate report: ', 'no-unsafe-inline' ) . $time_generate_report . '<br>' . PHP_EOL;
+				$result_string .= '-- --</p>' . PHP_EOL;
 			} catch ( \Rubix\ML\Exceptions\RuntimeException $rex ) {
-				$result_string .= '<p><b>' . esc_html__( 'RubixML Runtime exception', 'no-unsafe-inline' ) . ':</b> ' . $rex->getMessage() . ' </p>';
-				$result_string .= '<p>-- --</p>';
+				$result_string .= '<p><b>' . esc_html__( 'RubixML Runtime exception', 'no-unsafe-inline' ) . ':</b> ' . $rex->getMessage() . ' </p>' . PHP_EOL;
+				$result_string .= '<p>-- --</p>' . PHP_EOL;
 			}
 		}
 		$time_end_global       = microtime( true );
 		$execution_time_global = ( $time_end_global - $time_start_global );
-		$result_string        .= '<p><b> --- ' . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time_global . ' --- </b></p><br>';
+		$result_string        .= '<p><b> --- ' . esc_html__( 'Execution time Global (sec): ', 'no-unsafe-inline' ) . $execution_time_global . ' --- </b></p><br>' . PHP_EOL;
 
 		return $result_string;
 	}

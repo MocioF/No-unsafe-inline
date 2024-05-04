@@ -24,43 +24,43 @@
 }
 /* moving styles from inline */
  .nunil-spinner-box-1 {
-	left:38px;
-	top:38px;
+	left:0px;
+	top:0px;
 	animation-delay:0s;
 }
  .nunil-spinner-box-2 {
-	left:80px;
-	top:38px;
+	left:42px;
+	top:0px;
 	animation-delay:0.125s;
 }
  .nunil-spinner-box-3 {
-	left:122px;
-	top:38px;
+	left:84px;
+	top:0px;
 	animation-delay:0.25s;
 }
  .nunil-spinner-box-4 {
-	left:38px;
-	top:80px;
+	left:0px;
+	top:42px;
 	animation-delay:0.875s!important;;
 }
  .nunil-spinner-box-5 {
-	left:122px;
-	top:80px;
+	left:84px;
+	top:42px;
 	animation-delay:0.375s;
 }
  .nunil-spinner-box-6 {
-	left:38px;
-	top:122px;
+	left:0px;
+	top:84px;
 	animation-delay:0.75s;
 }
  .nunil-spinner-box-7 {
-	left:80px;
-	top:122px;
+	left:42px;
+	top:84px;
 	animation-delay:0.625s;
 }
  .nunil-spinner-box-8 {
-	left:122px;
-	top:122px;
+	left:84px;
+	top:84px;
 	animation-delay:0.5s;
 }
 
@@ -75,8 +75,8 @@
      animation-iteration-count: infinite;
 }
  .nunil-spinner-tools {
-     width: 120px;
-     height: 120px;
+     width: 124px;
+     height: 124px;
      position: relative;
      transform: translateZ(0) scale(1);
      backface-visibility: hidden;

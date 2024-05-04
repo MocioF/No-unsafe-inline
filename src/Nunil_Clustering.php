@@ -182,9 +182,9 @@ class Nunil_Clustering {
 
 		$start_time = microtime( true );
 
-		$result_string = '<br><b> --- ' . esc_html__( 'CLUSTERING DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>';
+		$result_string = '<br><b> --- ' . esc_html__( 'CLUSTERING DATABASE', 'no-unsafe-inline' ) . ' --- </b><br>' . PHP_EOL;
 
-		$result_string = $result_string . esc_html__( 'Start time: ', 'no-unsafe-inline' ) . $start_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Start time: ', 'no-unsafe-inline' ) . $start_time . '<br>' . PHP_EOL;
 
 		$scripts_tables = array(
 			array(
@@ -199,7 +199,7 @@ class Nunil_Clustering {
 
 		foreach ( $scripts_tables as $tbl ) {
 			// translators:: %s is the table internal name.
-			$result_string = $result_string . '<br>' . sprintf( esc_html__( 'Clustering %s', 'no-unsafe-inline' ), '<b>' . $tbl['table'] . '</b>' ) . '<br>';
+			$result_string = $result_string . '<br>' . sprintf( esc_html__( 'Clustering %s', 'no-unsafe-inline' ), '<b>' . $tbl['table'] . '</b>' ) . '<br>' . PHP_EOL;
 
 			$table = $tbl['table'];
 
@@ -219,7 +219,7 @@ class Nunil_Clustering {
 				esc_html__( 'DBSCAN params: radius: %1$s - minDensity: %2$s', 'no-unsafe-inline' ),
 				$radius,
 				$min_samples
-			);
+			) . PHP_EOL;
 
 			$seg_fields = DB::get_segmentation_values( $tbl['segmentation_field'], $tbl['table'] );
 
@@ -229,18 +229,18 @@ class Nunil_Clustering {
 				foreach ( $tagnames as $tagname ) {
 					$obj_collection = DB::get_nilsimsa_hashes( $table, $tbl['segmentation_field'], $segment[ $tbl['segmentation_field'] ], $tagname['tagname'], null );
 					if ( $min_samples <= count( $obj_collection ) ) {
-						$result_string   = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>';
-						$result_string   = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>';
+						$result_string   = $result_string . '<br><b>' . $segment[ $tbl['segmentation_field'] ] . '</b> - <b><i>' . $tagname['tagname'] . '</i></b><br>' . PHP_EOL;
+						$result_string   = $result_string . esc_html__( 'Processed hashes: ', 'no-unsafe-inline' ) . count( $obj_collection ) . '<br>' . PHP_EOL;
 						$dbscan_results  = self::make_db_scan( $obj_collection, $tbl['table'] );
 						$clustered_built = self::cluster_digests( $table, $obj_collection, $dbscan_results );
 
-						$result_string = $result_string . esc_html__( 'Clusters built: ', 'no-unsafe-inline' ) . strval( $clustered_built ) . '<br>';
+						$result_string = $result_string . esc_html__( 'Clusters built: ', 'no-unsafe-inline' ) . strval( $clustered_built ) . '<br>' . PHP_EOL;
 
-						$result_string = $result_string . ' ------- $$$ ------- <br>';
+						$result_string = $result_string . ' ------- $$$ ------- <br>' . PHP_EOL;
 					}
 				}
 			}
-			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>';
+			$result_string = $result_string . 'End clustering <b>' . $tbl['table'] . '</b><br>' . PHP_EOL;
 			Log::info(
 				sprintf(
 					// translators: %s is table name.
@@ -251,11 +251,11 @@ class Nunil_Clustering {
 		}
 		$end_time = microtime( true );
 
-		$result_string = $result_string . esc_html__( 'End time: ', 'no-unsafe-inline' ) . $end_time . '<br>';
+		$result_string = $result_string . esc_html__( 'End time: ', 'no-unsafe-inline' ) . $end_time . '<br>' . PHP_EOL;
 
 		$execution_time = ( $end_time - $start_time );
 
-		$result_string = $result_string . esc_html__( 'Execution time of script (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>';
+		$result_string = $result_string . esc_html__( 'Execution time of script (sec): ', 'no-unsafe-inline' ) . $execution_time . '<br>' . PHP_EOL;
 
 		$result['type']   = 'success';
 		$result['report'] = $result_string;
