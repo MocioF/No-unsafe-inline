@@ -1015,7 +1015,7 @@ class Nunil_Lib_Db {
 				$result = $wpdb->get_results(
 					'SELECT \'External Scripts\' AS \'type\', COUNT(`ID`) AS \'num\', '
 					. '`whitelist`, \'--\' AS \'clusters\' FROM ' . self::external_scripts_table() . ' '
-					. 'WHERE `directive` = \'script-src\' OR `directive` = \'style-src\' '
+					. 'WHERE `directive` = \'script-src\' OR `directive` = \'style-src\' OR `directive` = \'worker-src\' '
 					. 'GROUP BY `whitelist` '
 					. 'UNION ALL '
 					. 'SELECT \'Inline Scripts\' AS \'Type\', COUNT(`ID`) AS \'Num\', `whitelist`, '
@@ -1041,6 +1041,7 @@ class Nunil_Lib_Db {
 					. 'CASE '
 					. 'WHEN `directive` =\'script-src\' THEN `whitelist` '
 					. 'WHEN `directive` =\'style-src\' THEN `whitelist` '
+					. 'WHEN `directive` =\'worker-src\' THEN `whitelist` '
 					. 'ELSE \'--\' '
 					. 'END AS \'whitelist\', '
 					. 'COUNT(`ID`) AS \'num\' FROM ' . self::with_prefix( $table ) . ' '
@@ -1080,7 +1081,7 @@ class Nunil_Lib_Db {
 	 */
 	public static function get_inline_rows() {
 		global $wpdb;
-		$sql = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, tagname FROM ' . self::inline_scripts_table();
+		$sql = 'SELECT sha256, sha384, sha512, nilsimsa, clustername, whitelist, tagname, directive FROM ' . self::inline_scripts_table();
 		return $wpdb->get_results( $sql, OBJECT );
 	}
 
@@ -1335,7 +1336,7 @@ class Nunil_Lib_Db {
 
 		$sql = 'SELECT `ID`, `directive`, `tagname`, `src_attrib`, `sha256`, `sha384`, `sha512`, `whitelist` FROM '
 			. self::external_scripts_table()
-			. ' WHERE ( directive="script-src" or directive="style-src" ) ' . $do_search;
+			. ' WHERE ( directive="script-src" or directive="style-src" or directive="worker-src" ) ' . $do_search;
 		return $sql;
 	}
 
