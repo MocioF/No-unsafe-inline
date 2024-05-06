@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Content Security Policy (CSP) is a computer security standard introduced to prev
 Cross-site scripting (XSS) is a type of security vulnerability that can be found in some web applications.
 XSS attacks enable attackers to inject client-side scripts into web pages viewed by other users.
 A cross-site scripting vulnerability may be used by attackers to bypass access controls like the same-origin policy.
-Looking at National Vulnerability Database ran by US NIST, *more than <del>1,600</del> <ins>900 (March 2024)</ins> vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
+Looking at National Vulnerability Database run by US NIST, *more than 900 (March 2024) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
 
 *Keeping your site up-to-date* with the latest versions of plugins and themes is the **first** line of defense to ensure your site's security.
 
@@ -157,6 +157,13 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.0 =
+* Added persistence and online (partial) training to Knn classifiers
+* Added checks on startup for PHP build options
+* Fixed error thrown when malfromed URL are parsed while capture is enabled
+* Modified classificators tests
+* Improvements at the UI
+
 = 1.1.5 =
 * Update external scripts table on plugin/theme/core update
 * Added a check for PHP extension requirements on startup
