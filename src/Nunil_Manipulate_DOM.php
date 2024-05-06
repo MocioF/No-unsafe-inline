@@ -430,19 +430,23 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								$nunil_fibers[] = new \Fiber(
 									function () use ( $tagname, $lsh_hex_digest, $wl_cluster ) {
 										if ( 'script' === $tagname ) {
-											$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
+											$nunil_trainer_script = new Nunil_Knn_Trainer( 'script' );
+											$nunil_trainer_script->get_trained();
+											$nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
 										}
 										if ( 'style' === $tagname ) {
-											$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
+											$nunil_trainer_style = new Nunil_Knn_Trainer( 'style' );
+											$nunil_trainer_style->get_trained();
+											$nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
 										}
 									}
 								);
 							} else {
 								$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
-								if ( 'script' === $tagname ) {
+								if ( 'script' === $tagname && $this->nunil_trainer_script instanceof Nunil_Knn_Trainer ) {
 									$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
 								}
-								if ( 'style' === $tagname ) {
+								if ( 'style' === $tagname && $this->nunil_trainer_style instanceof Nunil_Knn_Trainer ) {
 									$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
 								}
 							}
@@ -981,12 +985,12 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$samples[] = $lsh_hex_digest;
 		$dataset   = new Unlabeled( $samples );
 
-		if ( 'style' === $tagname && isset( $this->internal_css_classifier ) ) {
-			$predicted_labels = $this->internal_css_classifier->predict( $dataset );
+		if ( is_null( $event ) && 'script' === $tagname && isset( $this->inline_scripts_classifier ) ) {
+			$predicted_labels = $this->inline_scripts_classifier->predict( $dataset );
 			$predicted_label  = $predicted_labels[0];
 			$list             = $this->inline_rows;
-		} elseif ( isset( $this->inline_scripts_classifier ) ) {
-			$predicted_labels = $this->inline_scripts_classifier->predict( $dataset );
+		} elseif ( is_null( $event ) && 'script' !== $tagname && isset( $this->internal_css_classifier ) ) {
+			$predicted_labels = $this->internal_css_classifier->predict( $dataset );
 			$predicted_label  = $predicted_labels[0];
 			$list             = $this->inline_rows;
 		} elseif ( null !== $event && isset( $this->event_handlers_classifier ) ) {
@@ -1012,7 +1016,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						}
 					}
 					return false;
-				} elseif ( isset( $my_evh ) ) {
+				} else {
 					foreach ( $list as $obj ) {
 						if (
 						$tagname === $obj->tagname &&

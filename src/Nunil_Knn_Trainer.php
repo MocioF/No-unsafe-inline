@@ -250,7 +250,7 @@ class Nunil_Knn_Trainer {
 			$this->filtered_db_results = array();
 			if ( is_array( $this->raw_db_results ) ) {
 				foreach ( $this->raw_db_results as $row ) {
-					if ( $this->model_type === $row->tagname ) {
+					if ( str_replace( '-src', '', $row->directive ) === $this->model_type ) {
 						$this->filtered_db_results[] = $row;
 					}
 				}
