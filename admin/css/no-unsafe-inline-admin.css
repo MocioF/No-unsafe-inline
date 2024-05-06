@@ -322,7 +322,7 @@ div.nunil_temp_div {
  */
 .rwd-table {
 	margin: 1em 0;
-	min-width: 300px;
+	min-width: 250px;
 	border-collapse: collapse;
 }
 
@@ -409,6 +409,12 @@ div.nunil_temp_div {
 	}
 }
 
+@media (max-width: 480px) {
+	.rwd-table th,
+	.rwd-table td {
+		font-size: 0.8em !important;
+	}
+}
 .rwd-table th,
 .rwd-table td:before {
 	color: #dd5;
