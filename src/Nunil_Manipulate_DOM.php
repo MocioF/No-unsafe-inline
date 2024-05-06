@@ -388,7 +388,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * Allow an inline script or style
 	 *
 	 * @since 1.0.0
-	 * @access private;
+	 * @access private
 	 * @param \DOMNodeList<\DOMNode> $inline_list The DOMNodeList.
 	 * @param string                 $tagname One of script or style.
 	 * @retunr void
