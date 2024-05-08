@@ -111,7 +111,19 @@ class No_Unsafe_Inline_Public {
 	}
 
 	/**
-	 * Check if string is HTML (or XML)
+	 * Check if string is XML
+	 *
+	 * @since 1.2.1
+	 * @access private
+	 * @param string $mystring The string to check.
+	 * @return bool
+	 */
+	private function is_xml( $mystring ) {
+		return ( 0 === strpos( $mystring, '<?xml' ) );
+	}
+
+	/**
+	 * Check if string is HTML
 	 *
 	 * @since 1.0.2
 	 * @access private
@@ -120,6 +132,9 @@ class No_Unsafe_Inline_Public {
 	 */
 	private function is_html( $mystring ) {
 		if ( $this->is_json( $mystring ) ) {
+			return false;
+		}
+		if ( $this->is_xml( $mystring ) ) {
 			return false;
 		}
 		return wp_strip_all_tags( $mystring ) !== $mystring ? true : false;
