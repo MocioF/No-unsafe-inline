@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -157,6 +157,9 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.1 =
+Bug fixes
+
 = 1.2.0 =
 * Added persistence and online (partial) training to Knn classifiers
 * Added checks on startup for PHP build options
