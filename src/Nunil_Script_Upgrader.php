@@ -256,12 +256,16 @@ class Nunil_Script_Upgrader {
 				if ( false !== $affected_rows ) {
 					$sri = new \NUNIL\Nunil_SRI();
 					if ( Utils::is_resource_hash_needed( $script->directive, $script->tagname ) ) {
-						$rehashed = $sri->put_hashes_in_db( $script->ID, $overwrite = true );
-						if ( false !== $rehashed ) {
-							Log::info( $msg_upd . PHP_EOL . $print_src );
-						} else {
-							DB::ext_delete( $script->ID, true );
-							Log::info( $msg_del . PHP_EOL . $print_src );
+						try {
+							$rehashed = $sri->put_hashes_in_db( $script->ID, $overwrite = true );
+							if ( false !== $rehashed ) {
+								Log::info( $msg_upd . PHP_EOL . $print_src );
+							} else {
+								DB::ext_delete( $script->ID, true );
+								Log::info( $msg_del . PHP_EOL . $print_src );
+							}
+						} catch ( Nunil_Exception $ex ) {
+							$ex->logexception();
 						}
 					} else {
 						$response = $sri->fetch_resource( $script->src_attrib );

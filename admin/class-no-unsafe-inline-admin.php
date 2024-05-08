@@ -377,8 +377,12 @@ class No_Unsafe_Inline_Admin {
 		if ( $ids ) {
 			foreach ( $ids as $id ) {
 				DB::update_nunil_version( $id->ID, $new_ver, $old_ver );
-				$sri = new \NUNIL\Nunil_SRI();
-				$sri->put_hashes_in_db( $id->ID, $overwrite = true );
+				try {
+					$sri = new \NUNIL\Nunil_SRI();
+					$sri->put_hashes_in_db( $id->ID, $overwrite = true );
+				} catch ( Nunil_Exception $ex ) {
+					$ex->logexception();
+				}
 			}
 			DB::delete_legacy_nunil_assets( $new_ver );
 		}

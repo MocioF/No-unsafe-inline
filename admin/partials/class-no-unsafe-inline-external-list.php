@@ -12,6 +12,8 @@
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_SRI;
+use NUNIL\Nunil_Exception;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -168,8 +170,12 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
-					$sri       = new \NUNIL\Nunil_SRI();
-					$sri->put_hashes_in_db( $script_id, $overwrite = false );
+					try {
+						$sri = new Nunil_SRI();
+						$sri->put_hashes_in_db( $script_id, $overwrite = false );
+					} catch ( Nunil_Exception $ex ) {
+						$ex->logexception();
+					}
 				}
 				break;
 
@@ -177,8 +183,12 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
 					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
-						$sri = new \NUNIL\Nunil_SRI();
-						$sri->put_hashes_in_db( $selected, $overwrite = false );
+						try {
+							$sri = new Nunil_SRI();
+							$sri->put_hashes_in_db( $selected, $overwrite = false );
+						} catch ( Nunil_Exception $ex ) {
+							$ex->logexception();
+						}
 					}
 				}
 				break;
@@ -189,8 +199,12 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				}
 				if ( isset( $_GET['script_id'] ) ) {
 					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
-					$sri       = new \NUNIL\Nunil_SRI();
-					$sri->put_hashes_in_db( $script_id, $overwrite = true );
+					try {
+						$sri = new Nunil_SRI();
+						$sri->put_hashes_in_db( $script_id, $overwrite = true );
+					} catch ( Nunil_Exception $ex ) {
+						$ex->logexception();
+					}
 				}
 				break;
 
@@ -198,8 +212,12 @@ class No_Unsafe_Inline_External_List extends WP_List_Table {
 				if ( isset( $_POST['ext-select'] ) ) {
 					$selected = map_deep( wp_unslash( $_POST['ext-select'] ), 'sanitize_text_field' );
 					if ( is_array( $selected ) && Utils::is_array_of_integer_strings( $selected ) ) {
-						$sri = new \NUNIL\Nunil_SRI();
-						$sri->put_hashes_in_db( $selected, $overwrite = true );
+						try {
+							$sri = new Nunil_SRI();
+							$sri->put_hashes_in_db( $selected, $overwrite = true );
+						} catch ( Nunil_Exception $ex ) {
+							$ex->logexception();
+						}
 					}
 				}
 				break;
