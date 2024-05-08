@@ -430,14 +430,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								$nunil_fibers[] = new \Fiber(
 									function () use ( $tagname, $lsh_hex_digest, $wl_cluster ) {
 										if ( 'script' === $tagname ) {
-											$nunil_trainer_script = new Nunil_Knn_Trainer( 'script' );
-											$nunil_trainer_script->get_trained();
-											$nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
+											$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
 										}
 										if ( 'style' === $tagname ) {
-											$nunil_trainer_style = new Nunil_Knn_Trainer( 'style' );
-											$nunil_trainer_style->get_trained();
-											$nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
+											$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
 										}
 									}
 								);

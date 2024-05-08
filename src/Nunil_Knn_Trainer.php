@@ -364,16 +364,15 @@ class Nunil_Knn_Trainer {
 	 * @return void
 	 */
 	public function update( $sample, $label ) {
-		if ( $this->classifier->trained() ) {
-			$samples         = array();
-			$labels          = array();
-			$samples[]       = array( $sample );
-			$labels[]        = $label;
-			$partial_dataset = new Labeled( $samples, $labels );
-			$this->classifier->partial( $partial_dataset );
-			if ( $this->can_use_persistent ) {
-				$this->save_trained();
-			}
+		$knn             = $this->get_trained();
+		$samples         = array();
+		$labels          = array();
+		$samples[]       = array( $sample );
+		$labels[]        = $label;
+		$partial_dataset = new Labeled( $samples, $labels );
+		$knn->partial( $partial_dataset );
+		if ( $this->can_use_persistent ) {
+			$this->save_trained();
 		}
 	}
 
