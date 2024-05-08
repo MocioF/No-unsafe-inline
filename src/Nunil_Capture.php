@@ -81,6 +81,15 @@ class Nunil_Capture {
 	private $hash_in_use;
 
 	/**
+	 * The output displayed if a debug info is shown when WP_DISPLAY_DEBUG is true
+	 *
+	 * @since 1.2.1
+	 * @access public
+	 * @var string $debug_preamble Output displayed before <!DOCTYPE
+	 */
+	public $debug_preamble = '';
+
+	/**
 	 * The class constructor.
 	 *
 	 * Set the htmlsource attribute.
@@ -117,10 +126,28 @@ class Nunil_Capture {
 	 */
 	public function load_html( $htmlsource ): void {
 		if ( '' !== $htmlsource ) {
+			$htmlsource = $this->remove_debug_display( $htmlsource );
 			$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
 		}
 	}
-
+	
+	/**
+	 * Removes the output displayed before <!DOCTYPE
+	 *
+	 * @since 1.2.1
+	 * @param string $mystring The string parsed (html output of the WP Process).
+	 * @return string
+	 */
+	private function remove_debug_display( $mystring ): string {
+		$mypos = strpos( $mystring, '<!DOCTYPE' );
+		if ( false !== $mypos && 0 !== $mypos ) {
+			$preamble             = substr( $mystring, 0, $mypos );
+			$this->debug_preamble = $preamble;
+			$mystring             = substr( $mystring, $mypos );
+		}
+		return $mystring;
+	}
+	
 	/**
 	 * Perform capture for each tag in array
 	 *
