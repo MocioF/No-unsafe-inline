@@ -56,7 +56,7 @@ In addition, in order to faciliatate the adoption of nonce-based CSP, they propo
 	And, of course, a nonce must be unique for each HTTP response.
 4. Unsafe hashes / Inline styles
 
-	Sometimes, HTML elements as images or button uses HTML Event Attributes (onclick, onsubmit...) to let events trigger actions in a browser.
+	Sometimes, HTML elements as images or buttons use HTML Event Attributes (onclick, onsubmit...) to let events to trigger actions in a browser.
 	You cannot use hashes or nonces for script included in event attributes and, adopting a strict CSP, requires refactoring those patterns into safer alternatives or to use 'unsafe-hashes'.
 	You got a similar problem when inline styles are used in HTML tags:
 
