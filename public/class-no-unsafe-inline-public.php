@@ -137,7 +137,7 @@ class No_Unsafe_Inline_Public {
 		if ( $this->is_xml( $mystring ) ) {
 			return false;
 		}
-		return wp_strip_all_tags( $mystring ) !== $mystring ? true : false;
+		return wp_strip_all_tags( $mystring ) !== trim( $mystring ) ? true : false;
 	}
 
 	/**
