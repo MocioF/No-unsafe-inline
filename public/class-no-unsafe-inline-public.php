@@ -53,6 +53,15 @@ class No_Unsafe_Inline_Public {
 	private $csp_local_whitelist;
 
 	/**
+	 * Capture instance used when capture is enabled
+	 *
+	 * @since 1.2.2
+	 * @access private
+	 * @var \NUNIL\Nunil_Capture The Nunil_Capture instance used.
+	 */
+	private $capture;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -62,6 +71,20 @@ class No_Unsafe_Inline_Public {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->get_capture();
+	}
+
+	/**
+	 * Initialize the capture instance if capture is enabled
+	 *
+	 * @since 1.2.2
+	 * @return void
+	 */
+	private function get_capture() {
+		$tools = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( array_key_exists( 'capture_enabled', $tools ) && 1 === $tools['capture_enabled'] ) {
+			$this->capture = new NUNIL\Nunil_Capture();
+		}
 	}
 
 	/**
@@ -149,13 +172,13 @@ class No_Unsafe_Inline_Public {
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
 		if ( 1 === $tools['capture_enabled'] ) {
+			$this->capture->load_html( $htmlsource );
+
 			if ( class_exists( 'Fiber' ) ) {
 				global $nunil_fibers;
+				$capture        = $this->capture;
 				$nunil_fibers[] = new Fiber(
-					function () use ( $htmlsource, $options ) {
-						$capture = new NUNIL\Nunil_Capture();
-						$capture->load_html( $htmlsource );
-
+					function () use ( $capture, $options ) {
 						$capture_tags = new \NUNIL\Nunil_Captured_Tags();
 						$tags         = $capture_tags->get_captured_tags();
 
@@ -168,17 +191,14 @@ class No_Unsafe_Inline_Public {
 					}
 				);
 			} else {
-				$capture = new NUNIL\Nunil_Capture();
-				$capture->load_html( $htmlsource );
-
 				$capture_tags = new \NUNIL\Nunil_Captured_Tags();
 				$tags         = $capture_tags->get_captured_tags();
 
-				$capture->capture_tags( $tags );
+				$this->capture->capture_tags( $tags );
 
 				if ( 0 === $options['use_unsafe-hashes'] ) {
-					$capture->capture_handlers();
-					$capture->capture_inline_style();
+					$this->capture->capture_handlers();
+					$this->capture->capture_inline_style();
 				}
 			}
 		}
