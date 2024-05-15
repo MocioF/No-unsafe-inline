@@ -265,7 +265,58 @@ class No_Unsafe_Inline {
 		// Filters feedback messages displayed during the core update process. It is called 6 time during upgrade process.
 		$this->loader->add_filter( 'update_feedback', $plugin_public, 'set_info_from_core_upgrader', 10, 0 );
 	}
-
+	
+	/**
+	 * Register the JavaScript for the public-facing and admin area of the site.
+	 *
+	 * @since    1.2.2
+	 * @return void
+	 */
+	public function enqueue_common_scripts() {
+		$suffix  = wp_scripts_get_suffix();
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
+		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && 1 === $tools['capture_enabled'] ) {
+			wp_enqueue_script(
+				$this->plugin_name . '_spv_handler',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-spv-handler$suffix.js",
+				array(),
+				$this->version,
+				false
+			);
+		}
+		
+		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
+		( 1 === $options['fix_setattribute_style'] )
+			) {
+			wp_enqueue_script(
+				$this->plugin_name . '_jquery-htmlprefilter-override',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-prefilter-override$suffix.js",
+				array( 'jquery' ),
+				$this->version,
+				false
+			);
+			wp_enqueue_script(
+				$this->plugin_name . '_fix_setattribute_style',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-fix-style$suffix.js",
+				array(),
+				$this->version,
+				false
+			);
+		}
+		
+		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
+		( 1 !== $options['use_unsafe-hashes'] ) ) {
+			wp_enqueue_script(
+				$this->plugin_name . '_mutation-observer',
+				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-mutation-observer$suffix.js",
+				array( 'jquery' ),
+				$this->version,
+				false
+			);
+		}
+	}
+	
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *

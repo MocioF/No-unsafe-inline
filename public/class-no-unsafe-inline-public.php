@@ -71,30 +71,19 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function enqueue_styles(): void {
-		// $suffix = wp_scripts_get_suffix();
-		// ~ wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . "css/no-unsafe-inline-public$suffix.css", array(), $this->version, 'all' );
 	}
 
 	/**
-	 * Register the JavaScript for the public-facing side of the site.
+	 * Register the JavaScript for the public-facing side of the site
 	 *
 	 * @since    1.0.0
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-		$suffix  = wp_scripts_get_suffix();
-		$options = (array) get_option( 'no-unsafe-inline' );
-		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
-		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-		( 1 === $options['fix_setattribute_style'] )
-			) {
-			wp_enqueue_script( $this->plugin_name . '_jquery-htmlprefilter-override', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-prefilter-override$suffix.js", array( 'jquery' ), $this->version, false );
-			wp_enqueue_script( $this->plugin_name . '_fix_setattribute_style', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-fix-style$suffix.js", array(), $this->version, false );
-		}
-		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-		( 1 !== $options['use_unsafe-hashes'] ) ) {
-			wp_enqueue_script( $this->plugin_name . '_mutation-observer', plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-mutation-observer$suffix.js", array( 'jquery' ), $this->version, false );
-		}
+		$plugin_name = $this->plugin_name; // keep as placeholder.
+		$version     = $this->version; // keep as placeholder.
+		$plugin      = new No_Unsafe_Inline();
+		$plugin->enqueue_common_scripts();
 	}
 
 	/**
