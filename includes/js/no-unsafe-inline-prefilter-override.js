@@ -5,4 +5,5 @@
  */
 jQuery.htmlPrefilter = function( html ) {
 	return ( html + '' ).replace( / style=/gi, ' data-style=' );
+  // return ( html + '' ).replace( / (?<!<script.*)(?!<\/script>) style==/gim, ' data-style=' );
 };
