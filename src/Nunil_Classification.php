@@ -36,6 +36,9 @@ class Nunil_Classification {
 	 * @return string
 	 */
 	public function test_cases() {
+		$gls = new Nunil_Global_Settings();
+		set_time_limit( $gls->test_classifier_time_limit );
+
 		$time_start_global = microtime( true );
 		$result_string     = '<p><b> --- ' . esc_html__( 'TEST CLASSIFIER: ', 'no-unsafe-inline' ) . ' --- </b><p>' . PHP_EOL;
 		$model_types       = array(

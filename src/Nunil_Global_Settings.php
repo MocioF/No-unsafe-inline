@@ -123,6 +123,15 @@ class Nunil_Global_Settings {
 	public $clustering_time_limit;
 
 	/**
+	 * Time limit to perform the classifier's test.
+	 *
+	 * @since 1.2.2
+	 * @access public
+	 * @var int Second set for set_time_limit() on testing classifier
+	 */
+	public $test_classifier_time_limit;
+
+	/**
 	 * Class constructor
 	 *
 	 * @since    1.0.0
@@ -131,25 +140,26 @@ class Nunil_Global_Settings {
 		$def_opts = array(
 
 			/* Rubix ML settings */
-			'dbscan_epsilon_inl'       => 60,
-			'dbscan_minsamples_inl'    => 3,
-			'balltree_maxleafsize_inl' => 100,
-			'dbscan_epsilon_evh'       => 60,
-			'dbscan_minsamples_evh'    => 3,
-			'balltree_maxleafsize_evh' => 100,
-			'knn_k_inl'                => 30,
-			'knn_k_evh'                => 3,
-			'knn_train_batch_size'     => 150,
+			'dbscan_epsilon_inl'         => 60,
+			'dbscan_minsamples_inl'      => 3,
+			'balltree_maxleafsize_inl'   => 100,
+			'dbscan_epsilon_evh'         => 60,
+			'dbscan_minsamples_evh'      => 3,
+			'balltree_maxleafsize_evh'   => 100,
+			'knn_k_inl'                  => 30,
+			'knn_k_evh'                  => 3,
+			'knn_train_batch_size'       => 150,
 
 			/* wp-cache expire time */
-			'expire_secs'              => array(
+			'expire_secs'                => array(
 				'inline_rows'   => 60, // 1 minute.
 				'events_rows'   => 60,
 				'external_rows' => 60,
 
 			),
 			/* misc */
-			'clustering_time_limit'    => 600,
+			'clustering_time_limit'      => 600,
+			'test_classifier_time_limit' => 600,
 		);
 
 		$opts = get_option( 'no-unsafe-inline-global-settings', $def_opts );
