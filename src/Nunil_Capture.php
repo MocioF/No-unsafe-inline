@@ -353,11 +353,11 @@ class Nunil_Capture {
 	 * @since 1.0.0
 	 * @access public
 	 * @param \DOMElement $node The node we are processing.
-	 * @return array{tagname: string, script: non-empty-string }|false An array of associative arrays: [tag], [id], [attribute], [script], [sha-256].
+	 * @return array{tagname: string, script: string }|false An array of associative arrays: [tag], [id], [attribute], [script], [sha-256].
 	 */
 	public function get_inline_style_in_node( $node ) {
 		$attribute = 'style';
-		if ( $node->getAttribute( $attribute ) ) {
+		if ( $node->hasAttribute( $attribute ) ) {
 			$row = array(
 				'tagname' => $node->nodeName,
 				'script'  => $node->getAttribute( $attribute ),
