@@ -127,7 +127,7 @@ class Nunil_Capture {
 	public function load_html( $htmlsource ): void {
 		if ( '' !== $htmlsource ) {
 			$htmlsource = $this->remove_debug_display( $htmlsource );
-			$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
+			$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | HTML5DOMDocument::OPTIMIZE_HEAD | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
 		}
 	}
 	
