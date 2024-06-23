@@ -52,9 +52,12 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 			1 === $options['child-src_enabled'] ||
 			1 === $options['worker-src_enabled'] ||
 			1 === $options['connect-src_enabled'] ||
+			1 === $options['frame-src_enabled'] ||
 			1 === $options['manifest-src_enabled'] ||
 			1 === $options['form-action_enabled'] ||
-			1 === $options['img-src_enabled']
+			1 === $options['img-src_enabled'] ||
+			1 === $options['script-src_enabled'] ||
+			1 === $options['style-src_enabled']
 			) {
 				$csp_violation = $this->get_csp_report_body( $report );
 
@@ -77,9 +80,9 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 
 					// Based on CSP2 this should be empty for inline but
 					// read https://csplite.com/csp66/#blocked-uri for other values.
-					$blocked_url = $csp_violation['blocked-uri'] ? $csp_violation['blocked-uri'] : $csp_violation['blockedURL'];
+					$blocked_url = array_key_exists( 'blocked-uri', $csp_violation ) ? $csp_violation['blocked-uri'] : ( array_key_exists( 'blockedURL', $csp_violation ) ? $csp_violation['blockedURL'] : '' );
 
-					$document_uri = $csp_violation['document-uri'] ? $csp_violation['document-uri'] : $csp_violation['documentURL'];
+					$document_uri = array_key_exists( 'document-uri', $csp_violation ) ? $csp_violation['document-uri'] : ( array_key_exists( 'documentURL', $csp_violation ) ? $csp_violation['documentURL'] : '' );
 
 					// to be checked if needed.
 					// https://csplite.com/csp66/#sample-violation-report .
@@ -92,18 +95,28 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 							'child-src',
 							'worker-src',
 							'connect-src',
+							'frame-src',
 							'manifest-src',
 							'form-action',
 							'img-src',
 						),
 						true
 					) ) {
-						$capture->insert_external_tag_in_db(
-							$violated_directive,
-							'v-capt',
-							strval( $blocked_url ),
-							strval( $document_uri )
-						);
+						if ( 'blob' === $document_uri ) {
+							$capture->insert_external_tag_in_db(
+								$violated_directive,
+								'v-capt', // tag.
+								'blob:',
+								strval( $document_uri )
+							);
+						} else {
+							$capture->insert_external_tag_in_db(
+								$violated_directive,
+								'v-capt',
+								strval( $blocked_url ),
+								strval( $document_uri )
+							);
+						}
 					}
 
 					if ( in_array(
@@ -111,6 +124,9 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 						array(
 							'script-src',
 							'style-src',
+							'script-src-elem',
+							'style-src-attr',
+							'style-src-elem',
 						),
 						true
 					) ) {
@@ -146,6 +162,52 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 									$partial
 								)
 							);
+
+							$sample = '';
+							if ( isset( $csp_violation['sample'] ) ) {
+								$sample = $csp_violation['sample'];
+							}
+							if ( isset( $csp_violation['script-sample'] ) ) {
+								$sample = $csp_violation['script-sample'];
+							}
+							$sample_len = strlen( $sample );
+
+							switch ( $violated_directive ) {
+								case 'style-src-attr':
+									$vdm = 'style-src';
+									break;
+								case 'style-src-elem':
+									$vdm = 'style-src';
+									break;
+								case 'script-src-elem':
+									$vdm = 'script-src';
+									break;
+								case 'script-src-attrib':
+									$vdm = 'script-src';
+									break;
+								default:
+									$vdm = $violated_directive;
+							}
+							// Solo se il sample è completo.
+							if ( $sample_len > 0 && $sample_len < 40 ) {
+								if ( 'script-src-attr' !== $violated_directive ) {
+									$capture->insert_inline_content_in_db(
+										$vdm,
+										'v-capt',
+										$sample,
+										false,
+										strval( $document_uri )
+									);
+								} // else this is an event handler
+							}
+							if ( 'blob' === $document_uri ) {
+								$capture->insert_external_tag_in_db(
+									$vdm,
+									'v-capt', // tag.
+									'blob:',
+									strval( $document_uri )
+								);
+							}
 						}
 						if ( 'eval' === $blocked_url || 'empty' === $blocked_url ) {
 							$capture->insert_external_tag_in_db(

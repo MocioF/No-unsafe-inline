@@ -954,7 +954,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		}
 		if ( ! is_null( $list ) ) {
 			foreach ( $list as $index => $obj ) {
-				if ( $fhash === $obj->$in_use && $tagname === $obj->tagname && ( null === $event || $event === $obj->event_attribute ) ) {
+				if ( $fhash === $obj->$in_use && ( 'v-capt' === $obj->tagname || $tagname === $obj->tagname ) && ( null === $event || $event === $obj->event_attribute ) ) {
 					if ( '1' === $obj->whitelist ) {
 						return $index;
 					} else {
@@ -1004,7 +1004,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				if ( null === $event ) {
 					foreach ( $list as $obj ) {
 						if (
-						$tagname === $obj->tagname &&
+						( 'v-capt' === $obj->tagname || $tagname === $obj->tagname ) &&
 						$predicted_label === $obj->clustername &&
 						'1' === $obj->whitelist
 						) {
@@ -1015,7 +1015,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				} else {
 					foreach ( $list as $obj ) {
 						if (
-						$tagname === $obj->tagname &&
+						( 'v-capt' === $obj->tagname || $tagname === $obj->tagname ) &&
 						$my_evh === $obj->event_attribute &&
 						$predicted_label === $obj->clustername &&
 						'1' === $obj->whitelist

@@ -718,7 +718,7 @@ class Nunil_Capture {
 	 * Insert inline references in database
 	 *
 	 * @since  1.0.0
-	 * @access private
+	 * @access protected
 	 * @param  string $directive The -src CSP directive.
 	 * @param  string $tagname   The HTML tag name.
 	 * @param  string $content   The content of the html tag.
@@ -728,7 +728,7 @@ class Nunil_Capture {
 	 * @param  string $page_url  The URL to be logged in db.
 	 * @return void
 	 */
-	private function insert_inline_content_in_db( $directive, $tagname, $content, $sticky = false, $page_url = null ): void {
+	protected function insert_inline_content_in_db( $directive, $tagname, $content, $sticky = false, $page_url = null ): void {
 		if ( 'script' === $tagname || 'style' === $tagname ) {
 			$utf8 = true;
 		} else {
@@ -779,7 +779,7 @@ class Nunil_Capture {
 	 * Insert external references in database
 	 *
 	 * @since  1.0.0
-	 * @access private
+	 * @access protected
 	 * @param  string $directive  A string containing the CSP -src directive.
 	 * @param  string $tagname    A string containing the HTML tag name.
 	 * @param  string $src_attrib The content of src attr.
@@ -790,18 +790,20 @@ class Nunil_Capture {
 		$returned_id = false;
 
 		if ( '' !== $src_attrib ) {
-			try {
-				$src_attrib = $this->clean_random_params( $src_attrib );
-			} catch ( Nunil_Exception $e ) {
-				$e->logexception();
-				return $returned_id;
-			}
+			if ( '\'unsafe-eval\'' !== $src_attrib ) {
+				try {
+					$src_attrib = $this->clean_random_params( $src_attrib );
+				} catch ( Nunil_Exception $e ) {
+					$e->logexception();
+					return $returned_id;
+				}
 
-			try {
-				$src_attrib = $this->conv_to_absolute_url( $src_attrib );
-			} catch ( Nunil_Exception $e ) {
-				$e->logexception();
-				return $returned_id;
+				try {
+					$src_attrib = $this->conv_to_absolute_url( $src_attrib );
+				} catch ( Nunil_Exception $e ) {
+					$e->logexception();
+					return $returned_id;
+				}
 			}
 
 			$external_script_id = Nunil_Lib_Db::get_ext_id( $directive, $tagname, $src_attrib );
