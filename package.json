@@ -20,6 +20,9 @@
     "content-security-policy"
   ],
   "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "diff": "^5.2.0",
+    "eslint": "^9.5.0",
     "grunt": "^1.6.1",
     "grunt-contrib-cssmin": "^5.0.0",
     "grunt-contrib-jshint": "^3.2.0",
