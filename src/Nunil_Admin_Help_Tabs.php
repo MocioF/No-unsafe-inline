@@ -798,7 +798,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
-			. esc_html__( 'By enabling this option, scripts will be injected into your pages to get around some uses of the SetAttribute() function in the scripts in your pages.', 'no-unsafe-inline' )
+			. esc_html__( 'By enabling this option, scripts will be injected into your pages to get around some uses of the methods: Element.setAttribute(), Element.insertAdjacentHTML(), Element.innerHTML setter, Node.appendChild(), Node.insertBefore() in the scripts of your pages.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'

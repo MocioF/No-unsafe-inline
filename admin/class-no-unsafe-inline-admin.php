@@ -1573,9 +1573,10 @@ class No_Unsafe_Inline_Admin {
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[fix_setattribute_style]"' .
 			'name="no-unsafe-inline[fix_setattribute_style]" %s />
-			<label for="no-unsafe-inline[fix_setattribute_style]">%s</label>',
+			<label for="no-unsafe-inline[fix_setattribute_style]">%s<br>%s</label>',
 			esc_html( $enabled ),
-			esc_html__( 'Global replacing Element.setAttribute() with Element.style.property = val and override jQuery htmlPrefilter() for CSP-safe applying of inline styles.', 'no-unsafe-inline' )
+			esc_html__( 'Globally replace Element.setAttribute() with Element.style.property = val, Element.insertAdjacentHTML(), Element.innerHTML setter, Node.appendChild(), Node.insertBefore() and override jQuery htmlPrefilter() for CSP-safe applying of inline styles.', 'no-unsafe-inline' ),
+			esc_html__( 'This cannot avoid CSP errors triggered by react-dom.js using innerHTML because it\'s overrided by react itself.', 'no-unsafe-inline' )
 		);
 	}
 
