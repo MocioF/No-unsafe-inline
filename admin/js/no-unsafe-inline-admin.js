@@ -1,5 +1,5 @@
 /*global
- alert, console, event, nunil_object, jQuery, wp
+ nunil_object, jQuery, wp
  */
  jQuery(document).ready(function($) {
   "use strict";
