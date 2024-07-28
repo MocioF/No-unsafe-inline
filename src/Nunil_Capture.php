@@ -371,7 +371,7 @@ class Nunil_Capture {
 	 * Get nodes with event attributes
 	 *
 	 * @since  1.0.0
-	 * @access publics
+	 * @access public
 	 * @return \DOMNodeList<\DOMNode>|false A DOMNodeList
 	 */
 	public function get_nodes_w_events() {

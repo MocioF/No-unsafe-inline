@@ -1338,7 +1338,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * Injects the created inline <script> and whitelists it
 	 *
 	 * @since 1.0.0
-	 * @access private;
+	 * @access private
 	 * @return void
 	 */
 	private function inject_inline_script(): void {
@@ -1380,7 +1380,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * Injects the created internal CSS and whitelists it
 	 *
 	 * @since 1.0.0
-	 * @access private;
+	 * @access private
 	 * @return void
 	 */
 	private function inject_inline_style(): void {
