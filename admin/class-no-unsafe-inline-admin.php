@@ -83,9 +83,6 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function enqueue_styles(): void {
-		$plugin = new No_Unsafe_Inline();
-		$plugin->enqueue_common_scripts();
-		
 		$suffix = wp_scripts_get_suffix();
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) && 'settings_page_no-unsafe-inline' === $screen->id ) {
@@ -119,6 +116,8 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
+		$plugin = new No_Unsafe_Inline();
+		$plugin->enqueue_common_scripts();
 		$suffix = wp_scripts_get_suffix();
 
 		$screen = get_current_screen();

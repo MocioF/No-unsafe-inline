@@ -12,6 +12,7 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+use NUNIL\Nunil_Lib_Utils as Utils;
 /**
  * The core plugin class.
  *
@@ -265,7 +266,7 @@ class No_Unsafe_Inline {
 		// Filters feedback messages displayed during the core update process. It is called 6 time during upgrade process.
 		$this->loader->add_filter( 'update_feedback', $plugin_public, 'set_info_from_core_upgrader', 10, 0 );
 	}
-	
+
 	/**
 	 * Register the JavaScript for the public-facing and admin area of the site.
 	 *
@@ -273,6 +274,7 @@ class No_Unsafe_Inline {
 	 * @return void
 	 */
 	public function enqueue_common_scripts() {
+		global $wp_scripts;
 		$suffix  = wp_scripts_get_suffix();
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
@@ -285,7 +287,7 @@ class No_Unsafe_Inline {
 				false
 			);
 		}
-		
+
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 		( 1 === $options['fix_setattribute_style'] )
 			) {
@@ -304,7 +306,7 @@ class No_Unsafe_Inline {
 				false
 			);
 		}
-		
+
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
 		( 1 !== $options['use_unsafe-hashes'] ) ) {
 			wp_enqueue_script(
@@ -315,8 +317,10 @@ class No_Unsafe_Inline {
 				false
 			);
 		}
+		// Moving the script before every other queued script is included.
+		Utils::move_array_element( $wp_scripts->queue, $this->plugin_name . '_fix_setattribute_style', 0 );
 	}
-	
+
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *

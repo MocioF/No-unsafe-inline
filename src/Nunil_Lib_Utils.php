@@ -201,4 +201,20 @@ class Nunil_Lib_Utils {
 		}
 		return true;
 	}
+
+	/**
+	 * Move a value to a position in array
+	 *
+	 * @param array<int, mixed> $simplearray The array to be reordered.
+	 * @param mixed             $value The value to be searched.
+	 * @param integer           $newpos The new array key.
+	 * @return void
+	 */
+	public static function move_array_element( &$simplearray, $value, $newpos ) {
+		$oldpos = array_search( $value, $simplearray, true );
+		if ( false === $oldpos ) {
+			return;
+		}
+		array_splice( $simplearray, max( $newpos, 0 ), 0, array_splice( $simplearray, max( $oldpos, 0 ), 1 ) );
+	}
 }
