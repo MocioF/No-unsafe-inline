@@ -101,13 +101,12 @@ svnsync() {
   # we don't sync vendor if the lock file is the same
   shasum "$SVN_PATH/trunk/composer.lock"
   shasum "$OUTPUT_PATH/composer.lock"
-  if [[ $(shasum "$SVN_PATH/trunk/composer.lock" | head -c 40) == $(shasum "$OUTPUT_PATH/composer.lock" | head -c 40) ]]; then
-    rsync -q -av $OUTPUT_PATH/* $SVN_PATH/trunk --exclude vendor
-    echo "## no differences in /vendor, similar lock files ##"
-  else
-    rsync -q -av $OUTPUT_PATH/* $SVN_PATH/trunk
-  fi
-
+  #if [[ $(shasum "$SVN_PATH/trunk/composer.lock" | head -c 40) == $(shasum "$OUTPUT_PATH/composer.lock" | head -c 40) ]]; then
+  #  rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk --exclude vendor
+  #  echo "## no differences in /vendor, similar lock files ##"
+  #else
+    rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk 
+  #fi
   (cd $SVN_PATH && svn add --force . && svn diff && svn stat)
 }
 
@@ -138,9 +137,9 @@ svnpush() {
   fi
 
   if [ ! -z "$SVN_TAG" ]; then
-    cd $SVN_PATH && svn cp trunk tags/$SVN_TAG && svn ci -m "Version $SVN_TAG" --username $SVN_USERNAME --password $SVN_PASSWORD
+    cd $SVN_PATH && svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' ) && svn cp trunk tags/$SVN_TAG && svn ci -m "Version $SVN_TAG" --username $SVN_USERNAME --password $SVN_PASSWORD
   else
-    cd $SVN_PATH && svn ci -m "Sync trunk" --username $SVN_USERNAME --password $SVN_PASSWORD
+    cd $SVN_PATH && svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' ) && svn ci -m "Sync trunk" --username $SVN_USERNAME --password $SVN_PASSWORD
   fi
 }
 
