@@ -21,7 +21,7 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.5.0",
-    "diff": "^5.2.0",
+    "diff": "^7",
     "eslint": "^9.5.0",
     "grunt": "^1.6.1",
     "grunt-contrib-cssmin": "^5.0.0",
@@ -31,6 +31,6 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-wp-i18n": "^1.0.3",
     "grunt-wp-readme-to-markdown": "^2.1.0",
-    "npm-check-updates": "^16.7.10"
+    "npm-check-updates": "^17"
   }
 }
