@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         # See: https://make.wordpress.org/core/handbook/references/php-compatibility-and-wordpress-versions/
-        wordpress-version: ['5.9', '6.0', '6.1', '6.2', '6.3', '6.4']
-        php-versions: ['7.4', '8.0', '8.1', '8.2']
+        wordpress-version: ['5.9', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6']
+        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
         exclude:
           - php-versions: '8.0'
             wordpress-version: '5.9'
@@ -21,18 +21,28 @@ jobs:
             wordpress-version: '5.9'
           - php-versions: '8.2'
             wordpress-version: '5.9'
+          - php-versions: '8.3'
+            wordpress-version: '5.9'
           - php-versions: '8.0'
             wordpress-version: '6.0'
           - php-versions: '8.1'
             wordpress-version: '6.0'
           - php-versions: '8.2'
             wordpress-version: '6.0'
+          - php-versions: '8.3'
+            wordpress-version: '6.0'
           - php-versions: '8.0'
             wordpress-version: '6.1'
           - php-versions: '8.1'
             wordpress-version: '6.1'
           - php-versions: '8.2'
             wordpress-version: '6.1'
+          - php-versions: '8.3'
+            wordpress-version: '6.1'
+          - php-versions: '8.3'
+            wordpress-version: '6.2'
+          - php-versions: '8.3'
+            wordpress-version: '6.3'
 
     name: PHP:${{ matrix.php-versions }} / WP:${{ matrix.wordpress-version }}
     services:
@@ -79,7 +89,7 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Only for WP >= 5.9 Install Composer dependencies
-      if: ${{ ( matrix.wordpress-version == '5.9' || matrix.wordpress-version == '6.0' || matrix.wordpress-version == '6.1' || matrix.wordpress-version == '6.2' || matrix.wordpress-version == '6.3' || matrix.wordpress-version == '6.4' ) }}
+      # if: ${{ ( matrix.wordpress-version == '5.9' || matrix.wordpress-version == '6.0' || matrix.wordpress-version == '6.1' || matrix.wordpress-version == '6.2' || matrix.wordpress-version == '6.3' || matrix.wordpress-version == '6.4' ) }}
       run: (composer remove --dev phpunit/phpunit || true ) && composer update --dev yoast/phpunit-polyfills --with-dependencies && composer install --no-progress --prefer-dist --optimize-autoloader --ignore-platform-reqs
       
     - name: When using PHP 8 and WP <= 5.8
