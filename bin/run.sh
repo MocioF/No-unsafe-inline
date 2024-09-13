@@ -3,10 +3,10 @@
 if [ $# -lt 1 ]; then
   echo "Run utilities"
   echo "----------------------"
-	echo "  usage: $0 <command> [options]"
-  echo "    <command> can be any of: up, down, console, setup, wordpress, deps, phpunit, test, format, bundle, svnsync"
+  echo "  usage: $0 <command> [options]"
+  echo "    <command> can be any of: up, down, console, setup, wordpress, deps, phpunit, test, format, bundle, svnsync, svnpush"
   echo " .  [options]: --verbose"
-	exit 1
+  exit 1
 fi
 
 COMMAND=$1
@@ -99,14 +99,15 @@ svnsync() {
   cp -r assets/* "$SVN_PATH/assets/"
 
   # we don't sync vendor if the lock file is the same
-  shasum "$SVN_PATH/trunk/composer.lock"
-  shasum "$OUTPUT_PATH/composer.lock"
+  #shasum "$SVN_PATH/trunk/composer.lock"
+  #shasum "$OUTPUT_PATH/composer.lock"
   #if [[ $(shasum "$SVN_PATH/trunk/composer.lock" | head -c 40) == $(shasum "$OUTPUT_PATH/composer.lock" | head -c 40) ]]; then
   #  rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk --exclude vendor
   #  echo "## no differences in /vendor, similar lock files ##"
   #else
-    rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk 
+  #  rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk
   #fi
+  rsync -q -av --delete --delete-excluded --delete-before $OUTPUT_PATH/ $SVN_PATH/trunk
   (cd $SVN_PATH && svn add --force . && svn diff && svn stat)
 }
 
@@ -136,26 +137,32 @@ svnpush() {
     exit 1
   fi
 
+  # remove from svn deleted files
+  cd $SVN_PATH
+  if [ ! -z "$(svn status | sed -e '/^!/!d' -e 's/^!//')" ]; then
+    svn rm $(svn status | sed -e '/^!/!d' -e 's/^!//')
+  fi
+
   if [ ! -z "$SVN_TAG" ]; then
-    cd $SVN_PATH && svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' ) && svn cp trunk tags/$SVN_TAG && svn ci -m "Version $SVN_TAG" --username $SVN_USERNAME --password $SVN_PASSWORD
+    svn cp trunk tags/$SVN_TAG && svn ci -m "Version $SVN_TAG" --username $SVN_USERNAME --password $SVN_PASSWORD
   else
-    cd $SVN_PATH && svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' ) && svn ci -m "Sync trunk" --username $SVN_USERNAME --password $SVN_PASSWORD
+    svn ci -m "Sync trunk" --username $SVN_USERNAME --password $SVN_PASSWORD
   fi
 }
 
 #----------------------------------------------
 
 case $COMMAND in
-  "up" | "down" | "setup" | "wordpress" | "deps" | "phpunit" | "test" | "format" | "console" | "bundle" | "svnsync" | "svnpush")
-    if [[ $VERBOSE == '--verbose' ]]; then
-      set -ex
-    else
-      echo "Executing command $COMMAND..."
-    fi
+"up" | "down" | "setup" | "wordpress" | "deps" | "phpunit" | "test" | "format" | "console" | "bundle" | "svnsync" | "svnpush")
+  if [[ $VERBOSE == '--verbose' ]]; then
+    set -ex
+  else
+    echo "Executing command $COMMAND..."
+  fi
 
-    eval $COMMAND
-    ;;
-  *)
-    echo "Command not supported: $COMMAND"
-    ;;
+  eval $COMMAND
+  ;;
+*)
+  echo "Command not supported: $COMMAND"
+  ;;
 esac
