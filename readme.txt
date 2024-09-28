@@ -3,7 +3,7 @@ Contributors: mociofiletto
 Donate link: https://paypal.me/GiuseppeF77
 Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.2
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 7.4
 Stable tag: 1.2.1
 License: GPLv2 or later
@@ -157,6 +157,13 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.2 =
+* Update mu-plugin to run callbacks attached to lower buffer levels and to the shutdown hook
+* Extend overriding of native js functions
+* Adding jqueryui v. 1.13.3 theme
+* Remove legacy dependencies from distribution package
+* Bug fixes
+
 = 1.2.1 =
 Bug fixes
 
