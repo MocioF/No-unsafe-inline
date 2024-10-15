@@ -924,6 +924,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			'cookie-cdn.cookiepro.com', // https://wordpress.org/support/topic/cookie-pro-script-gets-blocked-from-time-to-time/ .
 		);
 
+		$not_sri_sources = apply_filters( 'no_unsafe_inline_not_sri_sources', $not_sri_sources );
+
 		foreach ( $not_sri_sources as $source ) {
 			if ( false !== strpos( $sourcestr, $source ) ) {
 				// We found the not_sri_string in $sourcestr.
