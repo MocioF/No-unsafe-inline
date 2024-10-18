@@ -28,7 +28,7 @@ The main problem with Content Security Policies implemented in the real world is
 
 == The proposed solution ==
 Google researchers recommend, instead of whole host whitelisting, to activate individual scripts via a CSP nonces approach.
-In addition, in order to faciliatate the adoption of nonce-based CSP, they proposed the ’strict-dynamic’ keyword.
+In addition, in order to facilitate the adoption of nonce-based CSP, they proposed the ’strict-dynamic’ keyword.
 
 == The problem(s) with CSP in Wordpress ==
 1. Manual creation of a policy
@@ -38,7 +38,7 @@ In addition, in order to faciliatate the adoption of nonce-based CSP, they propo
 
 2. Inline scripts
 
-	WordPress core, and plugins use inline scripts. For these scripts, you can compute hashes to be inserted manually into your policy, only if these scripts do not change at any page load. Unfortunately, this is not very common as it is frequent to include variable values calculated server side in inline scripts. And it means that your inline scripts change too frequently to manually add their hashes to your policy.
+	WordPress core, and plugins, use inline scripts. For these scripts, you can compute hashes to be inserted manually into your policy, only if these scripts do not change at any page load. Unfortunately, this is not very common, as it is frequent to include variable values calculated server side in inline scripts. And it means that your inline scripts change too frequently to manually add their hashes to your policy.
 	This commonly happens when scripts are ["localized"](https://github.com/WordPress/WordPress/blob/a793be201b9c23dbe8b90a6ecd53ab52336f0f91/wp-includes/script-loader.php#L636).
 		
 3.	WordPress has no API to implement nonces for CSP
@@ -56,7 +56,7 @@ In addition, in order to faciliatate the adoption of nonce-based CSP, they propo
 	And, of course, a nonce must be unique for each HTTP response.
 4. Unsafe hashes / Inline styles
 
-	Sometimes, HTML elements as images or buttons use HTML Event Attributes (onclick, onsubmit...) to let events to trigger actions in a browser.
+	Sometimes, HTML elements as images or buttons use HTML Event Attributes (onclick, onsubmit...) to let events trigger actions in a browser.
 	You cannot use hashes or nonces for script included in event attributes and, adopting a strict CSP, requires refactoring those patterns into safer alternatives or to use 'unsafe-hashes'.
 	You got a similar problem when inline styles are used in HTML tags:
 
@@ -111,9 +111,9 @@ After plugin activation, go to Settings menu and search for CSP Settings submenu
 The steps you are supposed to do are the following.
 
 1.  From the Tools tab, activate the capture of the tags and use your site by visiting all the pages or making them visits from your users for a long time long period based on the use of your site (hours or days).
-2.  From the Tools tab perform the data clustering in the database (it can use many server resources).
+2.  From the Tools tab, perform the data clustering in the database (it can use many server resources).
 3.  Go to the Base rules tab and include in the CSP directives the desired values ​​(help you with the table at the bottom of the page).
-4.  Go to to external scripts tab, inline scripts tab and scripts invoked by event handlers tab and authorize the execution of all the legitimate scripts present on the pages of your site.
+4.  Go to the external scripts tab, inline scripts tab and scripts invoked by event handlers tab and authorize the execution of all the legitimate scripts present on the pages of your site.
 5.  Leaving the tag capture active, activate the policy test (at this stage the plugin will generate some violations of the temporary policy used to record additional values to be included in the directives of your "content security policy").
 6.  After visiting again your site pages, disable the capture of the tags and repeat the previous steps 2, 3 and 4.
 7.  Enable site protection.
@@ -130,7 +130,7 @@ This is not a click and go tool, but you can follow the instructions and impleme
 
 No.
 
-= Will this plugin impact site's performance? =
+= Will this plugin impact the site's performance? =
 
 During capturing phase this plugin needs to write many data to database, so your site can slow down.
 When the plugin enforces the CSP, it uses a mu-plugin to capture the output of the WordPress process, manipulate it and then send to browser.
