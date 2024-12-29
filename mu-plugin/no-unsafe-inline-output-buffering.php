@@ -21,7 +21,7 @@ add_action(
 	function () {
 		/**
 		 * To increase no-unsafe-inline action priority (late run),
-		 * we need to remove this action added by WP's core to 
+		 * we need to remove this action added by WP's core to
 		 * avoid that it will flush all buffers before manipulation.
 		 * Using a priority of 0 for the manipulation function
 		 * does not allow to capture the output added by other plugins
@@ -57,8 +57,8 @@ add_action(
 				 * Callbacks are executed only on ob_flush() and not on ob_get_clean().
 				 * If we capture and destroy these buffering levels with ob_get_clean()
 				 * those callbacks will never been called and the output captured and
-				 * modified by this mu-plugin could be different from the real output 
-				 * that would have been sent to the browser with the mu-plugin not in 
+				 * modified by this mu-plugin could be different from the real output
+				 * that would have been sent to the browser with the mu-plugin not in
 				 * place.
 				 * So we need to flush the levels that are down in the stack untill we
 				 * reach our ob_level and then capture its content with
@@ -66,7 +66,7 @@ add_action(
 				 * To catch this mu-plugin's buffering level, we open it with a specific
 				 * callback that doesn't do anything, ut allows us to locate it in the
 				 * stack pile by its name.
-				 * 
+				 *
 				 * The for loop loops ob levels from the more internal one (when $i = 0)
 				 * to the more external one.
 				 * We calculate the $i value of our buffering level and then we flush
@@ -147,7 +147,7 @@ function no_unsafe_inline_mu_plugin_callback( $data ) {
 
 /**
  * Search for callback name in the 2 dimensional array returned by ob_get_status( true )
- * 
+ *
  * Returns the array key.
  *
  * @param string $name The name of the callback.
