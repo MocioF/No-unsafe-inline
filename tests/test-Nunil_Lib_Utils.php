@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-final class Nunil_Lib_UtilsTest extends WP_UnitTestCase
+final class Nunil_Lib_UtilsTest extends \WP_UnitTestCase
 {
 	/**
 	 * @dataProvider provide_vars

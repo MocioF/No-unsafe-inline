@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/admin
  */
 
+namespace NUNIL\admin\partials;
+
 use Highlight\Highlighter;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
@@ -30,7 +32,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
  */
-class No_Unsafe_Inline_Events_List extends WP_List_Table {
+class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 
 	/** Class constructor */
 	public function __construct() {

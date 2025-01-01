@@ -11,6 +11,8 @@
  * @var string|false $enabled_logs
  */
 
+namespace NUNIL\admin\partials;
+
 ?>
 <div class="wrap" id="nunil-logs-list">
 	<?php

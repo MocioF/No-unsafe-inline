@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-final class Nunil_CaptureTest extends WP_UnitTestCase {
+final class Nunil_CaptureTest extends \WP_UnitTestCase {
 
 	public function tear_down(): void {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 
 	public function set_up(): void {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
 
-		$plugin = new No_Unsafe_Inline();
+		$plugin = new \NUNIL\includes\No_Unsafe_Inline();
 		$plugin->run();
 	}
 

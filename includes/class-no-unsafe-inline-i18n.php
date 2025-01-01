@@ -12,6 +12,8 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+namespace NUNIL\includes;
+
 /**
  * Define the internationalization functionality.
  *

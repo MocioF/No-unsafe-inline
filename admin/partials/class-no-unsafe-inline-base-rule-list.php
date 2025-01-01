@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/admin
  */
 
+namespace NUNIL\admin\partials;
+
 defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -23,7 +25,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
  */
-class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
+class No_Unsafe_Inline_Base_Rule_List extends \WP_List_Table {
 
 	/** Class constructor */
 	public function __construct() {
@@ -44,7 +46,7 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 	 * @return array<array{ID: int, directive: string, source: string}>>
 	 */
 	public static function get_sources() {
-		$basesrc = new NUNIL\Nunil_Base_Src_Rules();
+		$basesrc = new \NUNIL\Nunil_Base_Src_Rules();
 
 		$result = $basesrc->get_db_entries();
 		return $result;
@@ -125,7 +127,7 @@ class No_Unsafe_Inline_Base_Rule_List extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 		try {
 			$this->items = self::get_sources();
-		} catch ( NUNIL\Nunil_Exception $ex ) {
+		} catch ( \NUNIL\Nunil_Exception $ex ) {
 			$ex->logexception();
 		}
 	}

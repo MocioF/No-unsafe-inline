@@ -8,8 +8,10 @@
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
  *
- * @var \No_Unsafe_Inline_Admin $this
+ * @var \NUNIL\admin\No_Unsafe_Inline_Admin $this
  */
+
+namespace NUNIL\admin\partials;
 
 ?>
 <form method="post" action="options.php" class="no-unsafe-inline-settings-form">

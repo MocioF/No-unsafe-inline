@@ -1,22 +1,22 @@
 <?php declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
-final class Nunil_Nunil_ClusteringTest extends WP_UnitTestCase
+final class Nunil_Nunil_ClusteringTest extends \WP_UnitTestCase
 {	
 	
 	private $nunil_clustering;
 	private $gls;
 	
 	public function tear_down(): void {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 
 	public function set_up(): void {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
 
-		$plugin = new No_Unsafe_Inline();
+		$plugin = new \NUNIL\includes\No_Unsafe_Inline();
 		$plugin->run();
 		$this->nunil_clustering = new \NUNIL\Nunil_Clustering();
 		$this->gls = new \NUNIL\Nunil_Global_Settings();

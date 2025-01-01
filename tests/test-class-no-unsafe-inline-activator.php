@@ -1,14 +1,14 @@
 <?php
 
-final class No_Unsafe_Inline_ActivatorTest extends WP_UnitTestCase {
+final class No_Unsafe_Inline_ActivatorTest extends \WP_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
 	}
 
 	public function tear_down() {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 

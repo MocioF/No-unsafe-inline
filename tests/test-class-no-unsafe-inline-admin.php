@@ -1,14 +1,14 @@
 <?php
 
-final class No_Unsafe_Inline_AdminTest extends WP_UnitTestCase {
+final class No_Unsafe_Inline_AdminTest extends \WP_UnitTestCase {
 
 	public function set_up() {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
 	}
 
 	public function tear_down() {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 
@@ -108,9 +108,9 @@ final class No_Unsafe_Inline_AdminTest extends WP_UnitTestCase {
 			$assertvalue
 		);
 
-		$plugin = new No_Unsafe_Inline();
+		$plugin = new \NUNIL\includes\No_Unsafe_Inline();
 
-		$admin = new No_Unsafe_Inline_Admin( $plugin->get_plugin_name(), $plugin->get_version(), $plugin->get_managed_directives() );
+		$admin = new \NUNIL\admin\No_Unsafe_Inline_Admin( $plugin->get_plugin_name(), $plugin->get_version(), $plugin->get_managed_directives() );
 		$admin->nunil_upgrade();
 
 		$expected = $new_ver_mu_plugin_hash;

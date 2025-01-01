@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-final class Nunil_Manipulate_DOMTest extends WP_UnitTestCase
+final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
 {	
 	
 	protected $nunil_tag1;
 	protected $nunil_tag2;
 
 	public function tear_down() {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
     public function set_up(): void
     {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
         $directive    = 'script-src';
 		$tag          = 'script';
 		$stored_attr  = 'src';

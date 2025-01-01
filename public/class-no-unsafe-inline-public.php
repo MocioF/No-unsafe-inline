@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/public
  */
 
+namespace NUNIL\publc; /** PHP7.4 https://www.php.net/manual/en/reserved.keywords.php */
+
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
 
@@ -83,7 +85,7 @@ class No_Unsafe_Inline_Public {
 	private function get_capture() {
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( array_key_exists( 'capture_enabled', $tools ) && 1 === $tools['capture_enabled'] ) {
-			$this->capture = new NUNIL\Nunil_Capture();
+			$this->capture = new \NUNIL\Nunil_Capture();
 		}
 	}
 
@@ -105,7 +107,7 @@ class No_Unsafe_Inline_Public {
 	public function enqueue_scripts(): void {
 		$plugin_name = $this->plugin_name; // keep as placeholder.
 		$version     = $this->version; // keep as placeholder.
-		$plugin      = new No_Unsafe_Inline();
+		$plugin      = new \NUNIL\includes\No_Unsafe_Inline();
 		$plugin->enqueue_common_scripts();
 	}
 
@@ -177,7 +179,7 @@ class No_Unsafe_Inline_Public {
 			if ( class_exists( 'Fiber' ) ) {
 				global $nunil_fibers;
 				$capture        = $this->capture;
-				$nunil_fibers[] = new Fiber(
+				$nunil_fibers[] = new \Fiber(
 					function () use ( $capture, $options ) {
 						$capture_tags = new \NUNIL\Nunil_Captured_Tags();
 						$tags         = $capture_tags->get_captured_tags();
@@ -204,8 +206,8 @@ class No_Unsafe_Inline_Public {
 		}
 
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {
-			if ( false === is_admin() || ( true === is_admin() && 1 === $options['protect_admin'] ) ) {
-				$manipulated = new NUNIL\Nunil_Manipulate_DOM();
+			if ( false === is_admin() || ( 1 === $options['protect_admin'] ) ) {
+				$manipulated = new \NUNIL\Nunil_Manipulate_DOM();
 				$manipulated->load_html( $htmlsource );
 				$this->csp_local_whitelist = $manipulated->get_local_csp();
 				$htmlsource                = $manipulated->debug_preamble . $manipulated->get_manipulated();
@@ -427,7 +429,7 @@ class No_Unsafe_Inline_Public {
 							header( $header_csp );
 						}
 					} else {
-						NUNIL\Nunil_Lib_Log::warning(
+						\NUNIL\Nunil_Lib_Log::warning(
 							sprintf(
 								// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
 								esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
@@ -455,7 +457,7 @@ class No_Unsafe_Inline_Public {
 	public function register_capture_routes(): void {
 		$tools = (array) get_option( 'no-unsafe-inline-tools' );
 		if ( 1 === $tools['capture_enabled'] ) {
-			$capture_1 = new NUNIL\Nunil_Capture_CSP_Violations();
+			$capture_1 = new \NUNIL\Nunil_Capture_CSP_Violations();
 			register_rest_route(
 				'no-unsafe-inline/v1',
 				'/capture-by-violation',
@@ -520,7 +522,7 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function update_external_script_entries( $upgrader_object, $options ): void {
-		NUNIL\Nunil_Script_Upgrader::update_external_script_entries( $upgrader_object, $options );
+		\NUNIL\Nunil_Script_Upgrader::update_external_script_entries( $upgrader_object, $options );
 	}
 
 	/**
@@ -535,7 +537,7 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function set_info_from_upgrader_pre_install( $response, $hook_extra ): void {
-		NUNIL\Nunil_Script_Upgrader::set_info_from_upgrader_pre_install( $response, $hook_extra );
+		\NUNIL\Nunil_Script_Upgrader::set_info_from_upgrader_pre_install( $response, $hook_extra );
 	}
 
 	/**
@@ -548,6 +550,6 @@ class No_Unsafe_Inline_Public {
 	 * @return void
 	 */
 	public function set_info_from_core_upgrader(): void {
-		NUNIL\Nunil_Script_Upgrader::set_info_from_core_upgrader();
+		\NUNIL\Nunil_Script_Upgrader::set_info_from_core_upgrader();
 	}
 }

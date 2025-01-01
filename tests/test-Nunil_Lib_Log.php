@@ -2,16 +2,16 @@
 
 use NUNIL\Nunil_Lib_Log as Log;
 
-final class Nunil_Lib_LogTest extends WP_UnitTestCase
+final class Nunil_Lib_LogTest extends \WP_UnitTestCase
 {
 	public function tear_down(): void {
-		no_unsafe_inline_deactivate( false );
+		\NUNIL\no_unsafe_inline_deactivate( false );
 		parent::tear_down();
 	}
 	
     public function set_up(): void {
 		parent::set_up();
-		no_unsafe_inline_activate( false );
+		\NUNIL\no_unsafe_inline_activate( false );
 		
 		// setting log level to debug
 		$options = get_option( 'no-unsafe-inline');
@@ -21,7 +21,7 @@ final class Nunil_Lib_LogTest extends WP_UnitTestCase
 		$this->assertEquals(
 			true, $success
         );
-        $plugin = new No_Unsafe_Inline;
+        $plugin = new \NUNIL\includes\No_Unsafe_Inline;
         $plugin->load_logger();
 	}
 	

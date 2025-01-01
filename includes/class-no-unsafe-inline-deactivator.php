@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+namespace NUNIL\includes;
+
 use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as DB;
@@ -111,7 +113,7 @@ class No_Unsafe_Inline_Deactivator {
 	 * Run when a blog is removed from network
 	 *
 	 * @since 1.0.0
-	 * @param WP_Site $params Site object.
+	 * @param \WP_Site $params Site object.
 	 * @return void
 	 */
 	public static function remove_blog( $params ) {

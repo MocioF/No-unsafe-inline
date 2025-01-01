@@ -12,6 +12,8 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+namespace NUNIL\includes;
+
 use NUNIL\Nunil_Lib_Utils as Utils;
 /**
  * The core plugin class.
@@ -201,7 +203,7 @@ class No_Unsafe_Inline {
 	 * @return   void
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new No_Unsafe_Inline_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_managed_directives() );
+		$plugin_admin = new \NUNIL\admin\No_Unsafe_Inline_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_managed_directives() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts', 0 );
@@ -244,7 +246,7 @@ class No_Unsafe_Inline {
 	 * @return   void
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new No_Unsafe_Inline_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new \NUNIL\publc\No_Unsafe_Inline_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 0 );
 

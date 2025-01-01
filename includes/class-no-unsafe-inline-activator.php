@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+namespace NUNIL\includes;
+
 use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as DB;
@@ -151,7 +153,7 @@ class No_Unsafe_Inline_Activator {
 			} catch ( Nunil_Exception $ex ) {
 				$ex->logexception();
 				require_once __DIR__ . '/class-no-unsafe-inline-deactivator.php';
-				\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
+				\NUNIL\includes\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 			}
 		}
 		Log::info( 'Activated plugin.' );
@@ -267,7 +269,7 @@ class No_Unsafe_Inline_Activator {
 	 * Running setup whenever a new blog is created
 	 *
 	 * @since 1.0.0
-	 * @param WP_Site $params New site object.
+	 * @param \WP_Site $params New site object.
 	 * @return void
 	 */
 	public static function add_blog( $params ) {

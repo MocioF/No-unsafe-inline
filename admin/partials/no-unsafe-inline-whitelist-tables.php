@@ -8,8 +8,16 @@
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
  *
- * @var \No_Unsafe_Inline_Admin $this
+ * @var \NUNIL\admin\No_Unsafe_Inline_Admin $this
  */
+
+namespace NUNIL\admin\partials;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 if ( isset( $_GET['tab'] ) ) {
 	$nunil_tab       = strtolower( sanitize_text_field( wp_unslash( $_GET['tab'] ) ) );

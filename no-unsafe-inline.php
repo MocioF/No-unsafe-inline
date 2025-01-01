@@ -26,6 +26,8 @@
  * Requires PHP: 7.4
  */
 
+namespace NUNIL;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -62,7 +64,7 @@ define( 'NO_UNSAFE_INLINE_TABLE_PREFIX', $nunil_table_prefix );
  */
 function no_unsafe_inline_activate( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
-	No_Unsafe_Inline_Activator::activate( $network_wide );
+	\NUNIL\includes\No_Unsafe_Inline_Activator::activate( $network_wide );
 }
 
 /**
@@ -75,11 +77,11 @@ function no_unsafe_inline_activate( $network_wide ) {
  */
 function no_unsafe_inline_deactivate( $network_wide ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
-	No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
+	\NUNIL\includes\No_Unsafe_Inline_Deactivator::deactivate( $network_wide );
 }
 
-register_activation_hook( __FILE__, 'no_unsafe_inline_activate' );
-register_deactivation_hook( __FILE__, 'no_unsafe_inline_deactivate' );
+register_activation_hook( __FILE__, __NAMESPACE__ . '\\no_unsafe_inline_activate' );
+register_deactivation_hook( __FILE__, __NAMESPACE__ . '\\no_unsafe_inline_deactivate' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -112,15 +114,15 @@ function no_unsafe_inline_run() {
 	add_action(
 		'init',
 		function () {
-			$plugin = new No_Unsafe_Inline();
+			$plugin = new \NUNIL\includes\No_Unsafe_Inline();
 
 			$plugin->run();
 
 			// if we have a new blog on a multisite let's set it up.
-			add_action( 'wp_initialize_site', 'no_unsafe_inline_run_multisite_new_site' );
+			add_action( 'wp_initialize_site', __NAMESPACE__ . '\\no_unsafe_inline_run_multisite_new_site' );
 
 			// if a blog is removed, let's remove the settings.
-			add_action( 'wp_uninitialize_site', 'no_unsafe_inline_run_multisite_delete' );
+			add_action( 'wp_uninitialize_site', __NAMESPACE__ . '\\no_unsafe_inline_run_multisite_delete' );
 		}
 	);
 }
@@ -130,22 +132,22 @@ no_unsafe_inline_run();
  * Trigger plugin activation on a new blog creations
  *
  * @since 1.0.0
- * @param WP_Site $params New site object.
+ * @param \WP_Site $params New site object.
  * @return void
  */
 function no_unsafe_inline_run_multisite_new_site( $params ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-activator.php';
-	No_Unsafe_Inline_Activator::add_blog( $params );
+	\NUNIL\includes\No_Unsafe_Inline_Activator::add_blog( $params );
 }
 
 /**
  * Trigger table removes on blog deletion
  *
  * @since 1.0.0
- * @param WP_Site $params Old site object.
+ * @param \WP_Site $params Old site object.
  * @return void
  */
 function no_unsafe_inline_run_multisite_delete( $params ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-no-unsafe-inline-deactivator.php';
-	No_Unsafe_Inline_Deactivator::remove_blog( $params );
+	\NUNIL\includes\No_Unsafe_Inline_Deactivator::remove_blog( $params );
 }

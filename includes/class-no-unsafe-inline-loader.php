@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/includes
  */
 
+namespace NUNIL\includes;
+
 /**
  * Register all actions and filters for the plugin.
  *

@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/admin
  */
 
+namespace NUNIL\admin;
+
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Lib_Log as Log;
@@ -116,7 +118,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return void
 	 */
 	public function enqueue_scripts(): void {
-		$plugin = new No_Unsafe_Inline();
+		$plugin = new \NUNIL\includes\No_Unsafe_Inline();
 		$plugin->enqueue_common_scripts();
 		$suffix = wp_scripts_get_suffix();
 
@@ -216,9 +218,9 @@ class No_Unsafe_Inline_Admin {
 		if ( $old_ver === $new_ver ) {
 			return;
 		}
-		if ( NUNIL\Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
-			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
-			NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+		if ( \NUNIL\Nunil_Manage_Muplugin::is_nunil_muplugin_installed() ) {
+			\NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
+			\NUNIL\Nunil_Manage_Muplugin::toggle_nunil_muplugin_installation();
 		}
 	}
 
@@ -411,7 +413,7 @@ class No_Unsafe_Inline_Admin {
 					);
 					add_screen_option( 'per_page', $args );
 					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-external-list.php';
-					$this->show_table = new No_Unsafe_Inline_External_List();
+					$this->show_table = new \NUNIL\admin\partials\No_Unsafe_Inline_External_List();
 					break;
 				case 'inline':
 					$help_tabs->set_help_tabs( 'inline' );
@@ -422,7 +424,7 @@ class No_Unsafe_Inline_Admin {
 					);
 					add_screen_option( 'per_page', $args );
 					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-inline-list.php';
-					$this->show_table = new No_Unsafe_Inline_Inline_List();
+					$this->show_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Inline_List();
 					break;
 				case 'events':
 					$help_tabs->set_help_tabs( 'events' );
@@ -433,7 +435,7 @@ class No_Unsafe_Inline_Admin {
 					);
 					add_screen_option( 'per_page', $args );
 					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
-					$this->show_table = new No_Unsafe_Inline_Events_List();
+					$this->show_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Events_List();
 					break;
 				default:
 					$help_tabs->set_help_tabs( 'nunil-tools' );
@@ -2225,7 +2227,7 @@ class No_Unsafe_Inline_Admin {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
 
-		$obj = new NUNIL\Nunil_Clustering();
+		$obj = new \NUNIL\Nunil_Clustering();
 
 		$result = $obj->cluster_by_dbscan();
 
@@ -2528,7 +2530,7 @@ class No_Unsafe_Inline_Admin {
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
-		$test = new NUNIL\Nunil_Classification();
+		$test = new \NUNIL\Nunil_Classification();
 
 		$result_string = $test->test_cases();
 		$result        = array(

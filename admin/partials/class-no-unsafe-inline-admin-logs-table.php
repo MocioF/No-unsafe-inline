@@ -10,6 +10,8 @@
  * @subpackage No_unsafe-inline/admin
  */
 
+namespace NUNIL\admin\partials;
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
@@ -22,7 +24,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
  */
-class No_Unsafe_Inline_Admin_Logs_Table extends WP_List_Table {
+class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	private const MAX_LENGTH = 1500;
 
 	/** Class constructor */
@@ -100,9 +102,9 @@ class No_Unsafe_Inline_Admin_Logs_Table extends WP_List_Table {
 		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'desc';
 
 		try {
-			$logs        = NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );
+			$logs        = \NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );
 			$this->items = (array) $logs;
-		} catch ( NUNIL\Nunil_Exception $ex ) {
+		} catch ( \NUNIL\Nunil_Exception $ex ) {
 			$ex->logexception();
 		}
 

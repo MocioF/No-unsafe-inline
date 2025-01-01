@@ -9,6 +9,8 @@
  * @subpackage No_unsafe-inline/admin
  */
 
+namespace NUNIL\admin\partials;
+
 ?>
 <form method="post" action="options.php" class="no-unsafe-inline-tools-form">
 	<?php
@@ -146,23 +148,23 @@
 				'id' => true,
 			),
 		);
-		echo wp_kses( No_Unsafe_Inline_Admin::output_summary_tables(), $nunil_allowed_html );
+		echo wp_kses( \NUNIL\admin\No_Unsafe_Inline_Admin::output_summary_tables(), $nunil_allowed_html );
 		?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-2">
 		<div id="nunil_summary_external_table_container" class="nunil_summary_external_table_container">
-		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_external_table(), $nunil_allowed_html ); ?>
+		<?php echo wp_kses( \NUNIL\admin\No_Unsafe_Inline_Admin::output_summary_external_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-3">
 		<div id="nunil_summary_inline_table_container" class="nunil_summary_inline_table_container">
-		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_inline_table(), $nunil_allowed_html ); ?>
+		<?php echo wp_kses( \NUNIL\admin\No_Unsafe_Inline_Admin::output_summary_inline_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-4">
 		<div id="nunil_summary_eventhandlers_table_container" class="nunil_summary_eventhandlers_table_container">
-		<?php echo wp_kses( No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(), $nunil_allowed_html ); ?>
+		<?php echo wp_kses( \NUNIL\admin\No_Unsafe_Inline_Admin::output_summary_eventhandlers_table(), $nunil_allowed_html ); ?>
 		</div>
 	</div>
 	<div id="nunil-db-sum-tabs-5" class="nunil-db-sum-tabs-5">
