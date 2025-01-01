@@ -14,3 +14,45 @@ parameters:
 	ignoreErrors:
 		- '#Constant NO_UNSAFE_INLINE_PLUGIN_DIR not found.#'
 		- '#Constant NO_UNSAFE_INLINE_PLUGIN_BASENAME not found.#'
+	typeAliases:
+		CSPReportUri: '''
+			array{
+				csp-report?: array{
+					document-uri?: string,
+					referrer?: string,
+					violated-directive?: string,
+					effective-directive?: string,
+					original-policy?: string,
+					disposition?: string,
+					blocked-uri?: string,
+					line-number?: int,
+					column-number?: int,
+					source-file?: string,
+					status-code?: int,
+					script-sample?: string
+				}
+			}
+		'''
+		CSPReportTo: '''
+			array{
+				type: string,
+				age: int,
+				url?: string,
+				user_agent?: string,
+				body?: array{
+					document-url: string,
+					referrer?: string,
+					violated-directive?: string,
+					effective-directive?: string,
+					original-policy?: string,
+					disposition?: string,
+					blocked-uri?: string,
+					line-number?: int,
+					column-number?: int,
+					source-file?: string,
+					status-code?: int,
+					script-sample?: string
+				}
+			}
+		'''
+
