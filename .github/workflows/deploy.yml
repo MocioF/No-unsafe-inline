@@ -21,6 +21,8 @@ jobs:
           tools: composer
         env:
           fail-fast: true
+      - name: Install Subversion
+        run: sudo apt-get install subversion
       - name: Build project
         env:
           ZIP_NAME: no-unsafe-inline-v${{ env.RELEASE_VERSION }}.zip

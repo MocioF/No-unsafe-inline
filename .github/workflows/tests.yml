@@ -69,6 +69,9 @@ jobs:
       env:
         fail-fast: true
 
+    - name: Install Subversion
+      run: sudo apt-get install subversion
+
     - name: Setup Wordpress over phpunit
       run: bash bin/install-wp-tests.sh wordpress root password 127.0.0.1:${{ job.services.mysql.ports[3306] }} ${{ matrix.wordpress-version }} true
 
@@ -76,7 +79,7 @@ jobs:
       id: composer-cache
       run: echo "composer_dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       # run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      
+
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
@@ -91,7 +94,7 @@ jobs:
     - name: Only for WP >= 5.9 Install Composer dependencies
       # if: ${{ ( matrix.wordpress-version == '5.9' || matrix.wordpress-version == '6.0' || matrix.wordpress-version == '6.1' || matrix.wordpress-version == '6.2' || matrix.wordpress-version == '6.3' || matrix.wordpress-version == '6.4' ) }}
       run: (composer remove --dev phpunit/phpunit || true ) && composer update --dev yoast/phpunit-polyfills --with-dependencies && composer install --no-progress --prefer-dist --optimize-autoloader --ignore-platform-reqs
-      
+
     - name: When using PHP 8 and WP <= 5.8
       # See: https://core.trac.wordpress.org/ticket/50902
       if: ${{ matrix.php-versions == '8.0' && (matrix.wordpress-version == '5.6' || matrix.wordpress-version == '5.7' || matrix.wordpress-version == '5.8' )}}
@@ -117,6 +120,9 @@ jobs:
           tools: composer
         env:
           fail-fast: true
+
+      - name: Install Subversion
+        run: sudo apt-get install subversion
 
       - name: Sync with SVN
         run: |
