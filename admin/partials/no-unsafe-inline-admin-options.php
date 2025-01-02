@@ -7,8 +7,6 @@
  * @since      1.0.0
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
- *
- * @var \NUNIL\admin\No_Unsafe_Inline_Admin $this
  */
 
 namespace NUNIL\admin\partials;

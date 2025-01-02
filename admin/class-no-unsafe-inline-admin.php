@@ -393,7 +393,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! is_null( $current_screen ) ) {
 			// Get the active tab from the $_GET param.
 			$default_tab = null;
-			$tab         = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+			$tab         = isset( $_GET['tab'] ) ? Utils::sanitize_text( $_GET['tab'] ) : $default_tab;
 
 			$help_tabs = new \NUNIL\Nunil_Admin_Help_Tabs( $current_screen );
 
@@ -869,7 +869,7 @@ class No_Unsafe_Inline_Admin {
 	 * Sanitize the settings
 	 *
 	 * @throws \NUNIL\Nunil_Exception Main option is not an array.
-	 * @param array<string|array<string>> $input Contains the settings.
+	 * @param array<string|int|array<int|string>> $input Contains the settings.
 	 * @return array<mixed>
 	 */
 	public function sanitize_options( $input ) {
@@ -1022,7 +1022,12 @@ class No_Unsafe_Inline_Admin {
 
 		unset( $options['endpoints'] );
 		if ( isset( $input['endpoints'] ) && is_array( $input['endpoints'] ) ) {
-			$new_input['endpoints'] = array_map( 'esc_url_raw', $input['endpoints'], $protocols = array( array( 'https' ) ) );
+			$new_input['endpoints'] = array_map(
+				function ( $url ) {
+					return esc_url_raw( strval( $url ), array( 'https' ) );
+				},
+				$input['endpoints']
+			);
 		}
 
 		if ( isset( $input['max_response_header_size'] ) ) {
@@ -1106,6 +1111,12 @@ class No_Unsafe_Inline_Admin {
 		if ( is_array( $options ) ) {
 			$new_input = array_merge( $options, $new_input );
 		}
+		$new_input = array_map(
+			function ( $a ) {
+				return Utils::sanitize_text( $a, false );
+			},
+			$new_input
+		);
 		return $new_input;
 	}
 
@@ -1784,26 +1795,25 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		print( '<ol class="nunil-endpoints-list" id="nunil-endpoints-list">' );
-		if ( is_array( $endpoints ) ) {
-			// Add a line for each url.
-			foreach ( $endpoints as $index => $endpoint ) {
-				printf(
-					'<li>' .
-					'<button class="nunil-btn nunil-btn-del-endpoint" ' .
-					'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]">' .
-					'<span class="dashicons dashicons-remove"> </span></button>' .
-					'<span class="nunil-endpoint-string txt-active">%s</span>' .
-					'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]" ' .
-					'name="no-unsafe-inline[endpoints][%d]" value="%s" />' .
-					'</li>',
-					esc_html( $index ),
-					esc_html( $index ),
-					esc_html( $endpoint ),
-					esc_html( $index ),
-					esc_html( $index ),
-					esc_html( $endpoint )
-				);
-			}
+		// Add a line for each url.
+		foreach ( $endpoints as $index => $endpoint ) {
+			$endp_txt = strval( Utils::cast_strval( $endpoint ) );
+			printf(
+				'<li>' .
+				'<button class="nunil-btn nunil-btn-del-endpoint" ' .
+				'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]">' .
+				'<span class="dashicons dashicons-remove"> </span></button>' .
+				'<span class="nunil-endpoint-string txt-active">%s</span>' .
+				'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]" ' .
+				'name="no-unsafe-inline[endpoints][%d]" value="%s" />' .
+				'</li>',
+				esc_html( $index ),
+				esc_html( $index ),
+				esc_html( $endp_txt ),
+				esc_html( $index ),
+				esc_html( $index ),
+				esc_html( $endp_txt )
+			);
 		}
 		print( '</ol>' );
 	}
@@ -1990,7 +2000,7 @@ class No_Unsafe_Inline_Admin {
 
 		// Get the active tab from the $_GET param.
 		$default_tab = null;
-		$tab         = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+		$tab         = isset( $_GET['tab'] ) ? Utils::sanitize_text( $_GET['tab'], false ) : $default_tab;
 
 		?>
 		<div class="wrap">
@@ -2093,7 +2103,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return mixed
 	 */
 	public function save_screen_options( $status, $option, $value ) {
-		$this_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
+		$this_page = isset( $_REQUEST['page'] ) ? Utils::sanitize_text( $_REQUEST['page'], false ) : '';
 		switch ( $this_page ) {
 			case 'no-unsafe-inline':
 				return $value;
@@ -2191,7 +2201,7 @@ class No_Unsafe_Inline_Admin {
 
 		if ( $notice && is_array( $notice ) ) {
 			$type    = $notice['type'];
-			$message = $notice['message'];
+			$message = Utils::sanitize_text( $notice['message'], false );
 
 			$allowed_html_in_notice = array(
 				'br'     => array(),
@@ -2222,7 +2232,7 @@ class No_Unsafe_Inline_Admin {
 	public function trigger_clustering(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_clustering_nonce' )
+		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_clustering_nonce' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2231,10 +2241,10 @@ class No_Unsafe_Inline_Admin {
 
 		$result = $obj->cluster_by_dbscan();
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
 		}
 
 		wp_die();
@@ -2249,7 +2259,7 @@ class No_Unsafe_Inline_Admin {
 	public function clean_database(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_clean_database' )
+		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_clean_database' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2282,10 +2292,10 @@ class No_Unsafe_Inline_Admin {
 			'report' => $result_string,
 		);
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
 		}
 
 		wp_die();
@@ -2300,7 +2310,7 @@ class No_Unsafe_Inline_Admin {
 	public function prune_database(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_trigger_prune_database' )
+		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_prune_database' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2321,10 +2331,10 @@ class No_Unsafe_Inline_Admin {
 			'report' => $result_string,
 		);
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
 		}
 
 		wp_die();
@@ -2345,10 +2355,10 @@ class No_Unsafe_Inline_Admin {
 		$result['inline']   = DB::get_database_summary_data( 'inline_scripts' );
 		$result['events']   = DB::get_database_summary_data( 'event_handlers' );
 
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
 		}
 
 		wp_die();
@@ -2526,7 +2536,7 @@ class No_Unsafe_Inline_Admin {
 	public function test_classifier(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'nunil_test_classifier_nonce' )
+		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_test_classifier_nonce' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2537,10 +2547,10 @@ class No_Unsafe_Inline_Admin {
 			'type'   => 'success',
 			'report' => $result_string,
 		);
-		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) === 'xmlhttprequest' ) {
+		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
 		}
 
 		wp_die();

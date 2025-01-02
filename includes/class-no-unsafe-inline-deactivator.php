@@ -49,7 +49,7 @@ class No_Unsafe_Inline_Deactivator {
 				// WP < 4.6; however it is unsupported.
 				$sites = wp_get_sites();
 			}
-			if ( is_iterable( $sites ) && ! empty( $sites ) ) {
+			if ( ! empty( $sites ) ) {
 				$remove_mu_plugin = true;
 				foreach ( $sites as $site ) {
 					if ( is_object( $site ) ) {

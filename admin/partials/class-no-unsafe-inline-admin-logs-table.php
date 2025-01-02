@@ -12,7 +12,14 @@
 
 namespace NUNIL\admin\partials;
 
+use NUNIL\Nunil_Lib_Utils as Utils;
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
+	/**
+	 * Requires a core wp file.
+	 *
+	 * @phpstan-ignore requireOnce.fileNotFound
+	 */
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
@@ -50,7 +57,7 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	public function column_default( $item, $column_name ) {
 		$content = $item['created_at'] . ' | ' . strtoupper( $item['level'] ) . ' | ' . $item['message'];
 
-		if ( is_string( $content ) && strlen( $content ) > self::MAX_LENGTH ) {
+		if ( strlen( $content ) > self::MAX_LENGTH ) {
 			return substr( $content, 0, self::MAX_LENGTH ) . '...';
 		} else {
 			return $content;
@@ -88,7 +95,7 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-		$per_page = 500;
+		$per_page = 50;
 
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
@@ -97,9 +104,9 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 
 		$total_items = \NUNIL\Nunil_Lib_Db::get_total_logs();
 
-		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] ) - 1 ) : 0;
+		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( Utils::cast_intval( $_REQUEST['paged'] ) ) - 1 ) : 0;
 		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : 'created_at';
-		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'desc';
+		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? Utils::sanitize_text( $_REQUEST['order'], false ) : 'desc';
 
 		try {
 			$logs        = \NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );

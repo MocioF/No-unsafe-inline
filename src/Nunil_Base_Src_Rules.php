@@ -31,7 +31,7 @@ class Nunil_Base_Src_Rules {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var array<string> An ARRAY_N of strings of managed CSP -src directives.
+	 * @var list<array<array-key, string>> An ARRAY_N of strings of managed CSP -src directives.
 	 */
 	private $directives;
 
@@ -73,7 +73,7 @@ class Nunil_Base_Src_Rules {
 
 			wp_cache_set( $cache_key, $directives, $cache_group, $expire_secs );
 		}
-		if ( is_array( $directives ) ) {
+		if ( is_array( $directives ) && array_is_list( $directives ) ) {
 			$this->directives = $directives;
 		} else {
 			$message = __( 'Error retriving base src rules: $directives should be an array', 'no-unsafe-inline' );
@@ -87,7 +87,7 @@ class Nunil_Base_Src_Rules {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return array<array{ID: int, directive: string, source: string}>>
+	 * @return array<array{ID: int, directive: string, source: string}>
 	 */
 	public function get_db_entries() {
 		$results = array();
@@ -142,7 +142,8 @@ class Nunil_Base_Src_Rules {
 
 			wp_cache_set( $cache_key, $ext_scripts, $cache_group, $expire_secs );
 		}
-		if ( is_array( $ext_scripts ) ) {
+		if ( is_array( $ext_scripts ) && Utils::is_list_of_std_class( $ext_scripts ) ) {
+			/** @var list<\stdClass> $ext_scripts */
 			return $ext_scripts;
 		} else {
 			return null;

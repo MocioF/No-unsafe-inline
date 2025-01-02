@@ -19,6 +19,7 @@ use Rubix\ML\Serializers\Serializer;
 use Rubix\ML\Datasets\Labeled;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 /**
  * Class used to train AI models used by No unsafe-inline
@@ -155,7 +156,7 @@ class Nunil_Knn_Trainer {
 	 * @return void
 	 */
 	public function set_page_size( $page_size = 150 ) {
-		if ( is_int( $page_size ) && 1 < $page_size ) {
+		if ( 1 < $page_size ) {
 			$this->array_page_size = $page_size;
 		}
 	}
@@ -403,7 +404,7 @@ class Nunil_Knn_Trainer {
 		}
 		$wp_option = get_option( $nunil_lm_opt );
 		if ( is_array( $wp_option ) && array_key_exists( $table, $wp_option ) ) {
-			return intval( $wp_option[ $table ] );
+			return intval( Utils::cast_intval( $wp_option[ $table ] ) );
 		} else {
 			return false;
 		}

@@ -14,6 +14,11 @@ namespace NUNIL\admin\partials;
 defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
+	/**
+	 * Requires a core wp file.
+	 *
+	 * @phpstan-ignore requireOnce.fileNotFound
+	 */
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
@@ -43,7 +48,7 @@ class No_Unsafe_Inline_Base_Rule_List extends \WP_List_Table {
 	 *
 	 * @since @1.0.0
 	 *
-	 * @return array<array{ID: int, directive: string, source: string}>>
+	 * @return array<array{ID: int, directive: string, source: string}>
 	 */
 	public static function get_sources() {
 		$basesrc = new \NUNIL\Nunil_Base_Src_Rules();

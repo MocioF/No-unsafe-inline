@@ -7,8 +7,6 @@
  * @since      1.1.1
  * @package    No_unsafe-inline
  * @subpackage No_unsafe-inline/admin
- *
- * @var \NUNIL\admin\No_Unsafe_Inline_Admin $this
  */
 
 namespace NUNIL\admin\partials;
@@ -20,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use NUNIL\Nunil_Lib_Utils as Utils;
 
 if ( isset( $_GET['tab'] ) ) {
-	$nunil_tab       = strtolower( sanitize_text_field( wp_unslash( $_GET['tab'] ) ) );
+	$nunil_tab       = Utils::sanitize_text( $_GET['tab'] );
 	$nunil_list_tabs = array(
 		'external',
 		'inline',
@@ -34,7 +32,7 @@ if ( isset( $_GET['tab'] ) ) {
 }
 
 if ( isset( $_GET['page'] ) ) {
-	$nunil_page = sanitize_text_field( wp_unslash( $_GET['page'] ) );
+	$nunil_page = Utils::sanitize_text( $_GET['page'], false );
 	if ( 'no-unsafe-inline' !== $nunil_page ) {
 		$nunil_page = null;
 	}
@@ -45,7 +43,7 @@ if ( isset( $_GET['page'] ) ) {
 	$nunil_paged = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
 
 if ( isset( $_GET['orderby'] ) ) {
-	$nunil_orderby = strtolower( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) );
+	$nunil_orderby = Utils::sanitize_text( $_GET['orderby'] );
 	switch ( $nunil_tab ) {
 		case 'external':
 			$nunil_adm_orderby = array(
@@ -88,7 +86,7 @@ if ( isset( $_GET['orderby'] ) ) {
 }
 
 if ( isset( $_GET['order'] ) ) {
-	$nunil_order  = strtolower( sanitize_text_field( wp_unslash( $_GET['order'] ) ) );
+	$nunil_order  = Utils::sanitize_text( $_GET['order'] );
 	$nunil_orders = array(
 		'asc',
 		'desc',
@@ -108,6 +106,13 @@ printf( '<input type="hidden" name="paged" value="%d" />', intval( esc_html( str
 printf( '<input type="hidden" name="orderby" value="%s" />', esc_html( strval( $nunil_orderby ) ) );
 printf( '<input type="hidden" name="order" value="%s" />', esc_html( strval( $nunil_order ) ) );
 
+assert( isset( $this ) && $this instanceof \NUNIL\admin\No_Unsafe_Inline_Admin );
+
+/**
+ * Checked in the main class file.
+ *
+ * @var \NUNIL\admin\No_Unsafe_Inline_Admin $this
+ */
 $no_unsafe_inline_sources_obj = $this->show_table;
 $no_unsafe_inline_sources_obj->prepare_items();
 

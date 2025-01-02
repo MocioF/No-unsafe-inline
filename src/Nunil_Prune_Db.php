@@ -58,7 +58,7 @@ class Nunil_Prune_Db {
 			$ids   = DB::get_orpaned_occurences( $table_name );
 			if ( ! is_null( $ids ) ) {
 				foreach ( $ids as $row ) {
-					$del = DB::delete_occurence( $row->occ_id );
+					$del = DB::delete_occurence( strval( Utils::cast_strval( $row->occ_id ) ) );
 					if ( false !== $del ) {
 						$total = $total + $del;
 					}
@@ -100,18 +100,18 @@ class Nunil_Prune_Db {
 			if ( ! is_null( $big_clusters ) && 0 < count( $big_clusters ) ) {
 				foreach ( $big_clusters as $cluster ) {
 					$n_del = 0;
-					$ids   = DB::get_oldest_scripts_id( $table_name, $cluster->clustername, self::$cluster_limit );
+					$ids   = DB::get_oldest_scripts_id( $table_name, strval( Utils::cast_strval( $cluster->clustername ) ), self::$cluster_limit );
 					if ( ! is_null( $ids ) ) {
 						switch ( $table_name ) {
 							case 'inline_scripts':
 								foreach ( $ids as $id ) {
-									$n_del = $n_del + DB::inl_single_delete( $id->ID );
+									$n_del = $n_del + DB::inl_single_delete( strval( Utils::cast_strval( $id->ID ) ) );
 								}
 								$message = sprintf(
 									// translators: %1$d is the number of scripts deleted; %2$s is the clustername; %3$s is the internal table name.
 									esc_html__( 'Deleted %1$d scripts from cluster %2$s in %3$s table', 'no-unsafe-inline' ),
 									$n_del,
-									$cluster->clustername,
+									strval( Utils::cast_strval( $cluster->clustername ) ),
 									$table_name
 								);
 								$end_message = $end_message . $message . '<br>';
@@ -119,13 +119,13 @@ class Nunil_Prune_Db {
 								break;
 							case 'event_handlers':
 								foreach ( $ids as $id ) {
-									$n_del = $n_del + DB::evh_single_delete( $id->ID );
+									$n_del = $n_del + DB::evh_single_delete( strval( Utils::cast_strval( $id->ID ) ) );
 								}
 								$message = sprintf(
 									// translators: %1$d is the number of scripts deleted; %2$s is the clustername; %3$s is the internal table name.
 									esc_html__( 'Deleted %1$d scripts from cluster %2$s in %3$s table', 'no-unsafe-inline' ),
 									$n_del,
-									$cluster->clustername,
+									strval( Utils::cast_strval( $cluster->clustername ) ),
 									$table_name
 								);
 								$end_message = $end_message . $message . '<br>';
@@ -136,7 +136,7 @@ class Nunil_Prune_Db {
 						}
 					}
 					// translators: %s is the clustername.
-					$end_message = $end_message . sprintf( esc_html__( 'Pruned cluster %s', 'no-unsafe-inline' ), $cluster->clustername ) . '<br>';
+					$end_message = $end_message . sprintf( esc_html__( 'Pruned cluster %s', 'no-unsafe-inline' ), strval( Utils::cast_strval( $cluster->clustername ) ) ) . '<br>';
 				}
 				Utils::set_last_modified( $table_name );
 			}
@@ -202,11 +202,11 @@ class Nunil_Prune_Db {
 								$message = sprintf(
 									// translators: %1$s is the asset url; %2$s is the internal table name.
 									esc_html__( 'Deleted asset: %1$s from table %2$s', 'no-unsafe-inline' ),
-									$value['src_attrib'],
+									strval( Utils::cast_strval( $value['src_attrib'] ) ),
 									$table_name
 								);
 
-								$deleted = DB::ext_delete( $value['ID'], true );
+								$deleted = DB::ext_delete( strval( Utils::cast_strval( $value['ID'] ) ), true );
 								if ( $deleted > 0 ) {
 									$end_message = $end_message . $message . '<br>';
 									Log::info( $message );
@@ -215,27 +215,27 @@ class Nunil_Prune_Db {
 								$message = sprintf(
 									// translators: %1$s is the asset url; %2$s is the internal table name.
 									esc_html__( 'Deleted duplicated asset: %1$s from table %2$s', 'no-unsafe-inline' ),
-									$value['src_attrib'],
+									strval( Utils::cast_strval( $value['src_attrib'] ) ),
 									$table_name
 								);
-								$deleted = DB::ext_delete( $value['ID'], true );
+								$deleted = DB::ext_delete( strval( Utils::cast_strval( $value['ID'] ) ), true );
 								if ( $deleted > 0 ) {
 									$end_message = $end_message . $message . '<br>';
 									Log::info( $message );
 								}
-								$upd_occurences = DB::ext_occurences_update( $id, $value['ID'] );
+								$upd_occurences = DB::ext_occurences_update( strval( Utils::cast_strval( $id ) ), strval( Utils::cast_strval( $value['ID'] ) ) );
 							} elseif ( 0 === $k ) {
 								$message = sprintf(
 									// translators: %1$s is the asset url..
 									esc_html__( 'Found multiple asset: %1$s', 'no-unsafe-inline' ),
-									$value['src_attrib']
+									strval( Utils::cast_strval( $value['src_attrib'] ) )
 								);
 								$end_message = $end_message . '<i>' . $message . '</i><br>';
 							} else {
 								$message = sprintf(
 									// translators: %1$s is the asset url..
 									esc_html__( ' asset with different query not removed: %1$s', 'no-unsafe-inline' ),
-									$value['src_attrib']
+									strval( Utils::cast_strval( $value['src_attrib'] ) )
 								);
 								$end_message = $end_message . $message . '<br>';
 							}

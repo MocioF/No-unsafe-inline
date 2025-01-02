@@ -22,6 +22,13 @@ namespace NUNIL\admin\partials;
 		<?php
 	endif;
 
+	assert( isset( $enabled_logs ) );
+
+	/** 
+	 * Checked in the main class file.
+	 *
+	 * @var bool $enabled_logs
+	 */
 	if ( $enabled_logs ) {
 		$no_unsafe_inline_sources_obj = new No_Unsafe_Inline_Admin_Logs_Table();
 		$no_unsafe_inline_sources_obj->prepare_items();

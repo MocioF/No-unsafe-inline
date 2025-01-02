@@ -14,7 +14,7 @@ namespace NUNIL;
 use League\Uri\UriString;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Exception;
-
+use NUNIL\Nunil_Lib_Utils as Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -83,7 +83,7 @@ class Nunil_SRI {
 
 			$data = DB::get_ext_hashes_from_id( $id );
 			if ( ! is_null( $data ) ) {
-				$response = $this->fetch_resource( $data->src_attrib );
+				$response = $this->fetch_resource( strval( Utils::cast_strval( $data->src_attrib ) ) );
 
 				if ( ! is_wp_error( $response ) ) {
 					$body = wp_remote_retrieve_body( $response );
@@ -106,15 +106,27 @@ class Nunil_SRI {
 						array_push( $format, '%d' );
 					}
 
+					unset( $data->src_attrib );
 					$data = (array) $data;
 
-					unset( $data['src_attrib'] );
-
-					$affected = DB::update_ext_hashes( $data, $id, $format );
+					// Ensure $data is an array with string keys and string values.
+					foreach ( $data as $key => $value ) {
+						if ( is_string( $key ) && is_string( $value ) ) {
+							$filtered_data[ $key ] = $value;
+						} else {
+							// translators: %d is the script ID in external table.
+							throw new Nunil_Exception( sprintf( esc_html__( 'Wrong data retrieved for external script with ID: %d', 'no-unsafe-inline' ), esc_html( strval( $id ) ) ), 2005, 2 );
+						}
+					}
+					if ( isset( $filtered_data ) ) {
+						$affected = DB::update_ext_hashes( $filtered_data, $id, $format );
+					} else {
+						$returned = false;
+					}
 				} else {
 					$returned = false;
 					// translators: %s is the URL of the resource to fetch.
-					throw new Nunil_Exception( sprintf( esc_html__( 'Unable to fetch %s', 'no-unsafe-inline' ), esc_html( $data->src_attrib ) ), 2003, 2 );
+					throw new Nunil_Exception( sprintf( esc_html__( 'Unable to fetch %s', 'no-unsafe-inline' ), esc_html( strval( Utils::cast_strval( $data->src_attrib ) ) ) ), 2003, 2 );
 				}
 			} else {
 				$returned = false;

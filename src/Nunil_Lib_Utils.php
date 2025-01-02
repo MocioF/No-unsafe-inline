@@ -28,7 +28,7 @@ class Nunil_Lib_Utils {
 	public static function get_page_url() {
 		$protocol = is_ssl() ? 'https://' : 'http://';
 		if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
-			$myurl = ( $protocol ) . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+			$myurl = ( $protocol ) . sanitize_text_field( wp_unslash( strval( self::cast_strval( $_SERVER['HTTP_HOST'] ) ) ) ) . sanitize_text_field( wp_unslash( strval( self::cast_strval( $_SERVER['REQUEST_URI'] ) ) ) );
 		} else {
 			$myurl = '';
 		}
@@ -63,13 +63,13 @@ class Nunil_Lib_Utils {
 		delete_transient( 'no_unsafe_inline_admin_notice' );
 	}
 
-
 	/**
 	 * Checks if all values in array are integers
 	 *
 	 * @since 1.0.0
 	 * @param mixed $myarray The array to check.
 	 * @return bool True if all values of $array are integers, false otherwise
+	 * @phpstan-assert-if-true array<string> $myarray
 	 */
 	public static function is_array_of_integer_strings( $myarray ) {
 		if ( ! is_array( $myarray ) ) {
@@ -103,9 +103,9 @@ class Nunil_Lib_Utils {
 	 */
 	public static function is_resource_hash_needed( $directive, $tagname ): bool {
 		if (
-				( 'script' === $tagname && ( 'script-src' === $directive || 'script-src-elem' === $directive ) ) ||
-				( 'link' === $tagname && ( 'style-src' === $directive || 'style-src-elem' === $directive ) ) ||
-				( 'worker-src' === $directive )
+			( 'script' === $tagname && ( 'script-src' === $directive || 'script-src-elem' === $directive ) ) ||
+			( 'link' === $tagname && ( 'style-src' === $directive || 'style-src-elem' === $directive ) ) ||
+			( 'worker-src' === $directive )
 			) {
 			return true;
 		}
@@ -122,12 +122,12 @@ class Nunil_Lib_Utils {
 	public static function cast_strval( $myvar ) {
 		$new_var = $myvar;
 		if (
-				is_bool( $new_var ) ||
-				is_float( $new_var ) ||
-				is_int( $new_var ) ||
-				is_resource( $new_var ) ||
-				is_string( $new_var ) ||
-				null === $new_var
+			is_bool( $new_var ) ||
+			is_float( $new_var ) ||
+			is_int( $new_var ) ||
+			is_resource( $new_var ) ||
+			is_string( $new_var ) ||
+			null === $new_var
 			) {
 			return( $new_var );
 		} else {
@@ -145,13 +145,13 @@ class Nunil_Lib_Utils {
 	public static function cast_intval( $myvar ) {
 		$new_var = $myvar;
 		if (
-				is_array( $new_var ) ||
-				is_bool( $new_var ) ||
-				is_float( $new_var ) ||
-				is_int( $new_var ) ||
-				is_resource( $new_var ) ||
-				is_string( $new_var ) ||
-				null === $new_var
+			is_array( $new_var ) ||
+			is_bool( $new_var ) ||
+			is_float( $new_var ) ||
+			is_int( $new_var ) ||
+			is_resource( $new_var ) ||
+			is_string( $new_var ) ||
+			null === $new_var
 			) {
 			return( $new_var );
 		} else {
@@ -203,6 +203,25 @@ class Nunil_Lib_Utils {
 	}
 
 	/**
+	 * Check if an array is a list of stdClass objects.
+	 *
+	 * @param array<mixed> $myarray The array to check.
+	 * @return bool True if the array is a list of stdClass objects, false otherwise.
+	 * @phpstan-assert-if-true array<\stdClass> $myarray
+	 */
+	public static function is_list_of_std_class( array $myarray ): bool {
+		if ( ! array_is_list( $myarray ) ) {
+			return false;
+		}
+		foreach ( $myarray as $item ) {
+			if ( ! ( $item instanceof \stdClass ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Move a value to a position in array
 	 *
 	 * @param array<int, mixed> $simplearray The array to be reordered.
@@ -216,5 +235,21 @@ class Nunil_Lib_Utils {
 			return;
 		}
 		array_splice( $simplearray, max( $newpos, 0 ), 0, array_splice( $simplearray, max( $oldpos, 0 ), 1 ) );
+	}
+
+	/**
+	 * Sanitize a string
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @param bool  $lower If true, the string is converted to lowercase.
+	 * @return string
+	 */
+	public static function sanitize_text( $value, $lower = true ): string {
+		$sanitized_string = sanitize_text_field( wp_unslash( strval( self::cast_strval( $value ) ) ) );
+		if ( $lower ) {
+			return strtolower( $sanitized_string );
+		} else {
+			return $sanitized_string;
+		}
 	}
 }

@@ -397,6 +397,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 0 < $inline_list->length ) {
 			$directive = $tagname . '-src';
 			foreach ( $inline_list as $node ) {
+				if ( ! $node instanceof \DOMElement ) {
+					continue;
+				}
 				$content = $node->textContent;
 				$content = $this->clean_text_content( $content );
 				if ( 'script' === $tagname || 'style' === $tagname ) {
@@ -439,10 +442,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								);
 							} else {
 								$this->insert_new_inline_in_db( $tagname, $content, $hashes, $lsh_hex_digest, $wl_cluster );
-								if ( 'script' === $tagname && $this->nunil_trainer_script instanceof Nunil_Knn_Trainer ) {
+								if ( 'script' === $tagname ) {
 									$this->nunil_trainer_script->update( $lsh_hex_digest, $wl_cluster );
 								}
-								if ( 'style' === $tagname && $this->nunil_trainer_style instanceof Nunil_Knn_Trainer ) {
+								if ( 'style' === $tagname ) {
 									$this->nunil_trainer_style->update( $lsh_hex_digest, $wl_cluster );
 								}
 							}
@@ -640,7 +643,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			if ( ! is_null( $stored_attrs ) ) {
 				foreach ( $stored_attrs as $stored_attr ) {
 					if ( is_null( $tag_childs ) ) {
-						if ( is_string( $stored_attr ) && $node->hasAttribute( $stored_attr ) ) {
+						if ( $node->hasAttribute( $stored_attr ) ) {
 							$src_attrib = $node->getAttribute( $stored_attr );
 							if ( 'srcset' === $stored_attr ) {
 								$srcs = $this->get_srcs_from_srcset( $node->getAttribute( 'srcset' ) );
@@ -661,7 +664,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						foreach ( $tag_childs as $tag_child ) {
 							$child_nodes = $node->getElementsByTagName( $tag_child );
 							foreach ( $child_nodes as $child_node ) {
-								if ( is_string( $stored_attr ) && $child_node->hasAttribute( $stored_attr ) ) {
+								if ( $child_node->hasAttribute( $stored_attr ) ) {
 									$src_attrib = $child_node->getAttribute( $stored_attr );
 									if ( 'srcset' === $stored_attr ) {
 										$srcs = $this->get_srcs_from_srcset( $child_node->getAttribute( 'srcset' ) );
@@ -789,7 +792,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs set by others plugins.
 						$integrity_string = '';
 						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
-							$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
+							$hash_with_options = 'sha256-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha256 ) );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -802,7 +805,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							}
 						}
 						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
-							$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
+							$hash_with_options = 'sha384-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha384 ) );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -815,7 +818,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							}
 						}
 						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
-							$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
+							$hash_with_options = 'sha512-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha512 ) );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -879,15 +882,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 						$integrity_string = '';
 					if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
-						$hash_with_options = 'sha256-' . $this->external_rows[ $index ]->sha256;
+						$hash_with_options = 'sha256-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha256 ) );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 					if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
-						$hash_with_options = 'sha384-' . $this->external_rows[ $index ]->sha384;
+						$hash_with_options = 'sha384-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha384 ) );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 					if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
-						$hash_with_options = 'sha512-' . $this->external_rows[ $index ]->sha512;
+						$hash_with_options = 'sha512-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha512 ) );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 
@@ -924,10 +927,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			'cookie-cdn.cookiepro.com', // https://wordpress.org/support/topic/cookie-pro-script-gets-blocked-from-time-to-time/ .
 		);
 
-		$not_sri_sources = apply_filters( 'no_unsafe_inline_not_sri_sources', $not_sri_sources );
+		$not_sri_sources = (array) apply_filters( 'no_unsafe_inline_not_sri_sources', $not_sri_sources );
 
 		foreach ( $not_sri_sources as $source ) {
-			if ( false !== strpos( $sourcestr, $source ) ) {
+			if ( false !== strpos( $sourcestr, strval( Utils::cast_strval( $source ) ) ) ) {
 				// We found the not_sri_string in $sourcestr.
 				return false;
 			}

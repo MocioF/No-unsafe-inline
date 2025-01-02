@@ -243,7 +243,7 @@ class No_Unsafe_Inline_Public {
 		global $nunil_csp_meta;
 
 		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {
-			if ( false === is_admin() || ( true === is_admin() && 1 === $options['protect_admin'] ) ) {
+			if ( false === is_admin() || ( 1 === $options['protect_admin'] ) ) {
 				if ( 1 === $tools['test_policy'] ) {
 					$header_csp = 'Content-Security-Policy-Report-Only: ';
 				}
@@ -276,7 +276,7 @@ class No_Unsafe_Inline_Public {
 							$csp = $csp . ' \'strict-dynamic\'';
 						}
 						// If in base rules is set 'none' for a directive, don't add anything to that.
-						if ( is_array( $this->csp_local_whitelist ) && '\'none\'' !== $csp ) {
+						if ( '\'none\'' !== $csp ) {
 							foreach ( $this->csp_local_whitelist as $local ) {
 								if ( $dir === $local['directive'] ) {
 									$csp = $csp . ' \'' . $local['source'] . '\'';
@@ -302,7 +302,7 @@ class No_Unsafe_Inline_Public {
 						}
 						if ( true === $endpoints_in_use ) {
 							foreach ( $options['endpoints'] as $url ) {
-								$report_uri = $report_uri . $url . ' ';
+								$report_uri = $report_uri . strval( Utils::cast_strval( $url ) ) . ' ';
 							}
 						}
 
@@ -333,7 +333,7 @@ class No_Unsafe_Inline_Public {
 								$my_endpoints = '';
 								foreach ( $options['endpoints'] as $url ) {
 									$my_endpoints = $my_endpoints
-									. '{ "url": "' . $url . '" }, ';
+									. '{ "url": "' . strval( Utils::cast_strval( $url ) ) . '" }, ';
 								}
 									$my_endpoints = substr( $my_endpoints, 0, strlen( $my_endpoints ) - 2 );
 

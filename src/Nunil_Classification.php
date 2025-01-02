@@ -16,7 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use NUNIL\Nunil_Knn_Trainer;
-use NUNIL\Nunil_Lib_Utils;
 use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\CrossValidation\Reports\AggregateReport;
 use Rubix\ML\CrossValidation\Reports\ConfusionMatrix;
@@ -116,7 +115,7 @@ class Nunil_Classification {
 				);
 
 				$dataset_labels = $dataset->labels();
-				if ( Nunil_Lib_Utils::is_one_dimensional_string_array( $dataset_labels ) ) {
+				if ( array_is_list( $predictions ) && array_is_list( $dataset_labels ) ) {
 					$result_string .= '<pre><code>';
 					$result_string .= $report->generate( $predictions, $dataset_labels );
 					$result_string .= '</code></pre>';

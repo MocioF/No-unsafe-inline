@@ -55,7 +55,7 @@ class Nunil_HTML_Tag {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var array<string>|string|null The childs tagnames of the HTML tagname where to look for $stored_attr, if any
+	 * @var array<string>|null The childs tagnames of the HTML tagname where to look for $stored_attr, if any
 	 */
 	private $childs;
 
@@ -208,12 +208,7 @@ class Nunil_HTML_Tag {
 	 */
 	public function get_childs() {
 		if ( $this->childs ) {
-			if ( is_string( $this->childs ) ) {
-				$exploded = explode( ',', $this->childs );
-				return array_map( 'trim', $exploded );
-			} else {
-				return $this->childs;
-			}
+			return $this->childs;
 		} else {
 			return null;
 		}

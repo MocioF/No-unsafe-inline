@@ -21,6 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
+	/**
+	 * Requires a core wp file.
+	 *
+	 * @phpstan-ignore requireOnce.fileNotFound
+	 */
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
@@ -100,7 +105,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && is_string( $_GET['_wpnonce'] ) ) {
 				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are not processing form information; $nonce is used only for wp_verify_nonce
 				$nonce  = wp_unslash( $_GET['_wpnonce'] );
-				$action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
+				$action = ( isset( $_GET['action'] ) ? Utils::sanitize_text( $_GET['action'], false ) : '' );
 		} else {
 				$action = '';
 				$nonce  = '';
@@ -112,7 +117,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
+					$script_id = Utils::sanitize_text( $_GET['script_id'], false );
 					$affected  = DB::evh_whitelist( $script_id );
 				}
 				break;
@@ -131,7 +136,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
+					$script_id = Utils::sanitize_text( $_GET['script_id'], false );
 					$affected  = DB::evh_whitelist( $script_id, false );
 				}
 				break;
@@ -150,7 +155,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
+					$script_id = Utils::sanitize_text( $_GET['script_id'], false );
 					$affected  = DB::evh_delete( $script_id );
 				}
 				break;
@@ -169,7 +174,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 					wp_die( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 				}
 				if ( isset( $_GET['script_id'] ) ) {
-					$script_id = sanitize_text_field( wp_unslash( $_GET['script_id'] ) );
+					$script_id = Utils::sanitize_text( $_GET['script_id'], false );
 					$affected  = DB::evh_uncluster( $script_id );
 				}
 				break;
@@ -380,7 +385,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 	 */
 	public function prepare_items() {
 		if ( isset( $_REQUEST['s'] ) ) {
-			$search = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
+			$search = Utils::sanitize_text( $_REQUEST['s'], false );
 		} else {
 			$search = '';
 		}
@@ -401,7 +406,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 			$per_page = 20;
 		}
 
-		$paged = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] - 1 ) * $per_page ) : 0;
+		$paged = isset( $_REQUEST['paged'] ) ? max( 0, ( intval( Utils::cast_intval( $_REQUEST['paged'] ) ) - 1 ) * $per_page ) : 0;
 
 		$order = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'ASC', 'DESC', 'asc', 'desc' ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'ASC';
 

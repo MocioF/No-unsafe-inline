@@ -203,7 +203,7 @@ class Nunil_Event_Attributes {
 	 * @since 1.0.0
 	 * @access public
 	 * @param string $filter_by One of 'body', 'form', 'keyboard', 'mouse', 'drag', 'clipboard', 'media', 'misc'.
-	 * @return array<array<string>>;
+	 * @return array<array<string>> An array of array of [triggers] [eventattributes].
 	 */
 	public function get_attributes( $filter_by = null ) {
 		if ( ! $filter_by ) {

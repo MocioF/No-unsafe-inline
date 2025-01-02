@@ -65,7 +65,7 @@ class Nunil_Manage_Muplugin {
 				);
 				$result['status'] = 'ERROR';
 				throw new Nunil_Exception( esc_html( $result['error'] ), 3001, 3 );
-			} if ( 'ERROR' !== $result['status'] && ! copy( $source, $dest ) ) {
+			} if ( ! copy( $source, $dest ) ) {
 				// translators: %1$s is the source directory;  %2$s is the dest directory.
 				$result['error']  = sprintf( __( 'Error in plugin activation! Could not copy the No unsafe-inline\'s mu-plugin from %1$s to %2$s.', 'no-unsafe-inline' ), $source, $dest );
 				$result['status'] = 'ERROR';

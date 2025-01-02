@@ -125,7 +125,13 @@ class Nunil_Lib_Db {
 
 		$db_version = get_option( 'no-unsafe-inline_db_version' );
 
-		// We need this for dbDelta() to work.
+		/**
+		 * Requires a core wp file.
+		 *
+		 * We need this for dbDelta() to work.
+		 *
+		 * @phpstan-ignore requireOnce.fileNotFound
+		 */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate        = $wpdb->get_charset_collate();
@@ -1192,9 +1198,9 @@ class Nunil_Lib_Db {
 	 * Update hashes of an external script
 	 *
 	 * @since 1.0.0
-	 * @param array<string|int> $data  Array with ext script hashes and whitelist status.
-	 * @param int               $id The ID of script in DB table.
-	 * @param array<string>     $format An array of formats to be mapped to each of the values in $data.
+	 * @param array<string, string|int> $data  Array with ext script hashes and whitelist status.
+	 * @param int                       $id The ID of script in DB table.
+	 * @param array<string>             $format An array of formats to be mapped to each of the values in $data.
 	 * @return int|false The number of rows updated, or false on error.
 	 */
 	public static function update_ext_hashes( $data, $id, $format ) {
@@ -1488,6 +1494,9 @@ class Nunil_Lib_Db {
 		global $wpdb;
 
 		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
+
+		// Questa funziona su sql-lite ... verifica se è possibile individuarne l'uso.
+		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
 		return $wpdb->query( $sql );
 	}
 
@@ -2013,6 +2022,13 @@ class Nunil_Lib_Db {
 	 * @return void
 	 */
 	public static function extend_ext_src_attrib_size() {
+		/**
+		 * Requires a core wp file.
+		 * 
+		 * We need this for dbDelta() to work.
+		 * 
+		 * @phpstan-ignore requireOnce.fileNotFound
+		 */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		global $wpdb;
 		$charset_collate        = $wpdb->get_charset_collate();
