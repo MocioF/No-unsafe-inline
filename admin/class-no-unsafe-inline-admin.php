@@ -127,7 +127,7 @@ class No_Unsafe_Inline_Admin {
 			wp_enqueue_script(
 				$this->plugin_name,
 				plugin_dir_url( __FILE__ ) . "js/no-unsafe-inline-admin$suffix.js",
-				array( 'jquery', 'jquery-ui-dialog', 'jquery-ui-accordion', 'jquery-ui-tabs', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'wp-i18n' ),
+				array( 'jquery', 'jquery-ui-dialog', 'jquery-ui-accordion', 'jquery-effects-highlight', 'jquery-ui-tabs', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'wp-i18n' ),
 				$this->version,
 				false
 			);
@@ -463,7 +463,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_fetch_directives_settings',
 			esc_html__( 'Directives managed', 'no-unsafe-inline' ),
 			array( $this, 'print_directives_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-1">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		foreach ( $this->managed_directives as $src_directive ) {
@@ -490,7 +494,11 @@ class No_Unsafe_Inline_Admin {
 			'external_host_mode',
 			esc_html__( 'External source identification', 'no-unsafe-inline' ),
 			array( $this, 'print_external_host_mode_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-2">',
+				'after_section'  => '',
+			)
 		);
 
 		add_settings_field(
@@ -554,7 +562,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_algo_in_use',
 			array(
 				'option_name' => 'sri_sha256',
-				'label'       => esc_html__( 'Use sha256 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
+				'label'       => __( 'Use sha256 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -566,7 +574,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_algo_in_use',
 			array(
 				'option_name' => 'sri_sha384',
-				'label'       => esc_html__( 'Use sha384 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
+				'label'       => __( 'Use sha384 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -578,7 +586,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_algo_in_use',
 			array(
 				'option_name' => 'sri_sha512',
-				'label'       => esc_html__( 'Use sha512 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
+				'label'       => __( 'Use sha512 hashes in csp and integrity attribute.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -587,7 +595,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_use_sri',
 			esc_html__( 'Use Subresource Integrity', 'no-unsafe-inline' ),
 			array( $this, 'print_use_sri_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -598,7 +610,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_use_sri',
 			array(
 				'option_name' => 'sri_script',
-				'label'       => esc_html__( 'Add integrity attribute to external resources loaded by <script> tag.', 'no-unsafe-inline' ),
+				'label'       => __( 'Add integrity attribute to external resources loaded by <script> tag.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -610,7 +622,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_use_sri',
 			array(
 				'option_name' => 'sri_link',
-				'label'       => esc_html__( 'Add integrity attribute to external resources loaded by <link> tag.', 'no-unsafe-inline' ),
+				'label'       => __( 'Add integrity attribute to external resources loaded by <link> tag.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -619,7 +631,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_inline_script_mode',
 			esc_html__( 'Inline script mode', 'no-unsafe-inline' ),
 			array( $this, 'print_inline_script_mode_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-3">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -635,7 +651,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc',
 			esc_html__( 'Misc options', 'no-unsafe-inline' ),
 			array( $this, 'print_misc_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-4">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -647,11 +667,11 @@ class No_Unsafe_Inline_Admin {
 			array(
 				'option_name' => 'use_strict-dynamic',
 				// translators: strict-dynamic link.
-				'label'       => sprintf( esc_html__( 'Add %s in script-src and default-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
+				'label'       => sprintf( __( 'Add %s in script-src and default-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
 					// translators: %1$s and %2$s are link to external websites.
-					esc_html__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
+					__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
 					'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
-					'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>' 
+					'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>'
 				),
 			)
 		);
@@ -665,7 +685,7 @@ class No_Unsafe_Inline_Admin {
 			array(
 				'option_name' => 'no-unsafe-inline_upgrade_insecure',
 				// translators: upgrade-insecure-requests link.
-				'label'       => sprintf( esc_html__( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank"><b>upgrade-insecure-requests</b></a>' ),
+				'label'       => sprintf( __( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank"><b>upgrade-insecure-requests</b></a>' ),
 			)
 		);
 
@@ -677,7 +697,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc',
 			array(
 				'option_name' => 'protect_admin',
-				'label'       => esc_html__( 'Enforce the policy when true === is_admin().', 'no-unsafe-inline' ),
+				'label'       => __( 'Enforce the policy when true === is_admin().', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -690,7 +710,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc',
 			array(
 				'option_name' => 'use_unsafe-hashes',
-				'label'       => esc_html__( 'The \'unsafe-hashes\' Content Security Policy (CSP) keyword allows the execution of inline scripts within a JavaScript event handler attribute of a HTML element. This is not safe and this plugin can handle event handlers HTML attributes without \'unsafe-hashes\'.', 'no-unsafe-inline' ),
+				'label'       => __( 'The \'unsafe-hashes\' Content Security Policy (CSP) keyword allows the execution of inline scripts within a JavaScript event handler attribute of a HTML element. This is not safe and this plugin can handle event handlers HTML attributes without \'unsafe-hashes\'.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -715,7 +735,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_misc',
 			array(
 				'option_name' => 'add_wl_by_cluster_to_db',
-				'label'       => esc_html__( 'Add auto-authorized scripts in db.', 'no-unsafe-inline' ),
+				'label'       => __( 'Add auto-authorized scripts in db.', 'no-unsafe-inline' ),
 			)
 		);
 
@@ -732,7 +752,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_report',
 			esc_html__( 'Violations report options', 'no-unsafe-inline' ),
 			array( $this, 'print_report_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-5">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -772,7 +796,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_logs',
 			esc_html__( 'Logs', 'no-unsafe-inline' ),
 			array( $this, 'print_logs_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-6">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -796,7 +824,11 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline_deactivate',
 			esc_html__( 'Deactivation options', 'no-unsafe-inline' ),
 			array( $this, 'print_deactivate_section' ),
-			'no-unsafe-inline-options'
+			'no-unsafe-inline-options',
+			array(
+				'before_section' => '<div id="nunil-options-tabs-7">',
+				'after_section'  => '</div>',
+			)
 		);
 
 		add_settings_field(
@@ -973,11 +1005,13 @@ class No_Unsafe_Inline_Admin {
 
 		/**
 		 * In CSP3 hashes are only allowed for inline script, inline styles and external script
-		 * but support for external styles or imgs in the specification has not been announced
-		 * https://www.w3.org/TR/CSP3/#external-hash
-		 * 'hash' === $input['script-src_mode'] ||
-		 * 'hash' === $input['img-src_mode']
+		 * but support for external styles or imgs in the specification has not been announced.
+		 *
+		 * See: https://www.w3.org/TR/CSP3/#external-hash
 		 */
+		// 'hash' === $input['script-src_mode'] ||
+		// 'hash' === $input['img-src_mode']
+
 		'hash' === $input['script-src_mode']
 
 		) &&
@@ -1578,8 +1612,9 @@ class No_Unsafe_Inline_Admin {
 		$enabled                = $value ? 'checked' : '';
 		$allowed_html_in_notice = array(
 			'a'      => array(
-				'href'  => array(),
-				'title' => array(),
+				'href'   => array(),
+				'title'  => array(),
+				'target' => array(),
 			),
 			'br'     => array(),
 			'em'     => array(),
@@ -1904,40 +1939,44 @@ class No_Unsafe_Inline_Admin {
 					<?php
 					if ( null === $tab ) :
 						?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Tools', 'no-unsafe-inline' ) ); ?></a>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Tools', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab 
-						<?php
-						if ( 'base-rule' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Base rules', 'no-unsafe-inline' ) ); ?></a>
+					<?php
+					if ( 'base-rule' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Base rules', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab 
-						<?php
-						if ( 'external' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'External whitelist', 'no-unsafe-inline' ) ); ?></a>
+					<?php
+					if ( 'external' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'External whitelist', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=inline" class="nav-tab 
-						<?php
-						if ( 'inline' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Inline whitelist', 'no-unsafe-inline' ) ); ?></a>
-
+					<?php
+					if ( 'inline' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Inline whitelist', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=events" class="nav-tab 
-						<?php
-						if ( 'events' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Events whitelist', 'no-unsafe-inline' ) ); ?></a>
-
+					<?php
+					if ( 'events' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Events whitelist', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=settings" class="nav-tab 
-						<?php
-						if ( 'settings' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
-
+					<?php
+					if ( 'settings' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
 					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab 
-						<?php
-						if ( 'logs' === $tab ) :
-							?>
-						nav-tab-active<?php endif; ?>"><?php printf( esc_html__( 'Logs', 'no-unsafe-inline' ) ); ?></a>
+					<?php
+					if ( 'logs' === $tab ) :
+						?>
+						nav-tab-active<?php endif; ?>">
+						<?php printf( esc_html__( 'Logs', 'no-unsafe-inline' ) ); ?></a>
 				</nav>
 
 				<div class="tab-content">

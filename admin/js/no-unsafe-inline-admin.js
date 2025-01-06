@@ -38,6 +38,213 @@
     }
   });
 
+/*!
+ * jQuery serialtabs
+ * https://github.com/kevinmeunier/jquery-serialtabs
+ *
+ * Copyright 2022 Meunier Kévin
+ * https://www.meunierkevin.com
+ *
+ * Released under the MIT license
+ */
+  $.fn.serialtabs = function(options){
+    const settings = $.extend({}, $.fn.serialtabs.defaults, options);
+    const base = this;
+
+    $.extend(this, {
+      init: function(){
+        const event = settings.event+'.serialtabs';
+        const fxIn = settings.fxIn;
+        settings.fxIn = 'show';
+        let $lists = $(this);
+
+        this.each(function(){
+          const $list = $(this);
+          const $trigger = settings.getTrigger($list);
+          const $triggerCurrent = $trigger.filter('.is-current');
+
+          // Responsive design management
+          if( settings.mode == 'auto' ){
+            let delay = false;
+            let speed;
+            $(window).on('resize.serialtabs', function(event, speed){
+              if( delay !== false ) {
+                clearTimeout(delay);
+              }
+              delay = setTimeout(function(){
+                base.handleResize($list);
+              }, 25);
+            });
+
+            // Manual trigger on load
+            base.handleResize($list);
+          } else {
+            $list.attr('data-serialtabs-mode', settings.mode);
+          }
+
+          // Show the first element, or the current element
+          if( $list.attr('data-serialtabs-mode') == 'tabs' && $triggerCurrent.length == 0 ){
+            $trigger.first().addClass('is-current');
+          }
+
+          // Hide all elements on page load
+          $trigger.not('.is-current').each(function(){
+            const $this = $(this);
+            const $target = settings.getTarget($this);
+            $target.hide();
+          });
+
+          // Bind event
+          $trigger.on(event, function(event){
+            const $this = $(this);
+            base.handleEvent($this, $list);
+            if( event.target.tagName == 'A' ) {
+              return true;
+            }
+          });
+        });
+
+        // Restore the initial setting
+        settings.fxIn = fxIn;
+      },
+
+      handleEvent: function( $trigger, $list ){
+        const $target = settings.getTarget($trigger);
+        const $triggers = settings.getTrigger($list);
+        const $prevTrigger =  $triggers.filter('.is-current');
+        const $prevTarget = settings.getTarget($prevTrigger);
+
+        // Avoid triggering the event for already displayed elements
+        if( $list.attr('data-serialtabs-mode') == 'tabs' && $trigger.is($prevTrigger) )
+          return;
+
+        // Hide the previous element
+        if( $prevTrigger )
+          base.display($prevTrigger, $prevTarget, false);
+
+        // Show the new element
+        if( !$trigger.is($prevTrigger) )
+          base.display($trigger, $target, true);
+      },
+
+      display: function( $trigger, $target, action ){
+        // Management of the current class
+        $trigger[action ? 'addClass' : 'removeClass']('is-current');
+
+        // Management of the display state
+        $target[action ? settings.fxIn : settings.fxOut]();
+
+        // Check the radio button if existing
+        if( action ){
+          const $radio = $trigger.find('[type=radio]');
+          if( $radio.length )
+            $radio.prop('checked', true);
+        }
+      },
+
+      getTrigger: function( $list ){
+        let trigger;
+
+        if( typeof settings.trigger  == 'string' ){
+          trigger = $list.find( settings.trigger );
+        } else if( typeof settings.trigger  == 'function' ){
+          trigger = settings.trigger( $list );
+        }
+
+        return $(trigger);
+      },
+
+      getTarget: function( $trigger ){
+        let target;
+
+        if( typeof settings.target  == 'string' ){
+          target = $trigger.attr( settings.target );
+        } else if( typeof settings.target  == 'function' ){
+          target = settings.target( $trigger );
+        }
+
+        return $(target);
+      },
+
+      handleResize: function( $list ){
+        const isResponsive = base.isResponsive($list);
+
+        // Update the display mode
+        $list.attr('data-serialtabs-mode', (isResponsive ? 'accordion' : 'tabs'));
+
+        // Move the content
+        base.moveItems($list, isResponsive);
+      },
+
+      isResponsive: function( $list ){
+        let breakpoint = $list.data('serialtabs-breakpoint') ? $list.data('serialtabs-breakpoint') : 50;
+
+        // Breakpoint calculation
+        if( breakpoint == 50 )
+          $list.children().each(function(){
+            breakpoint += $(this).outerWidth();
+          });
+
+        // Store the breakpoint (essential)
+        $list.data('serialtabs-breakpoint', breakpoint);
+
+        return ( $list.parent().width() < breakpoint );
+      },
+
+      moveItems: function( $list, isResponsive ){
+        const $trigger = settings.getTrigger($list);
+
+        $trigger.each(function(){
+          const $this = $(this);
+          const $target = settings.getTarget($this);
+
+          if( isResponsive ){
+            $target.insertAfter($this);
+          } else {
+            $target.insertAfter($list);
+          }
+        });
+      }
+    });
+
+    // Initialisation
+    this.init();
+    return this;
+  };
+
+  $.fn.serialtabs.defaults = {
+    mode: 'auto', // 'auto', 'accordion', 'tabs'
+    event: 'click',
+    getTrigger: function($list){
+      return $list.find('[data-serialtabs]');
+    },
+    getTarget: function($trigger){
+      return $($trigger.data('serialtabs'));
+    },
+    fxIn: 'slideDown',
+    fxOut: 'slideUp'
+  };
+  /** END jQuery serialtabs */
+
+  /**
+   * Used to check at least one checkbox in the array is checked.
+   *
+   * If it is not, the first checkbox in the array is checked.
+   */
+  $.fn.checkOneAtLeast = function ( targets ){
+    var checked = false;
+    $(targets).each(function() {
+      if ($(this).prop("checked")) {
+        checked = true;
+      }
+    });
+    if ( false === checked ) {
+      $(targets)[0].prop("checked", true);
+      $(targets)[0].trigger("change");
+    }
+    return this;
+  }
+
   // Used to order strings in base rules
   function uniqueOrdered(string) {
     const categories = string.split(" ");
@@ -238,14 +445,52 @@
     });
   }
 
-  function isValidReportUrl(_string) {
-    var url_string;
-    try {
-      url_string = new URL(_string);
-    } catch (_) {
+  /**
+   * Since trustworthy depends on user agent, we shouldnt' limit to https only.
+   * However almost all browsers consider only https as trustworthy to deploy a report.
+   *
+   * https://w3c.github.io/reporting/#header
+   * https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
+   */
+  function isTrustworthyUrl(url_string) {
+    if (!url_string || url_string === '') {
+        return false;
+    }
+
+    const url = new URL(url_string);
+
+    // Check if the protocol is https
+    if (url.protocol === "https:") {
+        return true;
+    }
+
+    // Check if the host matches 127.0.0.0/8 or ::1/128
+    const host = url.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
+        return true;
+    }
+
+    return false;
+  }
+
+  function isPrintableAsciiString(_string) {
+    if (_string === '') {
       return false;
     }
-    return url_string.protocol === "http:" || url_string.protocol === "https:";
+    return /^[\x20-\x7F]*$/.test(_string);
+  }
+
+  function isUniqueNewEndpointKey(_newvalue) {
+    var isUnique = true;
+    $("input[type='hidden'][name^='no-unsafe-inline[endpoints]'][name$='[name]']").each(function() {
+      if (_newvalue === $(this).val()) {
+        isUnique = false;
+        //$(this).effect("highlight", {}, 3000);
+        $(this).prev().effect( "highlight", "slow" );
+        return false;
+      }
+    });
+    return isUnique;
   }
 
   // Open inline help from link
@@ -509,6 +754,11 @@
     page: 5,
     step: 512
   });
+
+  // Create tabs in options page.
+  $("[id^=nunil-options-tabs-").addClass( "serialtabs-nav-content" );
+  $(".serialtabs-nav > li").addClass( "sub-link-1" );
+  $('.serialtabs-nav').serialtabs();
 
   // Handle SRI options in settings tab.
   if ("no-unsafe-inline" === mypage && "settings" === mytab) {
