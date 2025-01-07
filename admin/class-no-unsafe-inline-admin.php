@@ -313,7 +313,10 @@ class No_Unsafe_Inline_Admin {
 				$options['use_report-to']           = 1;
 				$options['add_Reporting-Endpoints'] = 1;
 			}
+<<<<<<< HEAD
 			$options['capture_admin'] = 1;
+=======
+>>>>>>> 6789a43 (Add new options for CSP Violation Reports, adding Reporting-Endopoints response header field)
 			update_option( 'no-unsafe-inline', $options );
 		}
 	}
