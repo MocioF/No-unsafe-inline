@@ -313,6 +313,7 @@ class No_Unsafe_Inline_Admin {
 				$options['use_report-to']           = 1;
 				$options['add_Reporting-Endpoints'] = 1;
 			}
+			$options['capture_admin'] = 1;
 			update_option( 'no-unsafe-inline', $options );
 		}
 	}
@@ -722,6 +723,18 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		add_settings_field(
+			'capture_admin',
+			esc_html__( 'Collect data in admin pages', 'no-unsafe-inline' ),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_misc',
+			array(
+				'option_name' => 'capture_admin',
+				'label'       => __( 'Capture data when true === is_admin().', 'no-unsafe-inline' ),
+			)
+		);
+
+		add_settings_field(
 			'use_unsafe-hashes',
 			// translators: %s is unsafe-hashes link to w3.org site.
 			sprintf( esc_html__( 'Use \'%s\' for JS event handlers attributes of HTML elements. (Say NO)', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#unsafe-hashes-usage" target="_blank">unsafe-hashes</a>' ),
@@ -1072,6 +1085,7 @@ class No_Unsafe_Inline_Admin {
 			'use_strict-dynamic',
 			'no-unsafe-inline_upgrade_insecure',
 			'protect_admin',
+			'capture_admin',
 			'use_unsafe-hashes',
 			'fix_setattribute_style',
 			'add_wl_by_cluster_to_db',

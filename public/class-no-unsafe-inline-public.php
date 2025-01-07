@@ -173,7 +173,8 @@ class No_Unsafe_Inline_Public {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
-		if ( 1 === $tools['capture_enabled'] ) {
+		if ( 1 === $tools['capture_enabled'] &&
+		( false === is_admin() || ( 1 === $options['capture_admin'] ) ) ) {
 			$this->capture->load_html( $htmlsource );
 
 			if ( class_exists( 'Fiber' ) ) {

@@ -56,6 +56,7 @@ final class No_Unsafe_Inline_ActivatorTest extends \WP_UnitTestCase {
 		$plugin_options['use_strict-dynamic']                = 0;
 		$plugin_options['no-unsafe-inline_upgrade_insecure'] = 1;
 		$plugin_options['protect_admin']                     = 1;
+		$plugin_options['capture_admin']                     = 1;
 		$plugin_options['use_unsafe-hashes']                 = 0;
 		$plugin_options['fix_setattribute_style']            = 1;
 		$plugin_options['add_wl_by_cluster_to_db']           = 1;

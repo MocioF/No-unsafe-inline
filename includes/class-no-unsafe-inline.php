@@ -280,6 +280,10 @@ class No_Unsafe_Inline {
 		$suffix  = wp_scripts_get_suffix();
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
+
+		// Enqueue the script that will handle the CSP violation reports.
+		// This functionality is not implemented yet.
+		/*
 		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && 1 === $tools['capture_enabled'] ) {
 			wp_enqueue_script(
 				$this->plugin_name . '_spv_handler',
@@ -288,39 +292,40 @@ class No_Unsafe_Inline {
 				$this->version,
 				false
 			);
-		}
+		} */
 
-		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-		( 1 === $options['fix_setattribute_style'] )
-			) {
-			wp_enqueue_script(
-				$this->plugin_name . '_jquery-htmlprefilter-override',
-				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-prefilter-override$suffix.js",
-				array( 'jquery' ),
-				$this->version,
-				false
-			);
-			wp_enqueue_script(
-				$this->plugin_name . '_fix_setattribute_style',
-				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-fix-style$suffix.js",
-				array(),
-				$this->version,
-				false
-			);
+		if (
+			( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && ( false === is_admin() || 1 === $options['protect_admin'] ) ) ||
+			( ( 1 === $tools['capture_enabled'] ) && ( false === is_admin() || 1 === $options['capture_admin'] ) )
+		) {
+			if ( 1 === $options['fix_setattribute_style'] ) {
+				wp_enqueue_script(
+					$this->plugin_name . '_jquery-htmlprefilter-override',
+					plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-prefilter-override$suffix.js",
+					array( 'jquery' ),
+					$this->version,
+					false
+				);
+				wp_enqueue_script(
+					$this->plugin_name . '_fix_setattribute_style',
+					plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-fix-style$suffix.js",
+					array(),
+					$this->version,
+					false
+				);
+				// Moving the script before every other queued script is included.
+				Utils::move_array_element( $wp_scripts->queue, $this->plugin_name . '_fix_setattribute_style', 0 );
+			}
+			if ( 1 !== $options['use_unsafe-hashes'] ) {
+				wp_enqueue_script(
+					$this->plugin_name . '_mutation-observer',
+					plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-mutation-observer$suffix.js",
+					array( 'jquery' ),
+					$this->version,
+					false
+				);
+			}
 		}
-
-		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] || 1 === $tools['capture_enabled'] ) &&
-		( 1 !== $options['use_unsafe-hashes'] ) ) {
-			wp_enqueue_script(
-				$this->plugin_name . '_mutation-observer',
-				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-mutation-observer$suffix.js",
-				array( 'jquery' ),
-				$this->version,
-				false
-			);
-		}
-		// Moving the script before every other queued script is included.
-		Utils::move_array_element( $wp_scripts->queue, $this->plugin_name . '_fix_setattribute_style', 0 );
 	}
 
 	/**

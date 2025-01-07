@@ -786,6 +786,14 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>capture_admin</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'Choose here if to capture data to be used in "Content Security Policy" for admin pages of your site.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_unsafe-hashes</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
