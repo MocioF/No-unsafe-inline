@@ -225,6 +225,10 @@ class No_Unsafe_Inline_Activator {
 			$plugin_options['remove_tables']                     = 0;
 			$plugin_options['remove_options']                    = 0;
 			$plugin_options['use_reports']                       = 0;
+			$plugin_options['use_report-to']                     = 0;
+			$plugin_options['use_report-uri']                    = 0;
+			$plugin_options['add_Reporting-Endpoints']           = 0;
+			$plugin_options['add_Report-To']                     = 0;
 			$plugin_options['group_name']                        = 'csp-endpoint';
 			$plugin_options['max_age']                           = 10886400;
 			$plugin_options['max_response_header_size']          = 8192;

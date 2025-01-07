@@ -292,58 +292,89 @@ class No_Unsafe_Inline_Public {
 						}
 					}
 
-					$report_uri       = '';
-					$header_report_to = '';
-					$report_to        = '';
+					$report_uri                 = '';
+					$header_report_to           = '';
+					$report_to                  = '';
+					$header_reporting_endpoints = '';
 
 					if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) {
-						if ( 1 === $tools['capture_enabled'] ) {
-							$report_uri = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
-						}
-						if ( true === $endpoints_in_use ) {
-							foreach ( $options['endpoints'] as $url ) {
-								$report_uri = $report_uri . strval( Utils::cast_strval( $url ) ) . ' ';
+						/**
+						 * Note: report-uri directive is deprecated in CSP3.
+						 * It is replaced by report-to directive.
+						 * It is not used neither internally if not explicitly set in options.
+						 */
+						if ( 1 === $options['use_report-uri'] ) {
+							if ( 1 === $tools['capture_enabled'] ) {
+								$report_uri = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
+							}
+							if ( true === $endpoints_in_use ) {
+								foreach ( $options['endpoints'] as $endpoint ) {
+									if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
+										$report_uri = $report_uri . strval( Utils::cast_strval( $endpoint['url'] ) ) . ' ';
+									}
+								}
 							}
 						}
 
 						if ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) {
-							$header_report_to = $header_report_to
-							. '{ "group": ';
-							if ( '' !== $options['group_name'] && true === $endpoints_in_use ) {
-								$header_report_to = $header_report_to . '"' . $options['group_name'] . '", ';
-								$report_to        = $report_to . $options['group_name'];
-							} else {
-								$header_report_to = $header_report_to . '"csp-endpoint", ';
-								$report_to        = $report_to . 'csp-endpoint';
-							}
-							$header_report_to = $header_report_to
-							. '"max_age": ';
-							if ( '' !== $options['max_age'] && true === $endpoints_in_use ) {
-								$header_report_to = $header_report_to . $options['max_age'] . ', ';
-							} else {
-								$header_report_to = $header_report_to . '10886400, ';
-							}
-							$header_report_to = $header_report_to
-							. '"endpoints": [';
-							if ( 1 === $tools['capture_enabled'] ) {
+							if ( 1 === $options['add_Report-To'] ) {
 								$header_report_to = $header_report_to
-								. '{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }';
-							}
-							if ( true === $endpoints_in_use ) {
-								$my_endpoints = '';
-								foreach ( $options['endpoints'] as $url ) {
-									$my_endpoints = $my_endpoints
-									. '{ "url": "' . strval( Utils::cast_strval( $url ) ) . '" }, ';
+								. '{ "group": ';
+								if ( '' !== $options['group_name'] && true === $endpoints_in_use ) {
+										$header_report_to = $header_report_to . '"' . $options['group_name'] . '", ';
+										$report_to        = $report_to . $options['group_name'];
+								} else {
+									$header_report_to = $header_report_to . '"csp-endpoint", ';
+									$report_to        = $report_to . 'csp-endpoint';
 								}
+									$header_report_to = $header_report_to
+									. '"max_age": ';
+								if ( '' !== $options['max_age'] && true === $endpoints_in_use ) {
+									$header_report_to = $header_report_to . $options['max_age'] . ', ';
+								} else {
+									$header_report_to = $header_report_to . '10886400, ';
+								}
+									$header_report_to = $header_report_to
+									. '"endpoints": [';
+								if ( 1 === $tools['capture_enabled'] ) {
+									$header_report_to = $header_report_to
+									. '{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }';
+								}
+								if ( true === $endpoints_in_use ) {
+									$my_endpoints = '';
+									foreach ( $options['endpoints'] as $endpoint ) {
+										if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
+											$my_endpoints = $my_endpoints
+											. '{ "url": "' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '" }, ';
+										}
+									}
 									$my_endpoints = substr( $my_endpoints, 0, strlen( $my_endpoints ) - 2 );
 
+									if ( 1 === $tools['capture_enabled'] ) {
+										$header_report_to = $header_report_to . ', ' . $my_endpoints;
+									} else {
+										$header_report_to = $header_report_to . $my_endpoints;
+									}
+								}
+									$header_report_to = $header_report_to . '] }';
+							}
+							if ( 1 === $options['add_Reporting-Endpoints'] || 1 === $tools['capture_enabled'] ) {
+								foreach ( $options['endpoints'] as $endpoint ) {
+									if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
+										$report_to                  = $report_to . ' ' . strval( Utils::cast_strval( $endpoint['name'] ) );
+										$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
+										strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '"';
+									}
+									$report_to                  = $report_to . ' ' . strval( Utils::cast_strval( $endpoint['name'] ) );
+									$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
+									strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '"';
+								}
 								if ( 1 === $tools['capture_enabled'] ) {
-									$header_report_to = $header_report_to . ', ' . $my_endpoints;
-								} else {
-									$header_report_to = $header_report_to . $my_endpoints;
+									$report_to                  = $report_to . ' nunil-internal-reporting-endpoint';
+									$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
+									'nunil-internal-reporting-endpoint="' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '"';
 								}
 							}
-							$header_report_to = $header_report_to . '] }';
 						}
 					}
 					if ( 0 < strlen( $report_uri ) ) {
@@ -356,6 +387,21 @@ class No_Unsafe_Inline_Public {
 					if ( 0 < strlen( $header_report_to ) ) {
 						if ( ! headers_sent( $filename, $linenum ) ) {
 							header( 'Report-To: ' . $header_report_to );
+						} else {
+							Log::warning(
+								sprintf(
+									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
+									esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+									$filename,
+									$linenum
+								)
+							);
+						}
+					}
+
+					if ( 0 < strlen( $header_reporting_endpoints ) ) {
+						if ( ! headers_sent( $filename, $linenum ) ) {
+							header( 'Reporting-Endpoints: ' . $header_reporting_endpoints );
 						} else {
 							Log::warning(
 								sprintf(

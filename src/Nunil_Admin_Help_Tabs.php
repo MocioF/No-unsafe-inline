@@ -848,11 +848,102 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'In this section you can add endpoints where to report captured violation.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'The plugin will add both a report-uri and a report-to directive.', 'no-unsafe-inline' )
+			. esc_html__( 'The plugin can add both a report-uri and a report-to directive.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_report-to</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add a report-to directive in the CSP.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'The report-to directive should be used in conjunction with the Reporting-Endpoints response HTTP header.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_report-uri</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add a report-uri directive in the CSP.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'This directive is deprecated, and should be used only for compatibility reasons.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'The report-to directive is intended to replace report-uri, and in browsers that support report-to, the report-uri directive is ignored.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>add_Reporting-Endpoints</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add a Reporting-Endpoints HTTP response header field.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'In this header field each endpoint needs to be identificated with a name and an url.', 'no-unsafe-inline' )
+			. '<br>'
+			. esc_html__( 'The plugin accepts only https as protocol for the URL, and http only if URL is localhost.', 'no-unsafe-inline' )
+			. '<br>'
+			. esc_html__( 'Endpoints\' names has to be  unique ascii short strings.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>add_Report-To</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add a Report-To HTTP response header field.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p><u>'
+			. esc_html__( 'This is a non standard, retired, legacy feature.', 'no-unsafe-inline' ) . '</u>'
+			. '<br>'
+			. esc_html__( 'Endpoints\' should be in a group and they need a max-age value to define the reporting endpoint\'s lifetime in seconds.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'The Reporting-Endpoints is included in Reporting API v.1 and should be used instead of the legacy Report-To header, proposed in Reporting API v.0', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>group_name</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>string</b>: ' . esc_html__( 'a string that associates a name with the reporting endpoint', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add all endpoints in one group.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'This value is used only if the Report-To response HTTP header is set.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'If no group name will be specified, the plugin will use \'csp-endpoint\' as a default one.', 'no-unsafe-inline' )
 			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>max_age</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>integer</b>: ' . esc_html__( 'defines the reporting endpoint\'s lifetime, as a non-negative integer number of seconds', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will use the same value for all endpoints.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'This value is used only if the Report-To response HTTP header is set.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>endpoints</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>array{url: string, name: string}</b>: ' . esc_html__( 'defines the reporting endpoint\'s', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'In Reporting-Endpoints HTTP response header field each endpoint needs a unique name.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'This list is used both in the Report-To and in the Reporting-Endpoint response HTTP header fields.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
 			. '<p>'
 			. sprintf(
 				// translators: %s is the link to a paragraph in CSP3 specifications.

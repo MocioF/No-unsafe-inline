@@ -24,9 +24,7 @@
   var mytab = getUrlParameter("tab");
   var tb = $("table.nunil-ext-sources tbody");
 
-  const {
-    __
-  } = wp.i18n;
+  const { __ } = wp.i18n;
 
   $.fn.extend({
     clearText: function() {
@@ -53,21 +51,21 @@
 
     $.extend(this, {
       init: function(){
-        const event = settings.event+'.serialtabs';
+        const event = settings.event+".serialtabs";
         const fxIn = settings.fxIn;
-        settings.fxIn = 'show';
+        settings.fxIn = "show";
         let $lists = $(this);
 
         this.each(function(){
           const $list = $(this);
           const $trigger = settings.getTrigger($list);
-          const $triggerCurrent = $trigger.filter('.is-current');
+          const $triggerCurrent = $trigger.filter(".is-current");
 
           // Responsive design management
-          if( settings.mode == 'auto' ){
+          if( settings.mode == "auto" ){
             let delay = false;
             let speed;
-            $(window).on('resize.serialtabs', function(event, speed){
+            $(window).on("resize.serialtabs", function(event, speed){
               if( delay !== false ) {
                 clearTimeout(delay);
               }
@@ -79,16 +77,16 @@
             // Manual trigger on load
             base.handleResize($list);
           } else {
-            $list.attr('data-serialtabs-mode', settings.mode);
+            $list.attr("data-serialtabs-mode", settings.mode);
           }
 
           // Show the first element, or the current element
-          if( $list.attr('data-serialtabs-mode') == 'tabs' && $triggerCurrent.length == 0 ){
-            $trigger.first().addClass('is-current');
+          if( $list.attr("data-serialtabs-mode") == "tabs" && $triggerCurrent.length == 0 ){
+            $trigger.first().addClass("is-current");
           }
 
           // Hide all elements on page load
-          $trigger.not('.is-current').each(function(){
+          $trigger.not(".is-current").each(function(){
             const $this = $(this);
             const $target = settings.getTarget($this);
             $target.hide();
@@ -98,7 +96,7 @@
           $trigger.on(event, function(event){
             const $this = $(this);
             base.handleEvent($this, $list);
-            if( event.target.tagName == 'A' ) {
+            if( event.target.tagName == "A" ) {
               return true;
             }
           });
@@ -111,11 +109,11 @@
       handleEvent: function( $trigger, $list ){
         const $target = settings.getTarget($trigger);
         const $triggers = settings.getTrigger($list);
-        const $prevTrigger =  $triggers.filter('.is-current');
+        const $prevTrigger =  $triggers.filter(".is-current");
         const $prevTarget = settings.getTarget($prevTrigger);
 
         // Avoid triggering the event for already displayed elements
-        if( $list.attr('data-serialtabs-mode') == 'tabs' && $trigger.is($prevTrigger) )
+        if( $list.attr("data-serialtabs-mode") == "tabs" && $trigger.is($prevTrigger) )
           return;
 
         // Hide the previous element
@@ -129,25 +127,25 @@
 
       display: function( $trigger, $target, action ){
         // Management of the current class
-        $trigger[action ? 'addClass' : 'removeClass']('is-current');
+        $trigger[action ? "addClass" : "removeClass"]("is-current");
 
         // Management of the display state
         $target[action ? settings.fxIn : settings.fxOut]();
 
         // Check the radio button if existing
         if( action ){
-          const $radio = $trigger.find('[type=radio]');
+          const $radio = $trigger.find("[type=radio]");
           if( $radio.length )
-            $radio.prop('checked', true);
+            $radio.prop("checked", true);
         }
       },
 
       getTrigger: function( $list ){
         let trigger;
 
-        if( typeof settings.trigger  == 'string' ){
+        if( typeof settings.trigger  == "string" ){
           trigger = $list.find( settings.trigger );
-        } else if( typeof settings.trigger  == 'function' ){
+        } else if( typeof settings.trigger  == "function" ){
           trigger = settings.trigger( $list );
         }
 
@@ -157,9 +155,9 @@
       getTarget: function( $trigger ){
         let target;
 
-        if( typeof settings.target  == 'string' ){
+        if( typeof settings.target  == "string" ){
           target = $trigger.attr( settings.target );
-        } else if( typeof settings.target  == 'function' ){
+        } else if( typeof settings.target  == "function" ){
           target = settings.target( $trigger );
         }
 
@@ -170,14 +168,14 @@
         const isResponsive = base.isResponsive($list);
 
         // Update the display mode
-        $list.attr('data-serialtabs-mode', (isResponsive ? 'accordion' : 'tabs'));
+        $list.attr("data-serialtabs-mode", (isResponsive ? "accordion" : "tabs"));
 
         // Move the content
         base.moveItems($list, isResponsive);
       },
 
       isResponsive: function( $list ){
-        let breakpoint = $list.data('serialtabs-breakpoint') ? $list.data('serialtabs-breakpoint') : 50;
+        let breakpoint = $list.data("serialtabs-breakpoint") ? $list.data("serialtabs-breakpoint") : 50;
 
         // Breakpoint calculation
         if( breakpoint == 50 )
@@ -186,7 +184,7 @@
           });
 
         // Store the breakpoint (essential)
-        $list.data('serialtabs-breakpoint', breakpoint);
+        $list.data("serialtabs-breakpoint", breakpoint);
 
         return ( $list.parent().width() < breakpoint );
       },
@@ -213,16 +211,16 @@
   };
 
   $.fn.serialtabs.defaults = {
-    mode: 'auto', // 'auto', 'accordion', 'tabs'
-    event: 'click',
+    mode: "auto", // 'auto', 'accordion', 'tabs'
+    event: "click",
     getTrigger: function($list){
-      return $list.find('[data-serialtabs]');
+      return $list.find("[data-serialtabs]");
     },
     getTarget: function($trigger){
-      return $($trigger.data('serialtabs'));
+      return $($trigger.data("serialtabs"));
     },
-    fxIn: 'slideDown',
-    fxOut: 'slideUp'
+    fxIn: "slideDown",
+    fxOut: "slideUp"
   };
   /** END jQuery serialtabs */
 
@@ -792,45 +790,114 @@
 
     // Enable and disable endpoints fields on use_reports toggle.
     if (!$("input[type='checkbox'][name='no-unsafe-inline[use_reports]']").prop("checked")) {
+      $("input[type='checkbox'][name='no-unsafe-inline[use_report-uri]']").prop("disabled", true);
+      $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']").prop("disabled", true);
+      $("input[type='checkbox'][name='no-unsafe-inline[add_Report-To]']").prop("disabled", true);
+      $("input[type='checkbox'][name='no-unsafe-inline[add_Reporting-Endpoints]']").prop("disabled", true);
       $("input[type='text'][name='no-unsafe-inline[group_name]']").prop("disabled", true);
       $("input[type='text'][name='no-unsafe-inline[max_age]']").prop("disabled", true);
       $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").prop("disabled", true);
       $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").prop("disabled", true);
+      $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", true);
       $(".nunil-btn-del-endpoint").prop("disabled", true);
       $(".nunil-hidden-endpoint").prop("disabled", true);
       $(".nunil-endpoint-string").removeClass("txt-active");
+      $(".nunil-endpoint-string-unsaved").removeClass("txt-active-unsaved");
       $(".nunil-endpoint-string").addClass("txt-inactive");
+      $(".nunil-endpoint-string-unsaved").addClass("txt-inactive");
     }
     $("input[type='checkbox'][name='no-unsafe-inline[use_reports]']").on("change",
       function() {
         var chk = $(this);
         if (chk.prop("checked")) {
+          $("input[type='checkbox'][name='no-unsafe-inline[use_report-uri]']").prop("disabled", false);
+          $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']").prop("disabled", false);
+          $("input[type='checkbox'][name='no-unsafe-inline[add_Report-To]']").prop("disabled", false);
+          $("input[type='checkbox'][name='no-unsafe-inline[add_Reporting-Endpoints]']").prop("disabled", false);
           $("input[type='text'][name='no-unsafe-inline[group_name]']").prop("disabled", false);
           $("input[type='text'][name='no-unsafe-inline[max_age]']").prop("disabled", false);
           $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").prop("disabled", false);
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").prop("disabled", false);
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", false);
           $(".nunil-btn-del-endpoint").prop("disabled", false);
           $(".nunil-hidden-endpoint").prop("disabled", false);
           $(".nunil-endpoint-string").removeClass("txt-inactive");
+          $(".nunil-endpoint-string-unsaved").removeClass("txt-inactive");
           $(".nunil-endpoint-string").addClass("txt-active");
+          $(".nunil-endpoint-string-unsaved").addClass("txt-active-unsaved");
+          $.fn.checkOneAtLeast([
+            $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']"),
+            $("input[type='checkbox'][name='no-unsafe-inline[use_report-uri]']")
+          ]);
         } else {
+          $("input[type='checkbox'][name='no-unsafe-inline[use_report-uri]']").prop("disabled", true);
+          $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']").prop("disabled", true);
+          $("input[type='checkbox'][name='no-unsafe-inline[add_Report-To]']").prop("disabled", true);
+          $("input[type='checkbox'][name='no-unsafe-inline[add_Reporting-Endpoints]']").prop("disabled", true);
           $("input[type='text'][name='no-unsafe-inline[group_name]']").prop("disabled", true);
           $("input[type='text'][name='no-unsafe-inline[max_age]']").prop("disabled", true);
           $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").prop("disabled", true);
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").prop("disabled", true);
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", true);
           $(".nunil-btn-del-endpoint").prop("disabled", true);
           $(".nunil-hidden-endpoint").prop("disabled", true);
           $(".nunil-endpoint-string").removeClass("txt-active");
+          $(".nunil-endpoint-string-unsaved").removeClass("txt-active-unsaved");
           $(".nunil-endpoint-string").addClass("txt-inactive");
         }
       }
     );
+    $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']").on("change",
+      function() {
+        var chk = $(this);
+        if (chk.prop("checked")) {
+          $.fn.checkOneAtLeast([
+            $("input[type='checkbox'][name='no-unsafe-inline[add_Reporting-Endpoints]']"),
+            $("input[type='checkbox'][name='no-unsafe-inline[add_Report-To]']")
+          ]);
+        }
+      }
+    );
+
     // needed for event delegation.
     // https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
     $("#nunil-endpoints-list").on("click", ".nunil-btn-del-endpoint", function() {
+      var cloned;
+      cloned = $(this).closest("li").clone( true );
+      cloned.children("button").removeClass("nunil-btn-del-endpoint").addClass("nunil-btn-restore-endpoint");
+      cloned.children("button").children("span.dashicons-remove").addClass("dashicons-plus-alt").removeClass("dashicons-remove");
+      cloned.children("button span").addClass("dashicons-plus-alt").removeClass("dashicons-remove");
+      cloned.children("span.txt-active-unsaved").addClass("txt-inactive-unsaved").removeClass("txt-active-unsaved");
+      cloned.children("span.txt-active").addClass("txt-inactive").removeClass("txt-active");
+      cloned.children("input[type='hidden']").each(function() {
+        var oldname = $(this).attr("name");
+        $(this).attr("name", oldname.replace(/\[endpoints\]/, '[endpoints_deleted]'));
+      });
       $(this).closest("li").remove();
+      $("#nunil-endpoints-list").append(cloned);
     });
+    $("#nunil-endpoints-list").on("click", ".nunil-btn-restore-endpoint", function() {
+      var cloned;
+      cloned = $(this).closest("li").clone( true );
+      cloned.children("button").removeClass("nunil-btn-restore-endpoint").addClass("nunil-btn-del-endpoint");
+      cloned.children("button").children("span.dashicons-plus-alt").addClass("dashicons-remove").removeClass("dashicons-plus-alt");
+      cloned.children("button span.dashicons-plus-alt").addClass("dashicons-remove").removeClass("dashicons-plus-alt");
+      cloned.children("span.txt-inactive-unsaved").addClass("txt-active-unsaved").removeClass("txt-inactive-unsaved");
+      cloned.children("span.txt-inactive").addClass("txt-active").removeClass("txt-inactive");
+      cloned.children("input[type='hidden']").each(function() {
+        var oldname = $(this).attr("name");
+        $(this).attr("name", oldname.replace(/\[endpoints_deleted\]/, '[endpoints]'));
+      });
+      $(this).closest("li").remove();
+      $("#nunil-endpoints-list").append(cloned);
+    });
+
     $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").on("focus",
+      function() {
+        $(this).removeClass("nunil-error-input");
+      }
+    );
+    $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").on("focus",
       function() {
         $(this).removeClass("nunil-error-input");
       }
@@ -838,21 +905,49 @@
     $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").on("click",
       function() {
         var new_endpoint;
-        if (isValidReportUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val())) {
+        var new_endpoint_name;
+        if ( ! isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) ) {
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").addClass("nunil-error-input");
+          return;
+        }
+        if ( ! isPrintableAsciiString($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").addClass("nunil-error-input");
+          return;
+        }
+        if ( ! isUniqueNewEndpointKey($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val()) ) {
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").addClass("nunil-error-input");
+          return;
+        };
+
+        if (isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) &&
+        isPrintableAsciiString($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+          if ( $("#nunil-endpoints-list li").length == 0) {
+            $("#nunil-endpoints-list").append(
+              "<li><span class=\"nunil-btn nunil-btn-endpoint-list\"><span class=\"dashicons dashicons-editor-ul\"></span></span>" +
+				      "<span class=\"nunil-endpoint-string\"><b>" + __( 'endpoint URL', 'no-unsafe-inline' ) + "</b></span>" +
+				      "<span class= \"nunil-endpoint-string\"><b>"+ __( 'endpoint name', 'no-unsafe-inline' ) + "</b></span></li>"
+            );
+          };
+
           new_endpoint = $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val().trim();
+          new_endpoint_name = $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val().trim();
           $("#nunil-endpoints-list").append(
             "<li>" +
-            "<input  class=\"nunil-btn nunil-btn-del-endpoint\" type=\"button\" id=\"no-unsafe-inline[del-endpoint][" + a + "]\" " +
+            "<button  class=\"nunil-btn nunil-btn-del-endpoint\" id=\"no-unsafe-inline[del-endpoint][" + a + "]\" " +
             "name=\"no-unsafe-inline[del-endpoint][" + a + "]\" value=\"&#x2425;\">" +
-            "<span class=\"nunil-endpoint-string txt-active txt-newly\">" + new_endpoint + "</span>" +
-            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "]\"" +
-            "name=\"no-unsafe-inline[endpoints][" + a + "]\" value=\"" + new_endpoint + "\" />" +
+            "<span class=\"dashicons dashicons-remove\"> </span></button>" +
+            "<span class=\"nunil-endpoint-string-unsaved txt-active-unsaved txt-newly\">" + new_endpoint + "</span>" +
+            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][url]\"" +
+            "name=\"no-unsafe-inline[endpoints][" + a + "][url]\" value=\"" + new_endpoint + "\" />" +
+            "<span class=\"nunil-endpoint-string-unsaved txt-active-unsaved txt-newly\">" + new_endpoint_name + "</span>" +
+            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
+            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + new_endpoint_name + "\" />" +
             "</li>");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val("");
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val("");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").removeClass("nunil-error-input");
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").removeClass("nunil-error-input");
           a = a + 1;
-        } else {
-          $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").addClass("nunil-error-input");
         }
       }
     );

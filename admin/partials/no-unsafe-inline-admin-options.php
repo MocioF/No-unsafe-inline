@@ -11,10 +11,6 @@
 
 namespace NUNIL\admin\partials;
 
-use NUNIL\Nunil_Lib_Utils as Utils;
-
-$default_sectab = 'directives';
-$sectab         = isset( $_GET['sectab'] ) ? Utils::sanitize_text( $_GET['sectab'], false ) : $default_sectab;
 ?>
 <form method="post" action="options.php" class="no-unsafe-inline-settings-form">
 	<div id="nunil-options-tabs">

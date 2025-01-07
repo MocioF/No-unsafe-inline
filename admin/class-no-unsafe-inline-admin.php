@@ -295,6 +295,26 @@ class No_Unsafe_Inline_Admin {
 
 			update_option( 'no-unsafe-inline', $options );
 		}
+		if ( version_compare( $old_ver, '1.2.3', '<' ) ) {
+			$options = (array) get_option( 'no-unsafe-inline' );
+			if ( isset( $options['endpoints'] ) &&
+				Utils::is_one_dimensional_string_array( $options['endpoints'] )
+				) {
+				$new_endpoint = array();
+				foreach ( $options['endpoints'] as $index => $endpoint ) {
+					$new_endpoint[] = array(
+						'url'  => $endpoint,
+						'name' => 'csp-endpoint-' . strval( $index ),
+					);
+				}
+				$options['endpoints'] = $new_endpoint;
+			}
+			if ( isset( $options['use_reports'] ) && 1 === $options['use_reports'] ) {
+				$options['use_report-to']           = 1;
+				$options['add_Reporting-Endpoints'] = 1;
+			}
+			update_option( 'no-unsafe-inline', $options );
+		}
 	}
 
 	/**
@@ -768,6 +788,77 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		add_settings_field(
+			'use_report-to',
+			sprintf(
+			// translators: %1$s is report-uri link.
+				esc_html__( 'Use %1$s reporting directive', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank">report-to</a>'
+			),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report',
+			array(
+				'option_name' => 'use_report-to',
+				'label'       => __( 'Use the report-to directive to send reports to a URI.', 'no-unsafe-inline' ),
+			)
+		);
+
+		add_settings_field(
+			'use_report-uri',
+			sprintf(
+			// translators: %1$s is report-uri link.
+				esc_html__( 'Use %1$s reporting directive (deprecated)', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-uri" target="_blank">report-uri</a>'
+			),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report',
+			array(
+				'option_name' => 'use_report-uri',
+				'label'       => __( 'Use the report-uri directive to send reports to a URI.', 'no-unsafe-inline' ),
+			)
+		);
+
+		add_settings_field(
+			'add_Reporting-Endpoints',
+			sprintf(
+				// translators: %1$s is report-uri link.
+				esc_html__( 'Add the %1$s response header field to define the reporting endpoints.', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/reporting-1/#header" target="_blank">Reporting-Endpoints</a>'
+			),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report',
+			array(
+				'option_name' => 'add_Reporting-Endpoints',
+				'label'       => esc_html__( 'Add the Reporting-Endpoints response header field to define a set of reporting endpoints for a document or a worker script.', 'no-unsafe-inline' ) .
+				'<br>' . __( 'This is a standard feature included in the Reporting API v1.', 'no-unsafe-inline' ),
+			)
+		);
+
+		add_settings_field(
+			'add_Report-To',
+			sprintf(
+			// translators: %1$s is report-uri link.
+				esc_html__( 'Add the %1$s response header field to define the reporting endpoints (legacy and deprecated)', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/2016/NOTE-reporting-1-20160607/#header" target="_blank">Report-To</a>'
+			),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report',
+			array(
+				'option_name' => 'add_Report-To',
+				'label'       => sprintf(
+					__( 'Add the Report-To response header field to instruct the user agent to store a reporting endpoints for an origin.', 'no-unsafe-inline' ) .
+					'<br>' . __( 'This is a legacy and deprecated feature, never standardized and included in the Reporting API v0.', 'no-unsafe-inline' ) .
+					// translators: %s is a link.
+					'<br>' . __( 'See %s.', 'no-unsafe-inline' ),
+					'<a href="https://developer.chrome.com/blog/reporting-api-migration" target="_blank">Migrate to Reporting API v1</a>'
+				),
+			)
+		);
+
+		add_settings_field(
 			'group_name',
 			esc_html__( 'Group name', 'no-unsafe-inline' ),
 			array( $this, 'print_group_name' ),
@@ -946,8 +1037,12 @@ class No_Unsafe_Inline_Admin {
 	/**
 	 * Sanitize the settings
 	 *
+	 * The returned array is the sanitized settings and should be in the format:
+	 * array<string, string|int|array<int, array{url: string, name: string}>>
+	 * Using mixed, because get_option() returns mixed and we need to merge it with array.
+	 *
 	 * @throws \NUNIL\Nunil_Exception Main option is not an array.
-	 * @param array<string|int|array<int|string>> $input Contains the settings.
+	 * @param array<mixed> $input Contains the settings.
 	 * @return array<mixed>
 	 */
 	public function sanitize_options( $input ) {
@@ -981,6 +1076,10 @@ class No_Unsafe_Inline_Admin {
 			'fix_setattribute_style',
 			'add_wl_by_cluster_to_db',
 			'use_reports',
+			'use_report-to',
+			'use_report-uri',
+			'add_Reporting-Endpoints',
+			'add_Report-To',
 			'remove_tables',
 			'remove_options'
 		);
@@ -1100,14 +1199,33 @@ class No_Unsafe_Inline_Admin {
 			}
 		}
 
-		unset( $options['endpoints'] );
 		if ( isset( $input['endpoints'] ) && is_array( $input['endpoints'] ) ) {
 			$new_input['endpoints'] = array_map(
-				function ( $url ) {
-					return esc_url_raw( strval( $url ), array( 'https' ) );
+				function ( $endpoint ) {
+					/**
+					 * Since trustworthy depends on user agent, we shouldnt' limit to https only.
+					 * However almost all browsers consider only https as trustworthy to deply a report.
+					 *
+					 * See: https://w3c.github.io/reporting/#header
+					 * See: https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
+					 */
+					if (
+						is_array( $endpoint ) &&
+						array_key_exists( 'url', $endpoint ) &&
+						array_key_exists( 'name', $endpoint ) &&
+						$this->is_trustworthy_url( Utils::sanitize_text( $endpoint['url'], false ) )
+						) {
+						return array(
+							'url'  => esc_url_raw( Utils::sanitize_text( $endpoint['url'], false ) ),
+							'name' => Utils::sanitize_text( $endpoint['name'], false ),
+						);
+					}
+					return null;
 				},
 				$input['endpoints']
 			);
+			// resetto da 0 le chiavi dell'array e elimino eventuali valori nulli.
+			$new_input['endpoints'] = array_values( array_filter( $new_input['endpoints'] ) );
 		}
 
 		if ( isset( $input['max_response_header_size'] ) ) {
@@ -1124,6 +1242,43 @@ class No_Unsafe_Inline_Admin {
 		$new_options = array_merge( $options, $new_input );
 
 		return $new_options;
+	}
+
+	/**
+	 * Check if a URL is trustworthy.
+	 *
+	 * @param string $url_string The URL to check.
+	 * @return bool True if the URL is trustworthy, false otherwise.
+	 */
+	private function is_trustworthy_url( $url_string ) {
+		if ( empty( $url_string ) ) {
+			return false;
+		}
+
+		// Sanitize the URL.
+		$url_string = esc_url_raw( $url_string );
+
+		// Parse the URL.
+		$url = wp_parse_url( $url_string );
+
+		if ( false === $url ) {
+			return false;
+		}
+
+		// Check if the protocol is https.
+		if ( isset( $url['scheme'] ) && 'https' === $url['scheme'] ) {
+			return true;
+		}
+
+		// Check if the host matches 127.0.0.0/8 or ::1/128 .
+		if ( isset( $url['host'] ) ) {
+			$host = $url['host'];
+			if ( 'localhost' === $host || '127.0.0.1' === $host || '::1' === $host ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1696,37 +1851,75 @@ class No_Unsafe_Inline_Admin {
 
 		// Add new endpoint button.
 		printf(
+			'<div><b>' .
+			esc_html__( 'Required. An array of JSON objects that specify the actual URL of your report collector.', 'no-unsafe-inline' ) .
+			'</b></div>'
+		);
+		printf(
+			'<div class="nunil-new-endpoint-container">' .
+			'<div class="nunil-new-endpoint-button-wrapper">' .
 			'<input class="nunil-btn nunil-btn-addnew" type="button" id="no-unsafe-inline[add_new_endpoint]"' .
 			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
+			'</div>' .
+			'<div class="nunil-new-endpoint-url-wrapper">' .
+			'<label for="no-unsafe-inline[new_endpoint]" class="nunil_label_left">%s</label>' .
 			'<input class="nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
-			'name="no-unsafe-inline[new_endpoint]" %s /> 
-			<label for="no-unsafe-inline[new_endpoint]">%s</label>',
+			'name="no-unsafe-inline[new_endpoint]" %s />' .
+			'</div>' .
+			'<div class="nunil-new-endpoint-name-wrapper">' .
+			'<label for="no-unsafe-inline[new_endpoint_name]" class="nunil_label_left">%s</label>' .
+			'<input class="nunil-new-endpoint-name" type="text" id="no-unsafe-inline[new_endpoint_name]"' .
+			'name="no-unsafe-inline[new_endpoint_name]" %s />' .
+			'</div>' .
+			'</div>',
 			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
 			esc_html( $disabled ),
+			esc_html__( 'endpoint URL', 'no-unsafe-inline' ) . ': ',
 			esc_html( $disabled ),
-			esc_html__( 'Required. An array of JSON objects that specify the actual URL of your report collector.', 'no-unsafe-inline' )
+			esc_html__( 'endpoint name', 'no-unsafe-inline' ) . ': ',
+			esc_html( $disabled ),
 		);
 
 		print( '<ol class="nunil-endpoints-list" id="nunil-endpoints-list">' );
+		if ( count( $endpoints ) > 0 ) {
+			// Add a header line.
+			printf(
+				'<li><span class="nunil-btn nunil-btn-endpoint-list" disabled><span class="dashicons dashicons-editor-ul"></span></span>' .
+				'<span class="nunil-endpoint-string"><b>%s</b></span>' .
+				'<span class="nunil-endpoint-string"><b>%s</b></span></li>',
+				esc_html__( 'endpoint URL', 'no-unsafe-inline' ),
+				esc_html__( 'endpoint name', 'no-unsafe-inline' )
+			);
+		}
 		// Add a line for each url.
 		foreach ( $endpoints as $index => $endpoint ) {
-			$endp_txt = strval( Utils::cast_strval( $endpoint ) );
-			printf(
-				'<li>' .
-				'<button class="nunil-btn nunil-btn-del-endpoint" ' .
-				'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]">' .
-				'<span class="dashicons dashicons-remove"> </span></button>' .
-				'<span class="nunil-endpoint-string txt-active">%s</span>' .
-				'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d]" ' .
-				'name="no-unsafe-inline[endpoints][%d]" value="%s" />' .
-				'</li>',
-				esc_html( $index ),
-				esc_html( $index ),
-				esc_html( $endp_txt ),
-				esc_html( $index ),
-				esc_html( $index ),
-				esc_html( $endp_txt )
-			);
+			if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
+				$endp_url  = strval( Utils::cast_strval( $endpoint['url'] ) );
+				$endp_name = strval( Utils::cast_strval( $endpoint['name'] ) );
+				printf(
+					'<li>' .
+					'<button class="nunil-btn nunil-btn-del-endpoint" ' .
+					'id="no-unsafe-inline[del-endpoint][%d]" name="no-unsafe-inline[del-endpoint][%d]">' .
+					'<span class="dashicons dashicons-remove"> </span></button>' .
+					'<span class="nunil-endpoint-string txt-active">%s</span>' .
+					'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d][url]" ' .
+					'name="no-unsafe-inline[endpoints][%d][url]" value="%s" />' .
+					'<span class="nunil-endpoint-string txt-active">%s</span>' .
+					'<input class="nunil-hidden-endpoint" type="hidden" id="no-unsafe-inline[endpoints][%d][name]" ' .
+					'name="no-unsafe-inline[endpoints][%d][name]" value="%s" />' .
+					'</li>',
+					esc_html( $index ),
+					esc_html( $index ),
+					esc_html( $endp_url ),
+					esc_html( $index ),
+					esc_html( $index ),
+					esc_html( $endp_url ),
+					esc_html( $endp_name ),
+					esc_html( $index ),
+					esc_html( $index ),
+					esc_html( $endp_name ),
+				);
+			}
 		}
 		print( '</ol>' );
 	}
