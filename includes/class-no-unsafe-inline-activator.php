@@ -84,17 +84,10 @@ class No_Unsafe_Inline_Activator {
 						'order'   => 'asc',
 					);
 					$sites = get_sites( $args );
-				} else {
-					// WP < 4.6; however it is unsupported.
-					$sites = wp_get_sites();
 				}
 				if ( ! empty( $sites ) ) {
 					foreach ( $sites as $site ) {
-						if ( is_object( $site ) ) {
-							switch_to_blog( intval( $site->blog_id ) );
-						} else {
-							switch_to_blog( intval( $site['blog_id'] ) );
-						}
+						switch_to_blog( intval( $site->blog_id ) );
 						if ( ! is_plugin_active( 'no-unsafe-inline/no-unsafe-inline.php' ) ) {
 							self::single_activate();
 						}
