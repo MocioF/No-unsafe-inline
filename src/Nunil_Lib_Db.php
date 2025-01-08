@@ -1496,7 +1496,7 @@ class Nunil_Lib_Db {
 		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
 
 		// Questa funziona su sql-lite ... verifica se è possibile individuarne l'uso.
-		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
+		// $sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
 		return $wpdb->query( $sql );
 	}
 
@@ -2024,9 +2024,9 @@ class Nunil_Lib_Db {
 	public static function extend_ext_src_attrib_size() {
 		/**
 		 * Requires a core wp file.
-		 * 
+		 *
 		 * We need this for dbDelta() to work.
-		 * 
+		 *
 		 * @phpstan-ignore requireOnce.fileNotFound
 		 */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';

@@ -109,9 +109,9 @@ class Nunil_SRI {
 					unset( $data->src_attrib );
 					$data = (array) $data;
 
-					// Ensure $data is an array with string keys and string values.
+					// Ensure $data is an array with string keys and string or int values.
 					foreach ( $data as $key => $value ) {
-						if ( is_string( $key ) && is_string( $value ) ) {
+						if ( is_string( $key ) && ( is_string( $value ) || is_int( $value ) ) ) {
 							$filtered_data[ $key ] = $value;
 						} else {
 							// translators: %d is the script ID in external table.

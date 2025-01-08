@@ -12,6 +12,7 @@
 
 namespace NUNIL;
 
+use Error;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
@@ -75,7 +76,13 @@ class Nunil_Script_Upgrader {
 				}
 			}
 			if ( 'core' === $options['type'] ) {
-				require ABSPATH . '/wp-includes/version.php'; // @phpstan-ignore require.fileNotFound
+				/**
+				 * Requires a core wp file.
+				 *
+				 * @phpstan-ignore require.fileNotFound
+				 */
+				require ABSPATH . 'wp-includes/version.php';
+				global $wp_version;
 				$newver = isset( $wp_version ) ? strval( Utils::cast_strval( $wp_version ) ) : '';
 				$slug   = '';
 				$oldver = self::get_old_asset_version( $options['type'], $slug );
