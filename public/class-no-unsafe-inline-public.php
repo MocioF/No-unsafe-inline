@@ -293,6 +293,8 @@ class No_Unsafe_Inline_Public {
 						}
 					}
 
+					$header_csp = apply_filters( 'nunil_output_csp_headers_header_csp', $header_csp );
+
 					$report_uri                 = '';
 					$header_report_to           = '';
 					$report_to                  = '';
