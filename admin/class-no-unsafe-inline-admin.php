@@ -313,10 +313,7 @@ class No_Unsafe_Inline_Admin {
 				$options['use_report-to']           = 1;
 				$options['add_Reporting-Endpoints'] = 1;
 			}
-<<<<<<< HEAD
 			$options['capture_admin'] = 1;
-=======
->>>>>>> 6789a43 (Add new options for CSP Violation Reports, adding Reporting-Endopoints response header field)
 			update_option( 'no-unsafe-inline', $options );
 		}
 	}
@@ -2145,43 +2142,43 @@ class No_Unsafe_Inline_Admin {
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 				<!-- Here are our tabs -->
 				<nav class="nav-tab-wrapper">
-					<a href="?page=no-unsafe-inline" class="nav-tab 
+					<a href="?page=no-unsafe-inline" class="nav-tab
 					<?php
 					if ( null === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Tools', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab
 					<?php
 					if ( 'base-rule' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Base rules', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab
 					<?php
 					if ( 'external' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'External whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=inline" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=inline" class="nav-tab
 					<?php
 					if ( 'inline' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Inline whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=events" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=events" class="nav-tab
 					<?php
 					if ( 'events' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Events whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=settings" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=settings" class="nav-tab
 					<?php
 					if ( 'settings' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab
 					<?php
 					if ( 'logs' === $tab ) :
 						?>
