@@ -540,11 +540,30 @@
     "click",
     function(event) {
       event.preventDefault();
-      CopyToClipboard($("#nunil_tools_operation_report").text(), true, $(this).data("notification"));
+      let textValue;
+      let myItem;
+      myItem = document.getElementById("nunil_tools_operation_report");
+      textValue= myItem.innerText || myItem.textContent;
+      CopyToClipboard(textValue, true, $(this).data("notification"));
     }
   );
 
   function CopyToClipboard(value, showNotification, notificationText) {
+    navigator.clipboard.writeText(value).then(() => {
+      if (typeof showNotification === "undefined") {
+        showNotification = true;
+      }
+      if (typeof notificationText === "undefined") {
+        notificationText = "Copied to clipboard";
+      }
+      if (showNotification) {
+        new NunilOperationNotify(notificationText);
+      }
+    }).catch(err => {
+      console.error("Failed to copy text: ", err);
+    });
+
+    /**
     var temparea = $("<textarea>");
     $("body").append(temparea);
     temparea
@@ -564,6 +583,7 @@
     if (showNotification) {
       new NunilOperationNotify(notificationText);
     }
+    */
   }
 
   function NunilOperationNotify(notificationText) {
