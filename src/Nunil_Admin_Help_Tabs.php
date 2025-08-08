@@ -860,17 +860,6 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_report-to</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
-			. '</pre>'
-			. '<p>'
-			. esc_html__( 'The plugin will add a report-to directive in the CSP.', 'no-unsafe-inline' )
-			. '</p>'
-			. '<p>'
-			. esc_html__( 'The report-to directive should be used in conjunction with the Reporting-Endpoints response HTTP header.', 'no-unsafe-inline' )
-			. '</p>'
-			. '<hr>'
-			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_report-uri</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
 			. '</pre>'
@@ -882,6 +871,33 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'The report-to directive is intended to replace report-uri, and in browsers that support report-to, the report-uri directive is ignored.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_report-to</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The plugin will add a report-to directive in the CSP.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'The report-to directive should be used in conjunction with the Reporting-Endpoints response HTTP header.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>group_name</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <a href="https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2" target="_blank"><b>string (token)</b></a>: ' . esc_html__( 'a token that associates a name with the reporting endpoint', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'In Report-To JSON object the plugin will add all endpoints in one group.', 'no-unsafe-inline' )
+			. '<br>'
+			. esc_html__( 'In Reporting-Endpoints this value will be used for the first endpoint of the list.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'This token is used as value for report-to directive in Content-Security-Policy HTTP header.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'If no value will be specified, the plugin will use \'csp-endpoint\' as a default one.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
@@ -913,20 +929,6 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'The Reporting-Endpoints is included in Reporting API v.1 and should be used instead of the legacy Report-To header, proposed in Reporting API v.0', 'no-unsafe-inline' )
-			. '</p>'
-			. '<hr>'
-			. '<pre>'
-			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>group_name</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>string</b>: ' . esc_html__( 'a string that associates a name with the reporting endpoint', 'no-unsafe-inline' )
-			. '</pre>'
-			. '<p>'
-			. esc_html__( 'The plugin will add all endpoints in one group.', 'no-unsafe-inline' )
-			. '</p>'
-			. '<p>'
-			. esc_html__( 'This value is used only if the Report-To response HTTP header is set.', 'no-unsafe-inline' )
-			. '</p>'
-			. '<p>'
-			. esc_html__( 'If no group name will be specified, the plugin will use \'csp-endpoint\' as a default one.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
