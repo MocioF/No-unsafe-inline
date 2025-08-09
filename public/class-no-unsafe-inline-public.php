@@ -241,253 +241,267 @@ class No_Unsafe_Inline_Public {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
+		$deploy_policy = ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) && ( false === is_admin() || 1 === $options['protect_admin'] );
+		$do_capture    = ( 1 === $tools['capture_enabled'] && ( false === is_admin() || 1 === $options['capture_admin'] ) );
+
+		$internal_reporting_endpoint_url  = site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' );
+		$internal_reporting_endpoint_name = 'nunil-internal-reporting-endpoint';
+
 		global $nunil_csp_meta;
 
-		if ( 1 === $tools['test_policy'] || 1 === $tools['enable_protection'] ) {
-			if ( false === is_admin() || ( 1 === $options['protect_admin'] ) ) {
-				if ( 1 === $tools['test_policy'] ) {
-					$header_csp = 'Content-Security-Policy-Report-Only: ';
+		if ( 1 === $options['use_reports']
+			&& isset( $options['endpoints'] )
+			&& is_array( $options['endpoints'] )
+			&& ! empty( $options['endpoints'] ) ) {
+				$endpoints_in_use = true;
+		} else {
+			$endpoints_in_use = false;
+		}
+
+		if ( $deploy_policy ) {
+			if ( 1 === $tools['test_policy'] ) {
+				$header_csp = 'Content-Security-Policy-Report-Only: ';
+			} elseif ( 1 === $tools['enable_protection'] ) {
+				$header_csp = 'Content-Security-Policy: ';
+			} else {
+				$header_csp = 'Content-Security-Policy-Report-Only: ';
+			}
+
+			// The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.
+			if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] && 1 !== $tools['test_policy'] ) {
+				$header_csp = $header_csp . 'upgrade-insecure-requests; ';
+			}
+			$base_src = (array) get_option( 'no-unsafe-inline-base-rule' );
+
+			foreach ( $base_src as $directive => $base_sources ) {
+				$dir     = str_replace( '_base_rule', '', $directive );
+				$csp     = trim( strval( Utils::cast_strval( $base_sources ) ) );
+				$enabled = $dir . '_enabled';
+				if ( ( 'script-src' === $dir || 'default-src' === $dir ) && 1 === $options['use_strict-dynamic'] ) {
+					$csp = $csp . ' \'strict-dynamic\'';
 				}
-				if ( 1 === $tools['enable_protection'] ) {
-					$header_csp = 'Content-Security-Policy: ';
+				// If in base rules is set 'none' for a directive, don't add anything to that.
+				if ( '\'none\'' !== $csp ) {
+					foreach ( $this->csp_local_whitelist as $local ) {
+						if ( $dir === $local['directive'] ) {
+							$csp = $csp . ' \'' . $local['source'] . '\'';
+						}
+					}
+					if ( ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) &&
+					( 'script-src' === $dir || 'style-src' === $dir ) ) {
+						$csp = $csp . ' \'report-sample\'';
+					}
 				}
-
-				if ( isset( $header_csp ) ) {
-					if ( 1 === $options['use_reports']
-						&& isset( $options['endpoints'] )
-						&& is_array( $options['endpoints'] )
-						&& ! empty( $options['endpoints'] ) ) {
-							$endpoints_in_use = true;
-					} else {
-						$endpoints_in_use = false;
-					}
-
-					// The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.
-					if ( 1 === $options['no-unsafe-inline_upgrade_insecure'] && 1 !== $tools['test_policy'] ) {
-						$header_csp = $header_csp . 'upgrade-insecure-requests; ';
-					}
-
-					$base_src = (array) get_option( 'no-unsafe-inline-base-rule' );
-
-					foreach ( $base_src as $directive => $base_sources ) {
-						$dir     = str_replace( '_base_rule', '', $directive );
-						$csp     = trim( strval( Utils::cast_strval( $base_sources ) ) );
-						$enabled = $dir . '_enabled';
-						if ( ( 'script-src' === $dir || 'default-src' === $dir ) && 1 === $options['use_strict-dynamic'] ) {
-							$csp = $csp . ' \'strict-dynamic\'';
-						}
-						// If in base rules is set 'none' for a directive, don't add anything to that.
-						if ( '\'none\'' !== $csp ) {
-							foreach ( $this->csp_local_whitelist as $local ) {
-								if ( $dir === $local['directive'] ) {
-									$csp = $csp . ' \'' . $local['source'] . '\'';
-								}
-							}
-							if ( ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) &&
-							( 'script-src' === $dir || 'style-src' === $dir ) ) {
-								$csp = $csp . ' \'report-sample\'';
-							}
-						}
-						if ( 1 === $options[ $enabled ] ) { // add only rule for enabled directives.
-							$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
-						}
-					}
-
-					$report_uri                 = '';
-					$header_report_to           = '';
-					$report_to                  = '';
-					$header_reporting_endpoints = '';
-
-					if ( 1 === $tools['capture_enabled'] || 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) {
-						/**
-						 * Note: report-uri directive is deprecated in CSP3.
-						 * It is replaced by report-to directive.
-						 * It is not used neither internally if not explicitly set in options.
-						 */
-						if ( 1 === $options['use_report-uri'] ) {
-							if ( 1 === $tools['capture_enabled'] ) {
-								$report_uri = $report_uri . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . ' ';
-							}
-							if ( true === $endpoints_in_use ) {
-								foreach ( $options['endpoints'] as $endpoint ) {
-									if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
-										$report_uri = $report_uri . strval( Utils::cast_strval( $endpoint['url'] ) ) . ' ';
-									}
-								}
-							}
-						}
-
-						if ( 1 === $tools['capture_enabled'] || true === $endpoints_in_use ) {
-							if ( 1 === $options['add_Report-To'] ) {
-								$header_report_to = $header_report_to
-								. '{ "group": ';
-								if ( '' !== $options['group_name'] && true === $endpoints_in_use ) {
-										$header_report_to = $header_report_to . '"' . $options['group_name'] . '", ';
-										$report_to        = $report_to . $options['group_name'];
-								} else {
-									$header_report_to = $header_report_to . '"csp-endpoint", ';
-									$report_to        = $report_to . 'csp-endpoint';
-								}
-									$header_report_to = $header_report_to
-									. '"max_age": ';
-								if ( '' !== $options['max_age'] && true === $endpoints_in_use ) {
-									$header_report_to = $header_report_to . $options['max_age'] . ', ';
-								} else {
-									$header_report_to = $header_report_to . '10886400, ';
-								}
-									$header_report_to = $header_report_to
-									. '"endpoints": [';
-								if ( 1 === $tools['capture_enabled'] ) {
-									$header_report_to = $header_report_to
-									. '{ "url": "' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '" }';
-								}
-								if ( true === $endpoints_in_use ) {
-									$my_endpoints = '';
-									foreach ( $options['endpoints'] as $endpoint ) {
-										if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
-											$my_endpoints = $my_endpoints
-											. '{ "url": "' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '" }, ';
-										}
-									}
-									$my_endpoints = substr( $my_endpoints, 0, strlen( $my_endpoints ) - 2 );
-
-									if ( 1 === $tools['capture_enabled'] ) {
-										$header_report_to = $header_report_to . ', ' . $my_endpoints;
-									} else {
-										$header_report_to = $header_report_to . $my_endpoints;
-									}
-								}
-									$header_report_to = $header_report_to . '] }';
-							}
-							if ( 1 === $options['add_Reporting-Endpoints'] || 1 === $tools['capture_enabled'] ) {
-								foreach ( $options['endpoints'] as $endpoint ) {
-									if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
-										$report_to                  = $report_to . ' ' . strval( Utils::cast_strval( $endpoint['name'] ) );
-										$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
-										strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '"';
-									}
-									$report_to                  = $report_to . ' ' . strval( Utils::cast_strval( $endpoint['name'] ) );
-									$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
-									strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '"';
-								}
-								if ( 1 === $tools['capture_enabled'] ) {
-									$report_to                  = $report_to . ' nunil-internal-reporting-endpoint';
-									$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
-									'nunil-internal-reporting-endpoint="' . site_url( '/wp-json/no-unsafe-inline/v1/capture-by-violation' ) . '"';
-								}
-							}
-						}
-					}
-					if ( 0 < strlen( $report_uri ) ) {
-						$header_csp = $header_csp . ' report-uri ' . $report_uri . ';';
-					}
-					if ( 0 < strlen( $report_to ) ) {
-						$header_csp = $header_csp . ' report-to ' . $report_to . ';';
-					}
-
-					if ( 0 < strlen( $header_report_to ) ) {
-						if ( ! headers_sent( $filename, $linenum ) ) {
-							header( 'Report-To: ' . $header_report_to );
-						} else {
-							Log::warning(
-								sprintf(
-									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
-									esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
-									$filename,
-									$linenum
-								)
-							);
-						}
-					}
-
-					if ( 0 < strlen( $header_reporting_endpoints ) ) {
-						if ( ! headers_sent( $filename, $linenum ) ) {
-							header( 'Reporting-Endpoints: ' . $header_reporting_endpoints );
-						} else {
-							Log::warning(
-								sprintf(
-									// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
-									esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
-									$filename,
-									$linenum
-								)
-							);
-						}
-					}
-
-					if ( ! headers_sent( $filename, $linenum ) ) {
-
-						/**
-						 * Apache set a limit to max size of header sent.
-						 * Its default is 8190.
-						 * We need a strategy to send the CSP when hashes are too long.
-						 * In order:
-						 * 1. We remove optional ascii white spaces
-						 * 2. We try to reduce size by allowing all img ( = set "img-src *;")
-						 * 3. We Deploy simplified policy to meta tag
-						 */
-						$max_http_header_size             = $options['max_response_header_size'] ? $options['max_response_header_size'] : 8192;
-						$res_current_response_header_size = self::response_headers_size();
-
-						// Keep a 100 byte as a security buffer.
-						$max_csp_allowed_size = $max_http_header_size - $res_current_response_header_size - 100;
-
-						$csp_size = strlen( $header_csp );
-						if ( $csp_size > $max_csp_allowed_size ) {
-							if ( 'nonce' !== $options['inline_scripts_mode'] ) {
-								Log::warning( esc_html__( 'CSP header is too long: please try to use \'nonce\' for inline_scripts_mode', 'no-unsafe-inline' ) );
-							}
-
-							// 1. We remove optional-ascii-whitespace
-							$header_csp = str_replace( ' ;', ';', $header_csp );
-							$header_csp = str_replace( '; ', ';', $header_csp );
-							Log::warning( esc_html__( 'CSP header is too long: removed optional-ascii-whitespace', 'no-unsafe-inline' ) );
-						}
-
-						$csp_size = strlen( $header_csp );
-						if ( $csp_size > $max_csp_allowed_size ) {
-							// 2. We reduce img-src to *;
-							$header_csp = preg_replace( '/img-src(.*?);/m', 'img-src *;', $header_csp );
-							Log::warning( esc_html__( 'CSP header is too long: img-src was reduced to * (every image allowed)', 'no-unsafe-inline' ) );
-						}
-
-						if ( ! is_null( $header_csp ) ) {
-							$csp_size = strlen( $header_csp );
-							if ( $csp_size > $max_csp_allowed_size ) {
-								// 3. Moving policy to meta
-								$csp_meta_fallback = preg_replace(
-									array(
-										'/report-uri(.*?);/m',
-										'/report-to(.*?);/m',
-										'/frame-ancestors(.*?);/m',
-										'/sandbox(.*?);/m',
-										'/Content-Security-Policy-Report-Only: /',
-										'/Content-Security-Policy: /',
-									),
-									array( '', '', '', '', '', '' ),
-									$header_csp
-								);
-								$nunil_csp_meta    = '<meta http-equiv="Content-Security-Policy" content="' . $csp_meta_fallback . '">';
-								// translators: %s is &lt;meta http-equiv&gt;.
-								Log::warning( sprintf( esc_html__( 'CSP header is too long: reduced CSP was deployed via %s', 'no-unsafe-inline' ), '&lt;meta http-equiv&gt;' ) );
-							}
-						}
-						if ( '' === $nunil_csp_meta && ( ! is_null( $header_csp ) ) ) {
-							header( $header_csp );
-						}
-					} else {
-						\NUNIL\Nunil_Lib_Log::warning(
-							sprintf(
-								// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
-								esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
-								$filename,
-								$linenum
-							)
-						);
-					}
+				if ( 1 === $options[ $enabled ] ) { // add only rule for enabled directives.
+					$header_csp = trim( $header_csp ) . ' ' . $dir . ' ' . trim( $csp ) . '; ';
 				}
 			}
-		}
+
+			// Qui creo i valori nel caso in cui devo catturare le violazioni tramite i report.
+			// In questa configurazione, l'operazione avviene anche se è impostata la protezione CSP e non solo se è impostata la test policy.
+			if ( $do_capture ) {
+
+				// prepending to report-uri the internal reporting endpoint.
+				$report_uri = $internal_reporting_endpoint_url;
+
+				// adding the internal reporting endpoint to report-to.
+				$report_to = $internal_reporting_endpoint_name;
+
+				// adding the internal reporting endpoint to Reporting-Endpoints.
+				$header_reporting_endpoints = $internal_reporting_endpoint_name . '="' . $internal_reporting_endpoint_url . '"';
+
+				// adding the internal reporting endpoint to Report-To.
+				$max_age                = '' !== $options['max_age'] ? $options['max_age'] : 10886400; // 3 months in seconds
+				$header_report_to_array = array(
+					'group'     => $internal_reporting_endpoint_name,
+					'max_age'   => $max_age,
+					'endpoints' => array(
+						array(
+							'url' => $internal_reporting_endpoint_url,
+						),
+					),
+				);
+				$header_report_to       = wp_json_encode( $header_report_to_array );
+				if ( false === $header_report_to ) {
+					$header_report_to = '';
+					Log::warning( esc_html__( 'Report-To header could not be encoded in JSON', 'no-unsafe-inline' ) );
+				}
+			} else { // non è abilitata la cattura delle violazioni tramite report.
+				// inizializzo le variabili per i reporting endpoints.
+				$report_uri                 = '';
+				$header_report_to           = '';
+				$report_to                  = '';
+				$header_reporting_endpoints = '';
+
+				// Se sto utilizzando i reporting endpoints, ma non è abilitata la cattura delle violazioni tramite report.
+				if ( $endpoints_in_use ) {
+					if ( 1 === $options['use_report-uri'] ) {
+						foreach ( $options['endpoints'] as $endpoint ) {
+							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
+								$report_uri = $report_uri . strval( Utils::cast_strval( $endpoint['url'] ) ) . ' ';
+							}
+						}
+					}
+
+					if ( '' !== $options['group_name'] ) {
+						$group_name = $options['group_name'];
+					} else {
+						$group_name = 'csp-endpoint';
+					}
+
+					if ( 1 === $options['use_report-to'] ) {
+						$report_to = $group_name;
+					} else {
+						$report_to = '';
+					}
+
+					if ( 1 === $options['add_Report-To'] ) {
+						$max_age                = '' !== $options['max_age'] ? $options['max_age'] : 10886400; // 3 months in seconds.
+						$header_report_to_array = array(
+							'group'     => $group_name,
+							'max_age'   => $max_age,
+							'endpoints' => array(),
+						);
+						foreach ( $options['endpoints'] as $endpoint ) {
+							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
+								$header_report_to_array['endpoints'][] = array(
+									'url' => strval( Utils::cast_strval( $endpoint['url'] ) ),
+								);
+							}
+						}
+						$header_report_to = wp_json_encode( $header_report_to_array );
+						if ( false === $header_report_to ) {
+							$header_report_to = '';
+							Log::warning( esc_html__( 'Report-To header could not be encoded in JSON', 'no-unsafe-inline' ) );
+						}
+					} else {
+						$header_report_to = '';
+					}
+
+					if ( 1 === $options['add_Reporting-Endpoints'] ) {
+						$header_reporting_endpoints = '';
+						foreach ( $options['endpoints'] as $endpoint ) {
+							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
+								$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
+								strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '", ';
+							}
+						}
+						// rimuovo ultimi due caratteri ', '
+						$header_reporting_endpoints = substr( $header_reporting_endpoints, 0, strlen( $header_reporting_endpoints ) - 2 );
+					} else {
+						$header_reporting_endpoints = '';
+					}
+				} // se sto utilizzando i reporting endpoints, ma non è abilitata la cattura delle violazioni tramite report.
+			} // non è abilitata la cattura delle violazioni tramite report.
+
+			if ( 0 < strlen( $report_uri ) ) {
+				$header_csp = $header_csp . ' report-uri ' . $report_uri . ';';
+			}
+			if ( 0 < strlen( $report_to ) ) {
+				$header_csp = $header_csp . ' report-to ' . $report_to . ';';
+			}
+
+			if ( 0 < strlen( $header_report_to ) ) {
+				if ( ! headers_sent( $filename, $linenum ) ) {
+					header( 'Report-To: ' . $header_report_to );
+				} else {
+					Log::warning(
+						sprintf(
+							// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
+							esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+							$filename,
+							$linenum
+						)
+					);
+				}
+			}
+
+			if ( 0 < strlen( $header_reporting_endpoints ) ) {
+				if ( ! headers_sent( $filename, $linenum ) ) {
+					header( 'Reporting-Endpoints: ' . $header_reporting_endpoints );
+				} else {
+					Log::warning(
+						sprintf(
+							// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
+							esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+							$filename,
+							$linenum
+						)
+					);
+				}
+			}
+
+			if ( ! headers_sent( $filename, $linenum ) ) {
+
+				/**
+				 * Apache set a limit to max size of header sent.
+				 * Its default is 8190.
+				 * We need a strategy to send the CSP when hashes are too long.
+				 * In order:
+				 * 1. We remove optional ascii white spaces
+				 * 2. We try to reduce size by allowing all img ( = set "img-src *;")
+				 * 3. We Deploy simplified policy to meta tag
+				 */
+				$max_http_header_size             = $options['max_response_header_size'] ? $options['max_response_header_size'] : 8192;
+				$res_current_response_header_size = self::response_headers_size();
+
+				// Keep a 100 byte as a security buffer.
+				$max_csp_allowed_size = $max_http_header_size - $res_current_response_header_size - 100;
+
+				$csp_size = strlen( $header_csp );
+				if ( $csp_size > $max_csp_allowed_size ) {
+					if ( 'nonce' !== $options['inline_scripts_mode'] ) {
+						Log::warning( esc_html__( 'CSP header is too long: please try to use \'nonce\' for inline_scripts_mode', 'no-unsafe-inline' ) );
+					}
+
+					// 1. We remove optional-ascii-whitespace
+					$header_csp = str_replace( ' ;', ';', $header_csp );
+					$header_csp = str_replace( '; ', ';', $header_csp );
+					Log::warning( esc_html__( 'CSP header is too long: removed optional-ascii-whitespace', 'no-unsafe-inline' ) );
+				}
+
+				$csp_size = strlen( $header_csp );
+				if ( $csp_size > $max_csp_allowed_size ) {
+					// 2. We reduce img-src to *;
+					$header_csp = preg_replace( '/img-src(.*?);/m', 'img-src *;', $header_csp );
+					Log::warning( esc_html__( 'CSP header is too long: img-src was reduced to * (every image allowed)', 'no-unsafe-inline' ) );
+				}
+
+				if ( ! is_null( $header_csp ) ) {
+					$csp_size = strlen( $header_csp );
+					if ( $csp_size > $max_csp_allowed_size ) {
+						// 3. Moving policy to meta
+						$csp_meta_fallback = preg_replace(
+							array(
+								'/report-uri(.*?);/m',
+								'/report-to(.*?);/m',
+								'/frame-ancestors(.*?);/m',
+								'/sandbox(.*?);/m',
+								'/Content-Security-Policy-Report-Only: /',
+								'/Content-Security-Policy: /',
+							),
+							array( '', '', '', '', '', '' ),
+							$header_csp
+						);
+						$nunil_csp_meta    = '<meta http-equiv="Content-Security-Policy" content="' . $csp_meta_fallback . '">';
+						// translators: %s is &lt;meta http-equiv&gt;.
+						Log::warning( sprintf( esc_html__( 'CSP header is too long: reduced CSP was deployed via %s', 'no-unsafe-inline' ), '&lt;meta http-equiv&gt;' ) );
+					}
+				}
+				if ( '' === $nunil_csp_meta && ( ! is_null( $header_csp ) ) ) {
+					header( $header_csp );
+				}
+			} else {
+				\NUNIL\Nunil_Lib_Log::warning(
+					sprintf(
+						// translators: %1$s is the filename of the file that sent headers, %2$d is the line in filename where headers where sent.
+						esc_html__( 'CSP headers not sent because headers were sent by %1$s at line %2$d', 'no-unsafe-inline' ),
+						$filename,
+						$linenum
+					)
+				);
+			}
+		} // if( $deploy_policy ) {
 	}
 
 	/**
