@@ -546,6 +546,7 @@ div.nunil_temp_div {
 	flex-grow: 1;
 	flex-shrink: 2;
 	flex-basis: auto;
+	margin-top: 16px;
 }
 
 .nunil-new-endpoint-url-wrapper {
@@ -606,6 +607,9 @@ div.nunil_temp_div {
 	color: black;
 	border: 2px solid #4CAF50;
 	min-width: 10em;
+	padding: 12px !important;
+	font-size: 14px;
+	line-height: 20px !important;
 }
 
 .nunil-btn-addnew:hover:enabled {
@@ -683,7 +687,62 @@ div.nunil_temp_div {
 	background-color: #ff9696!important;
 }
 
-.nunil-text-group {
+.nunil-text-field{
+	position: relative;
+	margin-top: 20px;
+}
+
+.nunil-text-field__input {
+	appearance: none;
+	width: 100%;
+	padding: 12px !important;
+	border: solid 1px grey;
+	outline: none;
+	font-size: 14px;
+	line-height: 20px !important;
+}
+
+.nunil-text-field__input:not(:placeholder-shown) + .nunil-text-field__label {
+	transform: translate3d(0, -100%, 0) scale(0.875);
+}
+
+.nunil-text-field__label {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	transform-origin: 0 0;
+	transform: translate3d(12px, 12px, 0);
+	font-size: 14px;
+	line-height: 20px;
+	text-transform: uppercase;
+	transition: transform .2s;
+}
+
+.nunil-text-field__input:focus + .nunil-text-field__label {
+	transform: translate3d(0, -100%, 0) scale(0.875);
+}
+
+.nunil-text-field__input::placeholder {
+	color: transparent !important;
+	user-select: none !important;
+}
+
+.nunil-text-field__input:focus::placeholder {
+	color: rgb(93, 93, 150) !important;
+	user-select: none !important;
+}
+
+.nunil-text-field__input:not(:-ms-input-placeholder) + .nunil-text-field__label {
+	transform: translate3d(0, -100%, 0) scale(0.875);
+}
+
+.nunil-text-field__input:-ms-input-placeholder {
+	color: transparent !important;
+	-ms-user-select: none !important;
+}
+
+.nunil-text-group, .nunil-text-maxage {
 	min-width: 15em;
 	max-width: 19em;
 }

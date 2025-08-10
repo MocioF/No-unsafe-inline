@@ -1824,16 +1824,23 @@ class No_Unsafe_Inline_Admin {
 		$disabled = ( '' !== $in_use ) ? '' : 'disabled';
 
 		printf(
-			'<input class="nunil-text-group" type="text" id="no-unsafe-inline[group_name]"' .
-			'name="no-unsafe-inline[group_name]" value="%s" %s />
-			<label for="no-unsafe-inline[group_name]">%s</label>',
+			'<p>' . esc_html__( 'This is the value set for the report-to directive inside the Content-Security-Policy HTTP header.', 'no-unsafe-inline' ) . '</p>' .
+			'<div class="nunil-text-field">
+			<input class="nunil-text-field__input nunil-text-group" type="text" id="no-unsafe-inline[group_name]"' .
+			'name="no-unsafe-inline[group_name]" value="%s" placeholder="%s" %s />
+			<p class="nunil-text-field__label">%s</p>
+			</div>',
 			esc_html( $value ),
+			'csp-endpoint',
 			esc_html( $disabled ),
-			esc_html__( 'This is the value set for the report-to directive inside the Content-Security-Policy HTTP header.', 'no-unsafe-inline' ) .
-			'<br>' .
+			esc_html__( 'CSP Reporting Endpoint Name', 'no-unsafe-inline' )
+		);
+		printf(
+			'<p>' .
 			esc_html__( 'This value will reference to all the endpoints set in the list if it is defined in the Report-To response header or will be used for the first endopoint if it is defined in the Reporting-Endpoints header field.', 'no-unsafe-inline' ) .
 			'<br>' .
-			esc_html__( 'Optional. If a value is not defined, will be used the token "csp-endpoint".', 'no-unsafe-inline' )
+			esc_html__( 'Optional. If a value is not defined, will be used the token "csp-endpoint".', 'no-unsafe-inline' ) .
+			'</p>'
 		);
 	}
 
@@ -1852,12 +1859,18 @@ class No_Unsafe_Inline_Admin {
 		$disabled = ( '' !== $in_use ) ? '' : 'disabled';
 
 		printf(
-			'<input class="nunil-text-maxage" type="text" id="no-unsafe-inline[max_age]"' .
-			'name="no-unsafe-inline[max_age]" value="%d" %s />
-			<label for="no-unsafe-inline[max_age]">%s</label>',
+			'<div class="nunil-text-field">
+			<input class="nunil-text-field__input nunil-text-maxage" type="text" id="no-unsafe-inline[max_age]" ' .
+			'name="no-unsafe-inline[max_age]" value="%d" placeholder="%s" %s />
+			<p class="nunil-text-field__label">%s</p>
+			</div>',
 			intval( Utils::cast_intval( $value ) ),
+			'10886400',
 			esc_html( $disabled ),
-			esc_html__( 'Required for Report-To (ignored by Reporting-Endpoints). A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' )
+			esc_html__( 'Max-Age', 'no-unsafe-inline' )
+		);
+		printf(
+			'<p>' . esc_html__( 'Required for Report-To (ignored by Reporting-Endpoints). A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' ) . '</p>'
 		);
 	}
 
@@ -1887,24 +1900,30 @@ class No_Unsafe_Inline_Admin {
 		printf(
 			'<div class="nunil-new-endpoint-container">' .
 			'<div class="nunil-new-endpoint-url-wrapper">' .
-			'<label for="no-unsafe-inline[new_endpoint]" class="nunil_label_left">%s</label>' .
-			'<input class="nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
-			'name="no-unsafe-inline[new_endpoint]" %s />' .
+			'<div class="nunil-text-field">' .
+			'<input class="nunil-text-field__input nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
+			'name="no-unsafe-inline[new_endpoint]" placeholder="%s" %s />' .
+			'<p class="nunil-text-field__label">%s</p>' .
+			'</div>' .
 			'</div>' .
 			'<div class="nunil-new-endpoint-name-wrapper">' .
-			'<label for="no-unsafe-inline[new_endpoint_name]" class="nunil_label_left">%s</label>' .
-			'<input class="nunil-new-endpoint-name" type="text" id="no-unsafe-inline[new_endpoint_name]"' .
-			'name="no-unsafe-inline[new_endpoint_name]" %s />' .
+			'<div class="nunil-text-field">' .
+			'<input class="nunil-text-field__input nunil-new-endpoint-name" type="text" id="no-unsafe-inline[new_endpoint_name]"' .
+			'name="no-unsafe-inline[new_endpoint_name]" placeholder="%s" %s />' .
+			'<p class="nunil-text-field__label">%s</p>' .
+			'</div>' .
 			'</div>' .
 			'<div class="nunil-new-endpoint-button-wrapper">' .
 			'<input class="nunil-btn nunil-btn-addnew" type="button" id="no-unsafe-inline[add_new_endpoint]"' .
 			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
 			'</div>' .
 			'</div>',
-			esc_html__( 'endpoint URL', 'no-unsafe-inline' ) . ': ',
+			'https://example.com/report-endpoint',
 			esc_html( $disabled ),
-			esc_html__( 'endpoint name', 'no-unsafe-inline' ) . ': ',
+			esc_html__( 'endpoint URL', 'no-unsafe-inline' ),
+			'csp-endpoint',
 			esc_html( $disabled ),
+			esc_html__( 'endpoint name', 'no-unsafe-inline' ),
 			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
 			esc_html( $disabled ),
 		);
