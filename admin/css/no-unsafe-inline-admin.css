@@ -856,3 +856,11 @@ div.nunil_temp_div {
 	border: 1px solid #c3c4c7;
 	border-top: 0;
 }
+
+.nunil-logs th.column-created_at {
+	width: 15%;
+}
+
+.nunil-logs th.column-level {
+	width: 10%;
+}

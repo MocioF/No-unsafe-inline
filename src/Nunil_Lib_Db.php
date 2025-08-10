@@ -559,12 +559,18 @@ class Nunil_Lib_Db {
 	/**
 	 * Return the total log entries
 	 *
+	 * @param string $search Search term.
 	 * @return int Total log entries
 	 */
-	public static function get_total_logs() {
+	public static function get_total_logs( $search = '' ) {
 		global $wpdb;
+		$wild      = '%';
+		$do_search = ( $search ) ? $wpdb->prepare(
+			' WHERE `message` LIKE %s ',
+			$wild . $wpdb->esc_like( $search ) . $wild
+		) : '';
 
-		$total = $wpdb->get_var( 'SELECT COUNT(*) FROM ' . self::logs_table() );
+		$total = $wpdb->get_var( 'SELECT COUNT(*) FROM ' . self::logs_table() . $do_search );
 		return is_null( $total ) ? 0 : intval( $total );
 	}
 
@@ -575,11 +581,12 @@ class Nunil_Lib_Db {
 	 * @param int    $size Limit.
 	 * @param string $order_by Ordering field.
 	 * @param string $order_asc Sort: 'asc' or 'desc'.
+	 * @param string $search Search term.
 	 * @param string $mode Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
 	 * @return array<array<\stdClass>>|array<array<string>>|array<\stdClass> The result with the logs
 	 * @throws \NUNIL\Nunil_Exception If $order_by parameter is invalid.
 	 */
-	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $mode = OBJECT ) {
+	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $search = '', $mode = OBJECT ) {
 		global $wpdb;
 
 		if ( strpos( self::$allowed_logs_fields, $order_by ) === false ) {
@@ -595,9 +602,16 @@ class Nunil_Lib_Db {
 		}
 		$order_asc = 'asc' === $order_asc ? 'asc' : 'desc';
 
+		$wild      = '%';
+		$do_search = ( $search ) ? $wpdb->prepare(
+			' WHERE `message` LIKE %s ',
+			$wild . $wpdb->esc_like( $search ) . $wild
+		) : '';
+
 		$sql     = $wpdb->prepare(
 			'SELECT ' . self::$allowed_logs_fields .
 			' FROM ' . self::logs_table() .
+			$do_search . ' ' .
 			' ORDER BY ' . $order_by . ' ' . $order_asc .
 			' LIMIT %d OFFSET %d',
 			$size,

@@ -13,6 +13,7 @@
 namespace NUNIL\admin\partials;
 
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_Lib_Log as Log;
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	/**
@@ -40,8 +41,8 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 
 		parent::__construct(
 			array(
-				'singular' => 'log',
-				'plural'   => 'logs',
+				'singular' => 'nunil-log',
+				'plural'   => 'nunil-logs',
 			)
 		);
 	}
@@ -55,12 +56,25 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	 * @return string|void
 	 */
 	public function column_default( $item, $column_name ) {
-		$content = $item['created_at'] . ' | ' . strtoupper( $item['level'] ) . ' | ' . $item['message'];
-
-		if ( strlen( $content ) > self::MAX_LENGTH ) {
-			return substr( $content, 0, self::MAX_LENGTH ) . '...';
-		} else {
-			return $content;
+		switch ( $column_name ) {
+			case 'created_at':
+			case 'level':
+				return $item[ $column_name ];
+			case 'message':
+				if ( strlen( $item[ $column_name ] ) > self::MAX_LENGTH ) {
+					return substr( $item[ $column_name ], 0, self::MAX_LENGTH ) . '...';
+				} else {
+					return $item[ $column_name ];
+				}
+			default:
+				Log::debug(
+					sprintf(
+						// translators: %s is a dumped variable content.
+						esc_html__( 'Error in column_default( $item, $column_name ). $item is: %s', 'no-unsafe-inline' ),
+						'<pre><code>' . esc_html( print_r( $item, true ) ) . '</code></pre>'
+					)
+				);
+				return;
 		}
 	}
 
@@ -71,7 +85,9 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	 */
 	public function get_columns() {
 		$columns = array(
-			'entry' => esc_html__( 'Log entries', 'no-unsafe-inline' ),
+			'created_at' => esc_html__( 'Created At', 'no-unsafe-inline' ),
+			'level'      => esc_html__( 'Level', 'no-unsafe-inline' ),
+			'message'    => esc_html__( 'Message', 'no-unsafe-inline' ),
 		);
 		return $columns;
 	}
@@ -83,7 +99,8 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		$sortable_columns = array(
-			'entry' => array( 'created_at', true ),
+			'created_at' => array( 'created_at', true ),
+			'level'      => array( 'level', true ),
 		);
 		return $sortable_columns;
 	}
@@ -95,21 +112,37 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-		$per_page = 50;
+		if ( isset( $_REQUEST['s'] ) ) {
+			$search = Utils::sanitize_text( $_REQUEST['s'], false );
+		} else {
+			$search = '';
+		}
+
+		$user   = get_current_user_id();
+		$screen = get_current_screen();
+		if ( ! is_null( $screen ) ) {
+			$screen_option = $screen->get_option( 'per_page', 'option' );
+			$per_page      = intval( Utils::cast_intval( get_user_meta( $user, $screen_option, true ) ) );
+			if ( $per_page < 1 ) {
+				$per_page = intval( $screen->get_option( 'per_page', 'default' ) );
+			}
+		} else {
+			$per_page = 50; // Default value if screen is not set.
+		}
 
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 
 		$this->_column_headers = array( $columns, array(), $sortable );
 
-		$total_items = \NUNIL\Nunil_Lib_Db::get_total_logs();
+		$total_items = \NUNIL\Nunil_Lib_Db::get_total_logs( $search );
 
 		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( Utils::cast_intval( $_REQUEST['paged'] ) ) - 1 ) : 0;
 		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : 'created_at';
 		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? Utils::sanitize_text( $_REQUEST['order'], false ) : 'desc';
 
 		try {
-			$logs        = \NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, ARRAY_A );
+			$logs        = \NUNIL\Nunil_Lib_Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, $search, ARRAY_A );
 			$this->items = (array) $logs;
 		} catch ( \NUNIL\Nunil_Exception $ex ) {
 			$ex->logexception();

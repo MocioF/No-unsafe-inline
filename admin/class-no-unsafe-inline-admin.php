@@ -458,6 +458,17 @@ class No_Unsafe_Inline_Admin {
 					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-events-list.php';
 					$this->show_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Events_List();
 					break;
+				case 'logs':
+					$help_tabs->set_help_tabs( 'logs' );
+					$args = array(
+						'label'   => __( 'Logs per page', 'no-unsafe-inline' ),
+						'default' => 50,
+						'option'  => 'nunil_logs_per_page',
+					);
+					add_screen_option( 'per_page', $args );
+					require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-admin-logs-table.php';
+					$this->show_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Admin_Logs_Table();
+					break;
 				default:
 					$help_tabs->set_help_tabs( 'nunil-tools' );
 				endswitch;

@@ -40,7 +40,7 @@ if ( isset( $_GET['page'] ) ) {
 	$nunil_page = null;
 }
 
-	$nunil_paged = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
+$nunil_paged = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
 
 if ( isset( $_GET['orderby'] ) ) {
 	$nunil_orderby = Utils::sanitize_text( $_GET['orderby'] );
@@ -99,14 +99,12 @@ if ( isset( $_GET['order'] ) ) {
 }
 
 printf( '<div class="wrap" id="nunil-' . esc_html( strval( $nunil_tab ) ) . '-list">' );
-printf( '<form id="nunil-inline-' . esc_html( strval( $nunil_tab ) ) . '-form" method="post">' );
+printf( '<form id="nunil-whitelist-' . esc_html( strval( $nunil_tab ) ) . '-form" method="post">' );
 printf( '<input type="hidden" name="tab" value="%s" />', esc_html( strval( $nunil_tab ) ) );
 printf( '<input type="hidden" name="page" value="%s" />', esc_html( strval( $nunil_page ) ) );
 printf( '<input type="hidden" name="paged" value="%d" />', intval( esc_html( strval( $nunil_paged ) ) ) );
 printf( '<input type="hidden" name="orderby" value="%s" />', esc_html( strval( $nunil_orderby ) ) );
 printf( '<input type="hidden" name="order" value="%s" />', esc_html( strval( $nunil_order ) ) );
-
-assert( isset( $this ) && $this instanceof \NUNIL\admin\No_Unsafe_Inline_Admin );
 
 /**
  * Checked in the main class file.
