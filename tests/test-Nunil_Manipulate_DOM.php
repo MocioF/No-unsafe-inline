@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
 final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
-{	
-	
+{
+
 	protected $nunil_tag1;
 	protected $nunil_tag2;
 
@@ -23,7 +23,7 @@ final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
 		);
 		$inline = true;
 		$this->nunil_tag1 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
-		
+
 		$directive    = 'style-src';
 		$tag          = 'link';
 		$stored_attr  = 'href';
@@ -35,7 +35,7 @@ final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
 		$this->nunil_tag2 = new NUNIL\Nunil_HTML_Tag( $directive, $tag, $stored_attr, $needed_attrs, $childs = null, $inline );
     }
 
-	
+
 	/**
 	 * @dataProvider tagProvider_1
 	 */
@@ -46,12 +46,12 @@ final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
 			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag1 )
         );
     }
-	
+
 	public function tagProvider_1(): array {
 		$data = [
 			'script-src' => [ "//script[(@src) and not(@type='text/html') and not(@type='text/template')]" ],
 		];
-		
+
 		return $data;
 	}
 
@@ -65,14 +65,12 @@ final class Nunil_Manipulate_DOMTest extends \WP_UnitTestCase
 			$expected, $Nunil_Manipulate_DOM->build_xpath_query( $this->nunil_tag2 )
         );
     }
-	
+
 	public function tagProvider_2(): array {
 		$data = [
 			'style-src'  => [ "//link[(@href) and (@rel='preload') and (@as='script')]" ]
 		];
-		
+
 		return $data;
 	}
-
-		
 }

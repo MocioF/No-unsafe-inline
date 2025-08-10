@@ -110,6 +110,7 @@ class Nunil_Capture_CSP_Violations extends Nunil_Capture {
 			$csp_violation = $this->get_csp_report_body( $report );
 
 			if ( $csp_violation ) {
+				/** @var Nunil_Capture $capture */
 				$capture = new Nunil_Capture();
 
 				// effective-directory has had a delaied (and inconsistent) implementation.

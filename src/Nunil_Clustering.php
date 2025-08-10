@@ -14,6 +14,7 @@ namespace NUNIL;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\ML\Clusterers\DBSCAN;
 use Rubix\ML\Graph\Trees\BallTree;
+use Rubix\ML\Kernels\Distance\Nunil_Hamming_Distance;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;

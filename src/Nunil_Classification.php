@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use NUNIL\Nunil_Knn_Trainer;
+use Rubix\ML\Classifiers\Nunil_Knn_Trainer;
 use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\CrossValidation\Reports\AggregateReport;
 use Rubix\ML\CrossValidation\Reports\ConfusionMatrix;

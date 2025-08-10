@@ -22,7 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "NUNIL\\": "src/"
+            "NUNIL\\": "src/",
+            "Rubix\\ML\\": "src/rubix/ml/"
         }
     },
     "require-dev": {

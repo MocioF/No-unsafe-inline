@@ -130,7 +130,7 @@ class Nunil_Capture {
 			$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | HTML5DOMDocument::OPTIMIZE_HEAD | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
 		}
 	}
-	
+
 	/**
 	 * Removes the output displayed before <!DOCTYPE
 	 *
@@ -147,7 +147,7 @@ class Nunil_Capture {
 		}
 		return $mystring;
 	}
-	
+
 	/**
 	 * Perform capture for each tag in array
 	 *
@@ -520,6 +520,9 @@ class Nunil_Capture {
 				if ( ! mb_check_encoding( $content, 'utf8' ) ) {
 					// Fix PHP8.2 deprecation: https://php.watch/versions/8.2/utf8_encode-utf8_decode-deprecated#utf8_encode-replace .
 					$content = mb_convert_encoding( $content, 'UTF-8', mb_list_encodings() );
+					if ( false === $content ) {
+						return false;
+					}
 				}
 			}
 			$base64 = base64_encode( hash( $algo, $content, true ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
