@@ -416,7 +416,9 @@ class No_Unsafe_Inline_Public {
 				}
 			}
 
-			if ( 0 < strlen( $header_reporting_endpoints ) ) {
+      $header_csp = apply_filters( 'nunil_output_csp_headers_header_csp', $header_csp );
+
+      if ( 0 < strlen( $header_reporting_endpoints ) ) {
 				if ( ! headers_sent( $filename, $linenum ) ) {
 					header( 'Reporting-Endpoints: ' . $header_reporting_endpoints );
 				} else {

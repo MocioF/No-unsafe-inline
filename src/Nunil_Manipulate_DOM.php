@@ -986,24 +986,29 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$samples[] = $lsh_hex_digest;
 		$dataset   = new Unlabeled( $samples );
 
-		if ( is_null( $event ) && 'script' === $tagname && isset( $this->inline_scripts_classifier ) ) {
-			$predicted_labels = $this->inline_scripts_classifier->predict( $dataset );
-			$predicted_label  = $predicted_labels[0];
-			$list             = $this->inline_rows;
-		} elseif ( is_null( $event ) && 'script' !== $tagname && isset( $this->internal_css_classifier ) ) {
-			$predicted_labels = $this->internal_css_classifier->predict( $dataset );
-			$predicted_label  = $predicted_labels[0];
-			$list             = $this->inline_rows;
-		} elseif ( null !== $event && isset( $this->event_handlers_classifier ) ) {
-			$predicted_labels         = $this->event_handlers_classifier->predict( $dataset );
-			$combined_predicted_label = $predicted_labels[0];
-			$label_parts              = explode( '#', $combined_predicted_label, 2 );
-			$my_evh                   = $label_parts[0];
-			$predicted_label          = $label_parts[1];
-			$list                     = $this->events_rows;
-		} else {
+		try {
+			if ( is_null( $event ) && 'script' === $tagname && isset( $this->inline_scripts_classifier ) ) {
+				$predicted_labels = $this->inline_scripts_classifier->predict( $dataset );
+				$predicted_label  = $predicted_labels[0];
+				$list             = $this->inline_rows;
+			} elseif ( is_null( $event ) && 'script' !== $tagname && isset( $this->internal_css_classifier ) ) {
+				$predicted_labels = $this->internal_css_classifier->predict( $dataset );
+				$predicted_label  = $predicted_labels[0];
+				$list             = $this->inline_rows;
+			} elseif ( null !== $event && isset( $this->event_handlers_classifier ) ) {
+				$predicted_labels         = $this->event_handlers_classifier->predict( $dataset );
+				$combined_predicted_label = $predicted_labels[0];
+				$label_parts              = explode( '#', $combined_predicted_label, 2 );
+				$my_evh                   = $label_parts[0];
+				$predicted_label          = $label_parts[1];
+				$list                     = $this->events_rows;
+			} else {
+				return false;
+			}
+		} catch ( \Rubix\ML\Exceptions\RuntimeException $e ) {
 			return false;
 		}
+
 		if ( is_array( $list ) ) {
 			if ( 'Unclustered' !== $predicted_label ) {
 				if ( null === $event ) {
