@@ -1412,13 +1412,11 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						'source'    => $in_use . '-' . $hashes[ $in_use ],
 					);
 				}
-				$head_node = $this->domdocument->getElementsByTagName( 'head' );
-				if ( 0 < $head_node->length ) {
-					$head_node = $head_node->item( 0 );
+				$head_node_list = $this->domdocument->getElementsByTagName( 'head' );
+				if ( 0 < $head_node_list->length ) {
+					$head_node = $head_node_list->item( 0 );
 					if ( ! is_null( $head_node ) ) {
-						if ( is_a( $head_node, '\DOMElement' ) ) {
-							$head_node->appendChild( $style_node );
-						}
+						$head_node->appendChild( $style_node );
 					}
 				}
 			}
