@@ -105,12 +105,12 @@ class Nunil_Admin_Help_Tabs {
 
 				break;
 
-			case 'base-src':
+			case 'base-rule':
 				$this->screen->add_help_tab(
 					array(
-						'id'      => 'nunil-base-src',
+						'id'      => 'nunil-base-rule',
 						'title'   => __( 'Base sources for CSP', 'no-unsafe-inline' ),
-						'content' => $this->content( 'nunil-base-src' ),
+						'content' => $this->content( 'nunil-base-rule' ),
 					)
 				);
 
@@ -433,7 +433,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<li>' . esc_html__( 'delete plugin logs.', 'no-unsafe-inline' ) . '</li>'
 			. '</ul>'
 			. '</p>';
-		$content['nunil-base-src']                = '<p>'
+		$content['nunil-base-rule']               = '<p>'
 			. esc_html__( 'From this page you can add <host-source>, <scheme-source> and keywords that will be used in the CSP directives in all protected pages of your site.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
@@ -444,13 +444,16 @@ class Nunil_Admin_Help_Tabs {
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'In the table at the bottom of the page you will find some suggested sources which, if included in your CSP policy, would authorize the execution of external scripts captured while viewing the pages of your site; selecting the records of the table, these sources will be respectively inserted and removed from the corresponding directives.', 'no-unsafe-inline' )
+			. '<br>'
 			. esc_html__( 'The format of the sources is determined by the "External hosts identification" option which, however, does not limit the ability to manually insert elements in directives not listed in the table.', 'no-unsafe-inline' )
 			. '<p>'
 			. esc_html__( 'Avoid adding unsafe directives like \'unsafe-hashes\' and \'unsafe-inline\'.', 'no-unsafe-inline' )
+			. '<br>'
 			. esc_html__( 'If some scripts on your site use the eval() function you will be prompted to insert \'unsafe-eval\' in the table. This is not safe, but in order to get rid of this keyword without impacting the functionality of the site it is necessary to rewrite the code that uses this function.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'Do not use the \'strict-dynamic\' and \'report-sample\' keywords which are directly managed by the plugin.', 'no-unsafe-inline' )
+			. '<br>'
 			. esc_html__( 'Do not enter hashes for inline scripts and styles, which are managed directly by the plugin.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
