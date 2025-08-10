@@ -9,6 +9,7 @@
  * @since   1.0.0
  */
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Rubix\ML\Kernels\Distance;
 
 if ( ! defined( 'ABSPATH' ) ) {

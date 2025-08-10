@@ -1509,8 +1509,13 @@ class Nunil_Lib_Db {
 
 		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
 
-		// Questa funziona su sql-lite ... verifica se è possibile individuarne l'uso.
-		// $sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
+		/**
+		 * Questa funziona su sql-lite.
+		 *
+		 * Verifica se è possibile individuarne l'uso.
+		 *
+		 * $sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
+		 */
 		return $wpdb->query( $sql );
 	}
 

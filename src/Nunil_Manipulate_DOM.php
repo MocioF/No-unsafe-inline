@@ -979,6 +979,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @param string $lsh_hex_digest Nilsimsa digest.
 	 * @param string $tagname The tagname.
 	 * @param string $event Event handlers html attribute.
+	 * @throws \NUNIL\Nunil_Exception Estimator could not be trained.
 	 * @return string|false The clustername if whitelisted, else false
 	 */
 	private function check_cluster_whitelist( $lsh_hex_digest, $tagname, $event = null ) {

@@ -281,18 +281,21 @@ class No_Unsafe_Inline {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		$tools   = (array) get_option( 'no-unsafe-inline-tools' );
 
-		// Enqueue the script that will handle the CSP violation reports.
-		// This functionality is not implemented yet.
-		/*
-		if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && 1 === $tools['capture_enabled'] ) {
-			wp_enqueue_script(
-				$this->plugin_name . '_spv_handler',
-				plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-spv-handler$suffix.js",
-				array(),
-				$this->version,
-				false
-			);
-		} */
+		/**
+		 * Enqueue the script that will handle the CSP violation reports.
+		 *
+		 * This functionality is not implemented yet.
+		 *
+		 * if ( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && 1 === $tools['capture_enabled'] ) {
+		 *  wp_enqueue_script(
+		 *      $this->plugin_name . '_spv_handler',
+		 *      plugin_dir_url( NO_UNSAFE_INLINE_PLUGIN_BASENAME ) . "includes/js/no-unsafe-inline-spv-handler$suffix.js",
+		 *      array(),
+		 *      $this->version,
+		 *      false
+		 *  );
+		 * }
+		 */
 
 		if (
 			( ( 1 === $tools['enable_protection'] || 1 === $tools['test_policy'] ) && ( false === is_admin() || 1 === $options['protect_admin'] ) ) ||

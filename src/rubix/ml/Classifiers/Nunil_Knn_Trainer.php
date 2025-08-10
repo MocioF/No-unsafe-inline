@@ -10,6 +10,7 @@
  * @since   1.2.0
  */
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace Rubix\ML\Classifiers;
 
 use Rubix\ML\Classifiers\KNearestNeighbors;

@@ -386,7 +386,7 @@ class No_Unsafe_Inline_Public {
 								strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '", ';
 							}
 						}
-						// rimuovo ultimi due caratteri ', '
+						// rimuovo ultimi due caratteri ', '.
 						$header_reporting_endpoints = substr( $header_reporting_endpoints, 0, strlen( $header_reporting_endpoints ) - 2 );
 					} else {
 						$header_reporting_endpoints = '';
