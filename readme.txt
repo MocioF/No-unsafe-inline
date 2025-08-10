@@ -2,10 +2,10 @@
 Contributors: mociofiletto
 Donate link: https://paypal.me/GiuseppeF77
 Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
-Requires at least: 5.2
-Tested up to: 6.6
+Requires at least: 5.3
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,7 +32,7 @@ In addition, in order to facilitate the adoption of nonce-based CSP, they propos
 
 == The problem(s) with CSP in Wordpress ==
 1. Manual creation of a policy
-	
+
 	Usually, a WordPress project is a mix of code written by different authors who contributed to the Core and or wrote plugins and themes.
 	If it is possible to whitelist every external script loaded from a `<script src="">`, the real truth is that in a WordPress project you can have dozens of those scripts included with your plugins and calculate a cryptographic hash for each of them to be included in your CSP header can be a frustrating job. However, there are many browser extensions and WordPress' plugins that can help you in this job.
 
@@ -40,19 +40,19 @@ In addition, in order to facilitate the adoption of nonce-based CSP, they propos
 
 	WordPress core, and plugins, use inline scripts. For these scripts, you can compute hashes to be inserted manually into your policy, only if these scripts do not change at any page load. Unfortunately, this is not very common, as it is frequent to include variable values calculated server side in inline scripts. And it means that your inline scripts change too frequently to manually add their hashes to your policy.
 	This commonly happens when scripts are ["localized"](https://github.com/WordPress/WordPress/blob/a793be201b9c23dbe8b90a6ecd53ab52336f0f91/wp-includes/script-loader.php#L636).
-		
+
 3.	WordPress has no API to implement nonces for CSP
 
 	Even if it is easy to generate a nonce for each page view, this nonce has to be inserted in every script tag used to embed inline scripts in your page as
-		
+
 		<script nonce="rAnd0m">
 			doWhatever();
 		</script>
-		
+
 	and in your script-src directive:
-		
+
 		script-src 'nonce-rAnd0m';
-		
+
 	And, of course, a nonce must be unique for each HTTP response.
 4. Unsafe hashes / Inline styles
 
@@ -120,6 +120,26 @@ The steps you are supposed to do are the following.
 
 N.B. When you update plugins or themes, if something doesn't work properly on your site pages, temporarily deactivate the protection and repeat steps 1 to 7.
 
+== Plugin hooks ==
+
+= Filters =
+
+* [nunil_output_csp_headers_header_csp](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/public/class-no-unsafe-inline-public.php#L419)
+nunil_output_csp_headers_header_csp is available since version 1.2.3 and can be used to modify the Content-Security-Policy header before it is sent to browser
+* [no_unsafe_inline_not_sri_sources](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/src/Nunil_Manipulate_DOM.php#L930)
+no_unsafe_inline_not_sri_sources can be used to modify the list of external resources that do not support SRI (Subresource Integrity)
+
+* [no_unsafe_inline_final_output](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/mu-plugin/no-unsafe-inline-output-buffering.php#L100)
+no_unsafe_inline_final_output is an internal filter used to manipulate the output of the WordPress process just before the output is sent to the browser.
+* [no_unsafe_inline_meta_injector](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/mu-plugin/no-unsafe-inline-output-buffering.php#L107)
+no_unsafe_inline_meta_injector is an internal filter hook used to inject meta http-equiv="Content-Security-Policy" if variable is set
+
+= Actions =
+
+* [nunil_upgrade](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/includes/class-no-unsafe-inline.php#L213-L217) Functions hooked on nunil_upgrade will run when the plugin is upgraded
+
+* [nunil_output_csp_headers](https://github.com/MocioF/No-unsafe-inline/blob/d068711d56c2d7b228b524f640f5e13af3327097/includes/class-no-unsafe-inline.php#L254) Functions hooked to nunil_output_csp_headers will run when the plugin output the CSP HTTP response header
+
 == Frequently Asked Questions ==
 
 = Is this plugin easy to use? =
@@ -157,6 +177,16 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.3 =
+* Added a filter on no_unsafe_inline_not_sri_sources (thanks [@jkirrane](https://github.com/jkirrane))
+* Added a filter for $header_csp (nunil_output_csp_headers_header_csp) (thanks [@tripflex](https://github.com/tripflex))
+* Fixed a fatal error if training estimator fails (thanks [@tripflex](https://github.com/tripflex))
+* Fixed processing multiple reports while capturing by violations
+* Improved the user interface for settings
+* Added an option to manage Reporting API v.1 and the Reporting-Endpoints HTTP response header field
+* Added options to exclude protection and script capture on administration pages
+* Bug fixes
+
 = 1.2.2 =
 * Update mu-plugin to run callbacks attached to lower buffer levels and to the shutdown hook
 * Extend overriding of native js functions
