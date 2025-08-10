@@ -11,6 +11,7 @@
 
 namespace NUNIL\admin;
 
+use Error;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Lib_Log as Log;
@@ -801,6 +802,22 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		add_settings_field(
+			'use_report-uri',
+			sprintf(
+			// translators: %1$s is report-uri link.
+				esc_html__( 'Use %1$s reporting directive (deprecated)', 'no-unsafe-inline' ),
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-uri" target="_blank">report-uri</a>'
+			),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_report',
+			array(
+				'option_name' => 'use_report-uri',
+				'label'       => __( 'Use the report-uri directive to send reports to a URI.', 'no-unsafe-inline' ),
+			)
+		);
+
+		add_settings_field(
 			'use_report-to',
 			sprintf(
 			// translators: %1$s is report-uri link.
@@ -817,19 +834,11 @@ class No_Unsafe_Inline_Admin {
 		);
 
 		add_settings_field(
-			'use_report-uri',
-			sprintf(
-			// translators: %1$s is report-uri link.
-				esc_html__( 'Use %1$s reporting directive (deprecated)', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/CSP3/#directive-report-uri" target="_blank">report-uri</a>'
-			),
-			array( $this, 'print_toggle_option' ),
+			'group_name',
+			esc_html__( 'CSP Reporting Endpoint Name', 'no-unsafe-inline' ),
+			array( $this, 'print_group_name' ),
 			'no-unsafe-inline-options',
-			'no-unsafe-inline_report',
-			array(
-				'option_name' => 'use_report-uri',
-				'label'       => __( 'Use the report-uri directive to send reports to a URI.', 'no-unsafe-inline' ),
-			)
+			'no-unsafe-inline_report'
 		);
 
 		add_settings_field(
@@ -869,14 +878,6 @@ class No_Unsafe_Inline_Admin {
 					'<a href="https://developer.chrome.com/blog/reporting-api-migration" target="_blank">Migrate to Reporting API v1</a>'
 				),
 			)
-		);
-
-		add_settings_field(
-			'group_name',
-			esc_html__( 'Group name', 'no-unsafe-inline' ),
-			array( $this, 'print_group_name' ),
-			'no-unsafe-inline-options',
-			'no-unsafe-inline_report'
 		);
 
 		add_settings_field(
@@ -1240,6 +1241,13 @@ class No_Unsafe_Inline_Admin {
 			);
 			// resetto da 0 le chiavi dell'array e elimino eventuali valori nulli.
 			$new_input['endpoints'] = array_values( array_filter( $new_input['endpoints'] ) );
+
+			// If the array has only one value, the name should be set to the group name (if any).
+			if ( 1 === count( $new_input['endpoints'] ) && isset( $new_input['group_name'] ) && ! empty( $new_input['group_name'] ) ) {
+				$new_input['endpoints'][0]['name'] = $new_input['group_name'];
+			}
+		} else {
+			$new_input['endpoints'] = array();
 		}
 
 		if ( isset( $input['max_response_header_size'] ) ) {
@@ -1821,7 +1829,11 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[group_name]">%s</label>',
 			esc_html( $value ),
 			esc_html( $disabled ),
-			esc_html__( 'Optional. If a group name is not specified, the endpoints\' group is given the name of "csp-endpoint".', 'no-unsafe-inline' )
+			esc_html__( 'This is the value set for the report-to directive inside the Content-Security-Policy HTTP header.', 'no-unsafe-inline' ) .
+			'<br>' .
+			esc_html__( 'This value will reference to all the endpoints set in the list if it is defined in the Report-To response header or will be used for the first endopoint if it is defined in the Reporting-Endpoints header field.', 'no-unsafe-inline' ) .
+			'<br>' .
+			esc_html__( 'Optional. If a value is not defined, will be used the token "csp-endpoint".', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1845,7 +1857,7 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[max_age]">%s</label>',
 			intval( Utils::cast_intval( $value ) ),
 			esc_html( $disabled ),
-			esc_html__( 'Required. A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' )
+			esc_html__( 'Required for Report-To (ignored by Reporting-Endpoints). A non-negative integer that defines the lifetime of the endpoint in seconds (how long the browser should use the endpoint and report errors to it). A value of "0" will cause the endpoint group to be removed from the user agent’s reporting cache.', 'no-unsafe-inline' )
 		);
 	}
 
@@ -1866,15 +1878,14 @@ class No_Unsafe_Inline_Admin {
 		// Add new endpoint button.
 		printf(
 			'<div><b>' .
-			esc_html__( 'Required. An array of JSON objects that specify the actual URL of your report collector.', 'no-unsafe-inline' ) .
-			'</b></div>'
+			esc_html__( 'Required. A list of URLs and names that specify of your report collectors.', 'no-unsafe-inline' ) .
+			'</b></div>' .
+			'<div>' .
+			esc_html__( 'You can add multiple endpoints, but only the first one will be used for CSP violation reports if the Reporting-Endpoints header field is defined.', 'no-unsafe-inline' ) .
+			'</div>'
 		);
 		printf(
 			'<div class="nunil-new-endpoint-container">' .
-			'<div class="nunil-new-endpoint-button-wrapper">' .
-			'<input class="nunil-btn nunil-btn-addnew" type="button" id="no-unsafe-inline[add_new_endpoint]"' .
-			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
-			'</div>' .
 			'<div class="nunil-new-endpoint-url-wrapper">' .
 			'<label for="no-unsafe-inline[new_endpoint]" class="nunil_label_left">%s</label>' .
 			'<input class="nunil-new-endpoint" type="text" id="no-unsafe-inline[new_endpoint]"' .
@@ -1885,12 +1896,16 @@ class No_Unsafe_Inline_Admin {
 			'<input class="nunil-new-endpoint-name" type="text" id="no-unsafe-inline[new_endpoint_name]"' .
 			'name="no-unsafe-inline[new_endpoint_name]" %s />' .
 			'</div>' .
+			'<div class="nunil-new-endpoint-button-wrapper">' .
+			'<input class="nunil-btn nunil-btn-addnew" type="button" id="no-unsafe-inline[add_new_endpoint]"' .
+			'name="no-unsafe-inline[add_new_endpoint]" value="%s" %s />' .
+			'</div>' .
 			'</div>',
-			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
-			esc_html( $disabled ),
 			esc_html__( 'endpoint URL', 'no-unsafe-inline' ) . ': ',
 			esc_html( $disabled ),
 			esc_html__( 'endpoint name', 'no-unsafe-inline' ) . ': ',
+			esc_html( $disabled ),
+			esc_html__( 'Add a new endpoint', 'no-unsafe-inline' ),
 			esc_html( $disabled ),
 		);
 
@@ -2142,43 +2157,43 @@ class No_Unsafe_Inline_Admin {
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 				<!-- Here are our tabs -->
 				<nav class="nav-tab-wrapper">
-					<a href="?page=no-unsafe-inline" class="nav-tab 
+					<a href="?page=no-unsafe-inline" class="nav-tab
 					<?php
 					if ( null === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Tools', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=base-rule" class="nav-tab
 					<?php
 					if ( 'base-rule' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Base rules', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=external" class="nav-tab
 					<?php
 					if ( 'external' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'External whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=inline" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=inline" class="nav-tab
 					<?php
 					if ( 'inline' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Inline whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=events" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=events" class="nav-tab
 					<?php
 					if ( 'events' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Events whitelist', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=settings" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=settings" class="nav-tab
 					<?php
 					if ( 'settings' === $tab ) :
 						?>
 						nav-tab-active<?php endif; ?>">
 						<?php printf( esc_html__( 'Settings', 'no-unsafe-inline' ) ); ?></a>
-					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab 
+					<a href="?page=no-unsafe-inline&tab=logs" class="nav-tab
 					<?php
 					if ( 'logs' === $tab ) :
 						?>

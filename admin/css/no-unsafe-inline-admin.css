@@ -633,6 +633,19 @@ div.nunil_temp_div {
 	transition-duration: 0.4s;
 }
 
+.nunil-endpoint-string-unsaved-disabled {
+	display: inline-block;
+	padding: 5px 10px;
+	font-size: 1em;
+	margin: 2px 2px;
+	min-width: 15em;
+	transition-duration: 0.4s;
+	background-color: #a7aaad;
+	color: white;
+	cursor: not-allowed;
+}
+
+
 .txt-active {
 	background-color: #6699FF;
 	color: black;

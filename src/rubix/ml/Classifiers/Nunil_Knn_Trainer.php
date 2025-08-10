@@ -10,16 +10,18 @@
  * @since   1.2.0
  */
 
-namespace NUNIL;
+namespace Rubix\ML\Classifiers;
 
 use Rubix\ML\Classifiers\KNearestNeighbors;
 use Rubix\ML\Persisters\Filesystem;
 use Rubix\ML\Serializers\RBX;
 use Rubix\ML\Serializers\Serializer;
 use Rubix\ML\Datasets\Labeled;
+use Rubix\ML\Kernels\Distance\Nunil_Hamming_Distance;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
+use NUNIL\Nunil_Global_Settings;
 
 /**
  * Class used to train AI models used by No unsafe-inline

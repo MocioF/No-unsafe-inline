@@ -9,7 +9,7 @@
  * @since   1.0.0
  */
 
-namespace NUNIL;
+namespace Rubix\ML\Kernels\Distance;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

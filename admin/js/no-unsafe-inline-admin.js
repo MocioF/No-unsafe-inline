@@ -471,11 +471,12 @@
     return false;
   }
 
-  function isPrintableAsciiString(_string) {
-    if (_string === '') {
+  function isValidHttpToken(_token) {
+    if (_token === '') {
       return false;
     }
-    return /^[\x20-\x7F]*$/.test(_string);
+    const tokenRegex = /^[!#$%&'*+\-.^_`|~A-Za-z0-9]+$/;
+    return typeof _token === 'string' && tokenRegex.test(_token);
   }
 
   function isUniqueNewEndpointKey(_newvalue) {
@@ -539,11 +540,30 @@
     "click",
     function(event) {
       event.preventDefault();
-      CopyToClipboard($("#nunil_tools_operation_report").text(), true, $(this).data("notification"));
+      let textValue;
+      let myItem;
+      myItem = document.getElementById("nunil_tools_operation_report");
+      textValue= myItem.innerText || myItem.textContent;
+      CopyToClipboard(textValue, true, $(this).data("notification"));
     }
   );
 
   function CopyToClipboard(value, showNotification, notificationText) {
+    navigator.clipboard.writeText(value).then(() => {
+      if (typeof showNotification === "undefined") {
+        showNotification = true;
+      }
+      if (typeof notificationText === "undefined") {
+        notificationText = "Copied to clipboard";
+      }
+      if (showNotification) {
+        new NunilOperationNotify(notificationText);
+      }
+    }).catch(err => {
+      console.error("Failed to copy text: ", err);
+    });
+
+    /**
     var temparea = $("<textarea>");
     $("body").append(temparea);
     temparea
@@ -563,6 +583,7 @@
     if (showNotification) {
       new NunilOperationNotify(notificationText);
     }
+    */
   }
 
   function NunilOperationNotify(notificationText) {
@@ -872,6 +893,8 @@
       cloned.children("input[type='hidden']").each(function() {
         var oldname = $(this).attr("name");
         $(this).attr("name", oldname.replace(/\[endpoints\]/, '[endpoints_deleted]'));
+        var oldid = $(this).attr("id");
+        $(this).attr("id", oldid.replace(/\[endpoints\]/, '[endpoints_deleted]'));
       });
       $(this).closest("li").remove();
       $("#nunil-endpoints-list").append(cloned);
@@ -887,6 +910,8 @@
       cloned.children("input[type='hidden']").each(function() {
         var oldname = $(this).attr("name");
         $(this).attr("name", oldname.replace(/\[endpoints_deleted\]/, '[endpoints]'));
+         var oldid = $(this).attr("id");
+        $(this).attr("id", oldid.replace(/\[endpoints_deleted\]/, '[endpoints]'));
       });
       $(this).closest("li").remove();
       $("#nunil-endpoints-list").append(cloned);
@@ -906,11 +931,23 @@
       function() {
         var new_endpoint;
         var new_endpoint_name;
+        var endpoint_name_tag;
+
         if ( ! isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) ) {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").addClass("nunil-error-input");
           return;
         }
-        if ( ! isPrintableAsciiString($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+        // Se è il primo endpoint, il nome del gruppo è il nome del nuovo endpoint.
+        // Disabilito il campo nome endpoint.
+        if (a === 0) {
+          $("input[type='text'][name='no-unsafe-inline[group_name]']").effect( "highlight", "slow" );
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").effect( "highlight", "slow" );
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", true);
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val($("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim());
+        } else {
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", false);
+        }
+        if ( ! isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").addClass("nunil-error-input");
           return;
         }
@@ -920,7 +957,7 @@
         };
 
         if (isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) &&
-        isPrintableAsciiString($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+        isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
           if ( $("#nunil-endpoints-list li").length == 0) {
             $("#nunil-endpoints-list").append(
               "<li><span class=\"nunil-btn nunil-btn-endpoint-list\"><span class=\"dashicons dashicons-editor-ul\"></span></span>" +
@@ -931,6 +968,17 @@
 
           new_endpoint = $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val().trim();
           new_endpoint_name = $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val().trim();
+
+          if (a===0) {
+            endpoint_name_tag = "<span class=\"nunil-endpoint-string-unsaved-disabled txt-active-unsaved txt-newly\">" + $("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim() + "</span>" +
+            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
+            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + $("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim() + "\" />";
+          } else {
+            endpoint_name_tag = "<span class=\"nunil-endpoint-string-unsaved-disabled txt-active-unsaved txt-newly\">" + new_endpoint_name + "</span>" +
+            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
+            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + new_endpoint_name + "\" />";
+          }
+
           $("#nunil-endpoints-list").append(
             "<li>" +
             "<button  class=\"nunil-btn nunil-btn-del-endpoint\" id=\"no-unsafe-inline[del-endpoint][" + a + "]\" " +
@@ -939,11 +987,10 @@
             "<span class=\"nunil-endpoint-string-unsaved txt-active-unsaved txt-newly\">" + new_endpoint + "</span>" +
             "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][url]\"" +
             "name=\"no-unsafe-inline[endpoints][" + a + "][url]\" value=\"" + new_endpoint + "\" />" +
-            "<span class=\"nunil-endpoint-string-unsaved txt-active-unsaved txt-newly\">" + new_endpoint_name + "</span>" +
-            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
-            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + new_endpoint_name + "\" />" +
+            endpoint_name_tag +
             "</li>");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val("");
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", false);
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val("");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").removeClass("nunil-error-input");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").removeClass("nunil-error-input");

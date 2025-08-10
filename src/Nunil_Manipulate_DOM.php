@@ -16,7 +16,7 @@ use Rubix\ML\Datasets\Unlabeled;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
-use NUNIL\Nunil_Knn_Trainer;
+use Rubix\ML\Classifiers\Nunil_Knn_Trainer;
 use NUNIL\Nunil_Exception;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -144,7 +144,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * The Trainer used for inline scripts
 	 *
 	 * @since 1.2.0
-	 * @var \NUNIL\Nunil_Knn_Trainer
+	 * @var \Rubix\ML\Classifiers\Nunil_Knn_Trainer
 	 */
 	private $nunil_trainer_script;
 
@@ -152,7 +152,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * The Trainer used for inline styles
 	 *
 	 * @since 1.2.0
-	 * @var \NUNIL\Nunil_Knn_Trainer
+	 * @var \Rubix\ML\Classifiers\Nunil_Knn_Trainer
 	 */
 	private $nunil_trainer_style;
 
@@ -160,7 +160,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * The Trainer used for event handlers
 	 *
 	 * @since 1.2.0
-	 * @var \NUNIL\Nunil_Knn_Trainer
+	 * @var \Rubix\ML\Classifiers\Nunil_Knn_Trainer
 	 */
 	private $nunil_trainer_event;
 
@@ -194,7 +194,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		// Set properties with db results.
 		$cache_keys = array( 'inline_rows', 'events_rows', 'external_rows' );
 		foreach ( $cache_keys as $cache_key ) {
-			$db_rows = \NUNIL\Nunil_Knn_Trainer::get_db_rows( $cache_key );
+			$db_rows = Nunil_Knn_Trainer::get_db_rows( $cache_key );
 			if ( is_array( $db_rows ) ) {
 				$this->$cache_key = $db_rows;
 			}
@@ -1417,13 +1417,11 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						'source'    => $in_use . '-' . $hashes[ $in_use ],
 					);
 				}
-				$head_node = $this->domdocument->getElementsByTagName( 'head' );
-				if ( 0 < $head_node->length ) {
-					$head_node = $head_node->item( 0 );
+				$head_node_list = $this->domdocument->getElementsByTagName( 'head' );
+				if ( 0 < $head_node_list->length ) {
+					$head_node = $head_node_list->item( 0 );
 					if ( ! is_null( $head_node ) ) {
-						if ( is_a( $head_node, '\DOMElement' ) ) {
-							$head_node->appendChild( $style_node );
-						}
+						$head_node->appendChild( $style_node );
 					}
 				}
 			}

@@ -107,7 +107,7 @@ class No_Unsafe_Inline_External_List extends \WP_List_Table {
 		} elseif ( isset( $_GET['action'] ) && isset( $_GET['_wpnonce'] ) && is_string( $_GET['_wpnonce'] ) ) {
 				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Reason: We are not processing form information; $nonce is used only for wp_verify_nonce
 				$nonce  = wp_unslash( $_GET['_wpnonce'] );
-				$action = ( isset( $_GET['action'] ) ? Utils::sanitize_text( $_GET['action'], false ) : '' );
+				$action = Utils::sanitize_text( $_GET['action'] );
 		} else {
 				$action = '';
 				$nonce  = '';

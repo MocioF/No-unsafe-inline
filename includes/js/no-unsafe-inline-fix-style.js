@@ -254,7 +254,7 @@ function nunilNodeFunction() {
             linkChild = await nunilRemoteDigest(currentValue);
             return linkChild;
           } catch (error) {
-            console.log(error);
+            console.error("Error processing link integrity:", error);
           }
         }
       });
@@ -268,14 +268,16 @@ function nunilNodeFunction() {
       element.setAttribute("data-style-nunil-ac", style);
     }
 
-    if (element.nodeName === "STYLE ") {
+    if (element.nodeName === "STYLE") {
       if (nunilUseStyleNonce && nunilStyleNonce) {
-        element.setAttribute("nonce", nunilStyleNonce);
+        if (!element.hasAttribute("nonce")) {
+          element.setAttribute("nonce", nunilStyleNonce);
+        }
       }
     }
 
     if (element.nodeName === "LINK") {
-      if (nunilUseLinkNonce && nunilStyleNonce) {
+      if (nunilUseLinkNonce && nunilStyleNonce && !element.hasAttribute("nonce")) {
         element.setAttribute("nonce", nunilStyleNonce);
       }
       if (nunilUseLinkIntegrity) {
@@ -545,7 +547,7 @@ function nunilGetScriptNonce() {
 /**
  * Adds nonce used for <style> and append it to <style> tags
  * if nonce is used for <style> tags in document
- * 
+ *
  * @param {String} html
  * @returns {String}
  */
@@ -567,7 +569,7 @@ function nunilMaybeSetStyleNonce(html) {
 /**
  * Adds nonce used for <link> and append it to <link> tags
  * if nonce is used for <link> tags in document
- * 
+ *
  * @param {String} html
  * @returns {String}
  */
@@ -659,7 +661,7 @@ function nunilMaybeSetScriptIntegrity(html) {
 function nunilMaybeSetLinkIntegrity(html) {
   if (nunilUseLinkIntegrity) {
     var replacedLink = html.replace(nunilLinkReg, async function (match, args) {
-      if (false === nunilIntegrityReg.test(args) && // se non c'è già l'att integrity tra gli args 
+      if (false === nunilIntegrityReg.test(args) && // se non c'è già l'att integrity tra gli args
         true === nunilStylesheetReg.test(args) &&  // è uno StyleSheet
         true === nunilHrefReg.test(args)) // ha l'attributo HREF
       {

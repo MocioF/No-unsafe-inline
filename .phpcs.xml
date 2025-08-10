@@ -37,7 +37,12 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
-			<property name="prefixes" type="array" value="No_Unsafe_Inline,no_unsafe_inline,nunil,Nunil"/>
+			<property name="prefixes" type="array">
+				<element value="No_Unsafe_Inline"/>
+				<element value="no_unsafe_inline"/>
+				<element value="nunil"/>
+				<element value="Nunil"/>
+			</property>
 		</properties>
 	</rule>
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
@@ -52,7 +57,9 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<!-- Value: replace the text domain used. -->
-			<property name="text_domain" type="array" value="no-unsafe-inline"/>
+			<property name="text_domain" type="array">
+				<element value="no-unsafe-inline"/>
+			</property>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
