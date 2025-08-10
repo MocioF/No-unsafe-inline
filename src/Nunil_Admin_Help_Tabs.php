@@ -915,7 +915,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<br>'
 			. esc_html__( 'The plugin accepts only https as protocol for the URL, and http only if URL is localhost.', 'no-unsafe-inline' )
 			. '<br>'
-			. esc_html__( 'Endpoints\' names has to be  unique ascii short strings.', 'no-unsafe-inline' )
+			. esc_html__( 'Endpoints\' names has to be unique ascii short strings.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<pre>'
@@ -928,7 +928,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<p><u>'
 			. esc_html__( 'This is a non standard, retired, legacy feature.', 'no-unsafe-inline' ) . '</u>'
 			. '<br>'
-			. esc_html__( 'Endpoints\' should be in a group and they need a max-age value to define the reporting endpoint\'s lifetime in seconds.', 'no-unsafe-inline' )
+			. esc_html__( 'Endpoints should be in a group and they need a max-age value to define the reporting endpoint\'s lifetime in seconds.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
 			. esc_html__( 'The Reporting-Endpoints is included in Reporting API v.1 and should be used instead of the legacy Report-To header, proposed in Reporting API v.0', 'no-unsafe-inline' )
@@ -948,13 +948,13 @@ class Nunil_Admin_Help_Tabs {
 			. '<hr>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>endpoints</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>array{url: string, name: string}</b>: ' . esc_html__( 'defines the reporting endpoint\'s', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>array{url: string, name: string}</b>: ' . esc_html__( 'defines the reporting endpoints', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
 			. esc_html__( 'In Reporting-Endpoints HTTP response header field each endpoint needs a unique name.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<p>'
-			. esc_html__( 'This list is used both in the Report-To and in the Reporting-Endpoint response HTTP header fields.', 'no-unsafe-inline' )
+			. esc_html__( 'This list is used both in the Report-To and in the Reporting-Endpoints response HTTP header fields.', 'no-unsafe-inline' )
 			. '</p>'
 			. '<hr>'
 			. '<p>'

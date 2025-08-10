@@ -1071,7 +1071,7 @@ class No_Unsafe_Inline_Admin {
 	 * @return array<mixed>
 	 */
 	public function sanitize_options( $input ) {
-		// This field is used just to populate array of endopoints in UI.
+		// This field is used just to populate array of endpoints in UI.
 		unset( $input['new_endpoint'] );
 
 		$new_input = array();
@@ -1848,7 +1848,7 @@ class No_Unsafe_Inline_Admin {
 		);
 		printf(
 			'<p>' .
-			esc_html__( 'This value will reference to all the endpoints set in the list if it is defined in the Report-To response header or will be used for the first endopoint if it is defined in the Reporting-Endpoints header field.', 'no-unsafe-inline' ) .
+			esc_html__( 'This value will reference to all the endpoints set in the list if it is defined in the Report-To response header or will be used for the first endpoint if it is defined in the Reporting-Endpoints header field.', 'no-unsafe-inline' ) .
 			'<br>' .
 			esc_html__( 'Optional. If a value is not defined, will be used the token "csp-endpoint".', 'no-unsafe-inline' ) .
 			'</p>'
