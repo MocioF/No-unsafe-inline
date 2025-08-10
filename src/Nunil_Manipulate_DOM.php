@@ -1006,7 +1006,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				return false;
 			}
 		} catch ( \Rubix\ML\Exceptions\RuntimeException $e ) {
-			return false;
+			throw new Nunil_Exception( esc_html__( 'estimator could not be trained: ', 'no-unsafe-inline' ) . esc_html( $e->getMessage() ), 3030, 3 );
 		}
 
 		if ( is_array( $list ) ) {
