@@ -864,3 +864,52 @@ div.nunil_temp_div {
 .nunil-logs th.column-level {
 	width: 10%;
 }
+
+.nunil-logs-search-container{
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.nunil-logs-search-created_at-div {
+	order: 0;
+	flex-basis: 15%;
+	margin: 11px 0;
+}
+
+.nunil-logs-search-log-level-div {
+	order: 0;
+	flex-basis: 10%;
+	margin: 11px 0;
+}
+
+.nunil-logs-search-container > .nunil-logs-searchbox-div {
+	flex-grow: 1;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.nunil-log-info {
+	text-transform: uppercase;
+	color: rgb(93, 93, 150);
+}
+
+.nunil-log-warning {
+	text-transform: uppercase;
+	color: rgb(255, 165, 0);
+}
+
+.nunil-log-error {
+	text-transform: uppercase;
+	color: rgb(255, 0, 0);
+}
+
+.nunil-log-debug {
+	text-transform: uppercase;
+	color: rgb(100, 100, 100);
+}
+
+.nav-tab-wrapper {
+	margin: 10px 20px 0 2px;
+}

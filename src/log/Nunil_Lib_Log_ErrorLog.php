@@ -23,6 +23,7 @@ class Nunil_Lib_Log_ErrorLog implements Nunil_Lib_Log_Writer {
 	 * @param string $message Message to log.
 	 */
 	public function write( $level, $message ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		error_log( strtoupper( $level ) . ' | ' . addslashes( $message ) );
 	}
 }

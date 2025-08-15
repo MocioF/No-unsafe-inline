@@ -2724,4 +2724,57 @@ class No_Unsafe_Inline_Admin {
 
 		wp_die();
 	}
+
+	/**
+	 * Action wp_ajax for fetching ajax_response (logs)
+	 *
+	 * @return void
+	 */
+	public function _ajax_fetch_logs_callback() {
+		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-admin-logs-table.php';
+		$wp_log_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Admin_Logs_Table();
+		$wp_log_table->ajax_response();
+	}
+
+	/**
+	 * Action wp_ajax for fetching the first time table structure
+	 *
+	 * @return void
+	 */
+	public function _ajax_display_logs_callback() {
+		check_ajax_referer( 'ajax-nunil-logs-nonce', '_ajax_nunil_logs_nonce', true );
+		require_once plugin_dir_path( __FILE__ ) . 'partials/class-no-unsafe-inline-admin-logs-table.php';
+		$wp_log_table = new \NUNIL\admin\partials\No_Unsafe_Inline_Admin_Logs_Table();
+		$wp_log_table->prepare_items();
+
+		ob_start();
+		$wp_log_table->search_box( esc_html__( 'Search Logs', 'no-unsafe-inline' ), 'message' );
+		$display = ob_get_clean();
+
+		ob_start();
+		$wp_log_table->display();
+		$display .= ob_get_clean();
+
+		$encoded = wp_json_encode(
+			array(
+				'display' => $display,
+			)
+		);
+
+		if ( false === $encoded ) {
+			$code         = json_last_error();
+			$string_error = esc_html__( 'JSON encoding failed in ', 'no-unsafe-inline' ) . __METHOD__ . ' - json_last_error(): ' . strval( $code );
+			Log::error( $string_error );
+
+			$encoded_error = wp_json_encode(
+				array(
+					'error' => $string_error,
+					'code'  => $code,
+				)
+			);
+			wp_send_json_error( $encoded_error, 500 );
+		} else {
+			wp_send_json_success( $encoded, 200 );
+		}
+	}
 }

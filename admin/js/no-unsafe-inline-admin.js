@@ -1,11 +1,12 @@
 /*global
  nunil_object, jQuery, wp
  */
- jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
   "use strict";
 
   var a; // Used for endpoints list.
   var acc_options;
+  var ajax_logs_list;
   var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split("&");
@@ -27,7 +28,7 @@
   const { __ } = wp.i18n;
 
   $.fn.extend({
-    clearText: function() {
+    clearText: function () {
       return this.clone() // clone the element
         .children() // select all the children
         .remove() // remove all the children
@@ -36,40 +37,40 @@
     }
   });
 
-/*!
- * jQuery serialtabs
- * https://github.com/kevinmeunier/jquery-serialtabs
- *
- * Copyright 2022 Meunier Kévin
- * https://www.meunierkevin.com
- *
- * Released under the MIT license
- */
-  $.fn.serialtabs = function(options){
+  /*!
+   * jQuery serialtabs
+   * https://github.com/kevinmeunier/jquery-serialtabs
+   *
+   * Copyright 2022 Meunier Kévin
+   * https://www.meunierkevin.com
+   *
+   * Released under the MIT license
+   */
+  $.fn.serialtabs = function (options) {
     const settings = $.extend({}, $.fn.serialtabs.defaults, options);
     const base = this;
 
     $.extend(this, {
-      init: function(){
-        const event = settings.event+".serialtabs";
+      init: function () {
+        const event = settings.event + ".serialtabs";
         const fxIn = settings.fxIn;
         settings.fxIn = "show";
         let $lists = $(this);
 
-        this.each(function(){
+        this.each(function () {
           const $list = $(this);
           const $trigger = settings.getTrigger($list);
           const $triggerCurrent = $trigger.filter(".is-current");
 
           // Responsive design management
-          if( settings.mode == "auto" ){
+          if (settings.mode == "auto") {
             let delay = false;
             let speed;
-            $(window).on("resize.serialtabs", function(event, speed){
-              if( delay !== false ) {
+            $(window).on("resize.serialtabs", function (event, speed) {
+              if (delay !== false) {
                 clearTimeout(delay);
               }
-              delay = setTimeout(function(){
+              delay = setTimeout(function () {
                 base.handleResize($list);
               }, 25);
             });
@@ -81,22 +82,22 @@
           }
 
           // Show the first element, or the current element
-          if( $list.attr("data-serialtabs-mode") == "tabs" && $triggerCurrent.length == 0 ){
+          if ($list.attr("data-serialtabs-mode") == "tabs" && $triggerCurrent.length == 0) {
             $trigger.first().addClass("is-current");
           }
 
           // Hide all elements on page load
-          $trigger.not(".is-current").each(function(){
+          $trigger.not(".is-current").each(function () {
             const $this = $(this);
             const $target = settings.getTarget($this);
             $target.hide();
           });
 
           // Bind event
-          $trigger.on(event, function(event){
+          $trigger.on(event, function (event) {
             const $this = $(this);
             base.handleEvent($this, $list);
-            if( event.target.tagName == "A" ) {
+            if (event.target.tagName == "A") {
               return true;
             }
           });
@@ -106,26 +107,26 @@
         settings.fxIn = fxIn;
       },
 
-      handleEvent: function( $trigger, $list ){
+      handleEvent: function ($trigger, $list) {
         const $target = settings.getTarget($trigger);
         const $triggers = settings.getTrigger($list);
-        const $prevTrigger =  $triggers.filter(".is-current");
+        const $prevTrigger = $triggers.filter(".is-current");
         const $prevTarget = settings.getTarget($prevTrigger);
 
         // Avoid triggering the event for already displayed elements
-        if( $list.attr("data-serialtabs-mode") == "tabs" && $trigger.is($prevTrigger) )
+        if ($list.attr("data-serialtabs-mode") == "tabs" && $trigger.is($prevTrigger))
           return;
 
         // Hide the previous element
-        if( $prevTrigger )
+        if ($prevTrigger)
           base.display($prevTrigger, $prevTarget, false);
 
         // Show the new element
-        if( !$trigger.is($prevTrigger) )
+        if (!$trigger.is($prevTrigger))
           base.display($trigger, $target, true);
       },
 
-      display: function( $trigger, $target, action ){
+      display: function ($trigger, $target, action) {
         // Management of the current class
         $trigger[action ? "addClass" : "removeClass"]("is-current");
 
@@ -133,38 +134,38 @@
         $target[action ? settings.fxIn : settings.fxOut]();
 
         // Check the radio button if existing
-        if( action ){
+        if (action) {
           const $radio = $trigger.find("[type=radio]");
-          if( $radio.length )
+          if ($radio.length)
             $radio.prop("checked", true);
         }
       },
 
-      getTrigger: function( $list ){
+      getTrigger: function ($list) {
         let trigger;
 
-        if( typeof settings.trigger  == "string" ){
-          trigger = $list.find( settings.trigger );
-        } else if( typeof settings.trigger  == "function" ){
-          trigger = settings.trigger( $list );
+        if (typeof settings.trigger == "string") {
+          trigger = $list.find(settings.trigger);
+        } else if (typeof settings.trigger == "function") {
+          trigger = settings.trigger($list);
         }
 
         return $(trigger);
       },
 
-      getTarget: function( $trigger ){
+      getTarget: function ($trigger) {
         let target;
 
-        if( typeof settings.target  == "string" ){
-          target = $trigger.attr( settings.target );
-        } else if( typeof settings.target  == "function" ){
-          target = settings.target( $trigger );
+        if (typeof settings.target == "string") {
+          target = $trigger.attr(settings.target);
+        } else if (typeof settings.target == "function") {
+          target = settings.target($trigger);
         }
 
         return $(target);
       },
 
-      handleResize: function( $list ){
+      handleResize: function ($list) {
         const isResponsive = base.isResponsive($list);
 
         // Update the display mode
@@ -174,29 +175,29 @@
         base.moveItems($list, isResponsive);
       },
 
-      isResponsive: function( $list ){
+      isResponsive: function ($list) {
         let breakpoint = $list.data("serialtabs-breakpoint") ? $list.data("serialtabs-breakpoint") : 50;
 
         // Breakpoint calculation
-        if( breakpoint == 50 )
-          $list.children().each(function(){
+        if (breakpoint == 50)
+          $list.children().each(function () {
             breakpoint += $(this).outerWidth();
           });
 
         // Store the breakpoint (essential)
         $list.data("serialtabs-breakpoint", breakpoint);
 
-        return ( $list.parent().width() < breakpoint );
+        return ($list.parent().width() < breakpoint);
       },
 
-      moveItems: function( $list, isResponsive ){
+      moveItems: function ($list, isResponsive) {
         const $trigger = settings.getTrigger($list);
 
-        $trigger.each(function(){
+        $trigger.each(function () {
           const $this = $(this);
           const $target = settings.getTarget($this);
 
-          if( isResponsive ){
+          if (isResponsive) {
             $target.insertAfter($this);
           } else {
             $target.insertAfter($list);
@@ -213,10 +214,10 @@
   $.fn.serialtabs.defaults = {
     mode: "auto", // 'auto', 'accordion', 'tabs'
     event: "click",
-    getTrigger: function($list){
+    getTrigger: function ($list) {
       return $list.find("[data-serialtabs]");
     },
-    getTarget: function($trigger){
+    getTarget: function ($trigger) {
       return $($trigger.data("serialtabs"));
     },
     fxIn: "slideDown",
@@ -229,14 +230,14 @@
    *
    * If it is not, the first checkbox in the array is checked.
    */
-  $.fn.checkOneAtLeast = function ( targets ){
+  $.fn.checkOneAtLeast = function (targets) {
     var checked = false;
-    $(targets).each(function() {
+    $(targets).each(function () {
       if ($(this).prop("checked")) {
         checked = true;
       }
     });
-    if ( false === checked ) {
+    if (false === checked) {
       $(targets)[0].prop("checked", true);
       $(targets)[0].trigger("change");
     }
@@ -325,7 +326,7 @@
 
   function updateSummaryTablesWorker(once) {
     $.ajax({
-      complete: function() {
+      complete: function () {
         // Schedule the next request when the current one"s complete
         if ($("input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']").prop("checked")) {
           if (once === undefined) {
@@ -339,18 +340,18 @@
         action: "nunil_update_summary_tables"
       },
       dataType: "json",
-      success: function(res) {
+      success: function (res) {
         var nunil_db_summary_data = "";
         var nunil_external_table_summary_data = "";
         var nunil_inline_table_summary_data = "";
         var nunil_eventhandlers_table_summary_data = "";
         $.each(
           res,
-          function(index, label) {
+          function (index, label) {
             if ("global" === index) {
               $.each(
                 label,
-                function(index, value) {
+                function (index, value) {
                   var wlText = "";
                   nunil_db_summary_data += "<tr>";
                   nunil_db_summary_data += "<td data-th=\"" + __("Type", "no-unsafe-inline") + "\">" + value.type + "</td>";
@@ -369,7 +370,7 @@
             if ("inline" === index) {
               $.each(
                 label,
-                function(index, value) {
+                function (index, value) {
                   var wlText = "";
                   nunil_inline_table_summary_data += "<tr>";
                   nunil_inline_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
@@ -389,7 +390,7 @@
             if ("external" === index) {
               $.each(
                 label,
-                function(index, value) {
+                function (index, value) {
                   var wlText = "";
                   nunil_external_table_summary_data += "<tr>";
                   nunil_external_table_summary_data += "<td data-th=\"" + __("Directive", "no-unsafe-inline") + "\">" + value.directive + "</td>";
@@ -414,7 +415,7 @@
             if ("events" === index) {
               $.each(
                 label,
-                function(index, value) {
+                function (index, value) {
                   var wlText = "";
                   nunil_eventhandlers_table_summary_data += "<tr>";
                   nunil_eventhandlers_table_summary_data += "<td data-th=\"" + __("Tagname", "no-unsafe-inline") + "\">" + value.tagname + "</td>";
@@ -452,20 +453,20 @@
    */
   function isTrustworthyUrl(url_string) {
     if (!url_string || url_string === '') {
-        return false;
+      return false;
     }
 
     const url = new URL(url_string);
 
     // Check if the protocol is https
     if (url.protocol === "https:") {
-        return true;
+      return true;
     }
 
     // Check if the host matches 127.0.0.0/8 or ::1/128
     const host = url.hostname;
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
-        return true;
+      return true;
     }
 
     return false;
@@ -481,21 +482,227 @@
 
   function isUniqueNewEndpointKey(_newvalue) {
     var isUnique = true;
-    $("input[type='hidden'][name^='no-unsafe-inline[endpoints]'][name$='[name]']").each(function() {
+    $("input[type='hidden'][name^='no-unsafe-inline[endpoints]'][name$='[name]']").each(function () {
       if (_newvalue === $(this).val()) {
         isUnique = false;
         //$(this).effect("highlight", {}, 3000);
-        $(this).prev().effect( "highlight", "slow" );
+        $(this).prev().effect("highlight", "slow");
         return false;
       }
     });
     return isUnique;
   }
 
-  // Open inline help from link
+  // ajax logs
+  var logs_per_page = $("#nunil_logs_per_page").val() || 50; // Default value for logs per page.
+  ajax_logs_list = {
+
+    /**
+     * method display is used for getting first sets of data
+     **/
+    display: function () {
+      $.ajax({
+        beforeSend: function () {
+          $("#nunil-spinner-blocks").removeClass("hidden");
+        },
+        complete: function () {
+          $("#nunil-spinner-blocks").addClass("hidden");
+        },
+
+        data: {
+          _ajax_nunil_logs_nonce: $("#_ajax_nunil_logs_nonce").val(),
+          action: "nunil_display_logs",
+          per_page: logs_per_page
+        },
+        dataType: "json",
+        error: function (response) {
+          console.error("Response: ", response);
+        },
+        screen_id: $("#screen_id").val(),
+        success: function (response) {
+          var res = $.parseJSON(response.data);
+          $("#nunil-log-table").html(res.display);
+
+          $("tbody").on("click", ".toggle-row", function (e) {
+            e.preventDefault();
+            $(this).closest("tr").toggleClass("is-expanded")
+          });
+
+          ajax_logs_list.init();
+          // remove the search button
+          $("#message-search-input").prop("placeholder", $("#search-submit").val());
+          $("#search-submit").remove();
+        },
+        url: nunil_object.ajax_url,
+        type: "get",
+      });
+    },
+
+    init: function () {
+
+      var timer;
+      var delay = 500;
+
+      $(".tablenav-pages a, .manage-column.sortable a, .manage-column.sorted a").on("click", function (e) {
+        e.preventDefault();
+        var query = this.search.substring(1);
+
+        var data = {
+          paged: ajax_logs_list.__query(query, "paged") || "1",
+          order: ajax_logs_list.__query(query, "order") || "desc",
+          orderby: ajax_logs_list.__query(query, "orderby") || "created_at",
+          "nunil-log-date": $("select[name=nunil-log-date]").val() || "",
+          "nunil-log-level": $("select[name=nunil-log-level]").val() || "",
+          "s": $("input[name=s]").val() || "",
+          "nunil_logs_per_page": $("input[name=nunil_logs_per_page]").val() || "50"
+        };
+        ajax_logs_list.update(data);
+      });
+
+      $("input[name=paged]").off("keyup").on("keyup", function (e) {
+        if (13 == e.which)
+          e.preventDefault();
+
+        var data = {
+          paged: parseInt($("input[name=paged]").val()) || "1",
+          order: $("input[name=order]").val() || "desc",
+          orderby: $("input[name=orderby]").val() || "created_at",
+          "nunil-log-date": $("select[name=nunil-log-date]").val() || "",
+          "nunil-log-level": $("select[name=nunil-log-level]").val() || "",
+          "s": $("input[name=s]").val() || "",
+          "nunil_logs_per_page": $("input[name=nunil_logs_per_page]").val() || "50"
+        };
+
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          ajax_logs_list.update(data);
+        }, delay);
+      });
+
+      $("select[name=nunil-log-date]").off("change").on("change", function (e) {
+        e.preventDefault();
+
+      var data = {
+        paged: parseInt($("input[name=paged]").val()) || "1",
+        order: $("input[name=order]").val() || "desc",
+        orderby: $("input[name=orderby]").val() || "created_at",
+        "nunil-log-date": $(this).val() || "",
+        "nunil-log-level": $("select[name=nunil-log-level]").val() || "",
+        "s": $("input[name=s]").val() || "",
+        "nunil_logs_per_page": $("input[name=nunil_logs_per_page]").val() || "50"
+      };
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          ajax_logs_list.update(data);
+        }, delay);
+      });
+      $("select[name=nunil-log-level]").off("change").on("change", function (e) {
+        e.preventDefault();
+        var data = {
+          paged: parseInt($("input[name=paged]").val()) || 1,
+          order: $("input[name=order]").val() || "desc",
+          orderby: $("input[name=orderby]").val() || "created_at",
+          "nunil-log-date": $("select[name=nunil-log-date]").val() || "",
+          "nunil-log-level": $(this).val() || "",
+          "s": $("input[name=s]").val() || "",
+          "nunil_logs_per_page": $("input[name=nunil_logs_per_page]").val() || "50"
+        };
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          ajax_logs_list.update(data);
+        }, delay);
+      });
+      $("input[name=s]").off("change").on("change", function (e) {
+        e.preventDefault();
+        var data = {
+          paged: parseInt($("input[name=paged]").val()) || "1",
+          order: $("input[name=order]").val() || "desc",
+          orderby: $("input[name=orderby]").val() || "created_at",
+          "nunil-log-date": $("select[name=nunil-log-date]").val() || "",
+          "nunil-log-level": $("select[name=nunil-log-level]").val() || "",
+          "s": $("input[name=s]").val() || "",
+          "nunil_logs_per_page": $("input[name=nunil_logs_per_page]").val() || "50"
+        };
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          ajax_logs_list.update(data);
+        }, delay);
+      });
+
+      $("#nunil-logs-form").on("submit", function (e) {
+        e.preventDefault();
+      });
+    },
+
+    /** AJAX call
+     *
+     * Send the call and replace table parts with updated version!
+     *
+     * @param    object    data The data to pass through AJAX
+     */
+    update: function (data) {
+      $.ajax({
+        beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+          $("#nunil-spinner-blocks").removeClass("hidden");
+        },
+        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
+          $("#nunil-spinner-blocks").addClass("hidden");
+        },
+        data: $.extend(
+          {
+            _ajax_nunil_logs_nonce: $("#_ajax_nunil_logs_nonce").val(),
+            action: "nunil_fetch_logs",
+            per_page: logs_per_page
+          },
+          data
+        ),
+        dataType: "json",
+        error: function (response) {
+          console.error("Response: ", response);
+        },
+        success: function (response) {
+          var res = $.parseJSON(response.data);
+          if (res.rows.length)
+            $("#the-list").html(res.rows);
+          if (res.column_headers.length)
+            $("thead tr, tfoot tr").html(res.column_headers);
+          if (res.pagination.bottom.length)
+            $(".tablenav.top .tablenav-pages").html($(res.pagination.top).html());
+          if (res.pagination.top.length)
+            $(".tablenav.bottom .tablenav-pages").html($(res.pagination.bottom).html());
+          ajax_logs_list.init();
+        },
+        url: nunil_object.ajax_url,
+        type: "get",
+      });
+    },
+
+    /**
+     * Filter the URL Query to extract variables
+     *
+     * @see http://css-tricks.com/snippets/javascript/get-url-variables/
+     *
+     * @param    string    query The URL query part containing the variables
+     * @param    string    variable Name of the variable we want to get
+     *
+     * @return   string|boolean The variable value if available, false else.
+     */
+    __query: function (query, variable) {
+
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable)
+          return pair[1];
+      }
+      return false;
+    },
+  }
+
+    // Open inline help from link
   $("#nunil-help-link").on(
     "click",
-    function() {
+    function () {
       $("#contextual-help-link").click();
     }
   );
@@ -503,7 +710,7 @@
   // Trigger checkboxes check on select-all click.
   $("#cb-select-all-1").on(
     "click",
-    function() {
+    function () {
       $(":checkbox[name*='bulk-select[]']")
         .prop("checked", this.checked)
         .change();
@@ -512,14 +719,14 @@
   // Buttons on operation report.
   $("#nunil-db-sum-tabs-5").on(
     "mouseenter",
-    function() {
+    function () {
       $("#nunil_tools_operation_report_buttons").stop(true).fadeIn(600);
     }
   );
 
   $("#nunil-db-sum-tabs-5").on(
     "mouseleave",
-    function() {
+    function () {
       $("#nunil_tools_operation_report_buttons").stop(true).fadeOut(600);
     }
   );
@@ -538,12 +745,12 @@
 
   $("#nunil_tools_operation_report_button_clipboard").on(
     "click",
-    function(event) {
+    function (event) {
       event.preventDefault();
       let textValue;
       let myItem;
       myItem = document.getElementById("nunil_tools_operation_report");
-      textValue= myItem.innerText || myItem.textContent;
+      textValue = myItem.innerText || myItem.textContent;
       CopyToClipboard(textValue, true, $(this).data("notification"));
     }
   );
@@ -595,9 +802,9 @@
       });
       $("#nunil_tools_operation_report_container").append(notificationTag);
 
-      notificationTag.fadeIn("slow", function() {
-        setTimeout(function() {
-          notificationTag.fadeOut("slow", function() {
+      notificationTag.fadeIn("slow", function () {
+        setTimeout(function () {
+          notificationTag.fadeOut("slow", function () {
             notificationTag.remove();
           });
         }, 1000);
@@ -606,7 +813,7 @@
   }
   $("#nunil_tools_operation_report_button_clear").on(
     "click",
-    function(event, notificationText = $(this).data("notification"), mytext = $(this).data("dialog-message")) {
+    function (event, notificationText = $(this).data("notification"), mytext = $(this).data("dialog-message")) {
       event.preventDefault();
       var dialog = $("div.nunil-tools-dialog");
       dialog = $("<div/>", {
@@ -616,13 +823,13 @@
       $("#nunil_tools_operation_report_container").append(dialog);
       $(".nunil-tools-dialog").dialog({
         buttons: {
-          Ok: function() {
+          Ok: function () {
             $(this).dialog("close");
             dialog.remove();
             $("#nunil_tools_operation_report").text('');
             NunilOperationNotify(notificationText);
           },
-          Cancel: function() {
+          Cancel: function () {
             $(this).dialog("close");
             dialog.remove();
           }
@@ -644,7 +851,7 @@
 
     // Populate -src input field on checkbox check.
     $("input[type='checkbox'][name*='bulk-select[]']").on("change",
-      function() {
+      function () {
         var $chk = $(this);
         var directive = $chk
           .parent()
@@ -659,21 +866,21 @@
           $("#" + textboxId).val(
             uniqueOrdered(
               $("#" + textboxId)
-              .val()
-              .trim()
+                .val()
+                .trim()
             )
           );
         } else {
           $("#" + textboxId).val(
             $("#" + textboxId)
-            .val()
-            .replace(source, "")
+              .val()
+              .replace(source, "")
           );
           $("#" + textboxId).val(
             uniqueOrdered(
               $("#" + textboxId)
-              .val()
-              .trim()
+                .val()
+                .trim()
             )
           );
         }
@@ -681,11 +888,11 @@
     );
 
     tb.find("tr").each(
-      function(index, element) {
+      function (index, element) {
         $(element)
           .find("td")
           .each(
-            function(index, element) {
+            function (index, element) {
               var colVal = $(element).clearText();
               row.push(colVal);
             }
@@ -712,16 +919,16 @@
     ];
     var srcDirectiveId;
     managedDirectives.forEach(
-      function(directive) {
+      function (directive) {
         srcDirectiveId =
           "no-unsafe-inline-base-rule\\[" + directive + "_base_rule\\]";
         const SetSources = $("#" + srcDirectiveId)
           .val()
           .split(" ");
         SetSources.forEach(
-          function(source) {
+          function (source) {
             matrix.forEach(
-              function(element, index) {
+              function (element, index) {
                 if (element[0] === directive && element[1] === source) {
                   $(
                     "input[type='checkbox'][name*='bulk-select[]'][value='" +
@@ -751,10 +958,10 @@
       collapsible: true,
       heightStyle: "content"
     };
-    $("div[class^='code-accordion-']").each(function() {
+    $("div[class^='code-accordion-']").each(function () {
       $(this).accordion(acc_options);
     });
-    $("div[class^='pages-accordion-']").each(function() {
+    $("div[class^='pages-accordion-']").each(function () {
       $(this).accordion(acc_options);
     });
   }
@@ -775,14 +982,14 @@
   });
 
   // Create tabs in options page.
-  $("[id^=nunil-options-tabs-").addClass( "serialtabs-nav-content" );
-  $(".serialtabs-nav > li").addClass( "sub-link-1" );
+  $("[id^=nunil-options-tabs-").addClass("serialtabs-nav-content");
+  $(".serialtabs-nav > li").addClass("sub-link-1");
   $('.serialtabs-nav').serialtabs();
 
   // Handle SRI options in settings tab.
   if ("no-unsafe-inline" === mypage && "settings" === mytab) {
     $("input[type='checkbox'][name='no-unsafe-inline[sri_script]']").on("change",
-      function() {
+      function () {
         var chk = $(this);
         if (chk.prop("checked")) {
           if ($("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked") === false &&
@@ -795,7 +1002,7 @@
       }
     );
     $("input[type='checkbox'][name='no-unsafe-inline[sri_link]']").on("change",
-      function() {
+      function () {
         var chk = $(this);
         if (chk.prop("checked")) {
           if ($("input[type='checkbox'][name='no-unsafe-inline[sri_sha256]']").prop("checked") === false &&
@@ -828,7 +1035,7 @@
       $(".nunil-endpoint-string-unsaved").addClass("txt-inactive");
     }
     $("input[type='checkbox'][name='no-unsafe-inline[use_reports]']").on("change",
-      function() {
+      function () {
         var chk = $(this);
         if (chk.prop("checked")) {
           $("input[type='checkbox'][name='no-unsafe-inline[use_report-uri]']").prop("disabled", false);
@@ -869,7 +1076,7 @@
       }
     );
     $("input[type='checkbox'][name='no-unsafe-inline[use_report-to]']").on("change",
-      function() {
+      function () {
         var chk = $(this);
         if (chk.prop("checked")) {
           $.fn.checkOneAtLeast([
@@ -882,15 +1089,15 @@
 
     // needed for event delegation.
     // https://stackoverflow.com/questions/203198/event-binding-on-dynamically-created-elements
-    $("#nunil-endpoints-list").on("click", ".nunil-btn-del-endpoint", function() {
+    $("#nunil-endpoints-list").on("click", ".nunil-btn-del-endpoint", function () {
       var cloned;
-      cloned = $(this).closest("li").clone( true );
+      cloned = $(this).closest("li").clone(true);
       cloned.children("button").removeClass("nunil-btn-del-endpoint").addClass("nunil-btn-restore-endpoint");
       cloned.children("button").children("span.dashicons-remove").addClass("dashicons-plus-alt").removeClass("dashicons-remove");
       cloned.children("button span").addClass("dashicons-plus-alt").removeClass("dashicons-remove");
       cloned.children("span.txt-active-unsaved").addClass("txt-inactive-unsaved").removeClass("txt-active-unsaved");
       cloned.children("span.txt-active").addClass("txt-inactive").removeClass("txt-active");
-      cloned.children("input[type='hidden']").each(function() {
+      cloned.children("input[type='hidden']").each(function () {
         var oldname = $(this).attr("name");
         $(this).attr("name", oldname.replace(/\[endpoints\]/, '[endpoints_deleted]'));
         var oldid = $(this).attr("id");
@@ -899,18 +1106,18 @@
       $(this).closest("li").remove();
       $("#nunil-endpoints-list").append(cloned);
     });
-    $("#nunil-endpoints-list").on("click", ".nunil-btn-restore-endpoint", function() {
+    $("#nunil-endpoints-list").on("click", ".nunil-btn-restore-endpoint", function () {
       var cloned;
-      cloned = $(this).closest("li").clone( true );
+      cloned = $(this).closest("li").clone(true);
       cloned.children("button").removeClass("nunil-btn-restore-endpoint").addClass("nunil-btn-del-endpoint");
       cloned.children("button").children("span.dashicons-plus-alt").addClass("dashicons-remove").removeClass("dashicons-plus-alt");
       cloned.children("button span.dashicons-plus-alt").addClass("dashicons-remove").removeClass("dashicons-plus-alt");
       cloned.children("span.txt-inactive-unsaved").addClass("txt-active-unsaved").removeClass("txt-inactive-unsaved");
       cloned.children("span.txt-inactive").addClass("txt-active").removeClass("txt-inactive");
-      cloned.children("input[type='hidden']").each(function() {
+      cloned.children("input[type='hidden']").each(function () {
         var oldname = $(this).attr("name");
         $(this).attr("name", oldname.replace(/\[endpoints_deleted\]/, '[endpoints]'));
-         var oldid = $(this).attr("id");
+        var oldid = $(this).attr("id");
         $(this).attr("id", oldid.replace(/\[endpoints_deleted\]/, '[endpoints]'));
       });
       $(this).closest("li").remove();
@@ -918,65 +1125,65 @@
     });
 
     $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").on("focus",
-      function() {
+      function () {
         $(this).removeClass("nunil-error-input");
       }
     );
     $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").on("focus",
-      function() {
+      function () {
         $(this).removeClass("nunil-error-input");
       }
     );
     $("input[type='button'][name='no-unsafe-inline[add_new_endpoint]']").on("click",
-      function() {
+      function () {
         var new_endpoint;
         var new_endpoint_name;
         var endpoint_name_tag;
 
-        if ( ! isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) ) {
+        if (!isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val())) {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").addClass("nunil-error-input");
           return;
         }
         // Se è il primo endpoint, il nome del gruppo è il nome del nuovo endpoint.
         // Disabilito il campo nome endpoint.
         if (a === 0) {
-          $("input[type='text'][name='no-unsafe-inline[group_name]']").effect( "highlight", "slow" );
-          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").effect( "highlight", "slow" );
+          $("input[type='text'][name='no-unsafe-inline[group_name]']").effect("highlight", "slow");
+          $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").effect("highlight", "slow");
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", true);
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val($("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim());
         } else {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").prop("disabled", false);
         }
-        if ( ! isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+        if (!isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").addClass("nunil-error-input");
           return;
         }
-        if ( ! isUniqueNewEndpointKey($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val()) ) {
+        if (!isUniqueNewEndpointKey($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
           $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").addClass("nunil-error-input");
           return;
         };
 
         if (isTrustworthyUrl($("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val()) &&
-        isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
-          if ( $("#nunil-endpoints-list li").length == 0) {
+          isValidHttpToken($("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val())) {
+          if ($("#nunil-endpoints-list li").length == 0) {
             $("#nunil-endpoints-list").append(
               "<li><span class=\"nunil-btn nunil-btn-endpoint-list\"><span class=\"dashicons dashicons-editor-ul\"></span></span>" +
-				      "<span class=\"nunil-endpoint-string\"><b>" + __( 'endpoint URL', 'no-unsafe-inline' ) + "</b></span>" +
-				      "<span class= \"nunil-endpoint-string\"><b>"+ __( 'endpoint name', 'no-unsafe-inline' ) + "</b></span></li>"
+              "<span class=\"nunil-endpoint-string\"><b>" + __('endpoint URL', 'no-unsafe-inline') + "</b></span>" +
+              "<span class= \"nunil-endpoint-string\"><b>" + __('endpoint name', 'no-unsafe-inline') + "</b></span></li>"
             );
           };
 
           new_endpoint = $("input[type='text'][name='no-unsafe-inline[new_endpoint]']").val().trim();
           new_endpoint_name = $("input[type='text'][name='no-unsafe-inline[new_endpoint_name]']").val().trim();
 
-          if (a===0) {
+          if (a === 0) {
             endpoint_name_tag = "<span class=\"nunil-endpoint-string-unsaved-disabled txt-active-unsaved txt-newly\">" + $("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim() + "</span>" +
-            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
-            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + $("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim() + "\" />";
+              "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
+              "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + $("input[type='text'][name='no-unsafe-inline[group_name]']").val().trim() + "\" />";
           } else {
             endpoint_name_tag = "<span class=\"nunil-endpoint-string-unsaved-disabled txt-active-unsaved txt-newly\">" + new_endpoint_name + "</span>" +
-            "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
-            "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + new_endpoint_name + "\" />";
+              "<input class=\"nunil-hidden-endpoint\" type=\"hidden\" id=\"no-unsafe-inline[endpoints][" + a + "][name]\"" +
+              "name=\"no-unsafe-inline[endpoints][" + a + "][name]\" value=\"" + new_endpoint_name + "\" />";
           }
 
           $("#nunil-endpoints-list").append(
@@ -1014,15 +1221,15 @@
   });
   // AJAX for Clustering button.
   $("#nunil_trigger_clustering").on("click",
-    function(e) {
+    function (e) {
       var clustering_nonce = $("#clustering_nonce").val();
       e.preventDefault();
       $("#nunil_trigger_clustering").prop("disabled", true);
       $.ajax({
-        beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+        beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
           $("#nunil-spinner-blocks").removeClass("hidden");
         },
-        complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
           $("#nunil-spinner-blocks").addClass("hidden");
         },
         data: {
@@ -1030,7 +1237,7 @@
           nonce: clustering_nonce
         },
         dataType: "json",
-        success: function(res) {
+        success: function (res) {
           if (res.type === "success") {
             $("div#nunil_tools_operation_report").append(res.report);
             $("#nunil_trigger_clustering").prop("disabled", false);
@@ -1053,15 +1260,15 @@
 
   // AJAX for Test Classifier Button.
   $("#nunil_test_classifier").on("click",
-    function(e) {
+    function (e) {
       var clustering_nonce = $("#test_clussifier_nonce").val();
       e.preventDefault();
       $("#nunil_test_classifier").prop("disabled", true);
       $.ajax({
-        beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+        beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
           $("#nunil-spinner-blocks").removeClass("hidden");
         },
-        complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+        complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
           $("#nunil-spinner-blocks").addClass("hidden");
         },
         data: {
@@ -1069,7 +1276,7 @@
           nonce: clustering_nonce
         },
         dataType: "json",
-        success: function(res) {
+        success: function (res) {
           if (res.type === "success") {
             $("div#nunil_tools_operation_report").append(res.report);
             $("#nunil_test_classifier").prop("disabled", false);
@@ -1091,16 +1298,16 @@
 
   // AJAX for Clean Database Button.
   $("#nunil_clean_database").on("click",
-    function(e) {
+    function (e) {
       var db_clean_nonce = $("#clean_db_nonce").val();
       if (window.confirm(__("Are you sure you want to clean db data?\n(This will not clear your base rules)", "no-unsafe-inline"))) {
         e.preventDefault();
         $("#nunil_clean_database").prop("disabled", true);
         $.ajax({
-          beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+          beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
             $("#nunil-spinner-blocks").removeClass("hidden");
           },
-          complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+          complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
             $("#nunil-spinner-blocks").addClass("hidden");
           },
           data: {
@@ -1108,7 +1315,7 @@
             nonce: db_clean_nonce
           },
           dataType: "json",
-          success: function(res) {
+          success: function (res) {
             if (res.type === "success") {
               $("div#nunil_tools_operation_report").append(res.report);
               $("#nunil_clean_database").prop("disabled", false);
@@ -1134,16 +1341,16 @@
 
   // AJAX for Prune Database Button.
   $("#nunil_prune_database").on("click",
-    function(e) {
+    function (e) {
       var db_prune_nonce = $("#prune_db_nonce").val();
       if (window.confirm(__("Are you sure you want to prune db data?\n(This will reduce cluster size and remove orphans entries from occurences table)", "no-unsafe-inline"))) {
         e.preventDefault();
         $("#nunil_prune_database").prop("disabled", true);
         $.ajax({
-          beforeSend: function() { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+          beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
             $("#nunil-spinner-blocks").removeClass("hidden");
           },
-          complete: function() { // Set our complete callback, adding the .hidden class and hiding the spinner.
+          complete: function () { // Set our complete callback, adding the .hidden class and hiding the spinner.
             $("#nunil-spinner-blocks").addClass("hidden");
           },
           data: {
@@ -1151,7 +1358,7 @@
             nonce: db_prune_nonce
           },
           dataType: "json",
-          success: function(res) {
+          success: function (res) {
             if (res.type === "success") {
               $("div#nunil_tools_operation_report").append(res.report);
               $("#nunil_prune_database").prop("disabled", false);
@@ -1184,7 +1391,7 @@
   }
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[capture_enabled]']").on("change",
-    function() {
+    function () {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {
@@ -1194,7 +1401,7 @@
   );
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[test_policy]']").on("change",
-    function() {
+    function () {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {
@@ -1204,12 +1411,38 @@
   );
 
   $("input[type='checkbox'][name='no-unsafe-inline-tools[enable_protection]']").on("change",
-    function() {
+    function () {
       var chk = $(this);
       $("input#submit").prop("disabled", false);
       if (chk.prop("checked")) {
         $("input[type='checkbox'][name='no-unsafe-inline-tools[test_policy]']").prop("checked", false);
       }
+    }
+  );
+ // END tools section.
+
+  // START Log main tab.
+  if ("no-unsafe-inline" === mypage && "logs" === mytab) {
+    ajax_logs_list.display();
+  }
+
+  // Logs table filters
+  $("#nunil-log-date-filter").on("change",
+    function () {
+      var selectedDate = $(this).val();
+      // Perform filtering action based on selected date
+      $.ajax({
+        type: "POST",
+        url: nunil_object.ajax_url,
+        data: {
+          action: "nunil_filter_logs",
+          date: selectedDate
+        },
+        success: function (response) {
+          // Update logs table with filtered data
+          $("#nunil-logs-table").html(response);
+        }
+      });
     }
   );
 });

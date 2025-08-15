@@ -503,7 +503,7 @@ class No_Unsafe_Inline_Public {
 					)
 				);
 			}
-		} // if( $deploy_policy ) {
+		} // End of "if( $deploy_policy ) {"
 	}
 
 	/**

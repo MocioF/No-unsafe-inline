@@ -11,6 +11,7 @@
 
 namespace NUNIL;
 
+use Error;
 use NUNIL\Nunil_Exception;
 
 /**
@@ -549,6 +550,7 @@ class Nunil_Lib_Db {
 		);
 
 		if ( false === $result ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'Could not insert the log: ' . $level . ' ' . $message );
 			return $result;
 		}
@@ -560,17 +562,15 @@ class Nunil_Lib_Db {
 	 * Return the total log entries
 	 *
 	 * @param string $search Search term.
+	 * @param string $level Log level.
+	 * @param string $date Log date.
 	 * @return int Total log entries
 	 */
-	public static function get_total_logs( $search = '' ) {
+	public static function get_total_logs( $search = '', $level = '', $date = '' ) {
 		global $wpdb;
-		$wild      = '%';
-		$do_search = ( $search ) ? $wpdb->prepare(
-			' WHERE `message` LIKE %s ',
-			$wild . $wpdb->esc_like( $search ) . $wild
-		) : '';
-
-		$total = $wpdb->get_var( 'SELECT COUNT(*) FROM ' . self::logs_table() . $do_search );
+		$query = self::get_logs_query( 'created_at', 'asc', $search, $level, $date );
+		$sql   = ' SELECT COUNT(*) FROM ( ' . $query . ' ) AS total_logs ';
+		$total = $wpdb->get_var( $sql );
 		return is_null( $total ) ? 0 : intval( $total );
 	}
 
@@ -582,11 +582,44 @@ class Nunil_Lib_Db {
 	 * @param string $order_by Ordering field.
 	 * @param string $order_asc Sort: 'asc' or 'desc'.
 	 * @param string $search Search term.
+	 * @param string $level Log level.
+	 * @param string $date Log date.
 	 * @param string $mode Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
 	 * @return array<array<\stdClass>>|array<array<string>>|array<\stdClass> The result with the logs
 	 * @throws \NUNIL\Nunil_Exception If $order_by parameter is invalid.
 	 */
-	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $search = '', $mode = OBJECT ) {
+	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $search = '', $level = '', $date = '', $mode = OBJECT ) {
+		global $wpdb;
+		$query = self::get_logs_query( $order_by, $order_asc, $search, $level, $date );
+
+		// conto i risultati.
+		$num_results = $wpdb->get_var( 'SELECT COUNT(*) FROM ( ' . $query . ' ) AS total_logs ' );
+		if ( $num_results <= $offset ) {
+			$offset = 0; // If offset is greater than total results, reset to 0.
+		}
+		$sql     = $wpdb->prepare(
+			$query . ' LIMIT %d OFFSET %d',
+			$size,
+			$offset
+		);
+		$results = $wpdb->get_results( $sql, $mode );
+		return $results;
+	}
+
+	/**
+	 * Get logs query.
+	 *
+	 * This query is used by get_logs() and get_total_logs() methods.
+	 *
+	 * @param string $order_by Ordering field.
+	 * @param string $order_asc Sort: 'asc' or 'desc'.
+	 * @param string $search Search term.
+	 * @param string $level Log level.
+	 * @param string $date Log date.
+	 * @return string The SQL query to get logs.
+	 * @throws \NUNIL\Nunil_Exception If $order_by parameter is invalid.
+	 */
+	public static function get_logs_query( $order_by = 'created_at', $order_asc = 'desc', $search = '', $level = '', $date = '' ) {
 		global $wpdb;
 
 		if ( strpos( self::$allowed_logs_fields, $order_by ) === false ) {
@@ -601,24 +634,45 @@ class Nunil_Lib_Db {
 			);
 		}
 		$order_asc = 'asc' === $order_asc ? 'asc' : 'desc';
+		$do_search = '';
 
-		$wild      = '%';
-		$do_search = ( $search ) ? $wpdb->prepare(
-			' WHERE `message` LIKE %s ',
-			$wild . $wpdb->esc_like( $search ) . $wild
-		) : '';
+		if ( '' !== $level || '' !== $search || '' !== $date ) {
+			$wild      = '%';
+			$do_search = ( $search ) ? sprintf(
+				' AND `message` LIKE %s',
+				$wild . $wpdb->esc_like( $search ) . $wild
+			) : '';
 
-		$sql     = $wpdb->prepare(
-			'SELECT ' . self::$allowed_logs_fields .
+			if ( '' !== $level ) {
+				$do_search .= sprintf( ' AND `level` = \'%s\'', $level );
+			}
+
+			if ( '' !== $date ) {
+				$first = strtok( $date, '§' );
+				switch ( $first ) {
+					case 'on':
+						$do_search .= sprintf( ' AND DATE(`created_at`) = \'%s\'', strtok( '§' ) );
+						break;
+					case 'until':
+						$do_search .= sprintf( ' AND DATE(`created_at`) <= \'%s\'', strtok( '§' ) );
+						break;
+					case 'since':
+						$do_search .= sprintf( ' AND DATE(`created_at`) >= \'%s\'', strtok( '§' ) );
+						break;
+				}
+			}
+
+			$do_search = substr( $do_search, 5 ); // Remove the leading ' AND '.
+
+			$do_search = ' WHERE ' . $do_search;
+		}
+
+		$sql = 'SELECT ' . self::$allowed_logs_fields .
 			' FROM ' . self::logs_table() .
 			$do_search . ' ' .
-			' ORDER BY ' . $order_by . ' ' . $order_asc .
-			' LIMIT %d OFFSET %d',
-			$size,
-			$offset
-		);
-		$results = $wpdb->get_results( $sql, $mode );
-		return $results;
+			' ORDER BY ' . $order_by . ' ' . $order_asc;
+
+		return $sql;
 	}
 
 	/**
@@ -1510,11 +1564,13 @@ class Nunil_Lib_Db {
 		$sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
 
 		/**
+		 * Query originale:
+		 * $sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY) LIMIT 1000', $days );
+		 *
 		 * Questa funziona su sql-lite.
-		 *
-		 * Verifica se è possibile individuarne l'uso.
-		 *
 		 * $sql = $wpdb->prepare( 'DELETE FROM `' . self::logs_table() . '` WHERE `created_at` < DATE_SUB( NOW(), INTERVAL %d DAY)', $days );
+		 *
+		 * Quella in uso viene tradotta correttamente dal nuovo driver Sqlite
 		 */
 		return $wpdb->query( $sql );
 	}
@@ -2109,5 +2165,25 @@ class Nunil_Lib_Db {
 				$id
 			)
 		);
+	}
+
+	/**
+	 * Gets the distinct log dates.
+	 *
+	 * @return array<string>
+	 */
+	public static function get_logs_dates() {
+		global $wpdb;
+		return $wpdb->get_col( 'SELECT DISTINCT CAST( `created_at` AS DATE)  FROM ' . self::logs_table() . ' ORDER BY `created_at` DESC;' );
+	}
+
+	/**
+	 * Gets the distinct log levels.
+	 *
+	 * @return array<string>
+	 */
+	public static function get_logs_levels() {
+		global $wpdb;
+		return $wpdb->get_col( 'SELECT DISTINCT `level` FROM ' . self::logs_table() . ' ORDER BY `level` DESC;' );
 	}
 }

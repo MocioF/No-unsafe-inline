@@ -143,6 +143,7 @@ class Nunil_Base_Src_Rules {
 			wp_cache_set( $cache_key, $ext_scripts, $cache_group, $expire_secs );
 		}
 		if ( is_array( $ext_scripts ) && Utils::is_list_of_std_class( $ext_scripts ) ) {
+			// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			/** @var list<\stdClass> $ext_scripts */
 			return $ext_scripts;
 		} else {
