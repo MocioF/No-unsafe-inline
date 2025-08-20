@@ -23,6 +23,7 @@ use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Global_Settings;
+use NUNIL\Nunil_Exception;
 
 /**
  * Class used to train AI models used by No unsafe-inline
@@ -278,13 +279,25 @@ class Nunil_Knn_Trainer {
 	 * Saves a trained classifier on filesystem
 	 *
 	 * @return void
+	 * @throws Nunil_Exception
 	 */
 	public function save_trained() {
 		$this->train_classifier();
 		$this->serializer = new RBX();
-
-		$encoding = $this->serializer->serialize( $this->classifier );
-		$this->persister->save( $encoding );
+		try {
+			try {
+				$encoding = $this->serializer->serialize( $this->classifier );
+			} catch ( \Exception $e ) {
+				throw new Nunil_Exception( esc_html__( 'Error serializing RBX file: ', 'no-unsafe-inline' ) . $e->getMessage(), 3051, 3 );
+			}
+			try {
+				$this->persister->save( $encoding );
+			} catch ( \Exception $e ) {
+				throw new Nunil_Exception( esc_html__( 'Error saving RBX file: ', 'no-unsafe-inline' ) . $e->getMessage(), 3052, 3 );
+			}
+		} catch ( Nunil_Exception $ex ) {
+			$ex->logexception();
+		}
 	}
 
 	/**
@@ -325,12 +338,26 @@ class Nunil_Knn_Trainer {
 	 * Returns a trained estimator loading a persistable
 	 *
 	 * @return \Rubix\ML\Classifiers\KNearestNeighbors|false
+	 * @throws Nunil_Exception
 	 */
 	private function get_persistent() {
-		$encoding         = $this->persister->load();
-		$this->serializer = new RBX();
-		$persistable      = $this->serializer->deserialize( $encoding );
-		if ( $persistable instanceof \Rubix\ML\Classifiers\KNearestNeighbors ) {
+		try {
+			try {
+				$encoding = $this->persister->load();
+			} catch ( \Exception $e ) {
+				throw new Nunil_Exception( esc_html__( 'Error loading RBX file: ', 'no-unsafe-inline' ) . $this->persister . ' - ' . $e->getMessage(), 3053, 3 );
+			}
+			$this->serializer = new RBX();
+			try {
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				$persistable = $this->serializer->deserialize( $encoding );
+			} catch ( \Exception $e ) {
+				throw new Nunil_Exception( esc_html__( 'Error deserializing RBX file: ', 'no-unsafe-inline' ) . $this->persister . ' - ' . $e->getMessage(), 3054, 3 );
+			}
+		} catch ( Nunil_Exception $ex ) {
+			$ex->logexception();
+		}
+		if ( isset( $persistable ) && $persistable instanceof \Rubix\ML\Classifiers\KNearestNeighbors ) {
 			return $persistable;
 		} else {
 			return false;
