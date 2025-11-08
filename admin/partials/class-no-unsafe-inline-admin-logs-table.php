@@ -17,11 +17,6 @@ use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as Db;
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	/**
-	 * Requires a core wp file.
-	 *
-	 * @phpstan-ignore requireOnce.fileNotFound
-	 */
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
@@ -339,7 +334,8 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 		$response['column_headers']       = $headers;
 
 		if ( isset( $total_items ) ) {
-			$response['total_items_i18n'] = sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) );
+			// translators: %s is the number of items.
+			$response['total_items_i18n'] = sprintf( _n( '%s item', '%s items', $total_items, 'no-unsafe-inline' ), number_format_i18n( $total_items ) );
 		}
 
 		if ( isset( $total_pages ) ) {

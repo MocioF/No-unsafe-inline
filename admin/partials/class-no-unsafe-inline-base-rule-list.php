@@ -14,11 +14,6 @@ namespace NUNIL\admin\partials;
 defined( 'ABSPATH' ) || die( 'you do not have acces to this page!' );
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
-	/**
-	 * Requires a core wp file.
-	 *
-	 * @phpstan-ignore requireOnce.fileNotFound
-	 */
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 

@@ -76,11 +76,6 @@ class Nunil_Script_Upgrader {
 				}
 			}
 			if ( 'core' === $options['type'] ) {
-				/**
-				 * Requires a core wp file.
-				 *
-				 * @phpstan-ignore require.fileNotFound
-				 */
 				require ABSPATH . 'wp-includes/version.php';
 				global $wp_version;
 				$newver = isset( $wp_version ) ? strval( Utils::cast_strval( $wp_version ) ) : '';

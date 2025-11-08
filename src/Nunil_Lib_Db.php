@@ -130,8 +130,6 @@ class Nunil_Lib_Db {
 		 * Requires a core wp file.
 		 *
 		 * We need this for dbDelta() to work.
-		 *
-		 * @phpstan-ignore requireOnce.fileNotFound
 		 */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -2097,8 +2095,6 @@ class Nunil_Lib_Db {
 		 * Requires a core wp file.
 		 *
 		 * We need this for dbDelta() to work.
-		 *
-		 * @phpstan-ignore requireOnce.fileNotFound
 		 */
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		global $wpdb;
