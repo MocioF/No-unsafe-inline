@@ -389,8 +389,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMNodeList<\DOMNode> $inline_list The DOMNodeList.
-	 * @param string                 $tagname One of script or style.
+	 * @param \DOMNodeList<\DOMNameSpaceNode|\DOMNode> $inline_list The DOMNodeList.
+	 * @param string                                   $tagname One of script or style.
 	 * @retunr void
 	 */
 	private function allow_inline( $inline_list, $tagname ): void {
@@ -461,7 +461,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @return \DOMNodeList<\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
 	 */
 	private function get_inline_scripts() {
 		$x            = new \DOMXPath( $this->domdocument );
@@ -475,7 +475,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @return \DOMNodeList<\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
 	 */
 	private function get_internal_css() {
 		$x            = new \DOMXPath( $this->domdocument );
@@ -490,7 +490,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 * @access private
 	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
-	 * @return \DOMNodeList<\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
 	 */
 	private function get_external_nodelist( $tag ) {
 		$x            = new \DOMXPath( $this->domdocument );

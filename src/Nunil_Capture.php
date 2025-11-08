@@ -372,7 +372,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return \DOMNodeList<\DOMNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false A DOMNodeList
 	 */
 	public function get_nodes_w_events() {
 		$event_attributes = new Nunil_Event_Attributes();
@@ -399,7 +399,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return \DOMNodeList<\DOMNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false A DOMNodeList
 	 */
 	public function get_nodes_w_inline_style() {
 		$x            = new \DOMXPath( $this->domdocument );
