@@ -257,7 +257,7 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? Utils::sanitize_text( $_REQUEST['order'], false ) : 'desc';
 
 		try {
-			$logs        = Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, $search, $level, $date, ARRAY_A );
+			$logs        = Db::get_logs( $paged * $per_page, $per_page, $orderby, $order, $search, $level, $date );
 			$this->items = (array) $logs;
 		} catch ( \NUNIL\Nunil_Exception $ex ) {
 			$ex->logexception();

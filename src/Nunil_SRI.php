@@ -88,29 +88,31 @@ class Nunil_SRI {
 				if ( ! is_wp_error( $response ) ) {
 					$body = wp_remote_retrieve_body( $response );
 					if ( true === $overwrite ) {
-						$data->sha256 = Nunil_Capture::calculate_hash( 'sha256', $body, $utf8 = false );
-						$data->sha384 = Nunil_Capture::calculate_hash( 'sha384', $body, $utf8 = false );
-						$data->sha512 = Nunil_Capture::calculate_hash( 'sha512', $body, $utf8 = false );
+						$new_data = (object) array(
+							'sha256' => strval( Nunil_Capture::calculate_hash( 'sha256', $body, $utf8 = false ) ),
+							'sha384' => strval( Nunil_Capture::calculate_hash( 'sha384', $body, $utf8 = false ) ),
+							'sha512' => strval( Nunil_Capture::calculate_hash( 'sha512', $body, $utf8 = false ) ),
+						);
 					} else {
-						$data->sha256 = ( is_null( $data->sha256 ) ) ? Nunil_Capture::calculate_hash( 'sha256', $body, $utf8 = false ) : $data->sha256;
-						$data->sha384 = ( is_null( $data->sha384 ) ) ? Nunil_Capture::calculate_hash( 'sha384', $body, $utf8 = false ) : $data->sha384;
-						$data->sha512 = ( is_null( $data->sha512 ) ) ? Nunil_Capture::calculate_hash( 'sha512', $body, $utf8 = false ) : $data->sha512;
+						$new_data = (object) array(
+							'sha256' => ( is_null( $data->sha256 ) ) ? strval( Nunil_Capture::calculate_hash( 'sha256', $body, $utf8 = false ) ) : $data->sha256,
+							'sha384' => ( is_null( $data->sha384 ) ) ? strval( Nunil_Capture::calculate_hash( 'sha384', $body, $utf8 = false ) ) : $data->sha384,
+							'sha512' => ( is_null( $data->sha512 ) ) ? strval( Nunil_Capture::calculate_hash( 'sha512', $body, $utf8 = false ) ) : $data->sha512,
+						);
 					}
 
-					$whitelist = DB::get_ext_wl( $data );
+					$whitelist = DB::get_ext_wl( $new_data );
 
 					$format = array( '%s', '%s', '%s' );
 
 					if ( 1 === $whitelist ) {
-						$data->whitelist = $whitelist;
+						$new_data->whitelist = $whitelist;
 						array_push( $format, '%d' );
 					}
 
-					unset( $data->src_attrib );
-					$data = (array) $data;
-
+					$new_data = (array) $new_data;
 					// Ensure $data is an array with string keys and string or int values.
-					foreach ( $data as $key => $value ) {
+					foreach ( $new_data as $key => $value ) {
 						if ( is_string( $key ) && ( is_string( $value ) || is_int( $value ) ) ) {
 							$filtered_data[ $key ] = $value;
 						} else {

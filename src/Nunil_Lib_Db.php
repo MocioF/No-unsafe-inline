@@ -39,9 +39,9 @@ class Nunil_Lib_Db {
 	private static function with_prefix( $table ): string {
 		global $wpdb;
 		if ( 0 === strpos( $table, 'nunil_', 0 ) ) {
-			return $wpdb->prefix . $table;
+			return strval( $wpdb->prefix ) . $table;
 		} else {
-			return $wpdb->prefix . 'nunil_' . $table;
+			return strval( $wpdb->prefix ) . 'nunil_' . $table;
 		}
 	}
 
@@ -244,7 +244,7 @@ class Nunil_Lib_Db {
 	 * @since 1.0.0
 	 * @access private
 	 * @param string $directive A -src directive.
-	 * @return array<\stdClass>|null
+	 * @return list<object{"src_attrib": string}>|null
 	 */
 	public static function get_attrs_for_dir_in_ext( $directive ) {
 		global $wpdb;
@@ -252,7 +252,6 @@ class Nunil_Lib_Db {
 			'SELECT src_attrib FROM ' . self::external_scripts_table() . ' WHERE directive = %s',
 			$directive
 		);
-
 		return $wpdb->get_results( $sql, OBJECT );
 	}
 
@@ -528,8 +527,6 @@ class Nunil_Lib_Db {
 		return $wpdb->insert_id;
 	}
 
-
-
 	/**
 	 * Inserts a log entry in the DB
 	 *
@@ -584,11 +581,10 @@ class Nunil_Lib_Db {
 	 * @param string $search Search term.
 	 * @param string $level Log level.
 	 * @param string $date Log date.
-	 * @param string $mode Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
-	 * @return array<array<\stdClass>>|array<array<string>>|array<\stdClass> The result with the logs
+	 * @return array<array{"level": string, "message": string, "created_at": string}> The result with the logs
 	 * @throws \NUNIL\Nunil_Exception If $order_by parameter is invalid.
 	 */
-	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $search = '', $level = '', $date = '', $mode = OBJECT ) {
+	public static function get_logs( $offset, $size, $order_by = 'created_at', $order_asc = 'desc', $search = '', $level = '', $date = '' ) {
 		global $wpdb;
 		$query = self::get_logs_query( $order_by, $order_asc, $search, $level, $date );
 
@@ -602,7 +598,7 @@ class Nunil_Lib_Db {
 			$size,
 			$offset
 		);
-		$results = $wpdb->get_results( $sql, $mode );
+		$results = $wpdb->get_results( $sql, ARRAY_A );
 		return $results;
 	}
 
@@ -1151,7 +1147,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @return array<\stdClass>|null
+	 * @return array<object{"sha256": string, "sha384": string, "sha512": string, "nilsimsa": string, "clustername": string, "whitelist": int, "tagname": string, "directive": string}>|null
 	 */
 	public static function get_inline_rows() {
 		global $wpdb;
@@ -1164,7 +1160,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @return array<\stdClass>|null
+	 * @return array<object{"sha256": string, "sha384": string, "sha512": string, "nilsimsa": string, "clustername": string, "whitelist": int, "event_attribute": string, "tagname": string, "tagid": int}>|null
 	 */
 	public static function get_events_rows() {
 		global $wpdb;
@@ -1177,7 +1173,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @return array<\stdClass>|null
+	 * @return array<object{"ID": int, "directive": string, "tagname": string, "src_attrib": string, "sha256": string, "sha384": string, "sha512": string, "whitelist": int}>|null
 	 */
 	public static function get_external_rows() {
 		global $wpdb;
@@ -1228,7 +1224,7 @@ class Nunil_Lib_Db {
 	 *
 	 * @since 1.0.0
 	 * @param int $id The script ID.
-	 * @return \stdClass|null
+	 * @return object{"src_attrib": string, "sha256": string|null, "sha384": string|null, "sha512": string|null}|null
 	 */
 	public static function get_ext_hashes_from_id( $id ) {
 		global $wpdb;
@@ -1243,7 +1239,7 @@ class Nunil_Lib_Db {
 	/**
 	 * Get whitelist status of an external script, identified by hashes
 	 *
-	 * @param \stdClass $data Object with ext script hashes.
+	 * @param object{"sha256": string, "sha384": string, "sha512": string} $data Object with ext script hashes.
 	 * @return int|null
 	 */
 	public static function get_ext_wl( $data ) {

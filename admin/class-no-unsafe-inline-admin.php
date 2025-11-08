@@ -334,8 +334,8 @@ class No_Unsafe_Inline_Admin {
 			$externals = DB::get_external_rows();
 			if ( ! is_null( $externals ) && count( $externals ) > 1 ) {
 				foreach ( $externals as $ext_asset ) {
-					if ( false === Utils::is_resource_hash_needed( $ext_asset->directive, $ext_asset->tagname ) ) {
-						DB::ext_occurences_delete( $ext_asset->ID );
+					if ( false === Utils::is_resource_hash_needed( strval( $ext_asset->directive ), strval( $ext_asset->tagname ) ) ) {
+						DB::ext_occurences_delete( strval( $ext_asset->ID ) );
 					}
 				}
 			}
