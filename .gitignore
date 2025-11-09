@@ -13,3 +13,4 @@ docs
 .sass-cache
 /.phpunit.result.cache
 nbproject/
+.phplint-cache/
