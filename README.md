@@ -20,7 +20,7 @@ Content Security Policy (CSP) is a computer security standard introduced to prev
 Cross-site scripting (XSS) is a type of security vulnerability that can be found in some web applications.
 XSS attacks enable attackers to inject client-side scripts into web pages viewed by other users.
 A cross-site scripting vulnerability may be used by attackers to bypass access controls like the same-origin policy.
-Looking at National Vulnerability Database ran by US NIST, *more than ~~1,600~~ 900 (March 2024) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
+Looking at National Vulnerability Database ran by US NIST, *more than ~~1,600~~ 1,100 (November 2025) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search#/nvd/home?vulnRevisionStatusList=published&keyword=XSS%20Wordpress&resultType=records).
 
 *Keeping your site up-to-date* with the latest versions of plugins and themes is the **first** line of defense to ensure your site's security.
 
@@ -35,7 +35,7 @@ In addition, in order to facilitate the adoption of nonce-based CSP, they propos
 
 ### The problem(s) with CSP in Wordpress ###
 1. Manual creation of a policy
-	
+
 	Usually, a WordPress project is a mix of code written by different authors who contributed to the Core and or wrote plugins and themes.
 	If it is possible to whitelist every external script loaded from a `<script src="">`, the real truth is that in a WordPress project you can have dozens of those scripts included with your plugins and calculate a cryptographic hash for each of them to be included in your CSP header can be a frustrating job. However, there are many browser extensions and WordPress' plugins that can help you in this job.
 
@@ -43,19 +43,19 @@ In addition, in order to facilitate the adoption of nonce-based CSP, they propos
 
 	WordPress core, and plugins, use inline scripts. For these scripts, you can compute hashes to be inserted manually into your policy, only if these scripts do not change at any page load. Unfortunately, this is not very common as it is frequent to include variable values calculated server side in inline scripts. And it means that your inline scripts change too frequently to manually add their hashes to your policy.
 	This commonly happens when scripts are ["localized"](https://github.com/WordPress/WordPress/blob/a793be201b9c23dbe8b90a6ecd53ab52336f0f91/wp-includes/script-loader.php#L636).
-		
+
 3.	WordPress has no API to implement nonces for CSP
 
 	Even if it is easy to generate a nonce for each page view, this nonce has to be inserted in every script tag used to embed inline scripts in your page as
-		
+
 		<script nonce="rAnd0m">
 			doWhatever();
 		</script>
-		
+
 	and in your script-src directive:
-		
+
 		script-src 'nonce-rAnd0m';
-		
+
 	And, of course, a nonce must be unique for each HTTP response.
 4. Unsafe hashes / Inline styles
 
@@ -88,7 +88,7 @@ The plugin supports multisite installations and has (too) many options documente
 
 After plugin activation, go to Settings menu and search for CSP Settings submenu.
 The steps you are supposed to do are the following.
-1. From the Tools tab, activate the capture of the tags and use your site by visiting all the pages or making them visits from your users 
+1. From the Tools tab, activate the capture of the tags and use your site by visiting all the pages or having your users visit them.
 for a long time long period based on the use of your site (hours or days).
 2. From the Tools tab, perform the data clustering in the database (it can use many server resources).
 3. Go to the Base rules tab and include in the CSP directives the desired values ​​(help you with the table at the bottom of the page).

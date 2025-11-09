@@ -17,7 +17,7 @@ Content Security Policy (CSP) is a computer security standard introduced to prev
 Cross-site scripting (XSS) is a type of security vulnerability that can be found in some web applications.
 XSS attacks enable attackers to inject client-side scripts into web pages viewed by other users.
 A cross-site scripting vulnerability may be used by attackers to bypass access controls like the same-origin policy.
-Looking at National Vulnerability Database run by US NIST, *more than 900 (March 2024) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search/results?form_type=Basic&results_type=overview&query=XSS+Wordpress&search_type=all&isCpeNameSearch=false).
+Looking at National Vulnerability Database run by US NIST, *more than 1100 (November 2025) vulnerabilities* are reported as [XSS for Wordpress' plugins and themes](https://nvd.nist.gov/vuln/search#/nvd/home?vulnRevisionStatusList=published&keyword=XSS%20Wordpress&resultType=records).
 
 *Keeping your site up-to-date* with the latest versions of plugins and themes is the **first** line of defense to ensure your site's security.
 
@@ -110,7 +110,7 @@ The plugin supports multisite installations and has (too) many options documente
 After plugin activation, go to Settings menu and search for CSP Settings submenu.
 The steps you are supposed to do are the following.
 
-1.  From the Tools tab, activate the capture of the tags and use your site by visiting all the pages or making them visits from your users for a long time long period based on the use of your site (hours or days).
+1.  From the Tools tab, activate the capture of the tags and use your site by visiting all the pages or having your users visit them for a long time long period based on the use of your site (hours or days).
 2.  From the Tools tab, perform the data clustering in the database (it can use many server resources).
 3.  Go to the Base rules tab and include in the CSP directives the desired values ​​(help you with the table at the bottom of the page).
 4.  Go to the external scripts tab, inline scripts tab and scripts invoked by event handlers tab and authorize the execution of all the legitimate scripts present on the pages of your site.
