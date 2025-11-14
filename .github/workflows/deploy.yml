@@ -58,3 +58,48 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         run: |
           make svnpush
+      - name: Commit a new dev version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          PAT_TOKEN: ${{ secrets.PUSHNEWDEV }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "${GITHUB_ACTOR:-github-actions[bot]}"
+          git config --global user.email "${GITHUB_ACTOR:-github-actions[bot]}@users.noreply.github.com"
+
+          echo "Tag release: ${RELEASE_VERSION}"
+
+          if [[ "${RELEASE_VERSION}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR=${BASH_REMATCH[1]}
+            MINOR=${BASH_REMATCH[2]}
+            PATCH=${BASH_REMATCH[3]}
+            PATCH=$((PATCH + 1))
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}-dev"
+          else
+            # fallback: derive from the full tag name and keep readable timestamped dev string
+            TAG_NO_PREFIX="${GITHUB_REF#refs/tags/}"
+            TAG_NO_V="${TAG_NO_PREFIX#v}"
+            NEW_VERSION="dev-${TAG_NO_V}-$(date +'%Y%m%d%H%M%S')"
+          fi
+          echo "New dev version: ${NEW_VERSION}"
+
+          # ensure we are on main branch (fetch remote main and reset to it)
+          git fetch --no-tags origin main
+          git checkout -B main origin/main
+
+          # update no-unsafe-inline.php and composer.json "version" fields
+          sed -i -E "s/^([[:space:]]*\\*[[:space:]]*Version:)([[:space:]]*).*/\\1\\2${NEW_VERSION}/" no-unsafe-inline.php
+          sed -i -E "s/^([[:space:]]*define[[:space:]]*\\([[:space:]]*'NO_UNSAFE_INLINE_VERSION'[[:space:]]*,[[:space:]]*')[^']*('.*\\);)/\\1${NEW_VERSION}\\2/" no-unsafe-inline.php
+          sed -i -E "s/^([[:space:]]*\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*(\"[[:space:]]*,?)/\\1${NEW_VERSION}\\2/" composer.json
+
+          git add no-unsafe-inline.php composer.json
+          if git diff --cached --quiet; then
+            echo "No version changes to commit."
+            exit 0
+          fi
+
+          git commit -am "Bump version to ${NEW_VERSION} [skip ci]"
+
+          # use PAT to push to origin (keeps token out of logs)
+          git remote set-url origin "https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git"
+          git push origin HEAD:main
