@@ -19,7 +19,8 @@
         "league/uri-components": "^2.4",
         "rubix/ml": "^2.0",
         "rubix/tensor": "^3.0",
-        "symfony/polyfill-php81": "^1.31"
+        "symfony/polyfill-php81": "^1.31",
+        "masterminds/html5": "^2.10"
     },
     "autoload": {
         "psr-4": {

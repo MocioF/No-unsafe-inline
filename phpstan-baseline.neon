@@ -1,0 +1,337 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: Access to property $nodeName on an unknown class Dom\Element.
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Access to property $textContent on an unknown class Dom\Element.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to method getAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 8
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to method getElementsByTagName() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to method getElementsByTagName() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to method hasAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 4
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to method query() on an unknown class Dom\XPath.'
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Call to static method createFromString() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Class Dom\Element not found.
+			identifier: class.notFound
+			count: 3
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Class Dom\HTMLDocument not found.
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Instantiated class Dom\XPath not found.
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Iterating over an object of an unknown class Dom\HTMLCollection.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Iterating over an object of an unknown class Dom\NodeList.
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Capture::get_nodes_w_events() has invalid return type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Capture::get_nodes_w_events() has invalid return type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Capture::get_nodes_w_inline_style() has invalid return type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Capture::get_nodes_w_inline_style() has invalid return type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Capture::check_attrs() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Capture::get_event_handlers_in_node() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Capture::get_inline_style_in_node() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $nodelist of method NUNIL\Nunil_Capture::get_event_handlers_in_page() has invalid type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $nodelist of method NUNIL\Nunil_Capture::get_event_handlers_in_page() has invalid type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $nodelist of method NUNIL\Nunil_Capture::get_inline_style_in_page() has invalid type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: 'Parameter $nodelist of method NUNIL\Nunil_Capture::get_inline_style_in_page() has invalid type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Property NUNIL\Nunil_Capture::$domdocument has unknown class Dom\HTMLDocument as its type.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Property NUNIL\Nunil_Capture::$matches has unknown class Dom\HTMLCollection as its type.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
+			rawMessage: Access to property $length on an unknown class Dom\NodeList.
+			identifier: class.notFound
+			count: 3
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: Access to property $nodeName on an unknown class Dom\Element.
+			identifier: class.notFound
+			count: 11
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method appendChild() on an unknown class \Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method createElement() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method createTextNode() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method getAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 12
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method getElementsByTagName() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method getElementsByTagName() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method hasAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 7
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method query() on an unknown class Dom\XPath.'
+			identifier: class.notFound
+			count: 3
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method removeAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 2
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method saveHTML() on an unknown class Dom\HTMLDocument.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Call to method setAttribute() on an unknown class Dom\Element.'
+			identifier: class.notFound
+			count: 8
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: Class Dom\Element not found.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: Class Dom\HTMLDocument not found.
+			identifier: class.notFound
+			count: 3
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: Instantiated class Dom\XPath not found.
+			identifier: class.notFound
+			count: 3
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: Iterating over an object of an unknown class Dom\NodeList.
+			identifier: class.notFound
+			count: 4
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_external_nodelist() has invalid return type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_external_nodelist() has invalid return type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_inline_scripts() has invalid return type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_inline_scripts() has invalid return type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_internal_css() has invalid return type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Method NUNIL\Nunil_Manipulate_DOM::get_internal_css() has invalid return type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $inline_list of method NUNIL\Nunil_Manipulate_DOM::allow_inline() has invalid type Dom\Node.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $inline_list of method NUNIL\Nunil_Manipulate_DOM::allow_inline() has invalid type Dom\NodeList.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Manipulate_DOM::allow_whitelisted() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Manipulate_DOM::check_external_whitelist() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Manipulate_DOM::evh_allow_wl_hash() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Manipulate_DOM::ils_allow_wl_hash() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
+			rawMessage: 'Parameter $node of method NUNIL\Nunil_Manipulate_DOM::manipulate_external_node() has invalid type Dom\Element.'
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php

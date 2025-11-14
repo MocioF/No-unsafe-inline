@@ -211,7 +211,10 @@ class No_Unsafe_Inline_Public {
 				$manipulated = new \NUNIL\Nunil_Manipulate_DOM();
 				$manipulated->load_html( $htmlsource );
 				$this->csp_local_whitelist = $manipulated->get_local_csp();
-				$htmlsource                = $manipulated->debug_preamble . $manipulated->get_manipulated();
+				$html_manipulated_source   = $manipulated->get_manipulated();
+				if ( false !== $html_manipulated_source ) {
+					$htmlsource = $manipulated->debug_preamble . $html_manipulated_source;
+				}
 			}
 		}
 		return $htmlsource;
