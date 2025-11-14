@@ -52,7 +52,7 @@ class Nunil_Exception extends \Exception {
 	 * @param int        $log_level Log level to use.
 	 * @param \Throwable $previous Previous exception.
 	 */
-	public function __construct( $message = 'Unknown exception', $code = 0, $log_level = 0, \Throwable $previous = null ) {
+	public function __construct( $message = 'Unknown exception', $code = 0, $log_level = 0, ?\Throwable $previous = null ) {
 		$this->log_level = intval( $log_level );
 		if ( intval( $log_level ) > 3 ) {
 			$this->log_level = 3;
