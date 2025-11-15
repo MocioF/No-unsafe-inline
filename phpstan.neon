@@ -57,4 +57,5 @@ parameters:
 		'''
 includes:
 	- phar://phpstan.phar/conf/bleedingEdge.neon
+	- phpstan-baseline.neon # Errors related to PHP8.4 code, dynamically enabled only if the running php versione is >= 8.4
 

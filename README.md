@@ -135,7 +135,10 @@ No.
 
 ## Code and libraries ##
 Current version uses:
-* [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) to parse HTML;
+* to parse HTML:
+  * [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) on PHP<8.4 and libxml<=2.13.09
+  * [Masterminds\HTML5](https://github.com/Masterminds/html5-php) on PHP<8.4 and libxml>2.13.09
+  * [\Dom\HTMLDocument](https://www.php.net/manual/en/migration84.new-features.php#migration84.new-features.dom): The new ext-dom features with HTML5 support on PHP>8.4
 * [RubixML](https://rubixml.com/) for machine learning ***from version 1.1.0*** - _[PHP-ML](https://php-ml.readthedocs.io/en/latest/) was used in versions 1.0.x_;
 * [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests.
 

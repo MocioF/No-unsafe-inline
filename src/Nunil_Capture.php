@@ -13,6 +13,7 @@
 namespace NUNIL;
 
 use IvoPetkov\HTML5DOMDocument;
+use Masterminds\HTML5;
 use NUNIL\Nunil_Lib_Utils as Utils;
 use NUNIL\Nunil_Exception;
 
@@ -40,7 +41,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @var    \DOMNodeList<\DOMNode> The DOMNodeList.
+	 * @var    \DOMNodeList<\DOMNode>|\Dom\HTMLCollection|\DOMNodeList<\DOMElement> The DOMNodeList.
 	 */
 	private $matches;
 
@@ -58,9 +59,18 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @var    \IvoPetkov\HTML5DOMDocument Istance of IvoPetkov\HTML5DOMDocument object.
+	 * @var   HTML5DOMDocument|\DOMDocument|\Dom\HTMLDocument A Dom Document object.
 	 */
 	public $domdocument;
+
+	/**
+	 * The HTML5 object.
+	 *
+	 * @since  1.2.4
+	 * @access private
+	 * @var    \Masterminds\HTML5|null Istance of Masterminds\HTML5 object.
+	 */
+	private $html5;
 
 	/**
 	 * A temporary counter to avoid double processing tags
@@ -90,6 +100,15 @@ class Nunil_Capture {
 	public $debug_preamble = '';
 
 	/**
+	 * The DOM method in use
+	 *
+	 * @since 1.2.4
+	 * @access private
+	 * @var string $dommethod One of 'PHP_DOM_HTMLDOC', 'IVOPETKOV', 'MASTERMINDS'
+	 */
+	private $dommethod;
+
+	/**
 	 * The class constructor.
 	 *
 	 * Set the htmlsource attribute.
@@ -101,8 +120,22 @@ class Nunil_Capture {
 	 * @throws Nunil_Exception Exception raised when the plugin options are not set.
 	 */
 	public function __construct() {
-		$this->domdocument                     = new HTML5DOMDocument();
-		$this->domdocument->preserveWhiteSpace = true;
+		$this->dommethod = $this->detect_method();
+		switch ( $this->dommethod ) {
+			case 'PHP_DOM_HTMLDOC':
+				break;
+			case 'IVOPETKOV':
+				$this->domdocument                     = new HTML5DOMDocument();
+				$this->domdocument->preserveWhiteSpace = true;
+				break;
+			case 'MASTERMINDS':
+				$options     = array(
+					'encode_entities' => false,
+					'disable_html_ns' => true,
+				);
+				$this->html5 = new HTML5( $options );
+				break;
+		}
 
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 		if ( ! empty( $plugin_options ) ) {
@@ -118,6 +151,23 @@ class Nunil_Capture {
 	}
 
 	/**
+	 * Detect the method to use for DOMDocument
+	 *
+	 * @since 1.2.4
+	 * @access private
+	 * @return string One of 'PHP_DOM_HTMLDOC', 'IVOPETKOV', 'MASTERMINDS'
+	 */
+	private function detect_method(): string {
+		if ( version_compare( PHP_VERSION, '8.4.0' ) >= 0 ) {
+			return 'PHP_DOM_HTMLDOC';
+		}
+		if ( version_compare( strval( LIBXML_VERSION ), '21309' ) <= 0 ) {
+			return 'IVOPETKOV';
+		}
+		return 'MASTERMINDS';
+	}
+
+	/**
 	 * Load the HTML into domdocument
 	 *
 	 * @since 1.0.0
@@ -127,7 +177,21 @@ class Nunil_Capture {
 	public function load_html( $htmlsource ): void {
 		if ( '' !== $htmlsource ) {
 			$htmlsource = $this->remove_debug_display( $htmlsource );
-			$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | HTML5DOMDocument::OPTIMIZE_HEAD | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
+			switch ( $this->dommethod ) {
+				case 'PHP_DOM_HTMLDOC':
+					$this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR | \DOM\HTML_NO_DEFAULT_NS );
+					break;
+				case 'IVOPETKOV':
+					if ( $this->domdocument instanceof HTML5DOMDocument ) {
+						$this->domdocument->loadHTML( $htmlsource, HTML5DOMDocument::ALLOW_DUPLICATE_IDS | HTML5DOMDocument::OPTIMIZE_HEAD | LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES );
+					}
+					break;
+				case 'MASTERMINDS':
+					if ( $this->html5 instanceof HTML5 ) {
+						$this->domdocument = $this->html5->loadHTML( $htmlsource );
+					}
+					break;
+			}
 		}
 	}
 
@@ -195,8 +259,8 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param \DOMNodeList<\DOMNode> $nodelist A DOMNodeList.
-	 * @return array<array<string>>
+	 * @param \DOMNodeList<\DOMNode>|\Dom\NodeList<\Dom\Node> $nodelist A DOMNodeList.
+	 * @return list<array<string, string>>
 	 */
 	public function get_event_handlers_in_page( $nodelist = null ) {
 		if ( ! isset( $nodelist ) ) {
@@ -205,7 +269,7 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if ( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) {
 					$rows     = $this->get_event_handlers_in_node( $node );
 					$all_rows = array_merge( $all_rows, $rows );
 				}
@@ -219,8 +283,8 @@ class Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param \DOMNodeList<\DOMNode> $nodelist A DOMNodeList.
-	 * @return array<array<string>>
+	 * @param \DOMNodeList<\DOMNode>|\Dom\NodeList<\Dom\Node> $nodelist A DOMNodeList.
+	 * @return list<array<string, string>>
 	 */
 	public function get_inline_style_in_page( $nodelist = null ) {
 		if ( ! isset( $nodelist ) ) {
@@ -229,7 +293,7 @@ class Nunil_Capture {
 		$all_rows = array();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if ( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) {
 					$row = $this->get_inline_style_in_node( $node );
 					if ( false !== $row ) {
 						$all_rows[] = $row;
@@ -246,7 +310,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @param array<array<string>> $rows An array of row array.
+	 * @param list<array<string, string>> $rows An array of row array.
 	 * @return void
 	 */
 	private function put_handlers_in_db( $rows ): void {
@@ -261,7 +325,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @param array<array<string>> $rows An array of row array.
+	 * @param list<array<string, string>> $rows An array of row array.
 	 * @return void
 	 */
 	private function put_styles_in_db( $rows ): void {
@@ -275,7 +339,7 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @param array<string> $row Associative array of values to be inserted in db.
+	 * @param array<string, string> $row Associative array of values to be inserted in db.
 	 * @return void
 	 */
 	private function insert_handler_in_db( $row ): void {
@@ -324,8 +388,8 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  \DOMElement $node The element we are processing.
-	 * @return array<array{"tagname": string, "tagid": string, "event_attribute": string, "script": string}> An array of associative arrays: [tag], [id], [event_attribute], [script].
+	 * @param  \DOMElement|\Dom\Element $node The element we are processing.
+	 * @return list<array{"tagname": string, "tagid": string, "event_attribute": string, "script": string}> An array of associative arrays: [tag], [id], [event_attribute], [script].
 	 */
 	public function get_event_handlers_in_node( $node ) {
 		$event_attributes = new Nunil_Event_Attributes();
@@ -334,13 +398,12 @@ class Nunil_Capture {
 
 		foreach ( $attributes as $attribute ) {
 			if ( $node->getAttribute( $attribute['attr'] ) ) {
-				$row = array(
+				$row    = array(
 					'tagname'         => $node->nodeName,
-					'tagid'           => $node->getAttribute( 'id' ),
+					'tagid'           => strval( $node->getAttribute( 'id' ) ),
 					'event_attribute' => $attribute['attr'],
 					'script'          => $node->getAttribute( $attribute['attr'] ),
 				);
-
 				$rows[] = $row;
 			}
 		}
@@ -352,15 +415,15 @@ class Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access public
-	 * @param \DOMElement $node The node we are processing.
-	 * @return array{tagname: string, script: string }|false An array of associative arrays: [tag], [id], [attribute], [script], [sha-256].
+	 * @param \DOMElement|\Dom\Element $node The node we are processing.
+	 * @return array{tagname: string, script: string}|false An array of associative arrays: [tag], [id], [attribute], [script], [sha-256].
 	 */
 	public function get_inline_style_in_node( $node ) {
 		$attribute = 'style';
 		if ( $node->hasAttribute( $attribute ) ) {
 			$row = array(
 				'tagname' => $node->nodeName,
-				'script'  => $node->getAttribute( $attribute ),
+				'script'  => strval( $node->getAttribute( $attribute ) ),
 			);
 			return $row;
 		}
@@ -372,13 +435,16 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false A DOMNodeList
 	 */
 	public function get_nodes_w_events() {
 		$event_attributes = new Nunil_Event_Attributes();
 		$attributes       = $event_attributes->get_attributes();
-
-		$x            = new \DOMXPath( $this->domdocument );
+		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
+			$x = new \Dom\XPath( $this->domdocument );
+		} else {
+			$x = new \DOMXPath( $this->domdocument );
+		}
 		$x_path_query = '//*[';
 
 		foreach ( $attributes as $attribute ) {
@@ -399,10 +465,14 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false A DOMNodeList
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false A DOMNodeList
 	 */
 	public function get_nodes_w_inline_style() {
-		$x            = new \DOMXPath( $this->domdocument );
+		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
+			$x = new \Dom\XPath( $this->domdocument );
+		} else {
+			$x = new \DOMXPath( $this->domdocument );
+		}
 		$x_path_query = '//*[@style]';
 
 		$nodelist = $x->query( $x_path_query );
@@ -436,7 +506,7 @@ class Nunil_Capture {
 		 * textcontent we process tag with childs, first.
 		 */
 		foreach ( $tagnames as &$tagname ) {
-			usort( $tagname, array( 'NUNIL\Nunil_Capture', 'sort_tag_by_child_first' ) );
+			usort( $tagname, array( $this, 'sort_tag_by_child_first' ) );
 		}
 		return $tagnames;
 	}
@@ -537,8 +607,8 @@ class Nunil_Capture {
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @param  array<array<string>>|null  $attrs An array of [attr_name] => value.
-	 * @param  \IvoPetkov\HTML5DOMElement $node  An HTML5DOMElement.
+	 * @param  array<array<string>>|null                           $attrs An array of [attr_name] => value.
+	 * @param  \IvoPetkov\HTML5DOMElement|\DOMElement|\Dom\Element $node  An HTML5DOMElement.
 	 * @return bool True if the node has all attrs and values or if $attrs is empty.
 	 */
 	private function check_attrs( $attrs, $node ) {
@@ -588,7 +658,7 @@ class Nunil_Capture {
 			$node_key        = 'key_' . sprintf( '%d', $node_index );
 			$index_processed = array_key_exists( $node_key, $processed );
 
-			if ( ! $index_processed && ( $node instanceof \IvoPetkov\HTML5DOMElement ) ) {
+			if ( ! $index_processed && ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) ) {
 				$inline = false;
 
 				if ( $this->check_attrs( $tag->get_neededattrs(), $node ) ) {
@@ -600,14 +670,14 @@ class Nunil_Capture {
 						foreach ( $stored_attrs as $stored_attr ) {
 							if ( $node->hasAttribute( $stored_attr ) ) {
 								if ( 'srcset' === $stored_attr ) {
-									$srcset = $node->getAttribute( $stored_attr );
+									$srcset = strval( $node->getAttribute( $stored_attr ) );
 									$srcs   = $this->get_srcs_from_srcset( $srcset );
 									foreach ( $srcs as $src_attrib ) {
 										$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 										$processed[ $node_key ] = true;
 									}
 								} else { // $stored_attr is not 'srcset'.
-									$src_attrib             = $node->getAttribute( $stored_attr );
+									$src_attrib             = strval( $node->getAttribute( $stored_attr ) );
 									$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 									$processed[ $node_key ] = true;
 								}
@@ -624,14 +694,14 @@ class Nunil_Capture {
 									foreach ( $child_nodes as $child_node ) {
 										if ( $child_node->hasAttribute( $stored_attr ) ) {
 											if ( 'srcset' === $stored_attr ) {
-												$srcset = $child_node->getAttribute( $stored_attr );
+												$srcset = strval( $child_node->getAttribute( $stored_attr ) );
 												$srcs   = $this->get_srcs_from_srcset( $srcset );
 												foreach ( $srcs as $src_attrib ) {
 													$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 													$processed[ $node_key ] = true;
 												}
 											} else {
-												$src_attrib             = $child_node->getAttribute( $stored_attr );
+												$src_attrib             = strval( $child_node->getAttribute( $stored_attr ) );
 												$external_script_id     = $this->insert_external_tag_in_db( $directive, $tagname, $src_attrib );
 												$processed[ $node_key ] = true;
 											}
@@ -647,8 +717,7 @@ class Nunil_Capture {
 					$directive = $tag->get_directive();
 					$tagname   = $tag->get_name();
 
-					$content = $node->textContent;
-
+					$content = strval( $node->textContent );
 					$content = $this->clean_text_content( $content );
 
 					if ( '' !== $content ) {

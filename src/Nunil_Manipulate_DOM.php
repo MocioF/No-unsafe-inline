@@ -246,7 +246,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @return string The manipulated HTML.
+	 * @return string|false The manipulated HTML, or false on failure.
 	 */
 	public function get_manipulated() {
 		set_time_limit( 300 );
@@ -374,7 +374,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				$node_list = $this->get_external_nodelist( $tag );
 				if ( $node_list ) {
 					foreach ( $node_list as $node ) {
-						if ( $node instanceof \DOMElement ) {
+						if ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) {
 							$index = $this->check_external_whitelist( $node );
 							$this->manipulate_external_node( $node, $tag->get_directive(), $index );
 						}
@@ -389,8 +389,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMNodeList<\DOMNameSpaceNode|\DOMNode> $inline_list The DOMNodeList.
-	 * @param string                                   $tagname One of script or style.
+	 * @param \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node> $inline_list The DOMNodeList.
+	 * @param string                                                            $tagname One of script or style.
 	 * @retunr void
 	 */
 	private function allow_inline( $inline_list, $tagname ): void {
@@ -461,10 +461,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false
 	 */
 	private function get_inline_scripts() {
-		$x            = new \DOMXPath( $this->domdocument );
+		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
+			$x = new \Dom\XPath( $this->domdocument );
+		} else {
+			$x = new \DOMXPath( $this->domdocument );
+		}
 		$x_path_query = "//script[not(@src) and not(@type='text/html') and not(@type='text/template')]";
 		$nodelist     = $x->query( $x_path_query );
 		return $nodelist;
@@ -475,10 +479,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false
 	 */
 	private function get_internal_css() {
-		$x            = new \DOMXPath( $this->domdocument );
+		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
+			$x = new \Dom\XPath( $this->domdocument );
+		} else {
+			$x = new \DOMXPath( $this->domdocument );
+		}
 		$x_path_query = '//style[not(@src)]';
 		$nodelist     = $x->query( $x_path_query );
 		return $nodelist;
@@ -490,10 +498,14 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 * @access private
 	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
-	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|false
+	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false
 	 */
 	private function get_external_nodelist( $tag ) {
-		$x            = new \DOMXPath( $this->domdocument );
+		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
+			$x = new \Dom\XPath( $this->domdocument );
+		} else {
+			$x = new \DOMXPath( $this->domdocument );
+		}
 		$x_path_query = $this->build_xpath_query( $tag );
 
 		return $x->query( $x_path_query );
@@ -623,7 +635,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * If the node asks for more sources returns an array.
 	 *
 	 * @access private
-	 * @param \DOMElement $node The selected DOMNode.
+	 * @param \DOMElement|\Dom\Element $node The selected DOMNode.
 	 * @return array<int|false> An array where each element is the index of external_rows array if resource is whitelisted, false if not.
 	 */
 	private function check_external_whitelist( $node ) {
@@ -644,9 +656,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 				foreach ( $stored_attrs as $stored_attr ) {
 					if ( is_null( $tag_childs ) ) {
 						if ( $node->hasAttribute( $stored_attr ) ) {
-							$src_attrib = $node->getAttribute( $stored_attr );
+							$src_attrib = strval( $node->getAttribute( $stored_attr ) );
 							if ( 'srcset' === $stored_attr ) {
-								$srcs = $this->get_srcs_from_srcset( $node->getAttribute( 'srcset' ) );
+								$srcs = $this->get_srcs_from_srcset( strval( $node->getAttribute( 'srcset' ) ) );
 								foreach ( $srcs as $single_src ) {
 									$res = $this->check_res_wl( $single_src );
 									if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
@@ -665,9 +677,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							$child_nodes = $node->getElementsByTagName( $tag_child );
 							foreach ( $child_nodes as $child_node ) {
 								if ( $child_node->hasAttribute( $stored_attr ) ) {
-									$src_attrib = $child_node->getAttribute( $stored_attr );
+									$src_attrib = strval( $child_node->getAttribute( $stored_attr ) );
 									if ( 'srcset' === $stored_attr ) {
-										$srcs = $this->get_srcs_from_srcset( $child_node->getAttribute( 'srcset' ) );
+										$srcs = $this->get_srcs_from_srcset( strval( $child_node->getAttribute( 'srcset' ) ) );
 										foreach ( $srcs as $single_src ) {
 											$res = $this->check_res_wl( $single_src );
 											if ( false !== $res && ! in_array( $res, $int_result, true ) ) {
@@ -739,7 +751,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMElement                $node The DOMNode passed by reference.
+	 * @param \DOMElement|\Dom\Element   $node The DOMNode passed by reference.
 	 * @param string                     $directive The -src directive.
 	 * @param int|false|array<int|false> $input_index The index of the whitelisted source in $this->external_rows array.
 	 * @return void
@@ -837,9 +849,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							// i.e. the CSS returned by the googlefonts API is different for different browsers.
 							// In this cases we don't add integrity to the resources.
 							if ( 'script' === $node->nodeName ) {
-								$sourcestr = $node->getAttribute( 'src' );
+								$sourcestr = strval( $node->getAttribute( 'src' ) );
 							} else {
-								$sourcestr = $node->getAttribute( 'href' );
+								$sourcestr = strval( $node->getAttribute( 'href' ) );
 							}
 							if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
 								$node->setAttribute( 'integrity', trim( $integrity_string ) );
@@ -849,8 +861,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							}
 						}
 					} else { // The node has got integrity by other way. Just whitelist it.
-						$integrity        = $node->getAttribute( 'integrity' );
-						$crossorigin      = $node->getAttribute( 'crossorigin' );
+						$integrity        = strval( $node->getAttribute( 'integrity' ) );
+						$crossorigin      = strval( $node->getAttribute( 'crossorigin' ) );
 						$integrity_values = preg_split( '/\s+/', $integrity, -1 );
 						if ( $integrity_values && $add_hashes ) {
 							foreach ( $integrity_values as $hash_with_options ) {
@@ -895,9 +907,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					}
 
 					if ( 'script' === $node->nodeName ) {
-						$sourcestr = $node->getAttribute( 'src' );
+						$sourcestr = strval( $node->getAttribute( 'src' ) );
 					} else {
-						$sourcestr = $node->getAttribute( 'href' );
+						$sourcestr = strval( $node->getAttribute( 'href' ) );
 					}
 					if ( '' !== $sourcestr && true === $this->api_support_integrity( $sourcestr ) ) {
 						$node->setAttribute( 'integrity', trim( $integrity_string ) );
@@ -1148,9 +1160,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMElement   $node The DOMElement passed by reference.
-	 * @param array<string> $hashes Array of sha hashes.
-	 * @param string        $directive The csp -src directive.
+	 * @param \DOMElement|\Dom\Element $node The DOMElement passed by reference.
+	 * @param array<string>            $hashes Array of sha hashes.
+	 * @param string                   $directive The csp -src directive.
 	 * @return void
 	 */
 	private function allow_whitelisted( &$node, $hashes, $directive ): void {
@@ -1291,8 +1303,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMElement $node The current DOMNode.
-	 * @param string      $evh The event handler attribute name.
+	 * @param \DOMElement|\Dom\Element $node The current DOMNode.
+	 * @param string                   $evh The event handler attribute name.
 	 * @return void
 	 */
 	private function evh_allow_wl_hash( &$node, $evh ): void {
@@ -1320,8 +1332,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 *
 	 * @since 1.0.0
 	 * @access private
-	 * @param \DOMElement $node The DOMNode passed by reference.
-	 * @param string      $cssclass The new class to be added.
+	 * @param \DOMElement|\Dom\Element $node The DOMNode passed by reference.
+	 * @param string                   $cssclass The new class to be added.
 	 * @return void
 	 */
 	private function ils_allow_wl_hash( &$node, $cssclass ): void {
@@ -1333,7 +1345,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$new_class = $old_class . "$cssclass";
 		$node->setAttribute( 'class', $new_class );
 
-		$style = $node->getAttribute( 'style' );
+		$style = strval( $node->getAttribute( 'style' ) );
 
 		/**
 		 * TODO: manage multybyte string.
@@ -1383,7 +1395,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					$body_node = $body_node->item( 0 );
 				}
 				if ( ! is_null( $body_node ) ) {
-					if ( is_a( $body_node, '\DOMElement' ) ) {
+					if ( is_a( $body_node, '\DOMElement' ) || is_a( $body_node, '\Dom\Element' ) ) {
 						$body_node->appendChild( $script_node );
 					}
 				}

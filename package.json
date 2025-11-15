@@ -1,6 +1,6 @@
 {
   "name": "no-unsafe-inline",
-  "version": "1.2.2",
+  "version": "1.2.4-dev",
   "main": "Gruntfile.js",
   "author": "Giuseppe Foti",
   "license": "GPL-2.0-or-later",
