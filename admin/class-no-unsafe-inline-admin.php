@@ -155,14 +155,14 @@ class No_Unsafe_Inline_Admin {
 	public function nunil_get_extra_meta_links( $meta, $file ) {
 		if ( NO_UNSAFE_INLINE_PLUGIN_BASENAME === $file ) {
 			$plugin_page = admin_url( 'admin.php?page=no-unsafe-inline' );
-			$meta[]      = "<a href='https://wordpress.org/support/plugin/no-unsafe-inline/' target='_blank' title'" . __( 'Support', 'no-unsafe-inline' ) . "'>" . __( 'Support', 'no-unsafe-inline' ) . '</a>';
-			$meta[]      = "<style>
+			$meta[]      = '<a href="https://wordpress.org/support/plugin/no-unsafe-inline/" target="_blank" rel="noopener noreferrer" title="' . __( 'Support', 'no-unsafe-inline' ) . '">' . __( 'Support', 'no-unsafe-inline' ) . '</a>';
+			$meta[]      = '<style>
 			.nunil-stars{display:inline-block;color:#ffb900;position:relative;top:3px}
 			.nunil-stars svg{fill:#ffb900}
 			.nunil-stars svg:hover{fill:#ffb900}
 			.nunil-stars svg:hover ~ svg{fill:none}
 			</style>
-			<a href='https://wordpress.org/support/plugin/no-unsafe-inline/reviews#new-post' target='_blank' title='" . __( 'Leave a review', 'no-unsafe-inline' ) . "'><i class='nunil-stars'><svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg><svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg><svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg><svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg><svg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-star'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg></i></a>";
+			<a href="https://wordpress.org/support/plugin/no-unsafe-inline/reviews#new-post" target="_blank" rel="noopener noreferrer" title="' . __( 'Leave a review', 'no-unsafe-inline' ) . '"><i class="nunil-stars"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></i></a>';
 		}
 		return $meta;
 	}
@@ -178,7 +178,7 @@ class No_Unsafe_Inline_Admin {
 	public function plugin_directory_links( $actions ) {
 		$links   = array(
 			'<a href="' . admin_url( 'options-general.php?page=no-unsafe-inline' ) . '">' . esc_html__( 'Settings', 'no-unsafe-inline' ) . '</a>',
-			'<a href="https://wordpress.org/plugins/no-unsafe-inline/" target="_blank">' . esc_html__( 'Documentation', 'no-unsafe-inline' ) . '</a>',
+			'<a href="https://wordpress.org/plugins/no-unsafe-inline/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'no-unsafe-inline' ) . '</a>',
 		);
 		$actions = array_merge( $actions, $links );
 		return $actions;
@@ -700,11 +700,11 @@ class No_Unsafe_Inline_Admin {
 			array(
 				'option_name' => 'use_strict-dynamic',
 				// translators: strict-dynamic link.
-				'label'       => sprintf( __( 'Add %s in script-src and default-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
+				'label'       => sprintf( __( 'Add %s in script-src and default-src.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#strict-dynamic-usage" target="_blank" rel="noopener noreferrer">\'strict-dynamic\'</a>' ) . '<br>' . sprintf(
 					// translators: %1$s and %2$s are link to external websites.
 					__( 'This is only partially supported in Mozilla/Firefox. Read %1$s and %2$s', 'no-unsafe-inline' ),
-					'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
-					'<a href="https://webcompat.com/issues/85780" target="_blank">https://webcompat.com/issues/85780</a>'
+					'<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6" target="_blank" rel="noopener noreferrer">https://bugzilla.mozilla.org/show_bug.cgi?id=1409200#c6</a>',
+					'<a href="https://webcompat.com/issues/85780" target="_blank" rel="noopener noreferrer">https://webcompat.com/issues/85780</a>'
 				),
 			)
 		);
@@ -718,7 +718,7 @@ class No_Unsafe_Inline_Admin {
 			array(
 				'option_name' => 'no-unsafe-inline_upgrade_insecure',
 				// translators: upgrade-insecure-requests link.
-				'label'       => sprintf( __( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank"><b>upgrade-insecure-requests</b></a>' ),
+				'label'       => sprintf( __( 'Set the CSP directive: %s', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/upgrade-insecure-requests/" target="_blank" rel="noopener noreferrer"><b>upgrade-insecure-requests</b></a>' ),
 			)
 		);
 
@@ -749,7 +749,7 @@ class No_Unsafe_Inline_Admin {
 		add_settings_field(
 			'use_unsafe-hashes',
 			// translators: %s is unsafe-hashes link to w3.org site.
-			sprintf( esc_html__( 'Use \'%s\' for JS event handlers attributes of HTML elements. (Say NO)', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#unsafe-hashes-usage" target="_blank">unsafe-hashes</a>' ),
+			sprintf( esc_html__( 'Use \'%s\' for JS event handlers attributes of HTML elements. (Say NO)', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#unsafe-hashes-usage" target="_blank" rel="noopener noreferrer">unsafe-hashes</a>' ),
 			array( $this, 'print_toggle_option' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc',
@@ -764,8 +764,8 @@ class No_Unsafe_Inline_Admin {
 			sprintf(
 			// translators: %1$s is setAttribute link, %2$s is jQuery htmlPrefilte link.
 				esc_html__( 'Fix the use of %1$s in 3th party libraries and override %2$s', 'no-unsafe-inline' ),
-				'<a href="https://csplite.com/csp/test343/" target="_blank">setAttribute(\'style\')</a>',
-				'<a href="https://csplite.com/csp/test433/" target="_blank">jQuery htmlPrefilter()(\'style\')</a>'
+				'<a href="https://csplite.com/csp/test343/" target="_blank" rel="noopener noreferrer">setAttribute(\'style\')</a>',
+				'<a href="https://csplite.com/csp/test433/" target="_blank" rel="noopener noreferrer">jQuery htmlPrefilter()(\'style\')</a>'
 			),
 			array( $this, 'print_fix_setattribute_style' ),
 			'no-unsafe-inline-options',
@@ -817,7 +817,7 @@ class No_Unsafe_Inline_Admin {
 			sprintf(
 			// translators: %1$s is report-uri link.
 				esc_html__( 'Use %1$s reporting directive (deprecated)', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/CSP3/#directive-report-uri" target="_blank">report-uri</a>'
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-uri" target="_blank" rel="noopener noreferrer">report-uri</a>'
 			),
 			array( $this, 'print_toggle_option' ),
 			'no-unsafe-inline-options',
@@ -833,7 +833,7 @@ class No_Unsafe_Inline_Admin {
 			sprintf(
 			// translators: %1$s is report-uri link.
 				esc_html__( 'Use %1$s reporting directive', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank">report-to</a>'
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank" rel="noopener noreferrer">report-to</a>'
 			),
 			array( $this, 'print_toggle_option' ),
 			'no-unsafe-inline-options',
@@ -857,7 +857,7 @@ class No_Unsafe_Inline_Admin {
 			sprintf(
 				// translators: %1$s is report-uri link.
 				esc_html__( 'Add the %1$s response header field to define the reporting endpoints.', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/reporting-1/#header" target="_blank">Reporting-Endpoints</a>'
+				'<a href="https://www.w3.org/TR/reporting-1/#header" target="_blank" rel="noopener noreferrer">Reporting-Endpoints</a>'
 			),
 			array( $this, 'print_toggle_option' ),
 			'no-unsafe-inline-options',
@@ -874,7 +874,7 @@ class No_Unsafe_Inline_Admin {
 			sprintf(
 			// translators: %1$s is report-uri link.
 				esc_html__( 'Add the %1$s response header field to define the reporting endpoints (legacy and deprecated)', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/2016/NOTE-reporting-1-20160607/#header" target="_blank">Report-To</a>'
+				'<a href="https://www.w3.org/TR/2016/NOTE-reporting-1-20160607/#header" target="_blank" rel="noopener noreferrer">Report-To</a>'
 			),
 			array( $this, 'print_toggle_option' ),
 			'no-unsafe-inline-options',
@@ -886,7 +886,7 @@ class No_Unsafe_Inline_Admin {
 					'<br>' . __( 'This is a legacy and deprecated feature, never standardized and included in the Reporting API v0.', 'no-unsafe-inline' ) .
 					// translators: %s is a link.
 					'<br>' . __( 'See %s.', 'no-unsafe-inline' ),
-					'<a href="https://developer.chrome.com/blog/reporting-api-migration" target="_blank">Migrate to Reporting API v1</a>'
+					'<a href="https://developer.chrome.com/blog/reporting-api-migration" target="_blank" rel="noopener noreferrer">Migrate to Reporting API v1</a>'
 				),
 			)
 		);
@@ -1049,7 +1049,7 @@ class No_Unsafe_Inline_Admin {
 				add_settings_field(
 					$args['option_name'],
 					// translators: %s is the CSP directive, like script-src.
-					sprintf( esc_html__( 'Base %s sources', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . $directive . '" target="_blank">' . $directive . '</a>' ),
+					sprintf( esc_html__( 'Base %s sources', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . $directive . '" target="_blank" rel="noopener noreferrer">' . $directive . '</a>' ),
 					array( $this, 'print_base_rule' ),
 					'no-unsafe-inline-base-rule-page',
 					'no-unsafe-inline-base-rule-section',
@@ -1424,7 +1424,7 @@ class No_Unsafe_Inline_Admin {
 			esc_html( $enabled ),
 			esc_html( $option_name ),
 			// translators: %s is a CSP directory link on w3.org specs for CSP3.
-			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label ) . '" target="_blank">' . esc_html( $label ) . '</a>' )
+			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>' )
 		);
 	}
 
@@ -1588,7 +1588,7 @@ class No_Unsafe_Inline_Admin {
 		printf(
 		// translators: Subresource Integrity link.
 			esc_html__( 'Options to use %s', 'no-unsafe-inline' ),
-			'<a href="https://w3c.github.io/webappsec-subresource-integrity/" target="_blank">Subresource Integrity</a>'
+			'<a href="https://w3c.github.io/webappsec-subresource-integrity/" target="_blank" rel="noopener noreferrer">Subresource Integrity</a>'
 		);
 	}
 
@@ -1693,7 +1693,7 @@ class No_Unsafe_Inline_Admin {
 			<label for="no-unsafe-inline[max_response_header_size]">%s %s</label>',
 			intval( Utils::cast_intval( $value ) ),
 			esc_html__( 'Write here the HTTP Response Header Size Limit allowed by your server (in bytes). See: ', 'no-unsafe-inline' ),
-			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
+			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank" rel="noopener noreferrer">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
 		);
 	}
 

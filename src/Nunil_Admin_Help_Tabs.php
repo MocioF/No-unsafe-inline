@@ -368,12 +368,12 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'For more information on clustering you can visit these pages:', 'no-unsafe-inline' ) . '<br>'
 			. sprintf(
 				'%s DBSCAN - RubixML - Machine Learning library for PHP %s',
-				'<a href="https://docs.rubixml.com/2.0/clusterers/dbscan.html" target="_blank">',
+				'<a href="https://docs.rubixml.com/2.0/clusterers/dbscan.html" target="_blank" rel="noopener noreferrer">',
 				'</a>'
 			) . '<br>'
 			. sprintf(
 				'%s What is Clustering? &nbsp;|&nbsp; Clustering in Machine Learning &nbsp;|&nbsp; Google Developers %s',
-				'<a href="https://developers.google.com/machine-learning/clustering/overview" target="_blank">',
+				'<a href="https://developers.google.com/machine-learning/clustering/overview" target="_blank" rel="noopener noreferrer">',
 				'</a>'
 			) . '<br>'
 			. '</p>'
@@ -381,19 +381,19 @@ class Nunil_Admin_Help_Tabs {
 			. sprintf(
 				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
 				esc_html__( 'no-unsafe-inline uses %1$sDBSCAN%2$s as a clustering algorithm performed on local-sensitive hashes.', 'no-unsafe-inline' ),
-				'<a href="https://wikipedia.org/wiki/DBSCAN" target="_blank"><b>',
+				'<a href="https://wikipedia.org/wiki/DBSCAN" target="_blank" rel="noopener noreferrer"><b>',
 				'</b></a>'
 			) . '<br>'
 			. sprintf(
 				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
 				esc_html__( 'The hashing algorithm used is %1$snilsimsa%2$s.', 'no-unsafe-inline' ),
-				'<a href="https://wikipedia.org/wiki/Nilsimsa_Hash" target="_blank"><b>',
+				'<a href="https://wikipedia.org/wiki/Nilsimsa_Hash" target="_blank" rel="noopener noreferrer"><b>',
 				'</b></a>'
 			) . '<br>'
 			. sprintf(
 				// translators: %1$s is the link opening tag; %2$s is the link closing tag.
 				esc_html__( 'The distance measurement is %1$sHamming distance%2$s.', 'no-unsafe-inline' ),
-				'<a href="https://wikipedia.org/wiki/Hamming_distance" target="_blank"><b>',
+				'<a href="https://wikipedia.org/wiki/Hamming_distance" target="_blank" rel="noopener noreferrer"><b>',
 				'</b></a>'
 			) . '<br>'
 			. '</p>'
@@ -640,7 +640,7 @@ class Nunil_Admin_Help_Tabs {
 			. sprintf(
 				// translators: %1$s and %2$s are opening and closing tag for a link in CSP3 specs' page.
 				esc_html__( 'Many directives\' values consist of %1$ssource lists%2$s: sets of strings which identify content that can be fetched and potentially embedded or executed.', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/CSP3/#grammardef-serialized-source-list" target="_blank">',
+				'<a href="https://www.w3.org/TR/CSP3/#grammardef-serialized-source-list" target="_blank" rel="noopener noreferrer">',
 				'</a>'
 			)
 			. '</p>'
@@ -743,7 +743,7 @@ class Nunil_Admin_Help_Tabs {
 			. sprintf(
 				// translators: %s is the link to a paragraph in SRI specifications.
 				esc_html__( 'Right now SRI specs (%s) states that "a new integrity attribute is added to the list of content attributes for the link and script elements"', 'no-unsafe-inline' ),
-				'<a href="https://w3c.github.io/webappsec-subresource-integrity/#verification-of-html-document-subresources" target="_blank">https://w3c.github.io/webappsec-subresource-integrity/#verification-of-html-document-subresources</a>'
+				'<a href="https://w3c.github.io/webappsec-subresource-integrity/#verification-of-html-document-subresources" target="_blank" rel="noopener noreferrer">https://w3c.github.io/webappsec-subresource-integrity/#verification-of-html-document-subresources</a>'
 			) . '<br>'
 			. esc_html__( 'A Note in specs says: "A future revision of this specification is likely to include integrity support for all possible subresources, i.e., a, audio, embed, iframe, img, link, object, script, source, track, and video elements."', 'no-unsafe-inline' )
 			. '</p>';
@@ -889,7 +889,7 @@ class Nunil_Admin_Help_Tabs {
 			. '<hr>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>group_name</b><br>'
-			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <a href="https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2" target="_blank"><b>string (token)</b></a>: ' . esc_html__( 'a token that associates a name with the reporting endpoint', 'no-unsafe-inline' )
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <a href="https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2" target="_blank" rel="noopener noreferrer"><b>string (token)</b></a>: ' . esc_html__( 'a token that associates a name with the reporting endpoint', 'no-unsafe-inline' )
 			. '</pre>'
 			. '<p>'
 			. esc_html__( 'In Report-To JSON object the plugin will add all endpoints in one group.', 'no-unsafe-inline' )
@@ -961,7 +961,7 @@ class Nunil_Admin_Help_Tabs {
 			. sprintf(
 				// translators: %s is the link to a paragraph in CSP3 specifications.
 				esc_html__( 'Read %s for info about reporting directives.', 'no-unsafe-inline' ),
-				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank">https://www.w3.org/TR/CSP3/#directive-report-to</a>'
+				'<a href="https://www.w3.org/TR/CSP3/#directive-report-to" target="_blank" rel="noopener noreferrer">https://www.w3.org/TR/CSP3/#directive-report-to</a>'
 			)
 			. '</p>'
 			. '<p>'
@@ -1001,10 +1001,10 @@ class Nunil_Admin_Help_Tabs {
 	 */
 	public function sidebar(): void {
 		$content  = '<p><strong>' . __( 'For more information:', 'no-unsafe-inline' ) . '</strong></p>';
-		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://wordpress.org/plugins/no-unsafe-inline/' ) . __( 'Plugin page on WordPress.org', 'no-unsafe-inline' ) . '</a></p>';
-		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://wordpress.org/support/plugin/no-unsafe-inline/' ) . __( 'Support forum', 'no-unsafe-inline' ) . '</a></p>';
-		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://github.com/MocioF/No-unsafe-inline' ) . __( 'Code page on GitHub', 'no-unsafe-inline' ) . '</a></p>';
-		$content .= sprintf( '<p><a href="%s" target="_blank">', 'https://github.com/MocioF/No-unsafe-inline/issues' ) . __( 'Report issues', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank" rel="noopener noreferrer">', 'https://wordpress.org/plugins/no-unsafe-inline/' ) . __( 'Plugin page on WordPress.org', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank" rel="noopener noreferrer">', 'https://wordpress.org/support/plugin/no-unsafe-inline/' ) . __( 'Support forum', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank" rel="noopener noreferrer">', 'https://github.com/MocioF/No-unsafe-inline' ) . __( 'Code page on GitHub', 'no-unsafe-inline' ) . '</a></p>';
+		$content .= sprintf( '<p><a href="%s" target="_blank" rel="noopener noreferrer">', 'https://github.com/MocioF/No-unsafe-inline/issues' ) . __( 'Report issues', 'no-unsafe-inline' ) . '</a></p>';
 		$this->screen->set_help_sidebar( $content );
 	}
 }
