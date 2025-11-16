@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: No unsafe-inline support
+    url: https://wordpress.org/support/plugin/no-unsafe-inline/
+    about: Please ask and answer questions here.

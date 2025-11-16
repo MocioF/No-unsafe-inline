@@ -1,0 +1,101 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - MocioF
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Please describe the issue you are facing in detail.
+      placeholder: Bug Description
+      value: "Bug Description"
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please list the steps needed to reproduce the issue.
+      placeholder: |
+        1. Step one
+        2. Step two
+        3. Step three
+      value: |
+        1. Step one
+        2. Step two
+        3. Step three
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Please describe what you expected to happen.
+      placeholder: Expected Behavior
+      value: Expected Behavior
+    validations:
+      required: false
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: Please describe what actually happened.
+      placeholder: Actual Behavior
+      value: Actual Behavior
+    validations:
+      required: false
+  - type: input
+    id: site-url
+    attributes:
+      label: Site URL
+      description: Please provide the URL of the site where the issue occurred.
+      placeholder: ex. https://example.com
+    validations:
+      required: false
+  - type: textarea
+    id: system-info
+    attributes:
+      label: System Information
+      description: Please provide any relevant system information (e.g., OS version, software version).
+      placeholder: |
+        - Server Operating System: e.g., Linux, Windows, macOS
+        - Web Server: e.g., Apache, Nginx
+        - WordPress Version: e.g., 6.8
+        - PHP Version: e.g., 7.4, 8.0
+        - No unsafe-inline Version: e.g., 1.2.3
+        - Plugin Version:
+        - libxml Version:
+        - PHP extensions:
+      value: |
+        - Operating System: e.g., Linux, Windows, macOS
+        - Web Server: e.g., Apache, Nginx
+        - WordPress Version: e.g., 6.8
+        - PHP Version: e.g., 7.4, 8.0
+        - No unsafe-inline Version: e.g., 1.2.3
+        - Plugin Version:
+        - libxml Version:
+        - PHP extensions:
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
