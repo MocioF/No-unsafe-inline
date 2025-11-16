@@ -179,7 +179,7 @@ class Nunil_Capture {
 			$htmlsource = $this->remove_debug_display( $htmlsource );
 			switch ( $this->dommethod ) {
 				case 'PHP_DOM_HTMLDOC':
-					$this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR | \DOM\HTML_NO_DEFAULT_NS );
+					$this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR | \Dom\HTML_NO_DEFAULT_NS );
 					break;
 				case 'IVOPETKOV':
 					if ( $this->domdocument instanceof HTML5DOMDocument ) {

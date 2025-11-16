@@ -121,6 +121,13 @@ namespace NUNIL\admin\partials;
 			</div>
 		</div>
 	</li>
+	<li class="nunil-tools-box">
+		<div class="nunil-tools-support-container">
+		<?php
+		\NUNIL\Nunil_Admin_Support_Box::render();
+		?>
+		</div>
+	</li>
 </ul>
 <hr class='nunil-tools-hr'>
 

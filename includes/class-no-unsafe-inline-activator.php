@@ -15,6 +15,7 @@ use NUNIL\Nunil_Manage_Muplugin;
 use NUNIL\Nunil_Lib_Log as Log;
 use NUNIL\Nunil_Lib_Db as DB;
 use NUNIL\Nunil_Exception;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 /**
  * Fired during plugin activation.
@@ -305,8 +306,43 @@ class No_Unsafe_Inline_Activator {
 	 */
 	public static function check_php_required_extensions() {
 		$needed   = '';
+		$required = self::get_required_extensions();
+
+		foreach ( $required as $extension ) {
+			if ( is_array( $extension ) ) {
+				// Alternative extensions needed.
+				$found = false;
+				foreach ( $extension as $alternative ) {
+					$found = $found || extension_loaded( $alternative );
+				}
+				if ( false === $found ) {
+					$needed .= ' (';
+					foreach ( $extension as $alternative ) {
+						$needed .= $alternative . ' or ';
+					}
+					$needed  = substr( $needed, 0, strlen( $needed ) - 4 );
+					$needed .= ')';
+				}
+			} elseif ( false === extension_loaded( $extension ) ) {
+					$needed .= ' ' . $extension;
+			}
+		}
+		if ( '' !== $needed && 'cli' === php_sapi_name() ) {
+			echo PHP_VERSION . PHP_EOL;
+			echo 'EXTENSIONS REQUIRED: ' . PHP_EOL;
+			echo esc_html( $needed );
+		}
+		return $needed;
+	}
+
+	/**
+	 * Get the list of required PHP extensions
+	 *
+	 * @since 1.2.4
+	 * @return list<string|list<string>>
+	 */
+	public static function get_required_extensions() {
 		$required = array(
-			// no-unsafe-inline plugin.
 			'ctype',
 			'date',
 			'dom',
@@ -342,32 +378,15 @@ class No_Unsafe_Inline_Activator {
 		) {
 			$required[] = 'random';
 		}
+		/* php 8.4 */
+		if (
+			version_compare( PHP_VERSION, '8.4.0', '>=' ) &&
+			version_compare( PHP_VERSION, '8.5.0', '<' )
+		) {
+			$required[] = 'random';
+		}
 
-		foreach ( $required as $extension ) {
-			if ( is_array( $extension ) ) {
-				// Alternative extensions needed.
-				$found = false;
-				foreach ( $extension as $alternative ) {
-					$found = $found || extension_loaded( $alternative );
-				}
-				if ( false === $found ) {
-					$needed .= ' (';
-					foreach ( $extension as $alternative ) {
-						$needed .= $alternative . ' or ';
-					}
-					$needed  = substr( $needed, 0, strlen( $needed ) - 4 );
-					$needed .= ')';
-				}
-			} elseif ( false === extension_loaded( $extension ) ) {
-					$needed .= ' ' . $extension;
-			}
-		}
-		if ( '' !== $needed && 'cli' === php_sapi_name() ) {
-			echo PHP_VERSION . PHP_EOL;
-			echo 'EXTENSIONS REQUIRED: ' . PHP_EOL;
-			echo esc_html( $needed );
-		}
-		return $needed;
+		return $required;
 	}
 
 	/**

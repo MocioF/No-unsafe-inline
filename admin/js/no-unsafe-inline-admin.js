@@ -751,11 +751,11 @@ jQuery(document).ready(function ($) {
       let myItem;
       myItem = document.getElementById("nunil_tools_operation_report");
       textValue = myItem.innerText || myItem.textContent;
-      CopyToClipboard(textValue, true, $(this).data("notification"));
+      CopyToClipboard(textValue, true, $(this).data("notification"), $("#nunil_tools_operation_report_container"));
     }
   );
 
-  function CopyToClipboard(value, showNotification, notificationText) {
+  function CopyToClipboard(value, showNotification, notificationText, divToAppend) {
     navigator.clipboard.writeText(value).then(() => {
       if (typeof showNotification === "undefined") {
         showNotification = true;
@@ -764,7 +764,7 @@ jQuery(document).ready(function ($) {
         notificationText = "Copied to clipboard";
       }
       if (showNotification) {
-        new NunilOperationNotify(notificationText);
+        new NunilOperationNotify(notificationText, divToAppend );
       }
     }).catch(err => {
       console.error("Failed to copy text: ", err);
@@ -793,14 +793,14 @@ jQuery(document).ready(function ($) {
     */
   }
 
-  function NunilOperationNotify(notificationText) {
+  function NunilOperationNotify(notificationText, divToAppend = $("#nunil_tools_operation_report_container") ) {
     var notificationTag = $("div.copy-notification");
     if (notificationTag.length == 0) {
       notificationTag = $("<div/>", {
         "class": "ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content copy-notification",
         text: notificationText
       });
-      $("#nunil_tools_operation_report_container").append(notificationTag);
+      divToAppend.append(notificationTag);
 
       notificationTag.fadeIn("slow", function () {
         setTimeout(function () {
@@ -827,7 +827,7 @@ jQuery(document).ready(function ($) {
             $(this).dialog("close");
             dialog.remove();
             $("#nunil_tools_operation_report").text('');
-            NunilOperationNotify(notificationText);
+            NunilOperationNotify(notificationText, $("#nunil_tools_operation_report_container"));
           },
           Cancel: function () {
             $(this).dialog("close");
@@ -841,6 +841,53 @@ jQuery(document).ready(function ($) {
       });
     }
   );
+
+  // START support box accordion.
+  // Accordion for support box.
+  let accordion_icons = {
+    header: "ui-icon-circle-arrow-e",
+    activeHeader: "ui-icon-circle-arrow-s"
+  };
+  $("#nunil-support-box-accordion").accordion({
+
+    collapsible: true,
+    heightStyle: "content",
+    icons: accordion_icons,
+    active: false
+  });
+  // Buttons on support box.
+  $("#nunil_sys_info_box_container").on(
+    "mouseenter",
+    function () {
+      $("#nunil_admin_support_box_buttons").stop(true).fadeIn(600);
+    }
+  );
+
+  $("#nunil_sys_info_box_container").on(
+    "mouseleave",
+    function () {
+      $("#nunil_admin_support_box_buttons").stop(true).fadeOut(600);
+    }
+  );
+  $("#nunil_admin_support_box_button_clipboard").tooltip({
+    position: {
+      at: "right center",
+      my: "left+15 center"
+    }
+  });
+  $("#nunil_admin_support_box_button_clipboard").on(
+    "click",
+    function (event) {
+      event.preventDefault();
+      let textValue;
+      let myItem;
+      myItem = document.getElementById("nunil_sys_info_box");
+      textValue = myItem.innerText || myItem.textContent;
+      CopyToClipboard(textValue, true, $(this).data("notification"), $("#nunil_sys_info_box_container"));
+    }
+  );
+
+  // END support box accordion.
   // START base rules main tab.
   mypage = getUrlParameter("page");
   mytab = getUrlParameter("tab");
