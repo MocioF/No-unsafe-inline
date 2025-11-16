@@ -179,7 +179,7 @@ No.
 == Changelog ==
 = 1.2.4 =
 * Added a support box in tools' panel
-* Updated the HTML5 parser to work with libxml>2.13.09 and with the new \Dom\ namespaced class on PHP<8.4
+* Updated the HTML5 parser to work with libxml>2.13.09 and with the new \Dom\ namespaced class on PHP>=8.4
 * Added rel="noopener noreferrer" in external links with _blank target
 
 = 1.2.3 =
