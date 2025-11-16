@@ -340,6 +340,12 @@ div.nunil_temp_div {
 	border-collapse: collapse;
 }
 
+@media (max-width: 480px) {
+	.rwd-table {
+		width: 100%;
+	}
+}
+
 .rwd-table tr {
 	border-top: 0px;
 }
@@ -439,8 +445,8 @@ div.nunil_temp_div {
 	grid-template-columns: repeat(3, 1fr);
 	column-gap: 15px;
 	grid-template-rows: 1fr;
-	grid-auto-rows: 1fr;
-	text-align: center;
+	/* grid-auto-rows: 1fr; */
+	/* text-align: center; */
 	justify-content: space-between;
 	align-items: start;
 }
@@ -755,7 +761,7 @@ div.nunil_temp_div {
 	position: relative;
 }
 
-.nunil_tools_operation_report_buttons {
+.nunil_tools_operation_report_buttons, .nunil_admin_support_box_buttons {
 	position: absolute;
 	bottom: 0.5em;
 	right: 1.4em;
@@ -763,13 +769,13 @@ div.nunil_temp_div {
 	flex-direction: row;
 }
 
-.nunil_tools_operation_report_button_clipboard {
+.nunil_tools_operation_report_button_clipboard, .nunil_admin_support_box_button_clipboard {
 	background-color: white;
 	color: #99ccff;
 	border: 2px solid #99ccff;
 }
 
-.nunil_tools_operation_report_button_clipboard:hover:enabled {
+.nunil_tools_operation_report_button_clipboard:hover:enabled, .nunil_admin_support_box_button_clipboard:hover:enabled {
 	background-color: #99ccff;
 	color: white;
 }
@@ -912,4 +918,44 @@ div.nunil_temp_div {
 
 .nav-tab-wrapper {
 	margin: 10px 20px 0 2px;
+}
+
+.nunil_req_ok {
+	color: #4BB543;
+	font-weight: bold;
+}
+
+.nunil_req_fail {
+	color: #FF0000;
+	font-weight: bold;
+}
+
+.nunil_req_unneeded {
+	color: #747474;
+	font-weight: bold;
+}
+.nunil_req_unknown {
+	color: #FFA500;
+	font-weight: bold;
+}
+
+.nunil_sys_info_box {
+	background-color: #f1f1f1;
+	padding: 10px;
+	border: 1px solid #ccc;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-size: medium;
+}
+
+.nunil_sys_info_box_container {
+	position: relative;
+	/* border-radius: .4em;
+	display: flex;
+	flex-direction: column; */
+}
+
+.nunil-software-versions-table, .nunil-extensions-status-table {
+	width: 100%;
 }
