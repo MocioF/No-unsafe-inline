@@ -23,7 +23,6 @@ body:
       label: Bug Description
       description: Please describe the issue you are facing in detail.
       placeholder: Bug Description
-      value: "Bug Description"
     validations:
       required: true
   - type: textarea
@@ -32,10 +31,6 @@ body:
       label: Steps to Reproduce
       description: Please list the steps needed to reproduce the issue.
       placeholder: |
-        1. Step one
-        2. Step two
-        3. Step three
-      value: |
         1. Step one
         2. Step two
         3. Step three
@@ -74,15 +69,6 @@ body:
       description: Please provide any relevant system information (e.g., OS version, software version).
       placeholder: |
         - Server Operating System: e.g., Linux, Windows, macOS
-        - Web Server: e.g., Apache, Nginx
-        - WordPress Version: e.g., 6.8
-        - PHP Version: e.g., 7.4, 8.0
-        - No unsafe-inline Version: e.g., 1.2.3
-        - Plugin Version:
-        - libxml Version:
-        - PHP extensions:
-      value: |
-        - Operating System: e.g., Linux, Windows, macOS
         - Web Server: e.g., Apache, Nginx
         - WordPress Version: e.g., 6.8
         - PHP Version: e.g., 7.4, 8.0
