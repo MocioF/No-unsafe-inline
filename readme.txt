@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -177,6 +177,11 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.4 =
+* Added a support box in tools' panel
+* Updated the HTML5 parser to work with libxml>2.13.09 and with the new \Dom\ namespaced class on PHP<8.4
+* Added rel="noopener noreferrer" in external links with _blank target
+
 = 1.2.3 =
 * Added a filter on no_unsafe_inline_not_sri_sources (thanks [@jkirrane](https://github.com/jkirrane))
 * Added a filter for $header_csp (nunil_output_csp_headers_header_csp) (thanks [@tripflex](https://github.com/tripflex))
@@ -266,7 +271,10 @@ Give it a try!
 
 == Code and libraries ==
 This version of the plugin uses:
-* [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) to parse HTML;
+* to parse HTML:
+  * [ivopetkov/HTML5DOMDocument](https://github.com/ivopetkov/html5-dom-document-php) on PHP<8.4 and libxml<=2.13.09
+  * [Masterminds\HTML5](https://github.com/Masterminds/html5-php) on PHP<8.4 and libxml>2.13.09
+  * [\Dom\HTMLDocument](https://www.php.net/manual/en/migration84.new-features.php#migration84.new-features.dom): The new ext-dom features with HTML5 support on PHP>8.4
 * [RubixML](https://rubixml.com/) for machine learning ***from version 1.1.0*** - _[PHP-ML](https://php-ml.readthedocs.io/en/latest/) was used in versions 1.0.x_;
 * [opctim/php-nilsimsa](https://github.com/opctim/php-nilsimsa) to calculate and compare Nilsimsa digests.
 

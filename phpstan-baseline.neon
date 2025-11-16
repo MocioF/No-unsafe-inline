@@ -61,6 +61,12 @@ parameters:
 			path: src/Nunil_Capture.php
 
 		-
+			rawMessage: Constant Dom\HTML_NO_DEFAULT_NS not found.
+			identifier: constant.notFound
+			count: 1
+			path: src/Nunil_Capture.php
+
+		-
 			rawMessage: Instantiated class Dom\XPath not found.
 			identifier: class.notFound
 			count: 2

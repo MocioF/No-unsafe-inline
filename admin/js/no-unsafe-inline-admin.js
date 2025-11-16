@@ -468,7 +468,6 @@ jQuery(document).ready(function ($) {
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
       return true;
     }
-
     return false;
   }
 
