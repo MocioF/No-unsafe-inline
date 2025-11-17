@@ -24,7 +24,7 @@ if ( isset( $_GET['tab'] ) ) {
 		'inline',
 		'events',
 	);
-	if ( false === in_array( $nunil_tab, $nunil_list_tabs ) ) {
+	if ( false === in_array( $nunil_tab, $nunil_list_tabs, true ) ) {
 		$nunil_tab = null;
 	}
 } else {
@@ -78,7 +78,7 @@ if ( isset( $_GET['orderby'] ) ) {
 			$nunil_adm_orderby = array();
 	}
 
-	if ( ! in_array( $nunil_orderby, $nunil_adm_orderby ) ) {
+	if ( ! in_array( $nunil_orderby, $nunil_adm_orderby, true ) ) {
 		$nunil_orderby = null;
 	}
 } else {
@@ -91,7 +91,7 @@ if ( isset( $_GET['order'] ) ) {
 		'asc',
 		'desc',
 	);
-	if ( ! in_array( $nunil_order, $nunil_orders ) ) {
+	if ( ! in_array( $nunil_order, $nunil_orders, true ) ) {
 		$nunil_order = null;
 	}
 } else {

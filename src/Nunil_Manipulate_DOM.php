@@ -191,6 +191,9 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 		$this->managed_tags = Nunil_Captured_Tags::get_captured_tags();
 
+		// Initialize csp_local_whitelist as empty array.
+		$this->csp_local_whitelist = [];
+
 		// Set properties with db results.
 		$cache_keys = array( 'inline_rows', 'events_rows', 'external_rows' );
 		foreach ( $cache_keys as $cache_key ) {
