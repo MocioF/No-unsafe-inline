@@ -5,7 +5,7 @@ Tags: Content Security Policy, unsafe-inline, security, multisite, CSP
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -177,6 +177,9 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.5 =
+Bug fix for PHP 8.4
+
 = 1.2.4 =
 * Added a support box in tools' panel
 * Updated the HTML5 parser to work with libxml>2.13.09 and with the new \Dom\ namespaced class on PHP>=8.4
