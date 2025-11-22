@@ -192,7 +192,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$this->managed_tags = Nunil_Captured_Tags::get_captured_tags();
 
 		// Initialize csp_local_whitelist as empty array.
-		$this->csp_local_whitelist = [];
+		$this->csp_local_whitelist = array();
 
 		// Set properties with db results.
 		$cache_keys = array( 'inline_rows', 'events_rows', 'external_rows' );
@@ -400,7 +400,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		if ( 0 < $inline_list->length ) {
 			$directive = $tagname . '-src';
 			foreach ( $inline_list as $node ) {
-				if ( ! $node instanceof \DOMElement ) {
+				if ( ! $node instanceof \DOMElement && ! $node instanceof \Dom\Element ) {
 					continue;
 				}
 				$content = $node->textContent;
@@ -1212,7 +1212,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$nodelist = $this->get_nodes_w_events();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if ( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) {
 					$rows = $this->get_event_handlers_in_node( $node );
 					foreach ( $rows as $row ) {
 						$hashes = $this->get_hashes( $row['script'], $utf8 = true );
@@ -1270,7 +1270,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$nodelist = $this->get_nodes_w_inline_style();
 		if ( $nodelist ) {
 			foreach ( $nodelist as $node ) {
-				if ( $node instanceof \DOMElement ) {
+				if ( $node instanceof \DOMElement || $node instanceof \Dom\Element ) {
 					$row = $this->get_inline_style_in_node( $node );
 
 					if ( false !== $row ) {

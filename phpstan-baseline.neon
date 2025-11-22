@@ -175,6 +175,12 @@ parameters:
 			path: src/Nunil_Manipulate_DOM.php
 
 		-
+			rawMessage: Access to property $textContent on an unknown class Dom\Element.
+			identifier: class.notFound
+			count: 1
+			path: src/Nunil_Manipulate_DOM.php
+
+		-
 			rawMessage: 'Call to method appendChild() on an unknown class \Dom\Element.'
 			identifier: class.notFound
 			count: 1
@@ -243,7 +249,7 @@ parameters:
 		-
 			rawMessage: Class Dom\Element not found.
 			identifier: class.notFound
-			count: 1
+			count: 4
 			path: src/Nunil_Manipulate_DOM.php
 
 		-
