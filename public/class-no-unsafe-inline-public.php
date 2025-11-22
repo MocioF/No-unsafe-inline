@@ -278,7 +278,7 @@ class No_Unsafe_Inline_Public {
 
 			foreach ( $base_src as $directive => $base_sources ) {
 				$dir     = str_replace( '_base_rule', '', $directive );
-				$csp     = trim( strval( Utils::cast_strval( $base_sources ) ) );
+				$csp     = trim( Utils::safe_strval( $base_sources ) );
 				$enabled = $dir . '_enabled';
 				if ( ( 'script-src' === $dir || 'default-src' === $dir ) && 1 === $options['use_strict-dynamic'] ) {
 					$csp = $csp . ' \'strict-dynamic\'';
@@ -305,7 +305,7 @@ class No_Unsafe_Inline_Public {
 				$header_csp = $header_csp . 'require-trusted-types-for \'script\'; ';
 			}
 			if ( 1 === $options['use_trusted-types'] ) {
-				$header_csp = $header_csp . 'trusted-types ' . trim( strval( Utils::cast_strval( $options['trusted-types'] ) ) ) . '; ';
+				$header_csp = $header_csp . 'trusted-types ' . trim( Utils::safe_strval( $options['trusted-types'] ) ) . '; ';
 			}
 
 			// Qui creo i valori nel caso in cui devo catturare le violazioni tramite i report.
@@ -349,7 +349,7 @@ class No_Unsafe_Inline_Public {
 					if ( 1 === $options['use_report-uri'] ) {
 						foreach ( $options['endpoints'] as $endpoint ) {
 							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
-								$report_uri = $report_uri . strval( Utils::cast_strval( $endpoint['url'] ) ) . ' ';
+								$report_uri = $report_uri . Utils::safe_strval( $endpoint['url'] ) . ' ';
 							}
 						}
 					}
@@ -376,7 +376,7 @@ class No_Unsafe_Inline_Public {
 						foreach ( $options['endpoints'] as $endpoint ) {
 							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) ) {
 								$header_report_to_array['endpoints'][] = array(
-									'url' => strval( Utils::cast_strval( $endpoint['url'] ) ),
+									'url' => Utils::safe_strval( $endpoint['url'] ),
 								);
 							}
 						}
@@ -394,7 +394,7 @@ class No_Unsafe_Inline_Public {
 						foreach ( $options['endpoints'] as $endpoint ) {
 							if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
 								$header_reporting_endpoints = $header_reporting_endpoints . ' ' .
-								strval( Utils::cast_strval( $endpoint['name'] ) ) . '="' . strval( Utils::cast_strval( $endpoint['url'] ) ) . '", ';
+								Utils::safe_strval( $endpoint['name'] ) . '="' . Utils::safe_strval( $endpoint['url'] ) . '", ';
 							}
 						}
 						// rimuovo ultimi due caratteri ', '.

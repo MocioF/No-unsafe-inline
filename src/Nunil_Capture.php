@@ -139,7 +139,7 @@ class Nunil_Capture {
 
 		$plugin_options = (array) get_option( 'no-unsafe-inline' );
 		if ( ! empty( $plugin_options ) ) {
-			$inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
+			$inline_scripts_mode = Utils::safe_strval( $plugin_options['inline_scripts_mode'] );
 			if ( 'nonce' === $inline_scripts_mode ) {
 				$this->hash_in_use = 'sha256';
 			} else {

@@ -78,7 +78,7 @@ class Nunil_Script_Upgrader {
 			if ( 'core' === $options['type'] ) {
 				require ABSPATH . 'wp-includes/version.php';
 				global $wp_version;
-				$newver = isset( $wp_version ) ? strval( Utils::cast_strval( $wp_version ) ) : '';
+				$newver = isset( $wp_version ) ? Utils::safe_strval( $wp_version ) : '';
 				$slug   = '';
 				$oldver = self::get_old_asset_version( $options['type'], $slug );
 				self::update_wp_asset_scripts( $options['type'], $slug, $oldver, $newver );
@@ -185,7 +185,7 @@ class Nunil_Script_Upgrader {
 					$type === $row['type'] &&
 					$slug === $row['slug']
 				) {
-					return strval( Utils::cast_strval( $row['oldver'] ) );
+					return Utils::safe_strval( $row['oldver'] );
 				}
 			}
 		}

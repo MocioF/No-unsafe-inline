@@ -28,7 +28,7 @@ class Nunil_Lib_Utils {
 	public static function get_page_url() {
 		$protocol = is_ssl() ? 'https://' : 'http://';
 		if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
-			$myurl = ( $protocol ) . sanitize_text_field( wp_unslash( strval( self::cast_strval( $_SERVER['HTTP_HOST'] ) ) ) ) . sanitize_text_field( wp_unslash( strval( self::cast_strval( $_SERVER['REQUEST_URI'] ) ) ) );
+			$myurl = ( $protocol ) . sanitize_text_field( wp_unslash( self::safe_strval( $_SERVER['HTTP_HOST'] ) ) ) . sanitize_text_field( wp_unslash( self::safe_strval( $_SERVER['REQUEST_URI'] ) ) );
 		} else {
 			$myurl = '';
 		}
@@ -133,6 +133,17 @@ class Nunil_Lib_Utils {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Returns a string from mixed
+	 *
+	 * @since 1.2.6
+	 * @param mixed $myvar The var to get string value from.
+	 * @return string
+	 */
+	public static function safe_strval( $myvar ) {
+		return strval( self::cast_strval( $myvar ) );
 	}
 
 	/**

@@ -297,7 +297,7 @@ class Nunil_Base_Src_Rules {
 	private function get_nunil_external_host_mode_option() {
 		$options = (array) get_option( 'no-unsafe-inline' );
 		if ( isset( $options['external_host_mode'] ) ) {
-			return strval( Utils::cast_strval( $options['external_host_mode'] ) );
+			return Utils::safe_strval( $options['external_host_mode'] );
 		} else {
 			return 'sch-host';
 		}

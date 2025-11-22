@@ -1485,7 +1485,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( Utils::cast_strval( $options[ $option_name ] ) ) ) : 0;
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( Utils::safe_strval( $options[ $option_name ] ) ) : 0;
 		$enabled     = $value ? 'checked="checked"' : '';
 
 		printf(
@@ -1519,7 +1519,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_external_host_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['external_host_mode'] ) ? strval( Utils::cast_strval( $options['external_host_mode'] ) ) : 'host';
+		$value   = isset( $options['external_host_mode'] ) ? Utils::safe_strval( $options['external_host_mode'] ) : 'host';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -1683,7 +1683,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_inline_script_mode_option(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['inline_scripts_mode'] ) ? strval( Utils::cast_strval( $options['inline_scripts_mode'] ) ) : 'nonce';
+		$value   = isset( $options['inline_scripts_mode'] ) ? Utils::safe_strval( $options['inline_scripts_mode'] ) : 'nonce';
 
 		echo (
 		'<div class="nunil-radio-div">' .
@@ -1788,7 +1788,7 @@ class No_Unsafe_Inline_Admin {
 	 */
 	public function print_trusted_types(): void {
 		$options = (array) get_option( 'no-unsafe-inline' );
-		$value   = isset( $options['trusted-types'] ) ? strval( Utils::cast_strval( $options['trusted-types'] ) ) : '';
+		$value   = isset( $options['trusted-types'] ) ? Utils::safe_strval( $options['trusted-types'] ) : '';
 		$label1  = esc_html__( 'Specify here the Trusted Types policy names to be whitelisted in the trusted-types CSP directive, separated by a space. Example: "default myPolicy".', 'no-unsafe-inline' );
 		$label2  = esc_html__( 'An empty directive value indicates policies may not be created, and sinks expect Trusted Type values, i.e. no DOM XSS injection sinks can be used at all.', 'no-unsafe-inline' );
 		printf(
@@ -2065,8 +2065,8 @@ class No_Unsafe_Inline_Admin {
 		// Add a line for each url.
 		foreach ( $endpoints as $index => $endpoint ) {
 			if ( is_array( $endpoint ) && array_key_exists( 'url', $endpoint ) && array_key_exists( 'name', $endpoint ) ) {
-				$endp_url  = strval( Utils::cast_strval( $endpoint['url'] ) );
-				$endp_name = strval( Utils::cast_strval( $endpoint['name'] ) );
+				$endp_url  = Utils::safe_strval( $endpoint['url'] );
+				$endp_name = Utils::safe_strval( $endpoint['name'] );
 				printf(
 					'<li>' .
 					'<button class="nunil-btn nunil-btn-del-endpoint" ' .
@@ -2250,7 +2250,7 @@ class No_Unsafe_Inline_Admin {
 		$option_name = $args['option_name'];
 		$label       = $args['label'];
 		$options     = (array) get_option( 'no-unsafe-inline-base-rule' );
-		$value       = isset( $options[ $option_name ] ) ? esc_attr( strval( Utils::cast_strval( $options[ $option_name ] ) ) ) : '';
+		$value       = isset( $options[ $option_name ] ) ? esc_attr( Utils::safe_strval( $options[ $option_name ] ) ) : '';
 
 		printf(
 			'<div class="nunil-base-rule-container">' .
@@ -2513,7 +2513,7 @@ class No_Unsafe_Inline_Admin {
 	public function trigger_clustering(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_clustering_nonce' )
+		&& wp_verify_nonce( sanitize_key( Utils::safe_strval( $_REQUEST['nonce'] ) ), 'nunil_trigger_clustering_nonce' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2525,7 +2525,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( Utils::safe_strval( $_SERVER['HTTP_REFERER'] ) ) ) );
 		}
 
 		wp_die();
@@ -2540,7 +2540,7 @@ class No_Unsafe_Inline_Admin {
 	public function clean_database(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_clean_database' )
+		&& wp_verify_nonce( sanitize_key( Utils::safe_strval( $_REQUEST['nonce'] ) ), 'nunil_trigger_clean_database' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2576,7 +2576,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( Utils::safe_strval( $_SERVER['HTTP_REFERER'] ) ) ) );
 		}
 
 		wp_die();
@@ -2591,7 +2591,7 @@ class No_Unsafe_Inline_Admin {
 	public function prune_database(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_trigger_prune_database' )
+		&& wp_verify_nonce( sanitize_key( Utils::safe_strval( $_REQUEST['nonce'] ) ), 'nunil_trigger_prune_database' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2615,7 +2615,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( Utils::safe_strval( $_SERVER['HTTP_REFERER'] ) ) ) );
 		}
 
 		wp_die();
@@ -2639,7 +2639,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( Utils::safe_strval( $_SERVER['HTTP_REFERER'] ) ) ) );
 		}
 
 		wp_die();
@@ -2817,7 +2817,7 @@ class No_Unsafe_Inline_Admin {
 	public function test_classifier(): void {
 		if ( ! (
 		isset( $_REQUEST['nonce'] )
-		&& wp_verify_nonce( sanitize_key( strval( Utils::cast_strval( $_REQUEST['nonce'] ) ) ), 'nunil_test_classifier_nonce' )
+		&& wp_verify_nonce( sanitize_key( Utils::safe_strval( $_REQUEST['nonce'] ) ), 'nunil_test_classifier_nonce' )
 		) ) {
 			exit( esc_html__( 'Nope! Security check failed!', 'no-unsafe-inline' ) );
 		}
@@ -2831,7 +2831,7 @@ class No_Unsafe_Inline_Admin {
 		if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && Utils::sanitize_text( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
 			echo wp_json_encode( $result );
 		} elseif ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-				header( 'Location: ' . esc_url_raw( wp_unslash( strval( Utils::cast_strval( $_SERVER['HTTP_REFERER'] ) ) ) ) );
+				header( 'Location: ' . esc_url_raw( wp_unslash( Utils::safe_strval( $_SERVER['HTTP_REFERER'] ) ) ) );
 		}
 
 		wp_die();

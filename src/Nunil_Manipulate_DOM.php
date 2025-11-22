@@ -203,7 +203,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 			}
 		}
 
-		$this->inline_scripts_mode = strval( Utils::cast_strval( $plugin_options['inline_scripts_mode'] ) );
+		$this->inline_scripts_mode = Utils::safe_strval( $plugin_options['inline_scripts_mode'] );
 
 		$this->page_nonce = $this->generate_nonce();
 
@@ -807,7 +807,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 					if ( ! $node->hasAttribute( 'integrity' ) ) { // We don't modify integrity attrs set by others plugins.
 						$integrity_string = '';
 						if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
-							$hash_with_options = 'sha256-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha256 ) );
+							$hash_with_options = 'sha256-' . Utils::safe_strval( $this->external_rows[ $index ]->sha256 );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -820,7 +820,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							}
 						}
 						if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
-							$hash_with_options = 'sha384-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha384 ) );
+							$hash_with_options = 'sha384-' . Utils::safe_strval( $this->external_rows[ $index ]->sha384 );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -833,7 +833,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 							}
 						}
 						if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
-							$hash_with_options = 'sha512-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha512 ) );
+							$hash_with_options = 'sha512-' . Utils::safe_strval( $this->external_rows[ $index ]->sha512 );
 							$integrity_string  = $integrity_string . $hash_with_options . ' ';
 							if ( $add_hashes ) {
 								$local_wl = array(
@@ -897,15 +897,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 
 						$integrity_string = '';
 					if ( $use256 && ! empty( $this->external_rows[ $index ]->sha256 ) ) {
-						$hash_with_options = 'sha256-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha256 ) );
+						$hash_with_options = 'sha256-' . Utils::safe_strval( $this->external_rows[ $index ]->sha256 );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 					if ( $use384 && ! empty( $this->external_rows[ $index ]->sha384 ) ) {
-						$hash_with_options = 'sha384-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha384 ) );
+						$hash_with_options = 'sha384-' . Utils::safe_strval( $this->external_rows[ $index ]->sha384 );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 					if ( $use512 && ! empty( $this->external_rows[ $index ]->sha512 ) ) {
-						$hash_with_options = 'sha512-' . strval( Utils::cast_strval( $this->external_rows[ $index ]->sha512 ) );
+						$hash_with_options = 'sha512-' . Utils::safe_strval( $this->external_rows[ $index ]->sha512 );
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 
@@ -945,7 +945,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		$not_sri_sources = (array) apply_filters( 'no_unsafe_inline_not_sri_sources', $not_sri_sources );
 
 		foreach ( $not_sri_sources as $source ) {
-			if ( false !== strpos( $sourcestr, strval( Utils::cast_strval( $source ) ) ) ) {
+			if ( false !== strpos( $sourcestr, Utils::safe_strval( $source ) ) ) {
 				// We found the not_sri_string in $sourcestr.
 				return false;
 			}

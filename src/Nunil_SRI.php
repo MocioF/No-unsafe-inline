@@ -83,7 +83,7 @@ class Nunil_SRI {
 
 			$data = DB::get_ext_hashes_from_id( $id );
 			if ( ! is_null( $data ) ) {
-				$response = $this->fetch_resource( strval( Utils::cast_strval( $data->src_attrib ) ) );
+				$response = $this->fetch_resource( Utils::safe_strval( $data->src_attrib ) );
 
 				if ( ! is_wp_error( $response ) ) {
 					$body = wp_remote_retrieve_body( $response );
@@ -128,7 +128,7 @@ class Nunil_SRI {
 				} else {
 					$returned = false;
 					// translators: %s is the URL of the resource to fetch.
-					throw new Nunil_Exception( sprintf( esc_html__( 'Unable to fetch %s', 'no-unsafe-inline' ), esc_html( strval( Utils::cast_strval( $data->src_attrib ) ) ) ), 2003, 2 );
+					throw new Nunil_Exception( sprintf( esc_html__( 'Unable to fetch %s', 'no-unsafe-inline' ), esc_html( Utils::safe_strval( $data->src_attrib ) ) ), 2003, 2 );
 				}
 			} else {
 				$returned = false;

@@ -70,7 +70,7 @@ class Nunil_Admin_Support_Box {
 								echo '<tr>';
 									echo '<td data-th="Software">' . esc_html__( 'Web Server', 'no-unsafe-inline' ) . '</td>';
 								if ( isset( $_SERVER['SERVER_SOFTWARE'] ) ) {
-									echo '<td data-th="Version">' . esc_html( sanitize_text_field( strval( Utils::cast_strval( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) ) ) . '</td>';
+									echo '<td data-th="Version">' . esc_html( sanitize_text_field( Utils::safe_strval( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) ) . '</td>';
 								} else {
 									echo '<td data-th="Version">' . esc_html__( 'Unknown', 'no-unsafe-inline' ) . '</td>';
 								}
@@ -78,7 +78,7 @@ class Nunil_Admin_Support_Box {
 								if ( isset( $_SERVER['SERVER_SIGNATURE'] ) ) {
 									echo '<tr>';
 										echo '<td data-th="Software">' . esc_html__( 'Server Signature', 'no-unsafe-inline' ) . '</td>';
-										echo '<td data-th="Version">' . esc_html( sanitize_text_field( strval( Utils::cast_strval( wp_unslash( $_SERVER['SERVER_SIGNATURE'] ) ) ) ) ) . '</td>';
+										echo '<td data-th="Version">' . esc_html( sanitize_text_field( Utils::safe_strval( wp_unslash( $_SERVER['SERVER_SIGNATURE'] ) ) ) ) . '</td>';
 									echo '</tr>';
 								}
 
@@ -276,7 +276,7 @@ class Nunil_Admin_Support_Box {
 		$info .= '- ' . __( 'Operating System', 'no-unsafe-inline' ) . ': ' . php_uname( 's' ) . "\n";
 		$info .= '- ' . __( 'Web Server', 'no-unsafe-inline' ) . ': ';
 		if ( isset( $_SERVER['SERVER_SOFTWARE'] ) ) {
-			$info .= sanitize_text_field( strval( Utils::cast_strval( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) );
+			$info .= sanitize_text_field( Utils::safe_strval( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) );
 		} else {
 			$info .= __( 'Unknown', 'no-unsafe-inline' );
 		}
