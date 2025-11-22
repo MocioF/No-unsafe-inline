@@ -281,18 +281,21 @@ td.column-script div.ui-accordion div.ui-accordion-content {
 }
 */
 
-.nunil-base-rule-container {
+.nunil-base-rule-container, .nunil-trusted-types-container {
 	float: left;
 	margin-right: 20px;
 	width: 100%;
 }
 
 input.nunil-base-rule,
-label.nunil-base-rule {
+label.nunil-base-rule,
+input.nunil-trusted-types,
+label.nunil-trusted-types
+{
 	display: block;
 }
 
-input.nunil-base-rule {
+input.nunil-base-rule, input.nunil-trusted-types {
 	width: 100%;
 }
 

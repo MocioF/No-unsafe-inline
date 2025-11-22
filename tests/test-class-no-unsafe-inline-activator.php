@@ -72,6 +72,9 @@ final class No_Unsafe_Inline_ActivatorTest extends \WP_UnitTestCase {
 		$plugin_options['group_name']                        = 'csp-endpoint';
 		$plugin_options['max_age']                           = 10886400;
 		$plugin_options['max_response_header_size']          = 8192;
+		$plugin_options['use_require-trusted-types-for']     = 0;
+		$plugin_options['use_trusted-types']                 = 0;
+		$plugin_options['trusted-types']                     = '';
 
 		$this->assertSame( $default, $plugin_options );
 	}

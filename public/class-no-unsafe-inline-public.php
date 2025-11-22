@@ -300,6 +300,14 @@ class No_Unsafe_Inline_Public {
 				}
 			}
 
+			// trusted-types API.
+			if ( 1 === $options['use_require-trusted-types-for'] ) {
+				$header_csp = $header_csp . 'require-trusted-types-for \'script\'; ';
+			}
+			if ( 1 === $options['use_trusted-types'] ) {
+				$header_csp = $header_csp . 'trusted-types ' . trim( strval( Utils::cast_strval( $options['trusted-types'] ) ) ) . '; ';
+			}
+
 			// Qui creo i valori nel caso in cui devo catturare le violazioni tramite i report.
 			// In questa configurazione, l'operazione avviene anche se è impostata la protezione CSP e non solo se è impostata la test policy.
 			if ( $do_capture ) {
@@ -460,6 +468,7 @@ class No_Unsafe_Inline_Public {
 					}
 
 					// 1. We remove optional-ascii-whitespace
+					$header_csp = str_replace( '  ', ' ', $header_csp );
 					$header_csp = str_replace( ' ;', ';', $header_csp );
 					$header_csp = str_replace( '; ', ';', $header_csp );
 					Log::warning( esc_html__( 'CSP header is too long: removed optional-ascii-whitespace', 'no-unsafe-inline' ) );

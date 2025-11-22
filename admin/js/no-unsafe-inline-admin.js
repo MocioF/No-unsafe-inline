@@ -16,7 +16,8 @@ jQuery(document).ready(function ($) {
     for (i = 0; i < sURLVariables.length; i += 1) {
       sParameterName = sURLVariables[i].split("=");
       if (sParameterName[0] === sParam) {
-        return (sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]));
+        return (sParameterName[1] === undefined ?
+          true : decodeURIComponent(sParameterName[1]));
       }
     }
     return false;
@@ -55,7 +56,7 @@ jQuery(document).ready(function ($) {
         const event = settings.event + ".serialtabs";
         const fxIn = settings.fxIn;
         settings.fxIn = "show";
-        let $lists = $(this);
+        //let $lists = $(this);
 
         this.each(function () {
           const $list = $(this);
@@ -82,7 +83,8 @@ jQuery(document).ready(function ($) {
           }
 
           // Show the first element, or the current element
-          if ($list.attr("data-serialtabs-mode") == "tabs" && $triggerCurrent.length == 0) {
+          if ($list.attr("data-serialtabs-mode") == "tabs" &&
+            $triggerCurrent.length == 0) {
             $trigger.first().addClass("is-current");
           }
 
@@ -114,8 +116,10 @@ jQuery(document).ready(function ($) {
         const $prevTarget = settings.getTarget($prevTrigger);
 
         // Avoid triggering the event for already displayed elements
-        if ($list.attr("data-serialtabs-mode") == "tabs" && $trigger.is($prevTrigger))
+        if ($list.attr("data-serialtabs-mode") == "tabs" &&
+          $trigger.is($prevTrigger)) {
           return;
+        }
 
         // Hide the previous element
         if ($prevTrigger)
@@ -169,14 +173,16 @@ jQuery(document).ready(function ($) {
         const isResponsive = base.isResponsive($list);
 
         // Update the display mode
-        $list.attr("data-serialtabs-mode", (isResponsive ? "accordion" : "tabs"));
+        $list.attr("data-serialtabs-mode",
+          (isResponsive ? "accordion" : "tabs"));
 
         // Move the content
         base.moveItems($list, isResponsive);
       },
 
       isResponsive: function ($list) {
-        let breakpoint = $list.data("serialtabs-breakpoint") ? $list.data("serialtabs-breakpoint") : 50;
+        let breakpoint = $list.data("serialtabs-breakpoint") ?
+          $list.data("serialtabs-breakpoint") : 50;
 
         // Breakpoint calculation
         if (breakpoint == 50)
@@ -750,7 +756,8 @@ jQuery(document).ready(function ($) {
       let myItem;
       myItem = document.getElementById("nunil_tools_operation_report");
       textValue = myItem.innerText || myItem.textContent;
-      CopyToClipboard(textValue, true, $(this).data("notification"), $("#nunil_tools_operation_report_container"));
+      CopyToClipboard(textValue, true, $(this).data("notification"),
+      $("#nunil_tools_operation_report_container"));
     }
   );
 
@@ -792,7 +799,8 @@ jQuery(document).ready(function ($) {
     */
   }
 
-  function NunilOperationNotify(notificationText, divToAppend = $("#nunil_tools_operation_report_container") ) {
+  function NunilOperationNotify(notificationText,
+    divToAppend = $("#nunil_tools_operation_report_container") ) {
     var notificationTag = $("div.copy-notification");
     if (notificationTag.length == 0) {
       notificationTag = $("<div/>", {
@@ -812,7 +820,8 @@ jQuery(document).ready(function ($) {
   }
   $("#nunil_tools_operation_report_button_clear").on(
     "click",
-    function (event, notificationText = $(this).data("notification"), mytext = $(this).data("dialog-message")) {
+    function (event, notificationText = $(this).data("notification"),
+    mytext = $(this).data("dialog-message")) {
       event.preventDefault();
       var dialog = $("div.nunil-tools-dialog");
       dialog = $("<div/>", {
@@ -826,7 +835,8 @@ jQuery(document).ready(function ($) {
             $(this).dialog("close");
             dialog.remove();
             $("#nunil_tools_operation_report").text('');
-            NunilOperationNotify(notificationText, $("#nunil_tools_operation_report_container"));
+            NunilOperationNotify(notificationText,
+              $("#nunil_tools_operation_report_container"));
           },
           Cancel: function () {
             $(this).dialog("close");
@@ -1253,6 +1263,113 @@ jQuery(document).ready(function ($) {
     );
   }
   // END endpoint section.
+
+  // Start trusted-types management.
+  function uniqueOrderedTypes(string) {
+    if ( string !== undefined ) {
+      const categories = string.split(" ");
+      const unique = Array.from(new Set(categories));
+      const ordered = [];
+      let allowDuplicates = false;
+      var i;
+      for (i = 0; i < unique.length; i += 1) {
+        if (unique[i] === "'none'") {
+          ordered.push("'none'");
+          unique.splice(i, 1);
+        }
+      }
+      for (i = 0; i < unique.length; i += 1) {
+        if (unique[i] === "default") {
+          ordered.push("default");
+          unique.splice(i, 1);
+        }
+      }
+      //unique.sort();
+      for (i = 0; i < unique.length; i += 1) {
+        // this goes ad the end
+        if ("'allow-duplicates'" !== unique[i] ) {
+          ordered.push(unique[i]);
+        } else {
+          allowDuplicates = true;
+        }
+      }
+      if ( allowDuplicates ) {
+        ordered.push("'allow-duplicates'");
+      }
+      return ordered.join(" ");
+    }
+  }
+
+  if ("no-unsafe-inline" === mypage && "settings" === mytab) {
+    function checkTrustedTypesFields(){
+      const previousVal = $("#no-unsafe-inline\\[trusted-types\\]").val();
+      if (previousVal !== undefined) {
+        const policies = previousVal.split(" ");
+        const values = "'none' 'allow-duplicates'".split(" ");
+        values.forEach(function(item) {
+          if (policies.indexOf(item) !== -1 ){
+            $(`input.no-unsafe-inline-trusted-type-builder[value="${item}"]`)
+            .prop("checked", true);
+          }
+        });
+      }
+    }
+    checkTrustedTypesFields();
+
+    function toggleTrustedTypesFields() {
+      let use_trusted_types = $("input[type='checkbox'][name='no-unsafe-inline[use_trusted-types]']").prop("checked");
+      if (use_trusted_types) {
+        $("#no-unsafe-inline\\[trusted-types\\]").prop("disabled", false);
+        $("checkbox[id='no-unsafe-inline_trusted-types_none']").prop("disabled", false);
+        $("checkbox[id='no-unsafe-inline_trusted-types_allow-duplicates']").prop("disabled", false);
+        $('#nunil-trusted-types-container').fadeTo(1000, 1);
+      } else {
+        $("#no-unsafe-inline\\[trusted-types\\]").prop("disabled", true);
+        $("checkbox[id='no-unsafe-inline_trusted-types_none']").prop("disabled", true);
+        $("checkbox[id='no-unsafe-inline_trusted-types_allow-duplicates']").prop("disabled", true);
+        $('#nunil-trusted-types-container').fadeTo(1000, 0.5);
+      }
+    }
+    // Initial call to set the correct state on page load.
+    toggleTrustedTypesFields();
+    // Event listener for changes.
+    $("input[type='checkbox'][name='no-unsafe-inline[use_trusted-types]']").on("change",
+      function () {
+        toggleTrustedTypesFields();
+      }
+    );
+  }
+
+  $(".no-unsafe-inline-trusted-type-builder").on("change",
+    function () {
+      var $chk = $(this);
+      var source = $chk.val();
+      var elTarget = $("#no-unsafe-inline\\[trusted-types\\]");
+      if ($chk.prop("checked")) {
+        var newval = elTarget.val().trim() + " " + source;
+        elTarget.val( newval );
+        elTarget.val(
+          uniqueOrderedTypes(
+            elTarget
+              .val()
+          )
+        );
+      } else {
+        elTarget.val(
+          elTarget
+            .val()
+            .replace(source, "")
+        );
+        elTarget.val(
+          uniqueOrderedTypes(
+            elTarget
+              .val()
+          )
+        );
+      }
+    }
+  );
+  // End trusted-types management.
 
   // START tools main tab.
   $("#nunil-db-sum-tabs").tabs({

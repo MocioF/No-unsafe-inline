@@ -317,6 +317,19 @@ class No_Unsafe_Inline_Admin {
 			$options['capture_admin'] = 1;
 			update_option( 'no-unsafe-inline', $options );
 		}
+		if ( version_compare( $old_ver, '1.2.6', '<' ) ) {
+			$options = (array) get_option( 'no-unsafe-inline' );
+			if ( ! array_key_exists( 'use_require-trusted-types-for', $options ) ) {
+				$options['use_require-trusted-types-for'] = 0;
+			}
+			if ( ! array_key_exists( 'use_trusted-types', $options ) ) {
+				$options['use_trusted-types'] = 0;
+			}
+			if ( ! array_key_exists( 'trusted-types', $options ) ) {
+				$options['trusted-types'] = '';
+			}
+			update_option( 'no-unsafe-inline', $options );
+		}
 	}
 
 	/**
@@ -687,7 +700,7 @@ class No_Unsafe_Inline_Admin {
 			'no-unsafe-inline-options',
 			array(
 				'before_section' => '<div id="nunil-options-tabs-4">',
-				'after_section'  => '</div>',
+				// 'after_section'  => '</div>',
 			)
 		);
 
@@ -790,6 +803,61 @@ class No_Unsafe_Inline_Admin {
 			array( $this, 'print_max_response_header_size' ),
 			'no-unsafe-inline-options',
 			'no-unsafe-inline_misc'
+		);
+
+		add_settings_section(
+			'no-unsafe-inline_trusted_types_api',
+			esc_html__( 'Trusted Types API', 'no-unsafe-inline' ),
+			array( $this, 'print_trusted_types_api_section' ),
+			'no-unsafe-inline-options',
+			array(
+				// 'before_section' => '<div id="nunil-options-tabs-4">',
+				'after_section' => '</div>',
+			)
+		);
+
+		add_settings_field(
+			'use_require-trusted-types-for',
+			// translators: %s is require-trusted-types-for link to w3.org site.
+			esc_html__( 'Add require-trusted-types-for \'script\'', 'no-unsafe-inline' ),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_trusted_types_api',
+			array(
+				'option_name' => 'use_require-trusted-types-for',
+				'label'       => sprintf(
+					// translators: %s is require-trusted-types-for link to w3.org site.
+					esc_html__(
+						'\'%s\' directive configures the Trusted Types framework for all the injection sinks of certain groups in a current realm. Currently, only the enforcement for DOM XSS injection sinks is specified, so the only value admitted is \'script\'.',
+						'no-unsafe-inline'
+					),
+					'<a href="https://www.w3.org/TR/trusted-types/#require-trusted-types-for-directive" target="_blank" rel="noopener noreferrer">require-trusted-types-for</a>'
+				),
+			)
+		);
+
+		add_settings_field(
+			'use_trusted-types',
+			esc_html__( 'Add trusted-types', 'no-unsafe-inline' ),
+			array( $this, 'print_toggle_option' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_trusted_types_api',
+			array(
+				'option_name' => 'use_trusted-types',
+				'label'       => sprintf(
+					// translators: %s is trusted-types link to w3.org site.
+					esc_html__( '\'%s\' controls the creation of Trusted Type policies.', 'no-unsafe-inline' ),
+					'<a href="https://www.w3.org/TR/trusted-types/#trusted-types-csp-directive" target="_blank" rel="noopener noreferrer">trusted-types</a>'
+				),
+			)
+		);
+
+		add_settings_field(
+			'trusted-types',
+			esc_html__( 'trusted-types value (Trusted Types policy names, and keywords)', 'no-unsafe-inline' ),
+			array( $this, 'print_trusted_types' ),
+			'no-unsafe-inline-options',
+			'no-unsafe-inline_trusted_types_api'
 		);
 
 		/*** Start report section */
@@ -1107,7 +1175,9 @@ class No_Unsafe_Inline_Admin {
 			'add_Reporting-Endpoints',
 			'add_Report-To',
 			'remove_tables',
-			'remove_options'
+			'remove_options',
+			'use_require-trusted-types-for',
+			'use_trusted-types'
 		);
 
 		foreach ( $check_box_options as $option_name ) {
@@ -1270,6 +1340,9 @@ class No_Unsafe_Inline_Admin {
 			if ( false !== $filtered_value ) {
 				$new_input['max_response_header_size'] = $filtered_value;
 			}
+		}
+		if ( isset( $input['trusted-types'] ) && is_string( $input['trusted-types'] ) ) {
+			$new_input['trusted-types'] = sanitize_text_field( $input['trusted-types'] );
 		}
 
 		$new_options = array_merge( $options, $new_input );
@@ -1698,6 +1771,46 @@ class No_Unsafe_Inline_Admin {
 	}
 
 	/**
+	 * Print the Trusted Types API section info
+	 *
+	 * @since 1.2.6
+	 * @return void
+	 */
+	public function print_trusted_types_api_section(): void {
+		print esc_html__( 'Trusted Types API.', 'no-unsafe-inline' );
+	}
+
+	/**
+	 * Print the trusted types option (trusted-type directive value)
+	 *
+	 * @since 1.2.6
+	 * @return void
+	 */
+	public function print_trusted_types(): void {
+		$options = (array) get_option( 'no-unsafe-inline' );
+		$value   = isset( $options['trusted-types'] ) ? strval( Utils::cast_strval( $options['trusted-types'] ) ) : '';
+		$label1  = esc_html__( 'Specify here the Trusted Types policy names to be whitelisted in the trusted-types CSP directive, separated by a space. Example: "default myPolicy".', 'no-unsafe-inline' );
+		$label2  = esc_html__( 'An empty directive value indicates policies may not be created, and sinks expect Trusted Type values, i.e. no DOM XSS injection sinks can be used at all.', 'no-unsafe-inline' );
+		printf(
+			'<div class="nunil-trusted-types-container" id="nunil-trusted-types-container">' .
+			'<label for="no-unsafe-inline[trusted-types]" class="nunil-trusted-types"/>' .
+			'<input type="text" id="no-unsafe-inline[trusted-types]" name="no-unsafe-inline[trusted-types]" class="nunil-trusted-types" value="%1$s"/>%2$s</label>',
+			esc_html( $value ),
+			esc_html( $label1 ) . '<br />' . esc_html( $label2 )
+		);
+		printf(
+			'<input type="checkbox" id="no-unsafe-inline_trusted-types_none" class="no-unsafe-inline-trusted-type-builder" value="\'none\'"/>' .
+			'<label for="no-unsafe-inline_trusted-types_none">%s</label>' .
+			'<br />' .
+			'<input type="checkbox" id="no-unsafe-inline_trusted-types_allow-duplicates" class="no-unsafe-inline-trusted-type-builder" value="\'allow-duplicates\'"/>' .
+			'<label for="no-unsafe-inline_trusted-types_allow-duplicates">%s</label>' .
+			'</div>',
+			esc_html__( 'Set an empty directive value (no policies allowed).', 'no-unsafe-inline' ),
+			esc_html__( 'Allow duplicate policy names.', 'no-unsafe-inline' )
+		);
+	}
+
+	/**
 	 * Print the logs section
 	 *
 	 * @since 1.0.0
@@ -1781,7 +1894,6 @@ class No_Unsafe_Inline_Admin {
 			esc_html__( 'Use report-to and report-uri.', 'no-unsafe-inline' )
 		);
 	}
-
 
 	/**
 	 * Print simple toggle option
