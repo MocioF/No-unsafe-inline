@@ -434,7 +434,7 @@ class Nunil_Knn_Trainer {
 		}
 		$wp_option = get_option( $nunil_lm_opt );
 		if ( is_array( $wp_option ) && array_key_exists( $table, $wp_option ) ) {
-			return intval( Utils::cast_intval( $wp_option[ $table ] ) );
+			return Utils::safe_intval( $wp_option[ $table ] );
 		} else {
 			return false;
 		}

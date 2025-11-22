@@ -393,7 +393,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 		$screen = get_current_screen();
 		if ( ! is_null( $screen ) ) {
 			$screen_option = $screen->get_option( 'per_page', 'option' );
-			$per_page      = intval( Utils::cast_intval( get_user_meta( $user, $screen_option, true ) ) );
+			$per_page      = Utils::safe_intval( get_user_meta( $user, $screen_option, true ) );
 			if ( $per_page < 1 ) {
 				$per_page = intval( $screen->get_option( 'per_page', 'default' ) );
 			}
@@ -401,7 +401,7 @@ class No_Unsafe_Inline_Events_List extends \WP_List_Table {
 			$per_page = 20;
 		}
 
-		$paged = isset( $_REQUEST['paged'] ) ? max( 0, ( intval( Utils::cast_intval( $_REQUEST['paged'] ) ) - 1 ) * $per_page ) : 0;
+		$paged = isset( $_REQUEST['paged'] ) ? max( 0, ( Utils::safe_intval( $_REQUEST['paged'] ) - 1 ) * $per_page ) : 0;
 
 		$order = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'ASC', 'DESC', 'asc', 'desc' ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'ASC';
 

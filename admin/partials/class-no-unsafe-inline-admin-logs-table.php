@@ -236,7 +236,7 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 			$search = '';
 		}
 
-		$per_page = isset( $_REQUEST['per_page'] ) ? intval( Utils::cast_intval( Utils::sanitize_text( $_REQUEST['per_page'] ) ) ) : 50;
+		$per_page = isset( $_REQUEST['per_page'] ) ? Utils::safe_intval( Utils::sanitize_text( $_REQUEST['per_page'] ) ) : 50;
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 
@@ -247,7 +247,7 @@ class No_Unsafe_Inline_Admin_Logs_Table extends \WP_List_Table {
 
 		$total_items = Db::get_total_logs( $search, $level, $date );
 
-		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( Utils::cast_intval( $_REQUEST['paged'] ) ) - 1 ) : 0;
+		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, Utils::safe_intval( $_REQUEST['paged'] ) - 1 ) : 0;
 		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : 'created_at';
 		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? Utils::sanitize_text( $_REQUEST['order'], false ) : 'desc';
 

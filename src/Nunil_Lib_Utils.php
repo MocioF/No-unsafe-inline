@@ -171,6 +171,17 @@ class Nunil_Lib_Utils {
 	}
 
 	/**
+	 * Returns a int from mixed
+	 *
+	 * @since 1.2.6
+	 * @param mixed $myvar The var to get int value from.
+	 * @return int
+	 */
+	public static function safe_intval( $myvar ) {
+		return intval( self::cast_intval( $myvar ) );
+	}
+
+	/**
 	 * Writes in a WP_Option the last time plugin tables have been modified
 	 *
 	 * @param string $table_name The internal (unprefixed) table name.

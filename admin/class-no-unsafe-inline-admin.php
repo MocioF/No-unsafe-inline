@@ -1764,7 +1764,7 @@ class No_Unsafe_Inline_Admin {
 			'<input class="nunil-max-response-header-size" type="text" id="no-unsafe-inline[max_response_header_size]"' .
 			'name="no-unsafe-inline[max_response_header_size]" value="%d" />
 			<label for="no-unsafe-inline[max_response_header_size]">%s %s</label>',
-			intval( Utils::cast_intval( $value ) ),
+			Utils::safe_intval( $value ),
 			esc_html__( 'Write here the HTTP Response Header Size Limit allowed by your server (in bytes). See: ', 'no-unsafe-inline' ),
 			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank" rel="noopener noreferrer">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
 		);
@@ -1987,7 +1987,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[max_age]" value="%d" placeholder="%s" %s />
 			<p class="nunil-text-field__label">%s</p>
 			</div>',
-			intval( Utils::cast_intval( $value ) ),
+			Utils::safe_intval( $value ),
 			'10886400',
 			esc_html( $disabled ),
 			esc_html__( 'Max-Age', 'no-unsafe-inline' )
