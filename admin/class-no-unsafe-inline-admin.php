@@ -1487,6 +1487,9 @@ class No_Unsafe_Inline_Admin {
 		$options     = (array) get_option( 'no-unsafe-inline' );
 		$value       = isset( $options[ $option_name ] ) ? esc_attr( Utils::safe_strval( $options[ $option_name ] ) ) : 0;
 		$enabled     = $value ? 'checked="checked"' : '';
+		$link        = 'prefetch-src' === $label ?
+		'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/' . esc_html( $label ) :
+		'https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label );
 
 		printf(
 			'<input class="nunil-ui-toggle" type="checkbox" id="no-unsafe-inline[%1$s]"' .
@@ -1497,7 +1500,7 @@ class No_Unsafe_Inline_Admin {
 			esc_html( $enabled ),
 			esc_html( $option_name ),
 			// translators: %s is a CSP directory link on w3.org specs for CSP3.
-			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="https://www.w3.org/TR/CSP3/#directive-' . esc_html( $label ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>' )
+			sprintf( esc_html__( 'Enable managing of the %s directive.', 'no-unsafe-inline' ), '<a href="' . esc_url( $link, array( 'http', 'https' ) ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>' )
 		);
 	}
 
@@ -1764,7 +1767,7 @@ class No_Unsafe_Inline_Admin {
 			'<input class="nunil-max-response-header-size" type="text" id="no-unsafe-inline[max_response_header_size]"' .
 			'name="no-unsafe-inline[max_response_header_size]" value="%d" />
 			<label for="no-unsafe-inline[max_response_header_size]">%s %s</label>',
-			Utils::safe_intval( $value ),
+			esc_html( strval( Utils::safe_intval( $value ) ) ),
 			esc_html__( 'Write here the HTTP Response Header Size Limit allowed by your server (in bytes). See: ', 'no-unsafe-inline' ),
 			'<a href="https://maxchadwick.xyz/blog/http-response-header-size-limits" target="_blank" rel="noopener noreferrer">https://maxchadwick.xyz/blog/http-response-header-size-limits</a>'
 		);
@@ -1987,7 +1990,7 @@ class No_Unsafe_Inline_Admin {
 			'name="no-unsafe-inline[max_age]" value="%d" placeholder="%s" %s />
 			<p class="nunil-text-field__label">%s</p>
 			</div>',
-			Utils::safe_intval( $value ),
+			esc_html( strval( Utils::safe_intval( $value ) ) ),
 			'10886400',
 			esc_html( $disabled ),
 			esc_html__( 'Max-Age', 'no-unsafe-inline' )
