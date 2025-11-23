@@ -468,12 +468,20 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function get_inline_scripts() {
 		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
-			$x = new \Dom\XPath( $this->domdocument );
+			$x      = new \Dom\XPath( $this->domdocument );
+			$root   = $this->domdocument->documentElement;
+			$ns_uri = $root->namespaceURI;
+			if ( $ns_uri ) {
+				$x->registerNamespace( 'xhtml', 'http://www.w3.org/1999/xhtml' );
+				$x_path_query = "//xhtml:script[not(@src) and not(@type='text/html') and not(@type='text/template')]";
+			} else {
+				$x_path_query = "//script[not(@src) and not(@type='text/html') and not(@type='text/template')]";
+			}
 		} else {
-			$x = new \DOMXPath( $this->domdocument );
+			$x            = new \DOMXPath( $this->domdocument );
+			$x_path_query = "//script[not(@src) and not(@type='text/html') and not(@type='text/template')]";
 		}
-		$x_path_query = "//script[not(@src) and not(@type='text/html') and not(@type='text/template')]";
-		$nodelist     = $x->query( $x_path_query );
+		$nodelist = $x->query( $x_path_query );
 		return $nodelist;
 	}
 
@@ -486,12 +494,20 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function get_internal_css() {
 		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
-			$x = new \Dom\XPath( $this->domdocument );
+			$x      = new \Dom\XPath( $this->domdocument );
+			$root   = $this->domdocument->documentElement;
+			$ns_uri = $root->namespaceURI;
+			if ( $ns_uri ) {
+				$x->registerNamespace( 'xhtml', 'http://www.w3.org/1999/xhtml' );
+				$x_path_query = '//xhtml:style[not(@src)]';
+			} else {
+				$x_path_query = '//style[not(@src)]';
+			}
 		} else {
-			$x = new \DOMXPath( $this->domdocument );
+			$x            = new \DOMXPath( $this->domdocument );
+			$x_path_query = '//style[not(@src)]';
 		}
-		$x_path_query = '//style[not(@src)]';
-		$nodelist     = $x->query( $x_path_query );
+		$nodelist = $x->query( $x_path_query );
 		return $nodelist;
 	}
 
@@ -504,12 +520,19 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @return \DOMNodeList<\DOMNameSpaceNode|\DOMNode>|\Dom\NodeList<\Dom\Node>|false
 	 */
 	private function get_external_nodelist( $tag ) {
+		$xhtml_ns = false;
 		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
-			$x = new \Dom\XPath( $this->domdocument );
+			$x      = new \Dom\XPath( $this->domdocument );
+			$root   = $this->domdocument->documentElement;
+			$ns_uri = $root->namespaceURI;
+			if ( $ns_uri ) {
+				$x->registerNamespace( 'xhtml', 'http://www.w3.org/1999/xhtml' );
+				$xhtml_ns = true;
+			}
 		} else {
 			$x = new \DOMXPath( $this->domdocument );
 		}
-		$x_path_query = $this->build_xpath_query( $tag );
+		$x_path_query = $this->build_xpath_query( $tag, $xhtml_ns );
 
 		return $x->query( $x_path_query );
 	}
@@ -520,10 +543,15 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 * @since 1.0.0
 	 * @access public
 	 * @param \NUNIL\Nunil_HTML_Tag $tag The NUNIL html tag to parse.
+	 * @param bool                  $xhtml_ns If to look in the XHTML namespace.
 	 * @return string
 	 */
-	public function build_xpath_query( $tag ) {
-		$x_path_query = '//' . $tag->get_name();
+	public function build_xpath_query( $tag, $xhtml_ns = false ) {
+		if ( true === $xhtml_ns ) {
+			$x_path_query = '//xhtml:' . $tag->get_name();
+		} else {
+			$x_path_query = '//' . $tag->get_name();
+		}
 
 		$storedattrs = $tag->get_storedattrs();
 
@@ -643,7 +671,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 	 */
 	private function check_external_whitelist( $node ) {
 		$tag_lists = $this->get_tags_by_tagname( $this->managed_tags );
-		$node_name = $node->nodeName;
+		$node_name = strtolower( $node->nodeName );
 
 		// We need to process only the list where $tag_lists[index] === $mytagname.
 		// The list is sorted placing first tag with childs.
@@ -782,10 +810,10 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 		}
 
 		if (
-			( 'nonce' === $options['script-src_mode'] && 'script-src' === $directive && 'script' === $node->nodeName ) ||
-			( 'nonce' === $options['script-src_mode'] && 'script-src-elem' === $directive && 'script' === $node->nodeName ) ||
-			( 'nonce' === $options['style-src_mode'] && 'style-src' === $directive && 'link' === $node->nodeName ) ||
-			( 'nonce' === $options['style-src_mode'] && 'style-src-elem' === $directive && 'link' === $node->nodeName )
+			( 'nonce' === $options['script-src_mode'] && 'script-src' === $directive && 'script' === strtolower( $node->nodeName ) ) ||
+			( 'nonce' === $options['script-src_mode'] && 'script-src-elem' === $directive && 'script' === strtolower( $node->nodeName ) ) ||
+			( 'nonce' === $options['style-src_mode'] && 'style-src' === $directive && 'link' === strtolower( $node->nodeName ) ) ||
+			( 'nonce' === $options['style-src_mode'] && 'style-src-elem' === $directive && 'link' === strtolower( $node->nodeName ) )
 		) {
 			$add_nonce = true;
 		} else {
@@ -845,13 +873,13 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 								}
 							}
 						}
-						if ( ( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
-							( 'link' === $node->nodeName && 1 === $options['sri_link'] )
+						if ( ( 'script' === strtolower( $node->nodeName ) && 1 === $options['sri_script'] ) ||
+							( 'link' === strtolower( $node->nodeName ) && 1 === $options['sri_link'] )
 						) {
 							// In some cases external API cannot support integrity in a consistent way.
 							// i.e. the CSS returned by the googlefonts API is different for different browsers.
 							// In this cases we don't add integrity to the resources.
-							if ( 'script' === $node->nodeName ) {
+							if ( 'script' === strtolower( $node->nodeName ) ) {
 								$sourcestr = strval( $node->getAttribute( 'src' ) );
 							} else {
 								$sourcestr = strval( $node->getAttribute( 'href' ) );
@@ -889,8 +917,8 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$node->setAttribute( 'nonce', $this->page_nonce );
 					}
 				} elseif ( (
-					( 'script' === $node->nodeName && 1 === $options['sri_script'] ) ||
-					( 'link' === $node->nodeName && 1 === $options['sri_link'] ) )
+					( 'script' === strtolower( $node->nodeName ) && 1 === $options['sri_script'] ) ||
+					( 'link' === strtolower( $node->nodeName ) && 1 === $options['sri_link'] ) )
 					&& ( ! $node->hasAttribute( 'integrity' ) )
 					&& ( ! is_null( $this->external_rows ) )
 					) { // The node is not whitelisted. Just add integrity if we know it and it doesn't have.
@@ -909,7 +937,7 @@ class Nunil_Manipulate_DOM extends Nunil_Capture {
 						$integrity_string  = $integrity_string . $hash_with_options . ' ';
 					}
 
-					if ( 'script' === $node->nodeName ) {
+					if ( 'script' === strtolower( $node->nodeName ) ) {
 						$sourcestr = strval( $node->getAttribute( 'src' ) );
 					} else {
 						$sourcestr = strval( $node->getAttribute( 'href' ) );

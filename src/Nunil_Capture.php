@@ -179,7 +179,8 @@ class Nunil_Capture {
 			$htmlsource = $this->remove_debug_display( $htmlsource );
 			switch ( $this->dommethod ) {
 				case 'PHP_DOM_HTMLDOC':
-					$this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR | \Dom\HTML_NO_DEFAULT_NS );
+					// $this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR | \Dom\HTML_NO_DEFAULT_NS );
+					$this->domdocument = \Dom\HTMLDocument::createFromString( $htmlsource, LIBXML_COMPACT | LIBXML_HTML_NOIMPLIED | LIBXML_NOERROR );
 					break;
 				case 'IVOPETKOV':
 					if ( $this->domdocument instanceof HTML5DOMDocument ) {
@@ -399,7 +400,7 @@ class Nunil_Capture {
 		foreach ( $attributes as $attribute ) {
 			if ( $node->getAttribute( $attribute['attr'] ) ) {
 				$row    = array(
-					'tagname'         => $node->nodeName,
+					'tagname'         => strtolower( $node->nodeName ),
 					'tagid'           => strval( $node->getAttribute( 'id' ) ),
 					'event_attribute' => $attribute['attr'],
 					'script'          => $node->getAttribute( $attribute['attr'] ),
@@ -422,7 +423,7 @@ class Nunil_Capture {
 		$attribute = 'style';
 		if ( $node->hasAttribute( $attribute ) ) {
 			$row = array(
-				'tagname' => $node->nodeName,
+				'tagname' => strtolower( $node->nodeName ),
 				'script'  => strval( $node->getAttribute( $attribute ) ),
 			);
 			return $row;
@@ -441,11 +442,19 @@ class Nunil_Capture {
 		$event_attributes = new Nunil_Event_Attributes();
 		$attributes       = $event_attributes->get_attributes();
 		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
-			$x = new \Dom\XPath( $this->domdocument );
+			$x      = new \Dom\XPath( $this->domdocument );
+			$root   = $this->domdocument->documentElement;
+			$ns_uri = $root->namespaceURI;
+			if ( $ns_uri ) {
+				$x->registerNamespace( 'xhtml', 'http://www.w3.org/1999/xhtml' );
+				$x_path_query = '//xhtml:*[';
+			} else {
+				$x_path_query = '//*[';
+			}
 		} else {
-			$x = new \DOMXPath( $this->domdocument );
+			$x            = new \DOMXPath( $this->domdocument );
+			$x_path_query = '//*[';
 		}
-		$x_path_query = '//*[';
 
 		foreach ( $attributes as $attribute ) {
 			$event = $attribute['attr'];
@@ -456,7 +465,6 @@ class Nunil_Capture {
 		$x_path_query = $x_path_query . ']';
 
 		$nodelist = $x->query( $x_path_query );
-
 		return $nodelist;
 	}
 
@@ -469,11 +477,19 @@ class Nunil_Capture {
 	 */
 	public function get_nodes_w_inline_style() {
 		if ( $this->domdocument instanceof \Dom\HTMLDocument ) {
-			$x = new \Dom\XPath( $this->domdocument );
+			$x      = new \Dom\XPath( $this->domdocument );
+			$root   = $this->domdocument->documentElement;
+			$ns_uri = $root->namespaceURI;
+			if ( $ns_uri ) {
+				$x->registerNamespace( 'xhtml', 'http://www.w3.org/1999/xhtml' );
+				$x_path_query = '//xhtml:*[@style]';
+			} else {
+				$x_path_query = '//*[@style]';
+			}
 		} else {
-			$x = new \DOMXPath( $this->domdocument );
+			$x            = new \DOMXPath( $this->domdocument );
+			$x_path_query = '//*[@style]';
 		}
-		$x_path_query = '//*[@style]';
 
 		$nodelist = $x->query( $x_path_query );
 
