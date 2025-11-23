@@ -91,8 +91,9 @@ jobs:
           sed -i -E "s/^([[:space:]]*\\*[[:space:]]*Version:)([[:space:]]*).*/\\1\\2${NEW_VERSION}/" no-unsafe-inline.php
           sed -i -E "s/^([[:space:]]*define[[:space:]]*\\([[:space:]]*'NO_UNSAFE_INLINE_VERSION'[[:space:]]*,[[:space:]]*')[^']*('.*\\);)/\\1${NEW_VERSION}\\2/" no-unsafe-inline.php
           sed -i -E "s/^([[:space:]]*\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*(\"[[:space:]]*,?)/\\1${NEW_VERSION}\\2/" composer.json
+          sed -i -E "s/^([[:space:]]*\"version\"[[:space:]]*:[[:space:]]*\")[^\"]*(\"[[:space:]]*,?)/\\1${NEW_VERSION}\\2/" package.json
 
-          git add no-unsafe-inline.php composer.json
+          git add no-unsafe-inline.php composer.json package.json
           if git diff --cached --quiet; then
             echo "No version changes to commit."
             exit 0

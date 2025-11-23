@@ -177,8 +177,14 @@ No.
 5. A database summary table at the bottom of tools tab.
 
 == Changelog ==
+= 1.2.6 =
+* Add management of trusted-types' API directives
+* Bug fix for PHP 8.4
+* Avoid using replace on TrustedHTML
+* Improve js to fix-style and prefilter override
+
 = 1.2.5 =
-Bug fix for PHP 8.4
+* Bug fix for PHP 8.4
 
 = 1.2.4 =
 * Added a support box in tools' panel
