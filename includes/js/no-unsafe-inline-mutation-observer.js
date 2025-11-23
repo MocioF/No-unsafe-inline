@@ -41,6 +41,7 @@
                                             myClass;
                                     }
                                 }
+                                if (!nunilSheet) return;
                                 let ruleList = nunilSheet.cssRules;
                                 let newRule = mySelector + " { " +
                                     newStyle + " }";
