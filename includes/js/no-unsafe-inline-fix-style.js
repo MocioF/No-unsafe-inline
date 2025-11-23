@@ -3,6 +3,18 @@
  *
  * https://csplite.com/csp/test433/
  * https://csplite.com/csp/test343/
+ *
+ *
+ * Overriden methods ("direct" injection sinks)
+ *  - Document.parseHTMLUnsafe()
+ *  - Document.write()
+ *  - Document.writeln()
+ *  - Element.innerHTML setter
+ *  - Element.insertAdjacentHTML
+ *  - Element.outerHTML setter
+ *  - Element.insertBefore
+ *  - Element.setAttribute
+ *  - Element.appendChild
  */
 
 /**
@@ -81,7 +93,7 @@ const nunilHrefReg = /\s*href\s*=\s*((?:'|")(.+?)(?:'|"))/sim;
  * @returns {String} - The camel case string
  */
 function toCamelCase(str) {
-  return str.replace(/-([a-z])/g, function (match, letter) {
+  return str.replace(/-([a-z])/g, function(match, letter) {
     return letter.toUpperCase();
   });
 }
@@ -98,7 +110,7 @@ var nativeSetAttribute = Element.prototype.setAttribute;
  * @param {string} val - The value to assign to the attribute
  * @returns {undefined}
  */
-Element.prototype.setAttribute = function (attr, val) {
+Element.prototype.setAttribute = function(attr, val) {
   if (attr.toLowerCase() !== "style") {
     // console.log("set " + attr + "=`" + val + "` natively");
     nativeSetAttribute.apply(this, [attr, val]);
@@ -295,10 +307,10 @@ function nunilNodeFunction() {
   if (arguments[0] instanceof HTMLScriptElement) {
     handleScriptElement(arguments[0]);
   } else if (Object.prototype.isPrototypeOf.call(
-    DocumentFragment.prototype, arguments[0])) {
+      DocumentFragment.prototype, arguments[0])) {
     handleDocumentFragment(arguments[0]);
   } else if (Object.prototype.isPrototypeOf.call(
-    Element.prototype, arguments[0])) {
+      Element.prototype, arguments[0])) {
     handleElement(arguments[0]);
   } else {
     // Handle other cases if needed
@@ -316,7 +328,7 @@ var nativeAppendChild = Element.prototype.appendChild;
  *
  * @returns {Element.prototype.appendChild}
  */
-Element.prototype.appendChild = function () {
+Element.prototype.appendChild = function() {
   nunilNodeFunction.apply(this, arguments);
   var child = nativeAppendChild.apply(this, arguments);
   nunilParseArgToStyle("data-style-nunil-ac");
@@ -333,12 +345,97 @@ var nativeInsertBefore = Element.prototype.insertBefore;
  *
  * @returns {Element.prototype.appendChild}
  */
-Element.prototype.insertBefore = function () {
+Element.prototype.insertBefore = function() {
   nunilNodeFunction.apply(this, arguments);
   var child = nativeInsertBefore.apply(this, arguments);
   nunilParseArgToStyle("data-style-nunil-ac");
   return child;
 };
+
+/**
+ * Store a reference to the native parseHTMLUnsafe method
+ */
+var nativeparseHTMLUnsafe = Document.prototype.parseHTMLUnsafe;
+
+/**
+ * Overriding parseHTMLUnsafe()
+ *
+ * @returns {undefined}
+ */
+Document.prototype.parseHTMLUnsafe = function() {
+  var input = arguments[0];
+  var options = arguments[1];
+  var replaced = input;
+
+  if (!
+    (typeof TrustedHTML !== 'undefined' && replaced instanceof TrustedHTML)
+  ) {
+    replaced = nunilHtmlReplace(replaced);
+    replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-phu=");
+  }
+  if (typeof options !== 'undefined') {
+    nativeparseHTMLUnsafe.apply(this, [replaced, options]);
+  } else {
+    nativeparseHTMLUnsafe.apply(this, [replaced]);
+  }
+  nunilParseArgToStyle("data-style-nunil-phu");
+}
+
+/**
+ * Store a reference to the native write method
+ */
+var nativeWrite = Document.prototype.write;
+
+/**
+ * Overrides Document.write
+ */
+Document.prototype.write = function() {
+  var input = Array.from(arguments);
+  let output = [];
+
+  input.forEach(function(item) {
+    let replaced;
+    if (!
+      (typeof TrustedHTML !== 'undefined' && item instanceof TrustedHTML)
+    ) {
+      replaced = nunilHtmlReplace(item);
+      replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-wln=");
+      output.push(replaced);
+    } else {
+      output.push(item);
+    }
+  });
+  nativeWrite.apply(this, output);
+  nunilParseArgToStyle("data-style-nunil-wln");
+}
+
+/**
+ * Store a reference to the native writeln method
+ */
+var nativeWriteln = Document.prototype.writeln;
+
+/**
+ * Overrides Document.writeln
+ */
+Document.prototype.writeln = function() {
+  var input = Array.from(arguments);
+  let output = [];
+
+  input.forEach(function(item) {
+    let replaced;
+    if (!
+      (typeof TrustedHTML !== 'undefined' && item instanceof TrustedHTML)
+    ) {
+      replaced = nunilHtmlReplace(item);
+      replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-w=");
+      output.push(replaced);
+    } else {
+      output.push(item);
+    }
+  });
+  nativeWriteln.apply(this, output);
+  nunilParseArgToStyle("data-style-nunil-w");
+}
 
 /**
  * Store a reference to the native InsertAdjacentHTML method
@@ -350,18 +447,17 @@ var nativeInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;
  *
  * @returns {undefined}
  */
-Element.prototype.insertAdjacentHTML = function () {
+Element.prototype.insertAdjacentHTML = function() {
   var position = arguments[0];
   var html = arguments[1];
-  var replaced = html
+  var replaced = html;
 
-  replaced = nunilMaybeSetStyleNonce(replaced);
-  replaced = nunilMaybeSetLinkNonce(replaced);
-  replaced = nunilMaybeSetScriptNonce(replaced);
-  replaced = nunilMaybeSetScriptIntegrity(replaced);
-  replaced = nunilMaybeSetLinkIntegrity(replaced);
-  replaced.replace(/\bstyle=/gim, "data-style-nunil-iah=");
-
+  if (!
+    (typeof TrustedHTML !== 'undefined' && replaced instanceof TrustedHTML)
+  ) {
+    replaced = nunilHtmlReplace(replaced);
+    replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-iah=");
+  }
   nativeInsertAdjacentHTML.apply(this, [position, replaced]);
   nunilParseArgToStyle("data-style-nunil-iah");
 };
@@ -373,14 +469,14 @@ Element.prototype.insertAdjacentHTML = function () {
 var innerHTMLSetter_ = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML").set;
 
 Object.defineProperty(Element.prototype, "innerHTML", {
-  set: function (value) {
+  set: function(value) {
     var replaced = value;
-    replaced = nunilMaybeSetStyleNonce(replaced);
-    replaced = nunilMaybeSetLinkNonce(replaced);
-    replaced = nunilMaybeSetScriptNonce(replaced);
-    replaced = nunilMaybeSetScriptIntegrity(replaced);
-    replaced = nunilMaybeSetLinkIntegrity(replaced);
-    replaced = replaced.replace(/\bstyle=/gim, "data-style-nunil-inh=");
+    if (!
+      (typeof TrustedHTML !== 'undefined' && replaced instanceof TrustedHTML)
+    ) {
+      replaced = nunilHtmlReplace(replaced);
+      replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-inh=");
+    }
 
     //Call the original setter
     innerHTMLSetter_.call(this, replaced);
@@ -392,13 +488,37 @@ Object.defineProperty(Element.prototype, "innerHTML", {
 });
 
 /**
+ * Element.outerHTML setter
+ */
+var outerHTMLSetter_ = Object.getOwnPropertyDescriptor(Element.prototype, "outerHTML").set;
+
+Object.defineProperty(Element.prototype, "outerHTML", {
+  set: function(value) {
+    var replaced = value;
+    if (!
+      (typeof TrustedHTML !== 'undefined' && replaced instanceof TrustedHTML)
+    ) {
+      replaced = nunilHtmlReplace(replaced);
+      replaced = replaced.replace(/\bstyle\s*=/gim, "data-style-nunil-ouh=");
+    }
+
+    //Call the original setter
+    outerHTMLSetter_.call(this, replaced);
+
+    requestAnimationFrame(() => {
+      nunilParseArgToStyle("data-style-nunil-ouh");
+    });
+  }
+});
+
+/**
  * Retrieve the value of 'argString' attribute and set it to style attribute.
  *
  * @param {String} argString
  */
 function nunilParseArgToStyle(argString) {
   var NodeList = document.querySelectorAll("[" + argString + "]");
-  NodeList.forEach(function (currentValue) {
+  NodeList.forEach(function(currentValue) {
     var myStyle = currentValue.getAttribute(argString);
     currentValue.removeAttribute(argString);
     currentValue.setAttribute("style", myStyle);
@@ -529,7 +649,7 @@ function nunilGetScriptNonce() {
     }
   } else {
     var scriptList = document.querySelectorAll("script");
-    scriptList.forEach(function (currentValue) {
+    scriptList.forEach(function(currentValue) {
       if (currentValue.nonce) {
         if ("" !== currentValue.nonce) {
           scriptNonce = currentValue.nonce;
@@ -553,7 +673,7 @@ function nunilGetScriptNonce() {
  */
 function nunilMaybeSetStyleNonce(html) {
   if (nunilStyleNonce && nunilUseStyleNonce) {
-    var replacedStyle = html.replace(nunilStyleReg, function (match, args, content) {
+    var replacedStyle = html.replace(nunilStyleReg, function(match, args, content) {
       if (false === nunilNonceReg.test(args)) {
         return "<style nonce=\"" + nunilStyleNonce + "\"" + args + ">" + content + "</style>";
       } else {
@@ -575,7 +695,7 @@ function nunilMaybeSetStyleNonce(html) {
  */
 function nunilMaybeSetLinkNonce(html) {
   if (nunilStyleNonce && nunilUseLinkNonce) {
-    var replacedLink = html.replace(nunilLinkReg, function (match, args) {
+    var replacedLink = html.replace(nunilLinkReg, function(match, args) {
       if (false === nunilNonceReg.test(args)) {
         return "<link nonce=\"" + nunilStyleNonce + "\"" + args + ">";
       } else {
@@ -596,7 +716,7 @@ function nunilMaybeSetLinkNonce(html) {
  */
 function nunilMaybeSetScriptNonce(html) {
   if (nunilScriptNonce) {
-    var replacedScript = html.replace(nunilScriptReg, function (match, args, content) {
+    var replacedScript = html.replace(nunilScriptReg, function(match, args, content) {
       if (false === nunilNonceReg.test(args)) { // se non c'è già il nonce tra gli args
         if (false === nunilSrcReg.test(args) && nunilUseInlineScriptNonce) {
           return "<script nonce=\"" + nunilScriptNonce + "\"" + args + ">" + content + "</script>";
@@ -621,7 +741,7 @@ function nunilMaybeSetScriptNonce(html) {
  */
 function nunilMaybeSetScriptIntegrity(html) {
   if (nunilUseScriptIntegrity) {
-    var replacedScript = html.replace(nunilScriptReg, async function (match, args, content) {
+    var replacedScript = html.replace(nunilScriptReg, async function(match, args, content) {
       if (false === nunilIntegrityReg.test(args)) { // se non c'è già l'att integrity tra gli args
         if (false === nunilSrcReg.test(args)) { // non c'è src
           try {
@@ -660,9 +780,9 @@ function nunilMaybeSetScriptIntegrity(html) {
  */
 function nunilMaybeSetLinkIntegrity(html) {
   if (nunilUseLinkIntegrity) {
-    var replacedLink = html.replace(nunilLinkReg, async function (match, args) {
+    var replacedLink = html.replace(nunilLinkReg, async function(match, args) {
       if (false === nunilIntegrityReg.test(args) && // se non c'è già l'att integrity tra gli args
-        true === nunilStylesheetReg.test(args) &&  // è uno StyleSheet
+        true === nunilStylesheetReg.test(args) && // è uno StyleSheet
         true === nunilHrefReg.test(args)) // ha l'attributo HREF
       {
         try {
@@ -693,7 +813,7 @@ async function nunilDigestMessage(message) {
   const encoder = new TextEncoder();
   const msgUint8 = encoder.encode(message); // encode as (utf-8) Uint8Array
   const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8);
-  const hashB64 = btoa(String.fromCharCode(... new Uint8Array(hashBuffer)));
+  const hashB64 = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
   return hashB64;
 }
 
@@ -761,4 +881,20 @@ async function nunilRemoteDigest(node) {
       }
     }
   }
+}
+
+/**
+ * Function used in injection sinks overriders.
+ *
+ * @param {string} replaced
+ * @returns string
+ */
+function nunilHtmlReplace(replaced) {
+  replaced = nunilMaybeSetStyleNonce(replaced);
+  replaced = nunilMaybeSetLinkNonce(replaced);
+  replaced = nunilMaybeSetScriptNonce(replaced);
+  replaced = nunilMaybeSetScriptIntegrity(replaced);
+  replaced = nunilMaybeSetLinkIntegrity(replaced);
+
+  return replaced;
 }
