@@ -763,7 +763,7 @@ class Nunil_Admin_Help_Tabs {
 			. esc_html__( 'You can choose to identify these contents through a cryptographic hash or by means of a nonce generated at each view.', 'no-unsafe-inline' )
 			. '</p>';
 
-		$content['nunil-misc']              = '<h1>' . esc_html__( 'Misc Options', 'no-unsafe-inline' ) . '</h1>'
+		$content['nunil-misc'] = '<h1>' . esc_html__( 'Misc Options', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_strict-dynamic</b><br>'
 			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
@@ -834,7 +834,38 @@ class Nunil_Admin_Help_Tabs {
 			. '<p>'
 			. esc_html__( 'If your CSP is too large for this limit, a simplified CSP will be sent by a meta tag instead of using an HTTP header.', 'no-unsafe-inline' )
 			. '</p>'
-			. '<hr>';
+			. '<hr>'
+			. '<h2>' . esc_html__( 'Trusted Types API', 'no-unsafe-inline' ) . '</h2>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_require-trusted-types-for</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'Adds the require-trusted-types-for directive to your CSP (with value \'script\').', 'no-unsafe-inline' )
+			. '</p>'
+			. '<pre>'
+			. '<hr>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>use_trusted-types</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <b>1</b>: ' . esc_html__( 'enabled', 'no-unsafe-inline' ) . ', <b>0</b>: ' . esc_html__( 'disabled', 'no-unsafe-inline' )
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'Adds the trusted-types directive to your CSP.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+			. '<pre>'
+			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>trusted-types</b><br>'
+			. '<i>' . esc_html__( 'Option values', 'no-unsafe-inline' ) . '</i>: <a href="https://www.w3.org/TR/trusted-types/#tt-expression" target="_blank" rel="noopener noreferrer"><b>tt-expression</b></a> = tt-policy-name  / tt-keyword / tt-wildcard'
+			. '</pre>'
+			. '<p>'
+			. esc_html__( 'The expression used as a value for the trusted-types directive.', 'no-unsafe-inline' )
+			. '</p>'
+			. '<p>'
+			. esc_html__( 'You can use the checkboxes to write a trusted-types expression (policy names and keywords separated by spaces).', 'no-unsafe-inline' )
+			. '</p>'
+			. '<hr>'
+
+			. esc_html__( 'Value used in the directory .', 'no-unsafe-inline' )
+			. '</p>';
 		$content['nunil-logs']              = '<h1>' . esc_html__( 'Log', 'no-unsafe-inline' ) . '</h1>'
 			. '<pre>'
 			. '<i>' . esc_html__( 'Option name', 'no-unsafe-inline' ) . '</i>: <b>log_driver</b><br>'

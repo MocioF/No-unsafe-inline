@@ -1808,7 +1808,7 @@ class No_Unsafe_Inline_Admin {
 			'<input type="checkbox" id="no-unsafe-inline_trusted-types_allow-duplicates" class="no-unsafe-inline-trusted-type-builder" value="\'allow-duplicates\'"/>' .
 			'<label for="no-unsafe-inline_trusted-types_allow-duplicates">%s</label>' .
 			'</div>',
-			esc_html__( 'Set an empty directive value (no policies allowed).', 'no-unsafe-inline' ),
+			esc_html__( 'Set an empty directive value (no policies allowed). Note that \'none\' has no effect unless it is the only expression in the directive value.', 'no-unsafe-inline' ),
 			esc_html__( 'Allow duplicate policy names.', 'no-unsafe-inline' )
 		);
 	}
