@@ -1,6 +1,6 @@
 {
     "name": "mociof/no-unsafe-inline",
-    "version": "1.3.0",
+    "version": "1.3.1-dev",
     "description": "A WordPress plugin to help site developers not to use unsafe-inline in CSP",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
